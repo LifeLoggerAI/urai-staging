@@ -15,7 +15,7 @@ beforeAll(async () => {
   testEnv = await initializeTestEnvironment({
     projectId: 'urai-staging-test',
     firestore: {
-      rules: readFileSync(resolve(__dirname, '../../firestore.rules'), 'utf8'),
+      rules: readFileSync(resolve(process.cwd(), '../firestore.rules'), 'utf8'),
       host: '127.0.0.1',
       port: 8080,
     },
