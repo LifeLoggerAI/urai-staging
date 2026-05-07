@@ -1,0 +1,5 @@
+{
+  "projects": {
+    "staging": "REPLACE_WITH_FIREBASE_STAGING_PROJECT_ID"
+  }
+}
