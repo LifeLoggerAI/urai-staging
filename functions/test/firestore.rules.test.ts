@@ -94,13 +94,36 @@ describe('Firestore staging rules', () => {
     await assertSucceeds(getDoc(doc(db, 'staging_featureFlags/demo')));
   });
 
-  it('allows admins to write feature flags', async () => {
+  it('allows admins to write feature flags with descriptions', async () => {
     const db = testEnv.authenticatedContext('admin-a', { role: 'admin' }).firestore();
     await assertSucceeds(
       setDoc(doc(db, 'staging_featureFlags/demo'), {
         flag: 'demo',
         enabled: true,
+        description: 'Demo feature flag',
         updatedBy: 'admin-a',
+      })
+    );
+  });
+
+  it('allows admins to write feature flags without descriptions', async () => {
+    const db = testEnv.authenticatedContext('admin-a', { role: 'admin' }).firestore();
+    await assertSucceeds(
+      setDoc(doc(db, 'staging_featureFlags/no-description'), {
+        flag: 'no-description',
+        enabled: false,
+        updatedBy: 'admin-a',
+      })
+    );
+  });
+
+  it('rejects null feature flag descriptions', async () => {
+    const db = testEnv.authenticatedContext('admin-a', { role: 'admin' }).firestore();
+    await assertFails(
+      setDoc(doc(db, 'staging_featureFlags/demo'), {
+        flag: 'demo',
+        enabled: true,
+        description: null,
       })
     );
   });
