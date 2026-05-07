@@ -92,16 +92,18 @@ export const setFeatureFlag = functions.https.onCall(async (data: unknown, conte
   const enabled = requiredBoolean(input.enabled, 'enabled');
   const description = optionalString(input.description, 'description', 500);
 
-  await db.collection('staging_featureFlags').doc(flag).set(
-    {
-      flag,
-      enabled,
-      description,
-      updatedAt: serverTimestamp(),
-      updatedBy: auth.uid,
-    },
-    { merge: true }
-  );
+  const flagUpdate: admin.firestore.DocumentData = {
+    flag,
+    enabled,
+    updatedAt: serverTimestamp(),
+    updatedBy: auth.uid,
+  };
+
+  if (description !== null) {
+    flagUpdate.description = description;
+  }
+
+  await db.collection('staging_featureFlags').doc(flag).set(flagUpdate, { merge: true });
 
   return {
     status: 'updated',
