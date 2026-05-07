@@ -2,15 +2,29 @@
   "name": "functions",
   "private": true,
   "main": "lib/index.js",
+  "engines": {
+    "node": "20"
+  },
   "scripts": {
+    "lint": "tsc --noEmit",
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run build && npm run test:unit",
+    "test": "npm run test:unit",
+    "test:unit": "vitest run test/auth.test.ts test/validation.test.ts",
+    "test:rules": "firebase emulators:exec --config ../firebase.json --only firestore \"vitest run test/firestore.rules.test.ts\"",
+    "test:e2e": "npm run test:rules"
   },
   "dependencies": {
     "firebase-admin": "^12.0.0",
     "firebase-functions": "^4.5.0"
   },
   "devDependencies": {
-    "typescript": "^5.2.2"
+    "@firebase/rules-unit-testing": "^3.0.3",
+    "@types/node": "^20.11.30",
+    "firebase": "^10.12.4",
+    "firebase-tools": "^13.35.1",
+    "typescript": "^5.2.2",
+    "vitest": "^2.1.9"
   }
 }
