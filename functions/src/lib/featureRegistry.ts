@@ -1,0 +1,312 @@
+export const FEATURE_STATUSES = [
+  'COMPLETE AND WIRED',
+  'IMPLEMENTED BUT NOT WIRED',
+  'PARTIAL',
+  'STUB / PLACEHOLDER',
+  'PLANNED BUT NOT IMPLEMENTED',
+  'BROKEN / BLOCKED',
+  'DUPLICATE / CONFLICTING',
+  'DEPRECATED / SHOULD REMOVE',
+] as const;
+
+export type FeatureStatus = (typeof FEATURE_STATUSES)[number];
+export type Priority = 'P0' | 'P1' | 'P2' | 'P3';
+
+export interface FeatureMatrixItem {
+  system: string;
+  status: FeatureStatus;
+  priority: Priority;
+  files: string[];
+  routes: string[];
+  firebaseCollections: string[];
+  cloudFunctions: string[];
+  apis: string[];
+  uiComponents: string[];
+  missingPieces: string[];
+  integrationRisks: string[];
+  requiredFixes: string[];
+  launchGate: boolean;
+}
+
+export const FEATURE_MATRIX: FeatureMatrixItem[] = [
+  {
+    system: 'Staging Firebase backend foundation',
+    status: 'COMPLETE AND WIRED',
+    priority: 'P0',
+    files: ['firebase.json', 'firestore.rules', 'firestore.indexes.json', 'functions/src/index.ts'],
+    routes: [],
+    firebaseCollections: ['staging_users', 'staging_events', 'staging_jobs', 'staging_featureFlags'],
+    cloudFunctions: [
+      'healthCheck',
+      'authenticatedHealthCheck',
+      'adminHealthCheck',
+      'recordStagingEvent',
+      'getFeatureFlag',
+      'setFeatureFlag',
+      'createStagingJob',
+      'getStagingCompletionMatrix',
+    ],
+    apis: ['Firebase Callable Functions', 'Firestore'],
+    uiComponents: [],
+    missingPieces: ['Verified .firebaserc binding for the real staging project'],
+    integrationRisks: ['Deploying against the wrong Firebase project if project ID is not confirmed'],
+    requiredFixes: ['Create .firebaserc from .firebaserc.example after project ID verification'],
+    launchGate: true,
+  },
+  {
+    system: 'Production UI / browser app surface',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P0',
+    files: [],
+    routes: ['Not present in this repo'],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['No frontend application, routes, browser E2E tests, or UI shell exists in urai-staging'],
+    integrationRisks: ['Backend may pass while product flows remain unvalidated'],
+    requiredFixes: ['Either add a staging UI app here or document the external UI repo that consumes this backend'],
+    launchGate: true,
+  },
+  {
+    system: 'URAI V1 passive life-tracking',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P0',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['Capture clients, ingestion functions, schemas, and dashboard wiring'],
+    integrationRisks: ['Large feature claims without verified ingestion or privacy controls'],
+    requiredFixes: ['Define event taxonomy, ingestion auth, consent checks, and staging fixtures'],
+    launchGate: true,
+  },
+  {
+    system: 'Audio transcription and AI tagging',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P0',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: ['External transcription provider not configured'],
+    uiComponents: [],
+    missingPieces: ['Audio upload path, transcription worker, people/emotion/habit/task tag schema'],
+    integrationRisks: ['High privacy risk and provider-key dependency'],
+    requiredFixes: ['Add consent-gated upload, processing queue, provider abstraction, and deletion policy'],
+    launchGate: true,
+  },
+  {
+    system: 'AI Narrator / Cognitive Mirror / Timeline Playback',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P1',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: ['LLM provider not configured'],
+    uiComponents: [],
+    missingPieces: ['Narrator generation pipeline, mirror summaries, timeline data model, playback UI'],
+    integrationRisks: ['Overlapping narrative systems may duplicate schema and prompts'],
+    requiredFixes: ['Merge narrator, mirror, story, and replay features under one narrative engine contract'],
+    launchGate: false,
+  },
+  {
+    system: 'Mood Forecast / Recovery Timeline / Personality Rings / Emotional Biome',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P1',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['Scoring models, feature vectors, visual components, validation data'],
+    integrationRisks: ['Model outputs could be presented as clinical or deterministic without guardrails'],
+    requiredFixes: ['Create non-clinical language policy, confidence scoring, and explainability layer'],
+    launchGate: false,
+  },
+  {
+    system: 'Symbolic Life Map / Memory Galaxy / constellation views',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P2',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['No visual renderer, star event schema, or route exists in this repo'],
+    integrationRisks: ['Potential mismatch with URAI Spatial renderer contracts'],
+    requiredFixes: ['Define shared memory-node schema before renderer work'],
+    launchGate: false,
+  },
+  {
+    system: 'Shadow Cognition / Obscura Patterns / Mental Load Intelligence',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P1',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['Passive signal definitions, scoring functions, user controls, and reporting UI'],
+    integrationRisks: ['Sensitive inference and overreach risk without opt-in and transparent explanations'],
+    requiredFixes: ['Add explicit consent tier, local-only fallback, and explainability copy'],
+    launchGate: false,
+  },
+  {
+    system: 'Relationship / attachment / betrayal / trust systems',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P2',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['Relationship graph schema, inference policy, UI review controls'],
+    integrationRisks: ['Deception or betrayal labels can be harmful if shown as fact'],
+    requiredFixes: ['Use pattern-language, uncertainty, opt-in controls, and user-editable interpretations'],
+    launchGate: false,
+  },
+  {
+    system: 'Facial and environment inference',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P2',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: ['MediaPipe / face-api.js not present'],
+    uiComponents: [],
+    missingPieces: ['On-device inference client, image-free storage schema, opt-in privacy UX'],
+    integrationRisks: ['Biometric/privacy risk; server processing must be explicitly gated'],
+    requiredFixes: ['Implement local-first inference and store derived signals only by default'],
+    launchGate: false,
+  },
+  {
+    system: 'Accessibility and deaf-community features',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P2',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['Haptic pattern library, visual alert layer, captioning flows, safety alerts'],
+    integrationRisks: ['Safety-critical claims need real-device validation'],
+    requiredFixes: ['Ship as assistive cues, not emergency guarantees; add device testing checklist'],
+    launchGate: false,
+  },
+  {
+    system: 'Insight Marketplace / Pro tier / data marketplace',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P3',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: ['Payments provider not configured'],
+    uiComponents: [],
+    missingPieces: ['Pricing, entitlements, payment webhooks, anonymization, data licensing terms'],
+    integrationRisks: ['Regulatory, consent, and data-sale compliance risk'],
+    requiredFixes: ['Complete privacy/legal architecture before implementation'],
+    launchGate: false,
+  },
+  {
+    system: 'URAI Spatial / AR / VR / WebXR',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P3',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['No spatial runtime exists in this staging backend repo'],
+    integrationRisks: ['Likely belongs in LifeLoggerAI/urai-spatial with a shared schema contract'],
+    requiredFixes: ['Keep staging repo as backend validation host and reference spatial repo contracts'],
+    launchGate: false,
+  },
+  {
+    system: 'URAI Admin / Privacy / Foundation / Studio ecosystem',
+    status: 'PLANNED BUT NOT IMPLEMENTED',
+    priority: 'P2',
+    files: [],
+    routes: [],
+    firebaseCollections: [],
+    cloudFunctions: [],
+    apis: [],
+    uiComponents: [],
+    missingPieces: ['Cross-repo contracts, deployment ownership, and integration tests'],
+    integrationRisks: ['Ecosystem modules may drift without canonical interfaces'],
+    requiredFixes: ['Create cross-repo API contracts and release gates'],
+    launchGate: false,
+  },
+];
+
+export const ROADMAP_PHASES = [
+  {
+    phase: 1,
+    name: 'Critical build blockers',
+    files: ['.firebaserc', 'functions/package-lock.json'],
+    outcome: 'Validated staging project binding and reproducible installs.',
+  },
+  {
+    phase: 2,
+    name: 'Broken wiring and missing integrations',
+    files: ['functions/src/index.ts', 'firestore.rules', 'firestore.indexes.json'],
+    outcome: 'Callable API, collections, indexes, and rules stay aligned.',
+  },
+  {
+    phase: 3,
+    name: 'Incomplete feature completion',
+    files: ['functions/src/lib/featureRegistry.ts', 'docs/URAI_MASTER_FEATURE_MATRIX.md'],
+    outcome: 'Every roadmap claim maps to a status and launch decision.',
+  },
+  {
+    phase: 4,
+    name: 'UI/UX cohesion',
+    files: ['External UI repo or new staging app route tree'],
+    outcome: 'Staging backend is exercised by real UI flows.',
+  },
+  {
+    phase: 5,
+    name: 'Firebase/security/rules cleanup',
+    files: ['firestore.rules', 'functions/test/firestore.rules.test.ts'],
+    outcome: 'Sensitive collections are owner/admin gated and emulator-tested.',
+  },
+  {
+    phase: 6,
+    name: 'Tests and verification',
+    files: ['functions/package.json', 'functions/test'],
+    outcome: 'Typecheck, build, unit tests, and emulator tests pass before deploy.',
+  },
+  {
+    phase: 7,
+    name: 'Documentation and launch readiness',
+    files: ['docs/*.md', 'README.md'],
+    outcome: 'Human operators have deployment, testing, schema, and limitation docs.',
+  },
+] as const;
+
+export function getCompletionSummary(items: FeatureMatrixItem[] = FEATURE_MATRIX) {
+  const byStatus = FEATURE_STATUSES.reduce<Record<FeatureStatus, number>>((acc, status) => {
+    acc[status] = items.filter((item) => item.status === status).length;
+    return acc;
+  }, {} as Record<FeatureStatus, number>);
+
+  const launchGateFailures = items.filter((item) => item.launchGate && item.status !== 'COMPLETE AND WIRED');
+
+  return {
+    totalSystems: items.length,
+    byStatus,
+    launchGateFailures: launchGateFailures.map((item) => item.system),
+    confidence: launchGateFailures.length === 0 ? 85 : 42,
+  };
+}
