@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build && npm run test:unit",
     "test": "npm run test:unit",
-    "test:unit": "vitest run test/auth.test.ts test/validation.test.ts",
+    "test:unit": "vitest run test/auth.test.ts test/validation.test.ts test/featureRegistry.test.ts",
     "test:rules": "firebase emulators:exec --config ../firebase.json --only firestore \"vitest run test/firestore.rules.test.ts\"",
     "test:e2e": "npm run test:rules"
   },
