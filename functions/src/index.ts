@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+import { getCompletionSummary, FEATURE_MATRIX, ROADMAP_PHASES } from './lib/featureRegistry';
 import { requireAdmin, requireAuth } from './lib/auth';
 import {
   assertPlainObject,
@@ -129,5 +130,17 @@ export const createStagingJob = functions.https.onCall(async (data: unknown, con
   return {
     status: 'queued',
     jobId: jobRef.id,
+  };
+});
+
+export const getStagingCompletionMatrix = functions.https.onCall(async (_data: unknown, context: functions.https.CallableContext) => {
+  requireAdmin(context);
+
+  return {
+    status: 'ok',
+    generatedAt: new Date().toISOString(),
+    summary: getCompletionSummary(),
+    phases: ROADMAP_PHASES,
+    matrix: FEATURE_MATRIX,
   };
 });
