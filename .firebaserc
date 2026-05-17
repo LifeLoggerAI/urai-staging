@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "urai-staging-35414255",
-    "staging": "urai-staging-35414255",
+    "default": "urai-staging",
+    "staging": "urai-staging",
     "production": "urai-4dc1d"
   },
   "targets": {},
