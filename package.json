@@ -1,0 +1,20 @@
+{
+  "name": "urai-staging",
+  "private": true,
+  "scripts": {
+    "lint": "npm --prefix functions run lint",
+    "typecheck": "npm --prefix functions run typecheck",
+    "build": "npm --prefix functions run build",
+    "test": "npm --prefix functions run test",
+    "test:unit": "npm --prefix functions run test:unit",
+    "test:rules": "npm --prefix functions run test:rules",
+    "test:e2e": "npm --prefix functions run test:e2e",
+    "check": "npm --prefix functions run check",
+    "emulators": "firebase emulators:start --only functions,firestore",
+    "emulators:test": "npm --prefix functions run test:e2e",
+    "deploy:staging": "npm --prefix functions run build && firebase deploy --only functions,firestore:rules,firestore:indexes --project staging"
+  },
+  "engines": {
+    "node": "20"
+  }
+}
