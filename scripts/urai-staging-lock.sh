@@ -36,7 +36,7 @@ else
   echo "nix-shell not found; skipping emulator-backed test:e2e. Run npm run test:e2e manually where Java/Nix is available."
 fi
 
-URAI_RELEASE_CANDIDATE_SHA="$RELEASE_SHA" URAI_DEPLOYED_AT="$DEPLOYED_AT" firebase deploy --only hosting,functions,firestore:rules,firestore:indexes --project "$EXPECTED_PROJECT_ID"
+URAI_RELEASE_CANDIDATE_SHA="$RELEASE_SHA" URAI_DEPLOYED_AT="$DEPLOYED_AT" firebase deploy --only hosting,functions,firestore:rules,firestore:indexes,storage --project "$EXPECTED_PROJECT_ID"
 
 URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" URAI_STAGING_URL="$STAGING_URL" bash scripts/smoke-staging.sh
 
@@ -62,7 +62,7 @@ URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" URAI_STAGING_URL="$STAGING_URL" b
   echo "- Build: npm run build"
   echo "- Unit tests: npm run test:unit"
   echo "- Emulator tests: npm run test:e2e when nix-shell is available"
-  echo "- Firebase deploy: hosting, functions, firestore rules, firestore indexes"
+  echo "- Firebase deploy: hosting, functions, firestore rules, firestore indexes, storage rules"
   echo "- Live smoke: /, /u/adamclamp, /api/healthz, /api/buildinfo, /api/companion, /api/waitlist"
   echo ""
   echo "## Not included"
