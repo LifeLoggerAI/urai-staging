@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STAGING_PROJECT_ID="${URAI_STAGING_PROJECT_ID:-urai-staging-35414255}"
-STAGING_URL="${URAI_STAGING_URL:-https://urai-staging-35414255.web.app}"
+STAGING_PROJECT_ID="${URAI_STAGING_PROJECT_ID:-urai-staging}"
+STAGING_URL="${URAI_STAGING_URL:-https://urai-staging.web.app}"
 
-if [ "$STAGING_PROJECT_ID" != "urai-staging-35414255" ]; then
-  echo "Refusing smoke test: URAI_STAGING_PROJECT_ID must be urai-staging-35414255" >&2
+if [ "$STAGING_PROJECT_ID" != "urai-staging" ]; then
+  echo "Refusing smoke test: URAI_STAGING_PROJECT_ID must be urai-staging" >&2
   exit 1
 fi
 
