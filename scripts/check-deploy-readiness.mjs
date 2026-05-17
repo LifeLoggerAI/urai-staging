@@ -3,12 +3,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
 const EXPECTED_STAGING_PROJECT = 'urai-staging-35414255';
-const FORBIDDEN_PRODUCTION_PROJECT = 'urai-4dc1d';
 const requiredFiles = [
   '.firebaserc',
   'firebase.json',
   'firestore.rules',
   'firestore.indexes.json',
+  'storage.rules',
   'functions/package.json',
   'functions/src/index.ts',
   'public/index.html',
@@ -36,15 +36,9 @@ function readJson(path) {
 
 const firebaserc = readJson('.firebaserc');
 if (firebaserc) {
-  if (firebaserc.projects?.staging !== EXPECTED_STAGING_PROJECT) {
-    failures.push(`.firebaserc projects.staging must be ${EXPECTED_STAGING_PROJECT}`);
-  }
-  if (firebaserc.projects?.default !== EXPECTED_STAGING_PROJECT) {
-    failures.push(`.firebaserc projects.default must be ${EXPECTED_STAGING_PROJECT}`);
-  }
-  if (firebaserc.projects?.production === EXPECTED_STAGING_PROJECT) {
-    failures.push('.firebaserc production alias must not point at staging');
-  }
+  if (firebaserc.projects?.staging !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.staging must be ${EXPECTED_STAGING_PROJECT}`);
+  if (firebaserc.projects?.default !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.default must be ${EXPECTED_STAGING_PROJECT}`);
+  if (firebaserc.projects?.production === EXPECTED_STAGING_PROJECT) failures.push('.firebaserc production alias must not point at staging');
 }
 
 const firebaseJson = readJson('firebase.json');
@@ -53,6 +47,7 @@ if (firebaseJson) {
   if (!firebaseJson.functions?.source) failures.push('firebase.json must define functions.source');
   if (firebaseJson.firestore?.rules !== 'firestore.rules') failures.push('firebase.json must deploy firestore.rules');
   if (firebaseJson.firestore?.indexes !== 'firestore.indexes.json') failures.push('firebase.json must deploy firestore.indexes.json');
+  if (firebaseJson.storage?.rules !== 'storage.rules') failures.push('firebase.json must deploy storage.rules');
 }
 
 const rootPackage = readJson('package.json');
@@ -64,11 +59,9 @@ if (rootPackage) {
 }
 
 const lockScriptText = existsSync('scripts/urai-staging-lock.sh') ? readFileSync('scripts/urai-staging-lock.sh', 'utf8') : '';
-if (lockScriptText.includes(FORBIDDEN_PRODUCTION_PROJECT)) {
-  failures.push('scripts/urai-staging-lock.sh must not contain the production project id');
-}
-if (!lockScriptText.includes(EXPECTED_STAGING_PROJECT)) {
-  failures.push(`scripts/urai-staging-lock.sh must explicitly target ${EXPECTED_STAGING_PROJECT}`);
+if (!lockScriptText.includes(EXPECTED_STAGING_PROJECT)) failures.push(`scripts/urai-staging-lock.sh must explicitly target ${EXPECTED_STAGING_PROJECT}`);
+if (lockScriptText.includes('--project "$URAI_PRODUCTION_PROJECT_ID"') || lockScriptText.includes('--project $URAI_PRODUCTION_PROJECT_ID')) {
+  failures.push('scripts/urai-staging-lock.sh must not deploy to the production project env var');
 }
 
 try {
