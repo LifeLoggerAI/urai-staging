@@ -2,41 +2,71 @@
 
 Firebase staging backend and validation environment for the URAI Life OS project.
 
-This repo currently owns the staging backend surface: Cloud Functions, Firestore rules, Firestore indexes, tests, CI, and deployment documentation. It does not currently contain the production UI.
+This repo owns the canonical URAI staging backend and validation shell at:
+
+```text
+LifeLoggerAI/urai-staging
+```
+
+The staging Firebase project is locked to:
+
+```text
+urai-staging-35414255
+```
+
+The historical/live staging URL target is:
+
+```text
+https://urai-staging-35414255.web.app
+```
+
+This repo does not own the full production UI. It owns the smoke-testable Firebase Hosting shell, Cloud Functions, Firestore rules, Storage rules, indexes, tests, CI, and staging lock documentation.
 
 ## Status
 
 Implemented in this branch:
 
-- Firebase config for Functions, Firestore, and local emulators.
-- Firebase Studio / Project IDX environment config with Java for Firestore emulator support.
-- Root `package.json` command pass-throughs so common commands work from the repo root.
-- Callable Functions: `healthCheck`, `authenticatedHealthCheck`, `adminHealthCheck`, `recordStagingEvent`, `getFeatureFlag`, `setFeatureFlag`, and `createStagingJob`.
-- Shared callable auth and input validation helpers.
+- Explicit Firebase aliases for `default`, `staging`, and `production` with staging locked to `urai-staging-35414255`.
+- Firebase Hosting shell in `public/index.html`.
+- Hosting rewrites for `/api/healthz`, `/api/buildinfo`, `/api/companion`, and `/api/waitlist`.
+- Callable Functions: `healthCheck`, `authenticatedHealthCheck`, `adminHealthCheck`, `recordStagingEvent`, `getFeatureFlag`, `setFeatureFlag`, `createStagingJob`, and `getStagingCompletionMatrix`.
+- HTTP smoke endpoints for live staging verification.
 - Firestore rules for `staging_users`, `staging_events`, `staging_jobs`, and `staging_featureFlags`.
+- Storage rules with default-deny behavior.
 - Rules validation for owners, admins, feature flags, append-only events, and default-deny behavior.
 - Unit tests and emulator-backed E2E-style rules tests.
-- GitHub Actions CI.
+- Staging readiness checker, deploy lock script, and smoke script.
+- System-of-systems readiness matrix, launch blocker checklist, and definition of done.
 
 Still intentionally not included:
 
-- Frontend/browser E2E tests; no UI exists in this repo yet.
-- Product-specific URAI workflows beyond the core staging backend slice.
+- Full URAI production UI.
+- Frontend/browser E2E tests for the product app.
+- External URAI modules owned by sibling repos, unless they provide their own deploy evidence.
 
 ## Repo structure
 
 | Path | Purpose |
 |---|---|
-| `package.json` | Root command pass-throughs into `functions/`. |
+| `package.json` | Root command pass-throughs into `functions/` and staging lock scripts. |
 | `.idx/dev.nix` | Firebase Studio / IDX environment packages, including Java for Firestore emulator. |
-| `firebase.json` | Firebase Functions, Firestore, and emulator config. |
+| `firebase.json` | Firebase Hosting, Functions, Firestore, Storage, and emulator config. |
 | `.firebaserc` | Firebase project aliases for this workspace. |
+| `public/index.html` | Minimal live staging shell. |
 | `firestore.rules` | Firestore security rules. |
 | `firestore.indexes.json` | Firestore index manifest. |
-| `functions/src/index.ts` | Callable Functions entry point. |
+| `storage.rules` | Firebase Storage security rules. |
+| `functions/src/index.ts` | Callable and HTTP Functions entry point. |
 | `functions/src/lib/auth.ts` | Auth/admin guards. |
 | `functions/src/lib/validation.ts` | Callable input validators. |
 | `functions/test/` | Unit and emulator-backed tests. |
+| `scripts/check-deploy-readiness.mjs` | Static readiness validation for staging deploy. |
+| `scripts/urai-staging-lock.sh` | Locked staging deploy script. |
+| `scripts/smoke-staging.sh` | Live smoke script. |
+| `URAI_STAGING_CANONICAL_APP.md` | Canonical staging app decision. |
+| `URAI_STAGING_READINESS_MATRIX.md` | System-of-systems readiness matrix. |
+| `URAI_STAGING_LAUNCH_BLOCKERS.md` | Launch blockers and fix priorities. |
+| `URAI_STAGING_DEFINITION_OF_DONE.md` | Final staging completion checklist. |
 | `.github/workflows/ci.yml` | Install, typecheck, build, and test workflow. |
 
 ## Firebase Studio / IDX setup
@@ -60,18 +90,9 @@ From the repo root:
 ```bash
 git clone https://github.com/LifeLoggerAI/urai-staging.git
 cd urai-staging
-npm --prefix functions install
-npm run typecheck
-npm run build
-npm run test:unit
-npm run test:e2e
-```
-
-You can also run from `functions/` directly:
-
-```bash
-cd functions
-npm install
+npm --prefix functions ci
+npm run check:deploy
+npm run lint
 npm run typecheck
 npm run build
 npm run test:unit
@@ -80,14 +101,12 @@ npm run test:e2e
 
 ## Firebase project binding
 
-The expected staging alias is:
+The active staging project must be:
 
 ```bash
-firebase use staging
+firebase use urai-staging-35414255
 firebase use
 ```
-
-The active project should be `urai-staging`.
 
 ## Scripts
 
@@ -101,35 +120,36 @@ npm run test:unit
 npm run test:rules
 npm run test:e2e
 npm run check
-npm run emulators
+npm run check:deploy
+npm run smoke:staging
 npm run deploy:staging
 ```
 
-From `functions/`:
+`deploy:staging` delegates to `scripts/urai-staging-lock.sh` and refuses to deploy anywhere except `urai-staging-35414255`.
 
-```bash
-npm run lint
-npm run typecheck
-npm run build
-npm run test:unit
-npm run test:rules
-npm run test:e2e
-npm run check
-```
+## HTTP smoke API
 
-`test:e2e` currently runs the emulator-backed Firestore security/data-flow suite because there is no browser UI in this repo.
+| Route | Method | Purpose |
+|---|---|---|
+| `/` | GET | Hosting shell smoke. |
+| `/u/adamclamp` | GET | Route rewrite smoke. |
+| `/api/healthz` | GET | Live health check. |
+| `/api/buildinfo` | GET | Build/project metadata smoke. |
+| `/api/companion` | POST | Companion endpoint smoke and invalid-message guard. |
+| `/api/waitlist` | POST | Staging waitlist write smoke. |
 
 ## Callable API
 
 | Function | Auth | Purpose |
 |---|---|---|
-| `healthCheck` | Public | Smoke check. |
+| `healthCheck` | Public | Callable smoke check. |
 | `authenticatedHealthCheck` | Signed-in user | Verifies callable auth context. |
 | `adminHealthCheck` | `role=admin` custom claim | Verifies admin claim wiring. |
 | `recordStagingEvent` | Signed-in user | Creates append-only staging events. |
 | `getFeatureFlag` | Signed-in user | Reads a staging feature flag. |
 | `setFeatureFlag` | `role=admin` custom claim | Creates or updates a feature flag. |
 | `createStagingJob` | `role=admin` custom claim | Queues an admin staging job. |
+| `getStagingCompletionMatrix` | `role=admin` custom claim | Returns the repo's completion matrix payload. |
 
 ## Deploy
 
@@ -137,4 +157,4 @@ npm run check
 npm run deploy:staging
 ```
 
-Run `LAUNCH_CHECKLIST.md` before any release-candidate validation.
+After the script passes, commit the generated `URAI_STAGING_LOCK.md` if you want the lock evidence preserved in git.
