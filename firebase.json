@@ -1,4 +1,54 @@
 {
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/api/companion",
+        "function": "companion"
+      },
+      {
+        "source": "/api/waitlist",
+        "function": "waitlist"
+      },
+      {
+        "source": "/api/healthz",
+        "function": "healthz"
+      },
+      {
+        "source": "/api/buildinfo",
+        "function": "buildinfo"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          }
+        ]
+      }
+    ]
+  },
   "functions": {
     "source": "functions",
     "predeploy": [
@@ -17,6 +67,10 @@
     "firestore": {
       "host": "127.0.0.1",
       "port": 8080
+    },
+    "hosting": {
+      "host": "127.0.0.1",
+      "port": 5000
     },
     "ui": {
       "enabled": true,
