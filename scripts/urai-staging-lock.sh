@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-EXPECTED_PROJECT_ID="urai-staging-35414255"
-EXPECTED_HOSTING_SITE="urai-staging-35414255"
-STAGING_URL="${URAI_STAGING_URL:-https://urai-staging-35414255.web.app}"
+EXPECTED_PROJECT_ID="urai-staging"
+EXPECTED_HOSTING_SITE="urai-staging"
+STAGING_URL="${URAI_STAGING_URL:-https://urai-staging.web.app}"
 RELEASE_SHA="${URAI_RELEASE_CANDIDATE_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}"
 DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 FAILURE_REPORT="URAI_STAGING_LOCK_FAILED.md"
