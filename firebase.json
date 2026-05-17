@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "urai-staging-35414255",
     "public": "public",
     "ignore": [
       "firebase.json",
