@@ -2,8 +2,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
-const EXPECTED_STAGING_PROJECT = 'urai-staging-35414255';
-const EXPECTED_HOSTING_SITE = 'urai-staging-35414255';
+const EXPECTED_STAGING_PROJECT = 'urai-staging';
+const EXPECTED_HOSTING_SITE = 'urai-staging';
 const requiredFiles = [
   '.firebaserc',
   'firebase.json',
