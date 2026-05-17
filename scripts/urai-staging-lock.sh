@@ -2,6 +2,7 @@
 set -euo pipefail
 
 EXPECTED_PROJECT_ID="urai-staging-35414255"
+EXPECTED_HOSTING_SITE="urai-staging-35414255"
 STAGING_URL="${URAI_STAGING_URL:-https://urai-staging-35414255.web.app}"
 RELEASE_SHA="${URAI_RELEASE_CANDIDATE_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}"
 DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -23,6 +24,11 @@ fi
 
 firebase use "$EXPECTED_PROJECT_ID" >/dev/null
 
+if ! firebase hosting:sites:list --project "$EXPECTED_PROJECT_ID" 2>/dev/null | grep -q "$EXPECTED_HOSTING_SITE"; then
+  echo "Hosting site $EXPECTED_HOSTING_SITE not found; creating it in $EXPECTED_PROJECT_ID."
+  firebase hosting:sites:create "$EXPECTED_HOSTING_SITE" --project "$EXPECTED_PROJECT_ID"
+fi
+
 npm --prefix functions ci
 npm run check:deploy
 npm run lint
@@ -36,7 +42,7 @@ else
   echo "nix-shell not found; skipping emulator-backed test:e2e. Run npm run test:e2e manually where Java/Nix is available."
 fi
 
-URAI_RELEASE_CANDIDATE_SHA="$RELEASE_SHA" URAI_DEPLOYED_AT="$DEPLOYED_AT" firebase deploy --only hosting,functions,firestore:rules,firestore:indexes,storage --project "$EXPECTED_PROJECT_ID"
+URAI_RELEASE_CANDIDATE_SHA="$RELEASE_SHA" URAI_DEPLOYED_AT="$DEPLOYED_AT" firebase deploy --only hosting:"$EXPECTED_HOSTING_SITE",functions,firestore:rules,firestore:indexes,storage --project "$EXPECTED_PROJECT_ID"
 
 URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" URAI_STAGING_URL="$STAGING_URL" bash scripts/smoke-staging.sh
 
@@ -46,6 +52,7 @@ URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" URAI_STAGING_URL="$STAGING_URL" b
   echo "Status: Locked after local deploy and live smoke."
   echo ""
   echo "- Firebase project: $EXPECTED_PROJECT_ID"
+  echo "- Firebase Hosting site: $EXPECTED_HOSTING_SITE"
   echo "- Staging URL: $STAGING_URL"
   echo "- Release candidate SHA: $RELEASE_SHA"
   echo "- Deployed at: $DEPLOYED_AT"
@@ -62,7 +69,7 @@ URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" URAI_STAGING_URL="$STAGING_URL" b
   echo "- Build: npm run build"
   echo "- Unit tests: npm run test:unit"
   echo "- Emulator tests: npm run test:e2e when nix-shell is available"
-  echo "- Firebase deploy: hosting, functions, firestore rules, firestore indexes, storage rules"
+  echo "- Firebase deploy: hosting site $EXPECTED_HOSTING_SITE, functions, firestore rules, firestore indexes, storage rules"
   echo "- Live smoke: /, /u/adamclamp, /api/healthz, /api/buildinfo, /api/companion, /api/waitlist"
   echo ""
   echo "## Not included"
