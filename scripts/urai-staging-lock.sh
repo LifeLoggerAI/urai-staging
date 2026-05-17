@@ -1,11 +1,37 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
 
 EXPECTED_PROJECT_ID="urai-staging-35414255"
 EXPECTED_HOSTING_SITE="urai-staging-35414255"
 STAGING_URL="${URAI_STAGING_URL:-https://urai-staging-35414255.web.app}"
 RELEASE_SHA="${URAI_RELEASE_CANDIDATE_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}"
 DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+FAILURE_REPORT="URAI_STAGING_LOCK_FAILED.md"
+
+step() {
+  echo "[URAI staging] $1"
+}
+
+on_error() {
+  local exit_code=$?
+  {
+    echo "# URAI Staging Lock Failed"
+    echo ""
+    echo "- Exit code: $exit_code"
+    echo "- Firebase project: $EXPECTED_PROJECT_ID"
+    echo "- Firebase Hosting site: $EXPECTED_HOSTING_SITE"
+    echo "- Staging URL: $STAGING_URL"
+    echo "- Release candidate SHA: $RELEASE_SHA"
+    echo "- Failed at: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo ""
+    echo "Run again with: bash -x scripts/urai-staging-lock.sh"
+  } > "$FAILURE_REPORT"
+  echo "[URAI staging] FAILED with exit code $exit_code. Wrote $FAILURE_REPORT" >&2
+  exit "$exit_code"
+}
+trap on_error ERR
+
+step "Starting lock for project $EXPECTED_PROJECT_ID"
 
 if [ "${URAI_STAGING_PROJECT_ID:-$EXPECTED_PROJECT_ID}" != "$EXPECTED_PROJECT_ID" ]; then
   echo "Refusing deploy: URAI_STAGING_PROJECT_ID must be $EXPECTED_PROJECT_ID" >&2
@@ -22,30 +48,53 @@ if ! command -v firebase >/dev/null 2>&1; then
   exit 1
 fi
 
-firebase use "$EXPECTED_PROJECT_ID" >/dev/null
+step "Selecting Firebase project"
+firebase use "$EXPECTED_PROJECT_ID"
 
-if ! firebase hosting:sites:list --project "$EXPECTED_PROJECT_ID" 2>/dev/null | grep -q "$EXPECTED_HOSTING_SITE"; then
-  echo "Hosting site $EXPECTED_HOSTING_SITE not found; creating it in $EXPECTED_PROJECT_ID."
+step "Checking Firebase Hosting site"
+SITE_LIST_FILE="$(mktemp)"
+firebase hosting:sites:list --project "$EXPECTED_PROJECT_ID" > "$SITE_LIST_FILE"
+cat "$SITE_LIST_FILE"
+if ! grep -q "$EXPECTED_HOSTING_SITE" "$SITE_LIST_FILE"; then
+  step "Hosting site $EXPECTED_HOSTING_SITE not found; creating it"
   firebase hosting:sites:create "$EXPECTED_HOSTING_SITE" --project "$EXPECTED_PROJECT_ID"
+else
+  step "Hosting site $EXPECTED_HOSTING_SITE exists"
 fi
+rm -f "$SITE_LIST_FILE"
 
+step "Installing function dependencies"
 npm --prefix functions ci
+
+step "Running deploy readiness check"
 npm run check:deploy
+
+step "Running lint"
 npm run lint
+
+step "Running typecheck"
 npm run typecheck
+
+step "Running build"
 npm run build
+
+step "Running unit tests"
 npm run test:unit
 
 if command -v nix-shell >/dev/null 2>&1; then
+  step "Running emulator-backed e2e tests"
   npm run test:e2e
 else
-  echo "nix-shell not found; skipping emulator-backed test:e2e. Run npm run test:e2e manually where Java/Nix is available."
+  step "nix-shell not found; skipping emulator-backed test:e2e. Run npm run test:e2e manually where Java/Nix is available."
 fi
 
+step "Deploying Hosting, Functions, Firestore, and Storage to staging"
 URAI_RELEASE_CANDIDATE_SHA="$RELEASE_SHA" URAI_DEPLOYED_AT="$DEPLOYED_AT" firebase deploy --only hosting:"$EXPECTED_HOSTING_SITE",functions,firestore:rules,firestore:indexes,storage --project "$EXPECTED_PROJECT_ID"
 
+step "Running live smoke tests"
 URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" URAI_STAGING_URL="$STAGING_URL" bash scripts/smoke-staging.sh
 
+step "Writing URAI_STAGING_LOCK.md"
 {
   echo "# URAI Staging Lock"
   echo ""
@@ -77,4 +126,5 @@ URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" URAI_STAGING_URL="$STAGING_URL" b
   echo "Production deployment is intentionally not performed by this script."
 } > URAI_STAGING_LOCK.md
 
-echo "URAI staging lock completed for $EXPECTED_PROJECT_ID at $STAGING_URL"
+rm -f "$FAILURE_REPORT"
+step "URAI staging lock completed for $EXPECTED_PROJECT_ID at $STAGING_URL"
