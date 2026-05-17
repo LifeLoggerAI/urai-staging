@@ -11,7 +11,7 @@
     "test:e2e": "nix-shell -p adoptopenjdk-bin --run \"npm --prefix functions run test:e2e\"",
     "check": "npm --prefix functions run typecheck && npm --prefix functions run build && npm --prefix functions run test:unit",
     "check:all": "npm run check && npm run test:e2e",
-    "emulators": "nix-shell -p adoptopenjdk-bin --run \"npm --prefix functions exec -- firebase emulators:start --config ../firebase.json --only functions,firestore\"",
+    "emulators": "nix-shell -p adoptopenjdk-bin --run \"./functions/node_modules/.bin/firebase emulators:start --config firebase.json --only functions,firestore\"",
     "emulators:test": "npm run test:e2e",
     "deploy:staging": "npm --prefix functions run build && firebase deploy --only functions,firestore:rules,firestore:indexes --project staging"
   },
