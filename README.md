@@ -9,6 +9,8 @@ This repo currently owns the staging backend surface: Cloud Functions, Firestore
 Implemented in this branch:
 
 - Firebase config for Functions, Firestore, and local emulators.
+- Firebase Studio / Project IDX environment config with Java for Firestore emulator support.
+- Root `package.json` command pass-throughs so common commands work from the repo root.
 - Callable Functions: `healthCheck`, `authenticatedHealthCheck`, `adminHealthCheck`, `recordStagingEvent`, `getFeatureFlag`, `setFeatureFlag`, and `createStagingJob`.
 - Shared callable auth and input validation helpers.
 - Firestore rules for `staging_users`, `staging_events`, `staging_jobs`, and `staging_featureFlags`.
@@ -18,7 +20,6 @@ Implemented in this branch:
 
 Still intentionally not included:
 
-- A real `.firebaserc`; the Firebase staging project ID must be confirmed first.
 - Frontend/browser E2E tests; no UI exists in this repo yet.
 - Product-specific URAI workflows beyond the core staging backend slice.
 
@@ -26,7 +27,10 @@ Still intentionally not included:
 
 | Path | Purpose |
 |---|---|
+| `package.json` | Root command pass-throughs into `functions/`. |
+| `.idx/dev.nix` | Firebase Studio / IDX environment packages, including Java for Firestore emulator. |
 | `firebase.json` | Firebase Functions, Firestore, and emulator config. |
+| `.firebaserc` | Firebase project aliases for this workspace. |
 | `firestore.rules` | Firestore security rules. |
 | `firestore.indexes.json` | Firestore index manifest. |
 | `functions/src/index.ts` | Callable Functions entry point. |
@@ -35,11 +39,38 @@ Still intentionally not included:
 | `functions/test/` | Unit and emulator-backed tests. |
 | `.github/workflows/ci.yml` | Install, typecheck, build, and test workflow. |
 
+## Firebase Studio / IDX setup
+
+This workspace uses Nix. Do not install Java with `sudo apt-get` in Firebase Studio. Java is provided by `.idx/dev.nix`:
+
+```nix
+pkgs.openjdk17
+```
+
+After pulling changes, rebuild or restart the Firebase Studio workspace, then verify:
+
+```bash
+java -version
+```
+
 ## Setup
+
+From the repo root:
 
 ```bash
 git clone https://github.com/LifeLoggerAI/urai-staging.git
-cd urai-staging/functions
+cd urai-staging
+npm --prefix functions install
+npm run typecheck
+npm run build
+npm run test:unit
+npm run test:e2e
+```
+
+You can also run from `functions/` directly:
+
+```bash
+cd functions
 npm install
 npm run typecheck
 npm run build
@@ -47,21 +78,32 @@ npm run test:unit
 npm run test:e2e
 ```
 
-After the first successful install, commit `functions/package-lock.json` so CI can move from `npm install` to `npm ci`.
-
 ## Firebase project binding
 
-This repo ships `.firebaserc.example`, not a real `.firebaserc`.
+The expected staging alias is:
 
 ```bash
-cp .firebaserc.example .firebaserc
-# Replace REPLACE_WITH_FIREBASE_STAGING_PROJECT_ID with the verified staging project ID.
 firebase use staging
+firebase use
 ```
 
-Do not deploy until the staging Firebase project ID is verified.
+The active project should be `urai-staging`.
 
 ## Scripts
+
+From the repo root:
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+npm run test:unit
+npm run test:rules
+npm run test:e2e
+npm run check
+npm run emulators
+npm run deploy:staging
+```
 
 From `functions/`:
 
@@ -92,7 +134,7 @@ npm run check
 ## Deploy
 
 ```bash
-firebase deploy --only functions,firestore --project staging
+npm run deploy:staging
 ```
 
 Run `LAUNCH_CHECKLIST.md` before any release-candidate validation.
