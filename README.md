@@ -11,13 +11,13 @@ LifeLoggerAI/urai-staging
 The staging Firebase project is locked to:
 
 ```text
-urai-staging-35414255
+urai-staging
 ```
 
-The historical/live staging URL target is:
+The live staging URL target is:
 
 ```text
-https://urai-staging-35414255.web.app
+https://urai-staging.web.app
 ```
 
 This repo does not own the full production UI. It owns the smoke-testable Firebase Hosting shell, Cloud Functions, Firestore rules, Storage rules, indexes, tests, CI, and staging lock documentation.
@@ -26,8 +26,8 @@ This repo does not own the full production UI. It owns the smoke-testable Fireba
 
 Implemented in this branch:
 
-- Explicit Firebase aliases for `default`, `staging`, and `production` with staging locked to `urai-staging-35414255`.
-- Firebase Hosting shell in `public/index.html`.
+- Explicit Firebase aliases for `default`, `staging`, and `production` with staging locked to `urai-staging`.
+- Firebase Hosting shell in `public/index.html`, now presented as a URAI V1-aligned staging surface with orb, ground layer, companion smoke framing, reduced-motion support, and smoke endpoint links.
 - Hosting rewrites for `/api/healthz`, `/api/buildinfo`, `/api/companion`, and `/api/waitlist`.
 - Callable Functions: `healthCheck`, `authenticatedHealthCheck`, `adminHealthCheck`, `recordStagingEvent`, `getFeatureFlag`, `setFeatureFlag`, `createStagingJob`, and `getStagingCompletionMatrix`.
 - HTTP smoke endpoints for live staging verification.
@@ -36,7 +36,7 @@ Implemented in this branch:
 - Rules validation for owners, admins, feature flags, append-only events, and default-deny behavior.
 - Unit tests and emulator-backed E2E-style rules tests.
 - Staging readiness checker, deploy lock script, and smoke script.
-- System-of-systems readiness matrix, launch blocker checklist, and definition of done.
+- System-of-systems readiness matrix, launch blocker checklist, definition of done, deployment guide, system audit, test report, environment notes, and release notes.
 
 Still intentionally not included:
 
@@ -52,7 +52,7 @@ Still intentionally not included:
 | `.idx/dev.nix` | Firebase Studio / IDX environment packages, including Java for Firestore emulator. |
 | `firebase.json` | Firebase Hosting, Functions, Firestore, Storage, and emulator config. |
 | `.firebaserc` | Firebase project aliases for this workspace. |
-| `public/index.html` | Minimal live staging shell. |
+| `public/index.html` | URAI staging validation shell. |
 | `firestore.rules` | Firestore security rules. |
 | `firestore.indexes.json` | Firestore index manifest. |
 | `storage.rules` | Firebase Storage security rules. |
@@ -63,6 +63,11 @@ Still intentionally not included:
 | `scripts/check-deploy-readiness.mjs` | Static readiness validation for staging deploy. |
 | `scripts/urai-staging-lock.sh` | Locked staging deploy script. |
 | `scripts/smoke-staging.sh` | Live smoke script. |
+| `SYSTEM_AUDIT.md` | Architecture, security, readiness, and known-limitations audit. |
+| `TEST_REPORT.md` | Runtime verification matrix and required evidence. |
+| `DEPLOYMENT.md` | Safe staging deploy guide. |
+| `ENVIRONMENT.md` | Runtime, Firebase, emulator, and environment guidance. |
+| `RELEASE_NOTES.md` | Release-candidate change log. |
 | `URAI_STAGING_CANONICAL_APP.md` | Canonical staging app decision. |
 | `URAI_STAGING_READINESS_MATRIX.md` | System-of-systems readiness matrix. |
 | `URAI_STAGING_LAUNCH_BLOCKERS.md` | Launch blockers and fix priorities. |
@@ -104,7 +109,7 @@ npm run test:e2e
 The active staging project must be:
 
 ```bash
-firebase use urai-staging-35414255
+firebase use urai-staging
 firebase use
 ```
 
@@ -125,7 +130,7 @@ npm run smoke:staging
 npm run deploy:staging
 ```
 
-`deploy:staging` delegates to `scripts/urai-staging-lock.sh` and refuses to deploy anywhere except `urai-staging-35414255`.
+`deploy:staging` delegates to `scripts/urai-staging-lock.sh` and refuses to deploy anywhere except `urai-staging`.
 
 ## HTTP smoke API
 

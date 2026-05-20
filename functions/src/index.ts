@@ -15,8 +15,8 @@ admin.initializeApp();
 
 const db = admin.firestore();
 const serverTimestamp = admin.firestore.FieldValue.serverTimestamp;
-const STAGING_PROJECT_ID = 'urai-staging-35414255';
-const STAGING_HOSTING_URL = 'https://urai-staging-35414255.web.app';
+const STAGING_PROJECT_ID = 'urai-staging';
+const STAGING_HOSTING_URL = 'https://urai-staging.web.app';
 
 function setJsonHeaders(response: functions.Response): void {
   response.set('Access-Control-Allow-Origin', '*');
