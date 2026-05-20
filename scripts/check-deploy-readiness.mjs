@@ -4,6 +4,8 @@ import { execSync } from 'node:child_process';
 
 const EXPECTED_STAGING_PROJECT = 'urai-staging';
 const EXPECTED_HOSTING_SITE = 'urai-staging';
+const EXPECTED_STAGING_URL = 'https://urai-staging.web.app';
+const DEPRECATED_STAGING_PROJECT = 'urai-staging-35414255';
 const requiredFiles = [
   '.firebaserc',
   'firebase.json',
@@ -15,6 +17,11 @@ const requiredFiles = [
   'public/index.html',
   'scripts/urai-staging-lock.sh',
   'scripts/smoke-staging.sh',
+  'DEPLOYMENT.md',
+  'ENVIRONMENT.md',
+  'RELEASE_NOTES.md',
+  'SYSTEM_AUDIT.md',
+  'TEST_REPORT.md',
   'URAI_STAGING_CANONICAL_APP.md',
   'URAI_STAGING_READINESS_MATRIX.md',
   'URAI_STAGING_LAUNCH_BLOCKERS.md',
@@ -33,6 +40,10 @@ function readJson(path) {
     failures.push(`Invalid JSON in ${path}: ${error.message}`);
     return null;
   }
+}
+
+function readText(path) {
+  return existsSync(path) ? readFileSync(path, 'utf8') : '';
 }
 
 const firebaserc = readJson('.firebaserc');
@@ -56,16 +67,39 @@ const rootPackage = readJson('package.json');
 if (rootPackage) {
   const deployScript = rootPackage.scripts?.['deploy:staging'] ?? '';
   const lockScript = rootPackage.scripts?.['lock:staging'] ?? '';
+  const checkDeployScript = rootPackage.scripts?.['check:deploy'] ?? '';
   if (!deployScript.includes('lock:staging')) failures.push('package.json deploy:staging must delegate to lock:staging');
   if (!lockScript.includes('scripts/urai-staging-lock.sh')) failures.push('package.json lock:staging must run scripts/urai-staging-lock.sh');
+  if (!checkDeployScript.includes('scripts/check-deploy-readiness.mjs')) failures.push('package.json check:deploy must run scripts/check-deploy-readiness.mjs');
 }
 
-const lockScriptText = existsSync('scripts/urai-staging-lock.sh') ? readFileSync('scripts/urai-staging-lock.sh', 'utf8') : '';
+const functionsIndexText = readText('functions/src/index.ts');
+if (!functionsIndexText.includes(`const STAGING_PROJECT_ID = '${EXPECTED_STAGING_PROJECT}'`)) {
+  failures.push(`functions/src/index.ts must report staging project ${EXPECTED_STAGING_PROJECT}`);
+}
+if (!functionsIndexText.includes(`const STAGING_HOSTING_URL = '${EXPECTED_STAGING_URL}'`)) {
+  failures.push(`functions/src/index.ts must report staging URL ${EXPECTED_STAGING_URL}`);
+}
+if (functionsIndexText.includes(DEPRECATED_STAGING_PROJECT)) {
+  failures.push(`functions/src/index.ts must not reference deprecated project ${DEPRECATED_STAGING_PROJECT}`);
+}
+
+const publicIndexText = readText('public/index.html');
+for (const requiredCopy of ['URAI Staging', 'companion', 'ground', '/api/healthz', '/api/buildinfo']) {
+  if (!publicIndexText.includes(requiredCopy)) failures.push(`public/index.html must include ${requiredCopy}`);
+}
+
+const lockScriptText = readText('scripts/urai-staging-lock.sh');
 if (!lockScriptText.includes(EXPECTED_STAGING_PROJECT)) failures.push(`scripts/urai-staging-lock.sh must explicitly target ${EXPECTED_STAGING_PROJECT}`);
 if (!lockScriptText.includes(`hosting:"$EXPECTED_HOSTING_SITE"`)) failures.push('scripts/urai-staging-lock.sh must deploy the explicit hosting site target');
 if (lockScriptText.includes('--project "$URAI_PRODUCTION_PROJECT_ID"') || lockScriptText.includes('--project $URAI_PRODUCTION_PROJECT_ID')) {
   failures.push('scripts/urai-staging-lock.sh must not deploy to the production project env var');
 }
+
+const smokeScriptText = readText('scripts/smoke-staging.sh');
+if (!smokeScriptText.includes(EXPECTED_STAGING_URL)) failures.push(`scripts/smoke-staging.sh must target ${EXPECTED_STAGING_URL} by default`);
+if (!smokeScriptText.includes('/api/companion')) failures.push('scripts/smoke-staging.sh must check /api/companion');
+if (!smokeScriptText.includes('/api/waitlist')) failures.push('scripts/smoke-staging.sh must check /api/waitlist');
 
 try {
   const sha = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
