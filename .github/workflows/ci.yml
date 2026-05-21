@@ -30,20 +30,5 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install dependencies
-        run: npm --prefix functions ci
-
-      - name: Deploy readiness check
-        run: npm run check:deploy
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Build
-        run: npm run build
-
-      - name: Unit tests
-        run: npm run test:unit
-
-      - name: Firestore rules E2E tests
-        run: npm --prefix functions run test:e2e
+      - name: Bootstrap staging validation
+        run: node scripts/urai-staging-bootstrap.mjs
