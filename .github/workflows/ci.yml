@@ -32,3 +32,6 @@ jobs:
 
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
+
+      - name: Validate launch evidence
+        run: node scripts/validate-launch-evidence.mjs
