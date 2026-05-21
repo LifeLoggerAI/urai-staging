@@ -5,23 +5,56 @@ Status: Locked after Firebase deploy and live smoke.
 - Firebase project: urai-staging
 - Firebase Hosting site: urai-staging
 - Staging URL: https://urai-staging.web.app
-- Release candidate SHA: fa77f61 plus smoke-script hardening commit 2c2c43af3dfcbf894c32b1d002aad8e734795dca
-- Locked evidence captured at: 2026-05-21T00:00:00Z
+- Release candidate SHA: fa77f61 plus follow-up hardening commits
+- Locked evidence captured at: 2026-05-21T00:59:00Z
 - Canonical repo app path: LifeLoggerAI/urai-staging
 - Deploy command: npm run ship:urai:staging
 - Smoke command: npm run test:smoke:staging
 
 ## Required evidence captured
 
+- Firestore emulator rules tests passed: 14 tests passed across 1 test file.
 - Deploy readiness passed for project urai-staging and hosting site urai-staging.
-- Firebase deploy ran after reauthentication.
+- Firebase deploy completed successfully to urai-staging.
 - Storage rules compiled successfully.
 - Firestore rules compiled successfully.
 - Functions TypeScript build completed.
-- Functions deploy packaging completed.
+- Functions source uploaded successfully.
+- Hosting site urai-staging released successfully.
 - Live Hosting fallback routes returned the URAI Staging shell.
-- Live API rewrites returned JSON Function responses rather than the B2B Portal HTML shell.
+- Live API rewrites returned JSON Function responses.
 - Existing Firestore indexes were preserved by selecting No at the deletion prompt.
+- Existing cloud functions not present in this local source were preserved by selecting No at the deletion prompt.
+- The staging lock script wrote URAI_STAGING_LOCK.md and completed.
+
+## Functions updated
+
+- healthz
+- buildinfo
+- companion
+- waitlist
+- healthCheck
+- authenticatedHealthCheck
+- adminHealthCheck
+- recordStagingEvent
+- getFeatureFlag
+- setFeatureFlag
+- createStagingJob
+- getStagingCompletionMatrix
+
+## Functions preserved
+
+The deploy prompt listed existing functions that are not present in this local source. They were preserved by selecting No at the deletion prompt.
+
+- health
+- onB2BLeadCreated
+- onEventCreated
+- onInsightCreated
+- onMemoryCreated
+- onNarrativeCreated
+- onSignalCreated
+- submitSignal
+- replay
 
 ## Live smoke evidence
 
@@ -55,5 +88,6 @@ LIVE / DEPLOYED / LOCKED / STAGING BACKEND READY
 
 ## Remaining follow-up
 
+- Pull latest main before the next deploy so firestore.indexes.json includes the preserved URAI product indexes committed in a4a73fd6d6598eb4a855c949f73bf9f730110ac0.
 - Upgrade Firebase Functions runtime and SDK before Node.js 20 decommissioning.
 - Coordinate Core Web product staging lock in LifeLoggerAI/UrAi issue #286 before declaring full cross-repo URAI staging locked.
