@@ -17,6 +17,10 @@ const report = {
   startedAt: new Date().toISOString(),
   finishedAt: null,
   status: 'running',
+  launchScore: 0,
+  commandCount: 0,
+  passedCount: 0,
+  failedCount: 0,
   skipped: [],
   commands: []
 };
@@ -36,6 +40,7 @@ if (problems.length) {
   report.status = 'failed';
   report.finishedAt = new Date().toISOString();
   report.error = problems.join(' ');
+  finalizeScore();
   writeReport();
   console.error('URAI staging bootstrap cannot continue:');
   for (const problem of problems) console.error(`- ${problem}`);
@@ -74,11 +79,13 @@ for (const [cmd, args] of commands) {
     exitCode: result.status ?? 1
   };
   report.commands.push(entry);
+  finalizeScore();
   writeReport();
   if (result.status !== 0) {
     report.status = 'failed';
     report.finishedAt = new Date().toISOString();
     report.error = `Failed at: ${commandText}`;
+    finalizeScore();
     writeReport();
     console.error(`\nURAI staging bootstrap failed at: ${commandText}`);
     console.error(`Evidence written to ${path.relative(root, evidencePath)}`);
@@ -88,9 +95,19 @@ for (const [cmd, args] of commands) {
 
 report.status = 'passed';
 report.finishedAt = new Date().toISOString();
+finalizeScore();
 writeReport();
 console.log('\nURAI staging bootstrap completed successfully.');
+console.log(`Launch score: ${report.launchScore}/100`);
 console.log(`Evidence written to ${path.relative(root, evidencePath)}`);
+
+function finalizeScore() {
+  report.commandCount = report.commands.length;
+  report.passedCount = report.commands.filter((command) => command.status === 'passed').length;
+  report.failedCount = report.commands.filter((command) => command.status === 'failed').length;
+  const totalExpected = report.commands.length || 1;
+  report.launchScore = Math.round((report.passedCount / totalExpected) * 100);
+}
 
 function writeReport() {
   fs.writeFileSync(evidencePath, `${JSON.stringify(report, null, 2)}\n`);
