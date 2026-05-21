@@ -9,6 +9,9 @@ firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
 
+# Generated local reports/artifacts
+artifacts/launch/
+
 # Local env and secrets
 .env
 .env.*
