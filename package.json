@@ -21,6 +21,7 @@
     "validate:completion": "npm run check:deploy",
     "preflight": "npm run check:all",
     "launch:p0": "node scripts/launch-p0.mjs",
+    "launch:p0:commands": "node scripts/launch-p0.mjs",
     "smoke:staging": "bash scripts/smoke-staging.sh",
     "test:smoke:staging": "npm run smoke:staging",
     "verify:release": "npm run check:deploy",
