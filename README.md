@@ -22,6 +22,12 @@ https://urai-staging.web.app
 
 This repo does not own the full production UI. It owns the smoke-testable Firebase Hosting shell, Cloud Functions, Firestore rules, Storage rules, indexes, tests, CI, and staging lock documentation.
 
+## Public staging visibility note
+
+This repository is currently public and documents staging infrastructure, URLs, routes, callable APIs, and readiness evidence. Before Genesis or production launch, confirm whether this repo should remain public. If it remains public, keep it limited to staging-safe code, public test surfaces, documentation, examples, and non-sensitive configuration only.
+
+Do not commit real secrets, service-account files, production data, private user data, internal incident evidence, raw operational exports, or screenshots/logs containing identifiers. Staging endpoints must remain isolated from production data and protected where auth or admin claims are required.
+
 ## Status
 
 Implemented in this branch:
