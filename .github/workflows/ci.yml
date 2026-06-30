@@ -5,9 +5,11 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   functions:
@@ -35,3 +37,13 @@ jobs:
 
       - name: Validate launch evidence
         run: node scripts/validate-launch-evidence.mjs
+
+      - name: Upload staging launch evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: urai-staging-launch-evidence
+          path: |
+            artifacts/launch/staging-bootstrap-report.json
+            artifacts/launch/staging-bootstrap-summary.md
+          if-no-files-found: warn
