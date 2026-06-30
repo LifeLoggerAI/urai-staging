@@ -35,12 +35,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Start deploy evidence summary
+        run: |
+          mkdir -p artifacts/deploy
+          {
+            echo "# URAI Staging Deploy Lock Evidence"
+            echo ""
+            echo "- Workflow: Staging Deploy Lock"
+            echo "- Repository: $GITHUB_REPOSITORY"
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Run ID: $GITHUB_RUN_ID"
+            echo "- Staging project: $EXPECTED_STAGING_PROJECT"
+            echo "- Staging URL: $URAI_STAGING_URL"
+            echo "- Live deploy requested: ${{ inputs.run_live_deploy }}"
+            echo "- Started at: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo ""
+            echo "## Guardrails"
+            echo ""
+            echo "- Manual dispatch only."
+            echo "- Exact staging project confirmation required."
+            echo "- Production approval flag forced to 0."
+            echo "- Deploy command remains npm run deploy:staging."
+            echo ""
+          } > artifacts/deploy/staging-deploy-summary.md
+
       - name: Validate dispatch guard
         run: |
           if [ "${{ inputs.confirm_staging_project }}" != "$EXPECTED_STAGING_PROJECT" ]; then
             echo "Refusing deploy: confirm_staging_project must be $EXPECTED_STAGING_PROJECT" >&2
             exit 1
           fi
+          echo "- Dispatch guard: passed" >> artifacts/deploy/staging-deploy-summary.md
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -88,23 +113,51 @@ jobs:
       - name: Firestore rules tests
         run: npm run test:rules
 
+      - name: Mark checks passed
+        run: |
+          {
+            echo "- Install/check/lint/typecheck/build/unit/rules: passed"
+            echo "- Checks completed at: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } >> artifacts/deploy/staging-deploy-summary.md
+
       - name: Require staging credentials for live deploy
         if: ${{ inputs.run_live_deploy }}
         env:
           FIREBASE_SERVICE_ACCOUNT_URAI_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_URAI_STAGING }}
         run: |
           if [ -z "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING" ]; then
-            echo "Missing secret FIREBASE_SERVICE_ACCOUNT_URAI_STAGING; cannot deploy." >&2
+            echo "Missing staging Firebase credential secret; cannot deploy." >&2
             exit 1
           fi
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING" > "$GOOGLE_APPLICATION_CREDENTIALS"
           chmod 600 "$GOOGLE_APPLICATION_CREDENTIALS"
+          echo "- Staging credentials: present" >> artifacts/deploy/staging-deploy-summary.md
 
       - name: Deploy lock to Firebase staging
         if: ${{ inputs.run_live_deploy }}
         env:
           URAI_RELEASE_CANDIDATE_SHA: ${{ github.sha }}
         run: npm run deploy:staging
+
+      - name: Mark deploy mode
+        if: always()
+        run: |
+          {
+            echo ""
+            echo "## Final workflow mode"
+            echo ""
+            if [ "${{ inputs.run_live_deploy }}" = "true" ]; then
+              if [ -f URAI_STAGING_LOCK.md ]; then
+                echo "- Live deploy: completed and lock file generated."
+              else
+                echo "- Live deploy: requested, but lock file was not generated. Review job logs."
+              fi
+            else
+              echo "- Live deploy: not requested. Checks-only evidence generated."
+            fi
+            echo "- Finished at: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } >> artifacts/deploy/staging-deploy-summary.md
+          cat artifacts/deploy/staging-deploy-summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload staging deploy evidence
         if: always()
@@ -114,6 +167,7 @@ jobs:
           path: |
             URAI_STAGING_LOCK.md
             URAI_STAGING_LOCK_FAILED.md
+            artifacts/deploy/staging-deploy-summary.md
             artifacts/launch/staging-bootstrap-report.json
             artifacts/launch/staging-bootstrap-summary.md
           if-no-files-found: warn
