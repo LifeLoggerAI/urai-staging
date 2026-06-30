@@ -28,12 +28,30 @@ This repository is currently public and documents staging infrastructure, URLs, 
 
 Do not commit real secrets, service-account files, production data, private user data, internal incident evidence, raw operational exports, or screenshots/logs containing identifiers. Staging endpoints must remain isolated from production data and protected where auth or admin claims are required.
 
-## Status
+## Current status
 
-Implemented in this branch:
+**DONE BUT NEEDS EXTERNAL ENV / RUNNER.**
+
+Repo-side staging completion work is implemented and guarded, but this repo must not be marked READY until GitHub Actions or another deploy-capable runner produces current receipts for install, lint, typecheck, build, unit tests, Firestore emulator tests, deploy lock if requested, and live smoke if deployed.
+
+Latest last-mile proof path:
+
+```text
+launch-proof/urai-staging-production-lock/2026-06-30T0000Z/
+```
+
+Latest repo-side completion commits include:
+
+- `5d6f952ffc1309c92db2d73ec116c0da11ba1bb9` - adaptive Java runner for emulator tests.
+- `1d7e065f0c8f484e1ae702b16dd2fd214323473a` - root emulator scripts use adaptive Java runner.
+- `d42b9ee6fcaa6f8ee4cad96e685e428c00f8e1b7` - deploy-readiness checker enforces staging disclaimers, robots block, and adaptive runner.
+- `cf9f0bbf48409b640ef1d316a5ac61bb882df266` - last-mile completion receipt.
+
+## Implemented in this branch
 
 - Explicit Firebase aliases for `default`, `staging`, and `production` with staging locked to `urai-staging`.
-- Firebase Hosting shell in `public/index.html`, now presented as a URAI V1-aligned staging surface with orb, ground layer, companion smoke framing, reduced-motion support, and smoke endpoint links.
+- Firebase Hosting shell in `public/index.html`, presented as a URAI V1-aligned staging surface with orb, ground layer, companion smoke framing, reduced-motion support, smoke endpoint links, and a visible not-production staging disclaimer.
+- `public/robots.txt` blocks indexing for the staging environment.
 - Hosting rewrites for `/api/healthz`, `/api/buildinfo`, `/api/companion`, and `/api/waitlist`.
 - Callable Functions: `healthCheck`, `authenticatedHealthCheck`, `adminHealthCheck`, `recordStagingEvent`, `getFeatureFlag`, `setFeatureFlag`, `createStagingJob`, and `getStagingCompletionMatrix`.
 - HTTP smoke endpoints for live staging verification.
@@ -41,24 +59,29 @@ Implemented in this branch:
 - Storage rules with default-deny behavior.
 - Rules validation for owners, admins, feature flags, append-only events, and default-deny behavior.
 - Unit tests and emulator-backed E2E-style rules tests.
-- Staging readiness checker, deploy lock script, and smoke script.
-- System-of-systems readiness matrix, launch blocker checklist, definition of done, deployment guide, system audit, test report, environment notes, and release notes.
+- Adaptive Java runner for emulator/rules tests in Firebase Studio, IDX, local shells, and GitHub Actions.
+- Staging readiness checker, deploy lock script, smoke script, CI evidence artifact workflow, and gated manual staging deploy workflow.
+- System-of-systems readiness matrix, launch blocker checklist, definition of done, deployment guide, system audit, test report, environment notes, release notes, and timestamped launch-proof receipts.
 
 Still intentionally not included:
 
 - Full URAI production UI.
 - Frontend/browser E2E tests for the product app.
 - External URAI modules owned by sibling repos, unless they provide their own deploy evidence.
+- Production deployment.
 
 ## Repo structure
 
 | Path | Purpose |
 |---|---|
-| `package.json` | Root command pass-throughs into `functions/` and staging lock scripts. |
+| `package.json` | Root command pass-throughs into `functions/`, adaptive emulator scripts, and staging lock scripts. |
 | `.idx/dev.nix` | Firebase Studio / IDX environment packages, including Java for Firestore emulator. |
+| `.github/workflows/ci.yml` | Install, typecheck, build, tests, and launch-evidence artifact workflow. |
+| `.github/workflows/staging-deploy.yml` | Manual gated staging deploy-lock workflow. |
 | `firebase.json` | Firebase Hosting, Functions, Firestore, Storage, and emulator config. |
 | `.firebaserc` | Firebase project aliases for this workspace. |
-| `public/index.html` | URAI staging validation shell. |
+| `public/index.html` | URAI staging validation shell with visible staging disclaimer. |
+| `public/robots.txt` | Blocks crawler indexing for staging. |
 | `firestore.rules` | Firestore security rules. |
 | `firestore.indexes.json` | Firestore index manifest. |
 | `storage.rules` | Firebase Storage security rules. |
@@ -66,6 +89,7 @@ Still intentionally not included:
 | `functions/src/lib/auth.ts` | Auth/admin guards. |
 | `functions/src/lib/validation.ts` | Callable input validators. |
 | `functions/test/` | Unit and emulator-backed tests. |
+| `scripts/run-with-java.sh` | Java/Nix compatibility wrapper for emulator-backed commands. |
 | `scripts/check-deploy-readiness.mjs` | Static readiness validation for staging deploy. |
 | `scripts/urai-staging-lock.sh` | Locked staging deploy script. |
 | `scripts/smoke-staging.sh` | Live smoke script. |
@@ -78,7 +102,6 @@ Still intentionally not included:
 | `URAI_STAGING_READINESS_MATRIX.md` | System-of-systems readiness matrix. |
 | `URAI_STAGING_LAUNCH_BLOCKERS.md` | Launch blockers and fix priorities. |
 | `URAI_STAGING_DEFINITION_OF_DONE.md` | Final staging completion checklist. |
-| `.github/workflows/ci.yml` | Install, typecheck, build, and test workflow. |
 
 ## Firebase Studio / IDX setup
 
@@ -94,6 +117,8 @@ After pulling changes, rebuild or restart the Firebase Studio workspace, then ve
 java -version
 ```
 
+Outside Firebase Studio/IDX, `scripts/run-with-java.sh` will use an existing Java runtime when `nix-shell` is unavailable.
+
 ## Setup
 
 From the repo root:
@@ -101,13 +126,15 @@ From the repo root:
 ```bash
 git clone https://github.com/LifeLoggerAI/urai-staging.git
 cd urai-staging
+npm install
 npm --prefix functions ci
+npm run doctor
 npm run check:deploy
 npm run lint
 npm run typecheck
 npm run build
 npm run test:unit
-npm run test:e2e
+npm run test:rules
 ```
 
 ## Firebase project binding
@@ -124,6 +151,7 @@ firebase use
 From the repo root:
 
 ```bash
+npm run doctor
 npm run lint
 npm run typecheck
 npm run build
@@ -138,16 +166,32 @@ npm run deploy:staging
 
 `deploy:staging` delegates to `scripts/urai-staging-lock.sh` and refuses to deploy anywhere except `urai-staging`.
 
+## GitHub Actions receipts
+
+CI path:
+
+- Workflow: `CI`
+- Artifact: `urai-staging-launch-evidence`
+- Expected files: `artifacts/launch/staging-bootstrap-report.json`, `artifacts/launch/staging-bootstrap-summary.md`
+
+Manual staging deploy-lock path:
+
+- Workflow: `Staging Deploy Lock`
+- Dispatch input `confirm_staging_project`: `urai-staging`
+- Dispatch input `run_live_deploy`: `false` for checks-only proof, `true` for full staging deploy-lock proof when the staging deploy environment is configured.
+- Artifact: `urai-staging-deploy-lock-evidence`
+
 ## HTTP smoke API
 
 | Route | Method | Purpose |
 |---|---|---|
 | `/` | GET | Hosting shell smoke. |
 | `/u/adamclamp` | GET | Route rewrite smoke. |
+| `/robots.txt` | GET | Confirms staging indexing block. |
 | `/api/healthz` | GET | Live health check. |
 | `/api/buildinfo` | GET | Build/project metadata smoke. |
 | `/api/companion` | POST | Companion endpoint smoke and invalid-message guard. |
-| `/api/waitlist` | POST | Staging waitlist write smoke. |
+| `/api/waitlist` | POST | Staging waitlist write smoke using synthetic data only. |
 
 ## Callable API
 
@@ -168,4 +212,4 @@ npm run deploy:staging
 npm run deploy:staging
 ```
 
-After the script passes, commit the generated `URAI_STAGING_LOCK.md` if you want the lock evidence preserved in git.
+After the script passes, preserve the generated `URAI_STAGING_LOCK.md` or the `urai-staging-deploy-lock-evidence` artifact as the deployment receipt.
