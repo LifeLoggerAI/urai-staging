@@ -9,6 +9,10 @@ DONE BUT NEEDS EXTERNAL ENV / RUNNER.
 
 This repo is production-safe as a staging validation environment, but it is not a production app and must not be marked production-ready in the global URAI release plan until current CI/deploy/live-smoke receipts exist.
 
+Final external receipt blocker:
+
+- GitHub Issue #10: `FINAL EXTERNAL STEP: run staging deploy-lock workflow and attach receipts`
+
 ## What this repo is
 
 `urai-staging` is the Firebase staging backend and validation shell for URAI. It owns:
@@ -59,6 +63,7 @@ This repo does not own:
 - `d42b9ee6fcaa6f8ee4cad96e685e428c00f8e1b7` - enforce adaptive emulator runner in deploy readiness.
 - `cf9f0bbf48409b640ef1d316a5ac61bb882df266` - add last-mile completion receipt.
 - `18e44da23aa787b726ad2a74d7dc63f17b9cc7f9` - align README with last-mile status.
+- `b43ce252da5afc3ab16d173f0e49df1fa7d4af27` - add current production status summary.
 
 ## Verification receipts available now
 
@@ -70,6 +75,8 @@ Repo-inspection receipts are available in:
 - `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/blockers.md`
 - `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/actions-hardening.md`
 - `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/last-mile-completion.md`
+- `STATUS.md`
+- GitHub Issue #10
 
 ## Verification still required
 
@@ -119,6 +126,7 @@ Manual deploy-lock proof path:
 - Input `confirm_staging_project`: `urai-staging`
 - Input `run_live_deploy`: `false` for checks-only proof, `true` for full deploy-lock proof when the staging deploy environment is configured.
 - Preserve artifact: `urai-staging-deploy-lock-evidence`
+- Close GitHub Issue #10 only after the required receipts are attached or preserved.
 
 ## Feature truth table
 
@@ -143,4 +151,4 @@ Manual deploy-lock proof path:
 
 ## Ecosystem coordinator summary
 
-`urai-staging` is DONE BUT NEEDS EXTERNAL ENV/RUNNER: repo-side staging guardrails, CI evidence workflow, gated deploy workflow, adaptive emulator runner, public disclaimer, robots block, README/status docs, and launch-proof receipts are committed; do not mark production-ready until current Actions/deploy/live-smoke artifacts pass.
+`urai-staging` is DONE BUT NEEDS EXTERNAL ENV/RUNNER: repo-side staging guardrails, CI evidence workflow, gated deploy workflow, adaptive emulator runner, public disclaimer, robots block, README/status docs, GitHub Issue #10, and launch-proof receipts are committed; do not mark production-ready until current Actions/deploy/live-smoke artifacts pass.
