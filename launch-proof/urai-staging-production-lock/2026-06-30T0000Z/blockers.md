@@ -5,12 +5,14 @@ Repo: LifeLoggerAI/urai-staging
 
 ## Readiness score
 
-Score: 72 / 100
+Score: 75 / 100
 
 Rationale:
 - Strong static staging architecture, scripts, docs, route map, and environment separation are present.
-- One stale env example was fixed during this pass.
-- Final lock cannot be granted until install, lint, typecheck, build, tests, Firebase deploy, and live smoke outputs are generated from a credentialed environment.
+- Stale env example was fixed during this pass.
+- Public staging disclaimer was added to the hosted shell.
+- `robots.txt` exists and disallows indexing.
+- Final lock still cannot be granted until install, lint, typecheck, build, tests, Firebase deploy, and live smoke outputs are generated from a credentialed environment.
 
 ## P0 blockers
 
@@ -44,7 +46,7 @@ Rationale:
    - GitHub text search found no common secret indicators in this pass, but that is not complete history scanning.
 
 2. CI status confirmation for the latest branch head.
-   - Confirm the `CI` workflow passes after this proof-folder and env-example update.
+   - Confirm the `CI` workflow passes after this proof-folder, env-example, and public disclaimer updates.
    - The workflow runs bootstrap and launch evidence validation, so it must be checked after the generated evidence files exist.
 
 3. Confirm live Hosting and Functions DNS from at least one external network.
@@ -62,11 +64,17 @@ Rationale:
 3. Add CI artifact upload for launch evidence if not already enabled.
    - Preserve command logs and summary as workflow artifacts.
 
-## P3 blockers
+## P3 follow-ups
 
-1. Add a short public-page disclaimer directly in `public/index.html` saying this is staging, not production.
-2. Add optional `robots.txt` inspection to docs, since smoke script expects `/robots.txt`.
-3. Add a README badge or section showing latest CI/deploy-lock status after CI is passing.
+1. Add a README badge or section showing latest CI/deploy-lock status after CI is passing.
+2. Consider adding a short screenshot or visual smoke receipt after the next successful staging deploy.
+
+## Completed during this pass
+
+1. `.env.example` now uses canonical staging values: `urai-staging` and `https://urai-staging.web.app`.
+2. `public/index.html` now includes a visible staging disclaimer: not production, not launch, synthetic data only.
+3. `public/robots.txt` was verified to disallow indexing for all user agents.
+4. Timestamped proof folder was created under `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/`.
 
 ## Completion plan
 
