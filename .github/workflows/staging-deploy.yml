@@ -1,0 +1,119 @@
+name: Staging Deploy Lock
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_staging_project:
+        description: "Type the exact Firebase staging project ID to allow deploy"
+        required: true
+        type: string
+      run_live_deploy:
+        description: "Deploy to Firebase staging after checks pass"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: urai-staging-deploy-lock
+  cancel-in-progress: false
+
+jobs:
+  staging-lock:
+    name: Staging deploy lock
+    runs-on: ubuntu-latest
+    env:
+      EXPECTED_STAGING_PROJECT: urai-staging
+      URAI_STAGING_PROJECT_ID: urai-staging
+      URAI_STAGING_URL: https://urai-staging.web.app
+      URAI_PRODUCTION_DEPLOY_APPROVED: "0"
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.firebase-service-account.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate dispatch guard
+        run: |
+          if [ "${{ inputs.confirm_staging_project }}" != "$EXPECTED_STAGING_PROJECT" ]; then
+            echo "Refusing deploy: confirm_staging_project must be $EXPECTED_STAGING_PROJECT" >&2
+            exit 1
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Setup Java for Firebase emulators
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@13.35.1
+
+      - name: Install root package metadata
+        run: npm install
+
+      - name: Install function dependencies
+        run: npm --prefix functions ci
+
+      - name: Run repo doctor
+        run: npm run doctor
+
+      - name: Check deploy readiness
+        run: npm run check:deploy
+
+      - name: Check lockfile and engines
+        run: npm run check:lockfile
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Firestore rules tests
+        run: npm run test:rules
+
+      - name: Require staging credentials for live deploy
+        if: ${{ inputs.run_live_deploy }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT_URAI_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_URAI_STAGING }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING" ]; then
+            echo "Missing secret FIREBASE_SERVICE_ACCOUNT_URAI_STAGING; cannot deploy." >&2
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING" > "$GOOGLE_APPLICATION_CREDENTIALS"
+          chmod 600 "$GOOGLE_APPLICATION_CREDENTIALS"
+
+      - name: Deploy lock to Firebase staging
+        if: ${{ inputs.run_live_deploy }}
+        env:
+          URAI_RELEASE_CANDIDATE_SHA: ${{ github.sha }}
+        run: npm run deploy:staging
+
+      - name: Upload staging deploy evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: urai-staging-deploy-lock-evidence
+          path: |
+            URAI_STAGING_LOCK.md
+            URAI_STAGING_LOCK_FAILED.md
+            artifacts/launch/staging-bootstrap-report.json
+            artifacts/launch/staging-bootstrap-summary.md
+          if-no-files-found: warn
