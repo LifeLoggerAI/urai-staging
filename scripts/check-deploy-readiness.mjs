@@ -15,6 +15,8 @@ const requiredFiles = [
   'functions/package.json',
   'functions/src/index.ts',
   'public/index.html',
+  'public/robots.txt',
+  'scripts/run-with-java.sh',
   'scripts/urai-staging-lock.sh',
   'scripts/smoke-staging.sh',
   'DEPLOYMENT.md',
@@ -68,9 +70,15 @@ if (rootPackage) {
   const deployScript = rootPackage.scripts?.['deploy:staging'] ?? '';
   const lockScript = rootPackage.scripts?.['lock:staging'] ?? '';
   const checkDeployScript = rootPackage.scripts?.['check:deploy'] ?? '';
+  const rulesScript = rootPackage.scripts?.['test:rules'] ?? '';
+  const e2eScript = rootPackage.scripts?.['test:e2e'] ?? '';
+  const emulatorsScript = rootPackage.scripts?.emulators ?? '';
   if (!deployScript.includes('lock:staging')) failures.push('package.json deploy:staging must delegate to lock:staging');
   if (!lockScript.includes('scripts/urai-staging-lock.sh')) failures.push('package.json lock:staging must run scripts/urai-staging-lock.sh');
   if (!checkDeployScript.includes('scripts/check-deploy-readiness.mjs')) failures.push('package.json check:deploy must run scripts/check-deploy-readiness.mjs');
+  for (const [name, script] of [['test:rules', rulesScript], ['test:e2e', e2eScript], ['emulators', emulatorsScript]]) {
+    if (!script.includes('scripts/run-with-java.sh')) failures.push(`package.json ${name} must use scripts/run-with-java.sh for CI/Firebase Studio compatibility`);
+  }
 }
 
 const functionsIndexText = readText('functions/src/index.ts');
@@ -85,8 +93,16 @@ if (functionsIndexText.includes(DEPRECATED_STAGING_PROJECT)) {
 }
 
 const publicIndexText = readText('public/index.html');
-for (const requiredCopy of ['URAI Staging', 'companion', 'ground', '/api/healthz', '/api/buildinfo']) {
+for (const requiredCopy of ['URAI Staging', 'Staging environment', 'not the production app', 'synthetic staging data only', 'companion', 'ground', '/api/healthz', '/api/buildinfo']) {
   if (!publicIndexText.includes(requiredCopy)) failures.push(`public/index.html must include ${requiredCopy}`);
+}
+
+const robotsText = readText('public/robots.txt');
+if (!robotsText.includes('Disallow: /')) failures.push('public/robots.txt must disallow indexing for staging');
+
+const javaRunnerText = readText('scripts/run-with-java.sh');
+if (!javaRunnerText.includes('nix-shell') || !javaRunnerText.includes('command -v java')) {
+  failures.push('scripts/run-with-java.sh must support both nix-shell and existing Java runtimes');
 }
 
 const lockScriptText = readText('scripts/urai-staging-lock.sh');
