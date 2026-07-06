@@ -25,6 +25,7 @@ jobs:
   staging-lock:
     name: Staging deploy lock
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     env:
       EXPECTED_STAGING_PROJECT: urai-staging
       URAI_STAGING_PROJECT_ID: urai-staging
@@ -32,8 +33,18 @@ jobs:
       URAI_PRODUCTION_DEPLOY_APPROVED: "0"
       GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.firebase-service-account.json
     steps:
-      - name: Checkout
+      - name: Checkout exact commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify exact commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git status --short
 
       - name: Start deploy evidence summary
         run: |
@@ -54,6 +65,7 @@ jobs:
             echo ""
             echo "- Manual dispatch only."
             echo "- Exact staging project confirmation required."
+            echo "- Exact workflow commit verified."
             echo "- Production approval flag forced to 0."
             echo "- Deploy command remains npm run deploy:staging."
             echo ""
@@ -120,18 +132,26 @@ jobs:
             echo "- Checks completed at: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           } >> artifacts/deploy/staging-deploy-summary.md
 
-      - name: Require staging credentials for live deploy
+      - name: Require and validate staging credentials
         if: ${{ inputs.run_live_deploy }}
+        shell: bash
         env:
           FIREBASE_SERVICE_ACCOUNT_URAI_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_URAI_STAGING }}
         run: |
+          set -euo pipefail
           if [ -z "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING" ]; then
             echo "Missing staging Firebase credential secret; cannot deploy." >&2
             exit 1
           fi
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING" > "$GOOGLE_APPLICATION_CREDENTIALS"
+          python -m json.tool "$GOOGLE_APPLICATION_CREDENTIALS" > /dev/null
           chmod 600 "$GOOGLE_APPLICATION_CREDENTIALS"
-          echo "- Staging credentials: present" >> artifacts/deploy/staging-deploy-summary.md
+          project_id="$(python -c 'import json,sys; print(json.load(open(sys.argv[1])).get("project_id", ""))' "$GOOGLE_APPLICATION_CREDENTIALS")"
+          if [ "$project_id" != "$EXPECTED_STAGING_PROJECT" ]; then
+            echo "Credential project mismatch: expected $EXPECTED_STAGING_PROJECT" >&2
+            exit 1
+          fi
+          echo "- Staging credentials: valid for expected project" >> artifacts/deploy/staging-deploy-summary.md
 
       - name: Deploy lock to Firebase staging
         if: ${{ inputs.run_live_deploy }}
@@ -158,6 +178,11 @@ jobs:
             echo "- Finished at: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           } >> artifacts/deploy/staging-deploy-summary.md
           cat artifacts/deploy/staging-deploy-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove staging credential file
+        if: always()
+        shell: bash
+        run: rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
 
       - name: Upload staging deploy evidence
         if: always()
