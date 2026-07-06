@@ -17,6 +17,7 @@ const requiredFiles = [
   'public/index.html',
   'public/robots.txt',
   'scripts/run-with-java.sh',
+  'scripts/urai-staging-bootstrap.mjs',
   'scripts/urai-staging-lock.sh',
   'scripts/smoke-staging.sh',
   'DEPLOYMENT.md',
@@ -79,6 +80,14 @@ if (rootPackage) {
   for (const [name, script] of [['test:rules', rulesScript], ['test:e2e', e2eScript], ['emulators', emulatorsScript]]) {
     if (!script.includes('scripts/run-with-java.sh')) failures.push(`package.json ${name} must use scripts/run-with-java.sh for CI/Firebase Studio compatibility`);
   }
+}
+
+const bootstrapText = readText('scripts/urai-staging-bootstrap.mjs');
+if (!bootstrapText.includes("['npm', ['--prefix', 'functions', 'ci']]")) {
+  failures.push('scripts/urai-staging-bootstrap.mjs must install Functions dependencies with npm ci');
+}
+if (bootstrapText.includes("['npm', ['--prefix', 'functions', 'install']]")) {
+  failures.push('scripts/urai-staging-bootstrap.mjs must not use npm install for Functions dependencies');
 }
 
 const functionsIndexText = readText('functions/src/index.ts');
