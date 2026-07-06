@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
@@ -19,8 +21,10 @@ const requiredFiles = [
   'scripts/run-with-java.sh',
   'scripts/urai-staging-lock.sh',
   'scripts/smoke-staging.sh',
+  '.github/workflows/staging-deploy.yml',
   'DEPLOYMENT.md',
   'ENVIRONMENT.md',
+  'ENVIRONMENT_AUTHORITY.md',
   'RELEASE_NOTES.md',
   'SYSTEM_AUDIT.md',
   'TEST_REPORT.md',
@@ -35,24 +39,26 @@ for (const file of requiredFiles) {
   if (!existsSync(file)) failures.push(`Missing required file: ${file}`);
 }
 
-function readJson(path) {
+function readJson(filePath) {
   try {
-    return JSON.parse(readFileSync(path, 'utf8'));
+    return JSON.parse(readFileSync(filePath, 'utf8'));
   } catch (error) {
-    failures.push(`Invalid JSON in ${path}: ${error.message}`);
+    failures.push(`Invalid JSON in ${filePath}: ${error.message}`);
     return null;
   }
 }
 
-function readText(path) {
-  return existsSync(path) ? readFileSync(path, 'utf8') : '';
+function readText(filePath) {
+  return existsSync(filePath) ? readFileSync(filePath, 'utf8') : '';
 }
 
 const firebaserc = readJson('.firebaserc');
 if (firebaserc) {
   if (firebaserc.projects?.staging !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.staging must be ${EXPECTED_STAGING_PROJECT}`);
   if (firebaserc.projects?.default !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.default must be ${EXPECTED_STAGING_PROJECT}`);
-  if (firebaserc.projects?.production === EXPECTED_STAGING_PROJECT) failures.push('.firebaserc production alias must not point at staging');
+  if (Object.prototype.hasOwnProperty.call(firebaserc.projects ?? {}, 'production')) failures.push('.firebaserc must not define any production alias in the staging repository');
+  const unexpectedAliases = Object.keys(firebaserc.projects ?? {}).filter((alias) => !['default', 'staging'].includes(alias));
+  if (unexpectedAliases.length > 0) failures.push(`.firebaserc contains unexpected aliases: ${unexpectedAliases.join(', ')}`);
 }
 
 const firebaseJson = readJson('firebase.json');
@@ -108,8 +114,24 @@ if (!javaRunnerText.includes('nix-shell') || !javaRunnerText.includes('command -
 const lockScriptText = readText('scripts/urai-staging-lock.sh');
 if (!lockScriptText.includes(EXPECTED_STAGING_PROJECT)) failures.push(`scripts/urai-staging-lock.sh must explicitly target ${EXPECTED_STAGING_PROJECT}`);
 if (!lockScriptText.includes(`hosting:"$EXPECTED_HOSTING_SITE"`)) failures.push('scripts/urai-staging-lock.sh must deploy the explicit hosting site target');
-if (lockScriptText.includes('--project "$URAI_PRODUCTION_PROJECT_ID"') || lockScriptText.includes('--project $URAI_PRODUCTION_PROJECT_ID')) {
-  failures.push('scripts/urai-staging-lock.sh must not deploy to the production project env var');
+if (lockScriptText.includes('URAI_PRODUCTION_PROJECT_ID')) failures.push('scripts/urai-staging-lock.sh must not reference a production project variable');
+
+const stagingWorkflowText = readText('.github/workflows/staging-deploy.yml');
+for (const requiredWorkflowPhrase of [
+  'Checkout exact commit',
+  'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
+  'URAI_PRODUCTION_DEPLOY_APPROVED: "0"',
+  'python -m json.tool "$GOOGLE_APPLICATION_CREDENTIALS"',
+  'Credential project mismatch',
+  'Remove staging credential file',
+  'rm -f "$GOOGLE_APPLICATION_CREDENTIALS"'
+]) {
+  if (!stagingWorkflowText.includes(requiredWorkflowPhrase)) failures.push(`staging deploy workflow must include ${requiredWorkflowPhrase}`);
+}
+
+const authorityText = readText('ENVIRONMENT_AUTHORITY.md');
+for (const requiredAuthorityPhrase of ['owns only the URAI staging', 'Production alias: intentionally absent', 'must not deploy to, alias, or imply ownership of the production project']) {
+  if (!authorityText.includes(requiredAuthorityPhrase)) failures.push(`ENVIRONMENT_AUTHORITY.md must include ${requiredAuthorityPhrase}`);
 }
 
 const smokeScriptText = readText('scripts/smoke-staging.sh');
