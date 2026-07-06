@@ -49,8 +49,7 @@ if (problems.length) {
 }
 
 const commands = [
-  ['npm', ['install']],
-  ['npm', ['--prefix', 'functions', 'install']],
+  ['npm', ['--prefix', 'functions', 'ci']],
   ['npm', ['run', 'doctor']],
   ['npm', ['run', 'check:deploy']],
   ['npm', ['run', 'check:lockfile']],
