@@ -11,6 +11,7 @@ const summaryPath = path.join(evidenceDir, 'staging-bootstrap-summary.md');
 const env = { ...process.env };
 delete env.NPM_CONFIG_PREFIX;
 delete env.npm_config_prefix;
+delete env.URAI_SKIP_RULES;
 
 const report = {
   repo: 'LifeLoggerAI/urai-staging',
@@ -32,9 +33,15 @@ const problems = [];
 if (!fs.existsSync(pkgPath)) problems.push('No package.json found. This must run from the LifeLoggerAI/urai-staging repo root.');
 const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf8')) : null;
 if (pkg && pkg.name !== 'urai-staging') problems.push(`Wrong repo: found package '${pkg.name}'. This bootstrap is for LifeLoggerAI/urai-staging.`);
+if (!fs.existsSync(path.join(root, 'functions', 'package-lock.json'))) {
+  problems.push('Missing functions/package-lock.json; deterministic npm ci cannot run.');
+}
 
 if (process.env.NPM_CONFIG_PREFIX || process.env.npm_config_prefix) {
   report.skipped.push('NPM_CONFIG_PREFIX was present and removed for child commands.');
+}
+if (process.env.URAI_SKIP_RULES === '1') {
+  report.skipped.push('URAI_SKIP_RULES was ignored; canonical staging verification always runs emulator-backed rules tests.');
 }
 
 if (problems.length) {
@@ -49,23 +56,17 @@ if (problems.length) {
 }
 
 const commands = [
-  ['npm', ['install']],
-  ['npm', ['--prefix', 'functions', 'install']],
+  ['npm', ['--prefix', 'functions', 'ci']],
   ['npm', ['run', 'doctor']],
   ['npm', ['run', 'check:deploy']],
   ['npm', ['run', 'check:lockfile']],
   ['npm', ['run', 'check:types']],
   ['npm', ['run', 'lint']],
   ['npm', ['run', 'test:unit']],
+  ['npm', ['run', 'test:rules']],
   ['npm', ['run', 'build']],
   ['npm', ['run', 'launch:p0']]
 ];
-
-if (process.env.URAI_SKIP_RULES !== '1') {
-  commands.splice(commands.length - 2, 0, ['npm', ['run', 'test:rules']]);
-} else {
-  report.skipped.push('Rules tests skipped because URAI_SKIP_RULES=1.');
-}
 
 for (const [cmd, args] of commands) {
   const commandText = `${cmd} ${args.join(' ')}`;
@@ -108,7 +109,7 @@ function finalizeScore() {
   report.commandCount = report.commands.length;
   report.passedCount = report.commands.filter((command) => command.status === 'passed').length;
   report.failedCount = report.commands.filter((command) => command.status === 'failed').length;
-  const totalExpected = report.commands.length || 1;
+  const totalExpected = 10;
   report.launchScore = Math.round((report.passedCount / totalExpected) * 100);
 }
 
@@ -135,7 +136,7 @@ function writeSummary() {
 
   if (report.error) lines.push('## Failure', '', report.error, '');
   if (report.skipped.length) {
-    lines.push('## Skipped / Adjusted', '');
+    lines.push('## Adjusted environment', '');
     for (const skipped of report.skipped) lines.push(`- ${skipped}`);
     lines.push('');
   }
