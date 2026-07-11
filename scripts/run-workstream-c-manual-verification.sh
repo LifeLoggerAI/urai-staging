@@ -102,7 +102,7 @@ run_shell_step admin lint "$ADMIN_DIR" 'pnpm lint'
 run_shell_step admin typecheck "$ADMIN_DIR" 'pnpm typecheck'
 run_shell_step admin tests "$ADMIN_DIR" 'pnpm test'
 run_shell_step admin build "$ADMIN_DIR" 'pnpm build'
-run_shell_step admin production-preflight-fails-closed "$ADMIN_DIR" 'set +e; pnpm preflight:production; s=$?; set -e; test "$s" -ne 0'
+run_shell_step admin production-preflight-fails-closed "$ADMIN_DIR" 'unset FIREBASE_TOKEN NEXT_PUBLIC_FIREBASE_API_KEY NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN NEXT_PUBLIC_FIREBASE_PROJECT_ID NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID NEXT_PUBLIC_FIREBASE_APP_ID; set +e; output="$(pnpm preflight:production 2>&1)"; s=$?; set -e; printf "%s\n" "$output"; test "$s" -ne 0; grep -q -- "--- Production preflight failed ---" <<<"$output"; ! grep -q "command not found" <<<"$output"'
 run_shell_step admin emulator-receipt "$ADMIN_DIR" 'pnpm receipt:system-registry:emulator'
 if [ -f "$ADMIN_DIR/docs/release-evidence/admin-system-registry-emulator-receipt.json" ]; then
   cp "$ADMIN_DIR/docs/release-evidence/admin-system-registry-emulator-receipt.json" "$EVIDENCE/"
