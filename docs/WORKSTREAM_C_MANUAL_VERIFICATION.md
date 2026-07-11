@@ -2,7 +2,34 @@
 
 Use this only while GitHub-hosted runners are not assigning jobs.
 
-## Run in Google Cloud Shell
+## Current controlled execution
+
+The current Jobs candidate has one unresolved critical Functions audit finding. The package associated with the old dependency subtree is unused outside active manifests and lockfiles. Run the guarded repair chain before the next standalone verifier run:
+
+```bash
+cd ~/urai-staging-manual
+git fetch origin workstream-c-manual-verification-20260711
+git reset --hard origin/workstream-c-manual-verification-20260711
+git clean -fd
+bash scripts/repair-jobs-unused-error-reporting.sh
+```
+
+The repair script:
+
+- requires Jobs to remain exactly at `1515ff2bbf66f764d125eb2abe7b615c88cedb59`;
+- proves `@google-cloud/error-reporting` has no runtime or source references;
+- removes only that direct dependency;
+- regenerates `functions/package-lock.json`, `pnpm-lock.yaml`, and `.pnpm/lock.yaml`;
+- runs npm and pnpm frozen installs;
+- captures full and production audit JSON and stops if any critical finding remains;
+- runs exact-head contracts, source verification, typecheck, build, and tests;
+- allows only the four expected manifest and lockfile changes;
+- commits and pushes only after every gate passes;
+- launches the complete Workstream C verifier using the new Jobs SHA.
+
+If the Jobs branch moved or any gate fails, the script stops before pushing.
+
+## Standalone verifier run
 
 ```bash
 cd ~/urai-staging-manual
@@ -20,10 +47,10 @@ git clone --branch workstream-c-manual-verification-20260711 \
   https://github.com/LifeLoggerAI/urai-staging.git \
   ~/urai-staging-manual
 cd ~/urai-staging-manual
-bash scripts/run-workstream-c-cloud-shell.sh
+bash scripts/repair-jobs-unused-error-reporting.sh
 ```
 
-The Cloud Shell launcher defaults to these repaired exact candidates:
+The Cloud Shell launcher currently defaults to these repaired exact candidates:
 
 - Admin: `d10dd517bbf806bae0a92d53383e0c6d620ba523`
 - Privacy: `bf9d6f42cba961169c5d6e0aaa24b07a64ba6c01`
@@ -45,7 +72,7 @@ The verifier preserves NVM-selected Node/npm paths, installs exact pnpm versions
 
 The evidence bundle contains exact verifier/candidate identities, step logs and exit codes, the Admin emulator receipt when generated, final Git status, mandatory `final-source-clean` results, compact failure excerpts and a SHA-256 manifest.
 
-Any failed command, SHA mismatch, dirty verifier checkout or candidate residue makes verification fail. The script does not deploy, create infrastructure, call paid providers, seed cloud Firestore or mutate production data.
+Any failed command, SHA mismatch, dirty verifier checkout or candidate residue makes verification fail. The scripts do not deploy, create infrastructure, call paid providers, seed cloud Firestore or mutate production data.
 
 The timestamped evidence archive is written under `/tmp` and its exact path is printed at completion.
 
