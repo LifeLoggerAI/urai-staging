@@ -17,11 +17,13 @@ bash scripts/run-workstream-c-manual-verification.sh
 
 The script checks out these exact candidates by default:
 
-- Admin: `1c9e41d56b125b7b1124ce69acc23003275a4922`
-- Privacy: `c8732de884186274c42bfc2e11b592737d6c4f4e`
+- Admin: `71f4f6d461e09bae30584f2bdef6c5deb9c79787`
+- Privacy: `f8ed46bec72b7be6cd9ba84bc73fc13a636df600`
 - Jobs: `dc299c7a34bd416433f46d329ce18f6119bc31bf`
 
 The three SHAs can also be overridden explicitly through the `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA` environment variables. The exact values used are recorded in the generated evidence summary and `heads.tsv`.
+
+The verifier preserves the NVM-selected Node and npm paths in every test subprocess, installs exact pnpm versions through npm, and requires the Admin production preflight to fail for the expected missing-authority reason rather than accepting a missing command as proof.
 
 It runs source, build, test, security, emulator and fail-closed preflight checks. It does not deploy, create infrastructure, call paid providers or mutate production data.
 
