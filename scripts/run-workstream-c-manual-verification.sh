@@ -30,7 +30,11 @@ use_node() {
 }
 
 ensure_java() {
+  local major=0
   if command -v java >/dev/null 2>&1; then
+    major="$(java -version 2>&1 | awk -F'[".]' '/version/ {print $2; exit}')"
+  fi
+  if [ "${major:-0}" -ge 21 ]; then
     return 0
   fi
   sudo apt-get update
@@ -73,6 +77,7 @@ run_shell_step() {
 log "Manual Workstream C verification root: $ROOT"
 ensure_java
 printf 'lane\tstep\texit_code\n' > "$EVIDENCE/status.tsv"
+printf 'repository\texpected_sha\tactual_sha\n' > "$EVIDENCE/heads.tsv"
 
 # ADMIN
 ADMIN_DIR="$ROOT/urai-admin"
@@ -80,7 +85,6 @@ clone_exact urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
 use_node 22
 run_shell_step admin install "$ADMIN_DIR" 'corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile'
 run_shell_step admin registry-contract "$ADMIN_DIR" 'pnpm test:registry'
-run_shell_step admin emulator-receipt "$ADMIN_DIR" 'pnpm receipt:system-registry:emulator'
 run_shell_step admin security-gate "$ADMIN_DIR" 'pnpm security:gate'
 run_shell_step admin active-functions "$ADMIN_DIR" 'pnpm functions:typecheck:active && pnpm functions:build:active'
 run_shell_step admin lint "$ADMIN_DIR" 'pnpm lint'
@@ -88,17 +92,20 @@ run_shell_step admin typecheck "$ADMIN_DIR" 'pnpm typecheck'
 run_shell_step admin tests "$ADMIN_DIR" 'pnpm test'
 run_shell_step admin build "$ADMIN_DIR" 'pnpm build'
 run_shell_step admin production-preflight-fails-closed "$ADMIN_DIR" 'set +e; pnpm preflight:production; s=$?; set -e; test "$s" -ne 0'
+run_shell_step admin emulator-receipt "$ADMIN_DIR" 'pnpm receipt:system-registry:emulator'
 if [ -f "$ADMIN_DIR/docs/release-evidence/admin-system-registry-emulator-receipt.json" ]; then
   cp "$ADMIN_DIR/docs/release-evidence/admin-system-registry-emulator-receipt.json" "$EVIDENCE/"
+  rm -f "$ADMIN_DIR/docs/release-evidence/admin-system-registry-emulator-receipt.json"
 fi
 
 # PRIVACY
 PRIVACY_DIR="$ROOT/urai-privacy"
+PRIVACY_VENV="$ROOT/privacy-validator-venv"
 clone_exact urai-privacy "$PRIVACY_SHA" "$PRIVACY_DIR"
 use_node 20.19.0
 run_shell_step privacy root-install "$PRIVACY_DIR" 'npm ci'
 run_shell_step privacy functions-install "$PRIVACY_DIR" 'npm ci --prefix functions'
-run_shell_step privacy python-validators "$PRIVACY_DIR" 'python3 -m venv .manual-venv && . .manual-venv/bin/activate && pip install -r requirements.txt && python -m unittest discover -s tests -p "test_*.py" && python tools/check_secrets.py && python tools/check_website.py && python tools/validate_privacy_package.py'
+run_shell_step privacy python-validators "$PRIVACY_DIR" "python3 -m venv '$PRIVACY_VENV' && . '$PRIVACY_VENV/bin/activate' && pip install -r requirements.txt && python -m unittest discover -s tests -p 'test_*.py' && python tools/check_secrets.py && python tools/check_website.py && python tools/validate_privacy_package.py"
 run_shell_step privacy lint-typecheck "$PRIVACY_DIR" 'npm run lint && npm run typecheck'
 run_shell_step privacy unit-rules-routes "$PRIVACY_DIR" 'npm run test:unit && npm run test:rules:static && npm run test:e2e'
 run_shell_step privacy audits "$PRIVACY_DIR" 'npm run audit:privacy && npm run audit:tier-one'
