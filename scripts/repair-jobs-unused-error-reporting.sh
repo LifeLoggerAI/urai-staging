@@ -41,6 +41,7 @@ safe_root() {
 
 [[ "$EXPECTED_JOBS_SHA" =~ $SHA_PATTERN ]] || fail 'Internal expected Jobs SHA is invalid'
 [ -f "$CONTROL_ROOT/scripts/run-workstream-c-cloud-shell.sh" ] || fail 'Run this script from the urai-staging verifier checkout'
+[ -f "$CONTROL_ROOT/scripts/validate-jobs-narrator-build-input.mjs" ] || fail 'Narrator build-input validator is missing'
 [ -z "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ] || fail 'The verifier checkout must be clean'
 command -v git >/dev/null || fail 'git is required'
 command -v gh >/dev/null || fail 'GitHub CLI is required'
@@ -82,12 +83,9 @@ ACTUAL_SHA="$(git rev-parse HEAD)"
 unexpected_error_reporting_refs="$(git grep -n '@google-cloud/error-reporting' -- . 2>/dev/null | grep -Ev '^(functions/package\.json|functions/package-lock\.json|pnpm-lock\.yaml|\.pnpm/lock\.yaml|_audit/)' || true)"
 [ -z "$unexpected_error_reporting_refs" ] || fail "Runtime/source references exist for error reporting:\n$unexpected_error_reporting_refs"
 
-# Source truth: asset and narrator workers use Firebase Admin and must retain it.
-for worker_source in workers/asset-worker/index.js workers/narrator-worker/index.js; do
-  git grep -n 'firebase-admin' -- "$worker_source" >/dev/null || fail "$worker_source must retain Firebase Admin"
-done
+git grep -n 'firebase-admin' -- workers/asset-worker/index.js >/dev/null || fail 'asset-worker must retain Firebase Admin'
+node "$CONTROL_ROOT/scripts/validate-jobs-narrator-build-input.mjs" "$REPO"
 
-# Spatial and studio workers do not use Firebase Admin; their declarations may be removed.
 UNUSED_FIREBASE_REF="$ROOT/unused-firebase-ref.txt"
 for worker in spatial-worker studio-worker; do
   if git grep -n 'firebase-admin' -- "workers/$worker" 2>/dev/null | grep -v '/package.json:' >"$UNUSED_FIREBASE_REF"; then
@@ -103,7 +101,7 @@ export PATH="$TOOLING/pnpm/bin:$PATH"
 export npm_config_registry="$PUBLIC_REGISTRY"
 [ "$(pnpm --version)" = '8.15.9' ] || fail 'Unexpected pnpm version'
 
-log 'Applying the source-correct audited manifest repair'
+log 'Applying the deployed-source-correct audited manifest repair'
 node <<'NODE'
 const fs = require('node:fs');
 const read = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
@@ -130,26 +128,21 @@ delete functions.dependencies['@google-cloud/error-reporting'];
 functions.overrides = { ...(functions.overrides || {}), ...overrides };
 write('functions/package.json', functions);
 
-for (const worker of ['asset-worker', 'narrator-worker']) {
-  const path = `workers/${worker}/package.json`;
-  const pkg = read(path);
-  if (!pkg.dependencies?.['firebase-admin']) {
-    throw new Error(`${path} must declare firebase-admin`);
-  }
-  pkg.dependencies['firebase-admin'] = '^12.7.0';
-  write(path, pkg);
-}
+const asset = read('workers/asset-worker/package.json');
+if (!asset.dependencies?.['firebase-admin']) throw new Error('asset-worker must declare firebase-admin');
+asset.dependencies['firebase-admin'] = '^12.7.0';
+write('workers/asset-worker/package.json', asset);
 
-for (const worker of ['spatial-worker', 'studio-worker']) {
+for (const worker of ['narrator-worker', 'spatial-worker', 'studio-worker']) {
   const path = `workers/${worker}/package.json`;
   const pkg = read(path);
-  if (!pkg.dependencies?.['firebase-admin']) {
-    throw new Error(`${path} does not declare firebase-admin`);
-  }
+  if (!pkg.dependencies?.['firebase-admin']) throw new Error(`${path} does not declare firebase-admin`);
   delete pkg.dependencies['firebase-admin'];
   write(path, pkg);
 }
 NODE
+
+node "$CONTROL_ROOT/scripts/validate-jobs-narrator-build-input.mjs" "$REPO"
 
 log 'Regenerating public-registry npm and pnpm locks'
 npm install --prefix functions --package-lock-only --ignore-scripts --audit=false --workspaces=false --registry="$PUBLIC_REGISTRY"
@@ -182,23 +175,13 @@ const severities = ['info', 'low', 'moderate', 'high', 'critical'];
 for (const path of process.argv.slice(2)) {
   const report = JSON.parse(fs.readFileSync(path, 'utf8'));
   const counts = report?.metadata?.vulnerabilities;
-  if (!counts || typeof counts !== 'object') {
-    throw new Error(`${path} lacks metadata.vulnerabilities; audit result is not trustworthy`);
-  }
+  if (!counts || typeof counts !== 'object') throw new Error(`${path} lacks metadata.vulnerabilities`);
   for (const severity of severities) {
-    if (!Number.isFinite(Number(counts[severity] ?? 0))) {
-      throw new Error(`${path} has invalid ${severity} vulnerability count`);
-    }
+    if (!Number.isFinite(Number(counts[severity] ?? 0))) throw new Error(`${path} has invalid ${severity} count`);
   }
   console.log(`${path}: ${JSON.stringify(counts)}`);
   const nonzero = severities.filter((severity) => Number(counts[severity] || 0) !== 0);
-  if (nonzero.length) {
-    const findings = Object.entries(report.vulnerabilities ?? report.advisories ?? {})
-      .filter(([, value]) => nonzero.includes(value?.severity))
-      .map(([name, value]) => ({ name, severity: value.severity, via: value.via, range: value.range, fixAvailable: value.fixAvailable }));
-    console.error(JSON.stringify(findings, null, 2));
-    process.exitCode = 1;
-  }
+  if (nonzero.length) process.exitCode = 1;
 }
 NODE
 [ "$FULL_AUDIT_EXIT" -eq 0 ] || fail "Functions full audit exited $FULL_AUDIT_EXIT despite zero parsed findings"
@@ -208,11 +191,15 @@ NODE
 log 'Running module-load and source/build/test gates'
 node --input-type=module -e "Promise.all([import('firebase-admin'), import('@google-cloud/pubsub'), import('@google-cloud/storage')]).then(() => console.log('functions module load passed'))"
 node -e "require('./workers/asset-worker/node_modules/firebase-admin'); console.log('asset Firebase Admin load passed')"
-node -e "require('./workers/narrator-worker/node_modules/firebase-admin'); console.log('narrator Firebase Admin load passed')"
+node "$CONTROL_ROOT/scripts/validate-jobs-narrator-build-input.mjs" "$REPO"
 pnpm ci:exact-head
 pnpm urai-jobs:verify
 pnpm typecheck
 pnpm build
+test -f workers/narrator-worker/dist/index.js || fail 'Narrator build output is missing'
+if grep -R -n 'firebase-admin' workers/narrator-worker/dist; then
+  fail 'Narrator build output unexpectedly references firebase-admin'
+fi
 pnpm test
 
 [ ! -L docs ] || fail 'docs must not be a symbolic link'
@@ -245,8 +232,8 @@ const auditFiles = {
 };
 const counts = (path) => JSON.parse(fs.readFileSync(path, 'utf8')).metadata.vulnerabilities;
 const receipt = {
-  schema: 'urai-jobs-dependency-audit-receipt-3',
-  receiptId: 'URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-015',
+  schema: 'urai-jobs-dependency-audit-receipt-4',
+  receiptId: 'URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-016',
   generatedAt: new Date().toISOString(),
   repository: 'LifeLoggerAI/urai-jobs',
   pullRequest: 75,
@@ -254,10 +241,11 @@ const receipt = {
   controlSha,
   previousHead,
   sourceCorrection: {
-    retainedFirebaseAdminWorkers: ['asset-worker', 'narrator-worker'],
-    removedUnusedFirebaseAdminWorkers: ['spatial-worker', 'studio-worker'],
+    retainedFirebaseAdminWorkers: ['asset-worker'],
+    removedUnusedFirebaseAdminWorkers: ['narrator-worker', 'spatial-worker', 'studio-worker'],
+    narratorBuildInputReceipt: 'URAI-WSC-20260711-JOBS-NARRATOR-BUILD-INPUT-016',
     supersedesPreparedReceipt: 'URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-013',
-    failedPreflightReceiptNotIssued: 'URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-014',
+    unissuedReceipts: ['URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-014', 'URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-015'],
   },
   auditResults: Object.fromEntries(Object.entries(auditFiles).map(([name, path]) => [name, {
     exitCode: Number(process.env[name === 'functionsFull' ? 'FULL_AUDIT_EXIT' : name === 'functionsProduction' ? 'PROD_AUDIT_EXIT' : 'PNPM_AUDIT_EXIT']),
@@ -266,7 +254,7 @@ const receipt = {
   }])),
   verification: {
     deterministicInstalls: 'pass', publicRegistryOnly: 'pass', moduleLoad: 'pass',
-    sourceContracts: 'pass', typecheck: 'pass', build: 'pass', tests: 'pass',
+    narratorBuildInput: 'pass', sourceContracts: 'pass', typecheck: 'pass', build: 'pass', tests: 'pass',
   },
   artifactHashes,
   mutations: { deployment: false, providerCall: false, billing: false, secretMutation: false, infrastructure: false, productionData: false, merge: false },
@@ -312,10 +300,10 @@ New head:      $NEW_SHA
 Audit reports: $AUDIT_DIR
 Receipt: docs/release-evidence/jobs-dependency-audit-receipt-20260711.json
 
-The branch was pushed only after source-correct worker dependency checks, zero findings at every severity, zero audit command exits, frozen installs, source verification, typecheck, build and tests passed.
+The branch was pushed only after deployed-source validation, zero findings at every severity, zero audit command exits, frozen installs, source verification, typecheck, build and tests passed.
 EOF
 
-gh pr comment 75 --repo LifeLoggerAI/urai-jobs --body "Dependency repair completed at exact head \`$NEW_SHA\`: narrator and asset workers retained Firebase Admin; only spatial and studio unused declarations were removed; zero npm full, npm production and pnpm workspace findings; audit commands exited zero; frozen installs, source verification, typecheck, build and tests passed. Receipt: \`URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-015\`. No deployment or production mutation occurred." || true
+gh pr comment 75 --repo LifeLoggerAI/urai-jobs --body "Dependency repair completed at exact head \`$NEW_SHA\`: asset-worker retained Firebase Admin; narrator, spatial and studio unused declarations were removed after narrator Docker/package/TypeScript build-input proof; zero audit findings; frozen installs, source verification, typecheck, build and tests passed. Receipt: \`URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-016\`. No deployment or production mutation occurred." || true
 
 if [ "$RUN_FULL_VERIFIER_AFTER_REPAIR" = '1' ]; then
   log "Starting full Workstream C verifier against repaired Jobs head $NEW_SHA"
