@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import fs from 'node:fs';
-import path from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
@@ -22,6 +20,7 @@ const requiredFiles = [
   'scripts/urai-staging-lock.sh',
   'scripts/smoke-staging.sh',
   '.github/workflows/staging-deploy.yml',
+  '.github/workflows/urai-production-verify.yml',
   'DEPLOYMENT.md',
   'ENVIRONMENT.md',
   'ENVIRONMENT_AUTHORITY.md',
@@ -88,15 +87,9 @@ if (rootPackage) {
 }
 
 const functionsIndexText = readText('functions/src/index.ts');
-if (!functionsIndexText.includes(`const STAGING_PROJECT_ID = '${EXPECTED_STAGING_PROJECT}'`)) {
-  failures.push(`functions/src/index.ts must report staging project ${EXPECTED_STAGING_PROJECT}`);
-}
-if (!functionsIndexText.includes(`const STAGING_HOSTING_URL = '${EXPECTED_STAGING_URL}'`)) {
-  failures.push(`functions/src/index.ts must report staging URL ${EXPECTED_STAGING_URL}`);
-}
-if (functionsIndexText.includes(DEPRECATED_STAGING_PROJECT)) {
-  failures.push(`functions/src/index.ts must not reference deprecated project ${DEPRECATED_STAGING_PROJECT}`);
-}
+if (!functionsIndexText.includes(`const STAGING_PROJECT_ID = '${EXPECTED_STAGING_PROJECT}'`)) failures.push(`functions/src/index.ts must report staging project ${EXPECTED_STAGING_PROJECT}`);
+if (!functionsIndexText.includes(`const STAGING_HOSTING_URL = '${EXPECTED_STAGING_URL}'`)) failures.push(`functions/src/index.ts must report staging URL ${EXPECTED_STAGING_URL}`);
+if (functionsIndexText.includes(DEPRECATED_STAGING_PROJECT)) failures.push(`functions/src/index.ts must not reference deprecated project ${DEPRECATED_STAGING_PROJECT}`);
 
 const publicIndexText = readText('public/index.html');
 for (const requiredCopy of ['URAI Staging', 'Staging environment', 'not the production app', 'synthetic staging data only', 'companion', 'ground', '/api/healthz', '/api/buildinfo']) {
@@ -107,30 +100,67 @@ const robotsText = readText('public/robots.txt');
 if (!robotsText.includes('Disallow: /')) failures.push('public/robots.txt must disallow indexing for staging');
 
 const javaRunnerText = readText('scripts/run-with-java.sh');
-if (!javaRunnerText.includes('nix-shell') || !javaRunnerText.includes('command -v java')) {
-  failures.push('scripts/run-with-java.sh must support both nix-shell and existing Java runtimes');
-}
+if (!javaRunnerText.includes('nix-shell') || !javaRunnerText.includes('command -v java')) failures.push('scripts/run-with-java.sh must support both nix-shell and existing Java runtimes');
 
 const lockScriptText = readText('scripts/urai-staging-lock.sh');
-if (!lockScriptText.includes(EXPECTED_STAGING_PROJECT)) failures.push(`scripts/urai-staging-lock.sh must explicitly target ${EXPECTED_STAGING_PROJECT}`);
-if (!lockScriptText.includes(`hosting:"$EXPECTED_HOSTING_SITE"`)) failures.push('scripts/urai-staging-lock.sh must deploy the explicit hosting site target');
+for (const requiredLockPhrase of [
+  'URAI_RELEASE_CANDIDATE_SHA is required',
+  'URAI_STAGING_ROLLBACK_SHA is required',
+  'git merge-base --is-ancestor',
+  'git status --porcelain --untracked-files=all',
+  'ALLOW_CREATE_STAGING_HOSTING_SITE',
+  'Refusing to create billable or externally visible infrastructure',
+  'npm run test:e2e',
+  `hosting:"$EXPECTED_HOSTING_SITE"`,
+  '--non-interactive'
+]) {
+  if (!lockScriptText.includes(requiredLockPhrase)) failures.push(`staging lock must include ${requiredLockPhrase}`);
+}
 if (lockScriptText.includes('URAI_PRODUCTION_PROJECT_ID')) failures.push('scripts/urai-staging-lock.sh must not reference a production project variable');
+if (lockScriptText.includes('firebase hosting:sites:create')) failures.push('canonical staging lock must not create a Hosting site');
+if (lockScriptText.includes('skipping emulator-backed')) failures.push('canonical staging lock must not skip emulator-backed tests');
 
 const stagingWorkflowText = readText('.github/workflows/staging-deploy.yml');
 for (const requiredWorkflowPhrase of [
-  'Checkout exact commit',
-  'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
+  'expected_sha:',
+  'rollback_sha:',
+  'environment: staging',
+  'ref: ${{ inputs.expected_sha }}',
+  'persist-credentials: false',
+  'git merge-base --is-ancestor',
+  'test -z "$(git status --porcelain --untracked-files=all)"',
   'URAI_PRODUCTION_DEPLOY_APPROVED: "0"',
+  'ALLOW_CREATE_STAGING_HOSTING_SITE: "0"',
   'python -m json.tool "$GOOGLE_APPLICATION_CREDENTIALS"',
   'Credential project mismatch',
+  'URAI_STAGING_ROLLBACK_SHA',
   'Remove staging credential file',
   'rm -f "$GOOGLE_APPLICATION_CREDENTIALS"'
 ]) {
   if (!stagingWorkflowText.includes(requiredWorkflowPhrase)) failures.push(`staging deploy workflow must include ${requiredWorkflowPhrase}`);
 }
 
+const productionVerifyText = readText('.github/workflows/urai-production-verify.yml');
+for (const requiredVerifyPhrase of [
+  'ref: ${{ github.event.pull_request.head.sha || github.sha }}',
+  'persist-credentials: false',
+  'git status --porcelain --untracked-files=all',
+  'Setup Java for Firebase emulators',
+  'node scripts/urai-staging-bootstrap.mjs',
+  'node scripts/validate-launch-evidence.mjs'
+]) {
+  if (!productionVerifyText.includes(requiredVerifyPhrase)) failures.push(`production verification workflow must include ${requiredVerifyPhrase}`);
+}
+
 const authorityText = readText('ENVIRONMENT_AUTHORITY.md');
-for (const requiredAuthorityPhrase of ['owns only the URAI staging', 'Production alias: intentionally absent', 'must not deploy to, alias, or imply ownership of the production project']) {
+for (const requiredAuthorityPhrase of [
+  'owns only the URAI staging',
+  'Production alias: intentionally absent',
+  'must not deploy to, alias, or imply ownership of the production project',
+  'SOURCE AUTHORITY REPAIRED — NOT VERIFIED OR DEPLOYED',
+  'must not create Hosting sites or other infrastructure',
+  'Billing good standing'
+]) {
   if (!authorityText.includes(requiredAuthorityPhrase)) failures.push(`ENVIRONMENT_AUTHORITY.md must include ${requiredAuthorityPhrase}`);
 }
 

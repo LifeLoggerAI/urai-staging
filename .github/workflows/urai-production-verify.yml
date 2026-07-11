@@ -4,26 +4,58 @@ on:
   workflow_dispatch:
   pull_request:
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   verify:
+    name: Verify exact staging candidate
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
         with:
-          node-version: '20'
-      - run: corepack enable
-      - name: Install dependencies
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact clean checkout
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          if [ -f pnpm-lock.yaml ]; then
-            corepack prepare pnpm@latest --activate
-            pnpm install --frozen-lockfile
-          elif [ -f package-lock.json ]; then
-            npm ci
-          elif [ -f package.json ]; then
-            npm install
-          else
-            echo "No package.json found; skipping install."
-          fi
-      - name: Verify
-        run: node scripts/urai-production-verify.mjs
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Setup Java for Firebase emulators
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Run canonical staging bootstrap
+        run: node scripts/urai-staging-bootstrap.mjs
+
+      - name: Validate launch evidence
+        run: node scripts/validate-launch-evidence.mjs
+
+      - name: Upload exact-head staging verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: urai-staging-production-verify-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            artifacts/launch/staging-bootstrap-report.json
+            artifacts/launch/staging-bootstrap-summary.md
+          if-no-files-found: error
+          retention-days: 365

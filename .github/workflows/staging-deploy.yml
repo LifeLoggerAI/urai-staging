@@ -3,6 +3,14 @@ name: Staging Deploy Lock
 on:
   workflow_dispatch:
     inputs:
+      expected_sha:
+        description: "Exact reviewed repository SHA to verify and optionally deploy"
+        required: true
+        type: string
+      rollback_sha:
+        description: "Distinct approved ancestor SHA for rollback"
+        required: true
+        type: string
       confirm_staging_project:
         description: "Type the exact Firebase staging project ID to allow deploy"
         required: true
@@ -25,26 +33,47 @@ jobs:
   staging-lock:
     name: Staging deploy lock
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+    environment: staging
     env:
       EXPECTED_STAGING_PROJECT: urai-staging
       URAI_STAGING_PROJECT_ID: urai-staging
       URAI_STAGING_URL: https://urai-staging.web.app
       URAI_PRODUCTION_DEPLOY_APPROVED: "0"
+      ALLOW_CREATE_STAGING_HOSTING_SITE: "0"
       GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.firebase-service-account.json
     steps:
       - name: Checkout exact commit
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ inputs.expected_sha }}
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Verify exact commit
+      - name: Verify exact commit and rollback authority
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git status --short
+          sha_pattern='^[0-9a-f]{40}$'
+          [[ "${{ inputs.expected_sha }}" =~ $sha_pattern ]] || {
+            echo "expected_sha must be a full lowercase 40-character SHA" >&2
+            exit 1
+          }
+          [[ "${{ inputs.rollback_sha }}" =~ $sha_pattern ]] || {
+            echo "rollback_sha must be a full lowercase 40-character SHA" >&2
+            exit 1
+          }
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "${{ inputs.expected_sha }}"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          git cat-file -e "${{ inputs.rollback_sha }}^{commit}"
+          test "$actual_sha" != "${{ inputs.rollback_sha }}"
+          git merge-base --is-ancestor "${{ inputs.rollback_sha }}" "$actual_sha" || {
+            echo "rollback_sha must be an ancestor of expected_sha" >&2
+            exit 1
+          }
+          echo "TARGET_SHA=$actual_sha" >> "$GITHUB_ENV"
+          echo "ROLLBACK_SHA=${{ inputs.rollback_sha }}" >> "$GITHUB_ENV"
 
       - name: Start deploy evidence summary
         run: |
@@ -54,7 +83,8 @@ jobs:
             echo ""
             echo "- Workflow: Staging Deploy Lock"
             echo "- Repository: $GITHUB_REPOSITORY"
-            echo "- Commit: $GITHUB_SHA"
+            echo "- Commit: $TARGET_SHA"
+            echo "- Rollback SHA: $ROLLBACK_SHA"
             echo "- Run ID: $GITHUB_RUN_ID"
             echo "- Staging project: $EXPECTED_STAGING_PROJECT"
             echo "- Staging URL: $URAI_STAGING_URL"
@@ -64,15 +94,18 @@ jobs:
             echo "## Guardrails"
             echo ""
             echo "- Manual dispatch only."
+            echo "- Protected staging environment."
+            echo "- Exact target and ancestor rollback SHAs required."
             echo "- Exact staging project confirmation required."
-            echo "- Exact workflow commit verified."
+            echo "- Clean exact workflow checkout verified."
             echo "- Production approval flag forced to 0."
-            echo "- Deploy command remains npm run deploy:staging."
+            echo "- Infrastructure creation forced off."
             echo ""
           } > artifacts/deploy/staging-deploy-summary.md
 
       - name: Validate dispatch guard
         run: |
+          set -euo pipefail
           if [ "${{ inputs.confirm_staging_project }}" != "$EXPECTED_STAGING_PROJECT" ]; then
             echo "Refusing deploy: confirm_staging_project must be $EXPECTED_STAGING_PROJECT" >&2
             exit 1
@@ -95,42 +128,11 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools@13.35.1
 
-      - name: Install root package metadata
-        run: npm install
+      - name: Run exact-head staging verification
+        run: node scripts/urai-staging-bootstrap.mjs
 
-      - name: Install function dependencies
-        run: npm --prefix functions ci
-
-      - name: Run repo doctor
-        run: npm run doctor
-
-      - name: Check deploy readiness
-        run: npm run check:deploy
-
-      - name: Check lockfile and engines
-        run: npm run check:lockfile
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Build
-        run: npm run build
-
-      - name: Unit tests
-        run: npm run test:unit
-
-      - name: Firestore rules tests
-        run: npm run test:rules
-
-      - name: Mark checks passed
-        run: |
-          {
-            echo "- Install/check/lint/typecheck/build/unit/rules: passed"
-            echo "- Checks completed at: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          } >> artifacts/deploy/staging-deploy-summary.md
+      - name: Validate launch evidence
+        run: node scripts/validate-launch-evidence.mjs
 
       - name: Require and validate staging credentials
         if: ${{ inputs.run_live_deploy }}
@@ -156,7 +158,8 @@ jobs:
       - name: Deploy lock to Firebase staging
         if: ${{ inputs.run_live_deploy }}
         env:
-          URAI_RELEASE_CANDIDATE_SHA: ${{ github.sha }}
+          URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
+          URAI_STAGING_ROLLBACK_SHA: ${{ env.ROLLBACK_SHA }}
         run: npm run deploy:staging
 
       - name: Mark deploy mode
@@ -188,7 +191,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: urai-staging-deploy-lock-evidence
+          name: urai-staging-deploy-lock-${{ inputs.expected_sha }}
           path: |
             URAI_STAGING_LOCK.md
             URAI_STAGING_LOCK_FAILED.md
@@ -196,3 +199,4 @@ jobs:
             artifacts/launch/staging-bootstrap-report.json
             artifacts/launch/staging-bootstrap-summary.md
           if-no-files-found: warn
+          retention-days: 365
