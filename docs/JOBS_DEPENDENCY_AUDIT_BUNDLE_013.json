@@ -1,0 +1,39 @@
+{
+  "schema": "urai-workstream-c-drive-bundle-anchor-1",
+  "receiptId": "URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-013",
+  "createdAt": "2026-07-11T22:05:00Z",
+  "liveJobsHead": "1515ff2bbf66f764d125eb2abe7b615c88cedb59",
+  "transactionBranch": "automation/jobs-dependency-audit-zero-20260711",
+  "driveReceiptDocument": {
+    "id": "1WtEe725SQ_jF8WmRggiX_EjLBiaYP8sCrKApk5eR-PY",
+    "url": "https://docs.google.com/document/d/1WtEe725SQ_jF8WmRggiX_EjLBiaYP8sCrKApk5eR-PY/edit"
+  },
+  "evidenceBundle": {
+    "id": "1ZcwQXzRX3x7txBMkuzFRtCv3TiKFRCWe",
+    "name": "URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-013.tar.gz",
+    "url": "https://drive.google.com/file/d/1ZcwQXzRX3x7txBMkuzFRtCv3TiKFRCWe/view",
+    "sha256": "9728bd3b73e9c648e7b88c4a906439752465fdb913e4371989baa6b53bb84db3",
+    "sizeBytes": 129630
+  },
+  "checksumFile": {
+    "id": "1Q9bsLtXB4_q6sTztuJcLQ9u1-3DhaX9v",
+    "name": "URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-013.tar.gz.sha256",
+    "url": "https://drive.google.com/file/d/1Q9bsLtXB4_q6sTztuJcLQ9u1-3DhaX9v/view"
+  },
+  "contents": [
+    "validated dependency manifests",
+    "regenerated public-registry npm lock",
+    "regenerated canonical and mirrored pnpm locks",
+    "npm full audit JSON",
+    "npm production audit JSON",
+    "pnpm workspace audit JSON",
+    "machine-readable receipt",
+    "per-file SHA256SUMS"
+  ],
+  "auditSummary": {
+    "functionsFull": "zero findings at every severity",
+    "functionsProduction": "zero findings at every severity",
+    "workspacePnpm": "zero findings at every severity"
+  },
+  "releaseConclusion": "Preparation and audit evidence only. Exact-head source/emulator execution, independent review, and protected staging/runtime/recovery/rollback receipts remain required."
+}
