@@ -4,11 +4,25 @@ set -Eeuo pipefail
 ADMIN_SHA="${ADMIN_SHA:-d10dd517bbf806bae0a92d53383e0c6d620ba523}"
 PRIVACY_SHA="${PRIVACY_SHA:-bf9d6f42cba961169c5d6e0aaa24b07a64ba6c01}"
 JOBS_SHA="${JOBS_SHA:-1515ff2bbf66f764d125eb2abe7b615c88cedb59}"
+CONTROL_BRANCH='workstream-c-manual-verification-20260711'
+PUBLIC_REGISTRY='https://registry.npmjs.org/'
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+CONTROL_ROOT="$(git rev-parse --show-toplevel)"
 ROOT="${WORKSTREAM_C_ROOT:-/tmp/urai-workstream-c-manual-$STAMP}"
 MIN_FREE_KB="${WORKSTREAM_C_MIN_FREE_KB:-8388608}"
+SHA_PATTERN='^[0-9a-f]{40}$'
 
 log() { printf '[%s] %s\n' "$(date -u +%FT%TZ)" "$*"; }
+fail() { echo "[workstream-c-cloud-shell] FAIL: $*" >&2; exit 1; }
+
+for candidate in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
+  [[ "$candidate" =~ $SHA_PATTERN ]] || fail "Candidate identity must be a full lowercase SHA: $candidate"
+done
+[ -z "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ] || fail 'Verifier checkout must be clean'
+CONTROL_SHA="$(git -C "$CONTROL_ROOT" rev-parse HEAD)"
+[[ "$CONTROL_SHA" =~ $SHA_PATTERN ]] || fail 'Verifier checkout SHA is invalid'
+REMOTE_CONTROL_SHA="$(git -C "$CONTROL_ROOT" ls-remote origin "refs/heads/$CONTROL_BRANCH" | awk '{print $1}')"
+[ "$REMOTE_CONTROL_SHA" = "$CONTROL_SHA" ] || fail "Verifier checkout is not the current remote control head: local=$CONTROL_SHA remote=${REMOTE_CONTROL_SHA:-missing}"
 
 cleanup_old_verifier_data() {
   local base path
@@ -42,6 +56,8 @@ export WORKSTREAM_C_ROOT="$ROOT"
 export NPM_CONFIG_CACHE="$ROOT/npm-cache"
 export npm_config_cache="$ROOT/npm-cache"
 export npm_config_store_dir="$ROOT/pnpm-store"
+export NPM_CONFIG_REGISTRY="$PUBLIC_REGISTRY"
+export npm_config_registry="$PUBLIC_REGISTRY"
 export PNPM_HOME="$ROOT/pnpm-home"
 export PIP_CACHE_DIR="$ROOT/pip-cache"
 export XDG_CONFIG_HOME="$ROOT/xdg-config"
@@ -51,6 +67,7 @@ export TMPDIR="$ROOT/tmp"
 export NO_GCE_CHECK=true
 export CI=1
 
+log "Verifier control head: $CONTROL_SHA"
 log "Cloud Shell verifier workspace: $ROOT"
 log "Admin: $ADMIN_SHA"
 log "Privacy: $PRIVACY_SHA"
