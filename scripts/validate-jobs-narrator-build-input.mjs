@@ -44,7 +44,7 @@ assert.match(dockerfile, /^COPY src \.\/src$/m, 'Narrator image must copy src ex
 assert.match(dockerfile, /^CMD \["node", "dist\/index\.js"\]$/m, 'Narrator image must run dist/index.js');
 assert.doesNotMatch(dockerfile, /^COPY (?:\.\/)?index\.js\b/m, 'Legacy root index.js must not be copied');
 assert.doesNotMatch(dockerfile, /^COPY \. \.$/m, 'Narrator image must not copy the whole worker directory');
-assert.doesNotMatch(combinedSource, /(?:from|require\()["']firebase-admin["']/, 'Active narrator source must not import firebase-admin');
+assert.doesNotMatch(combinedSource, /firebase-admin/, 'Active narrator source must not reference firebase-admin');
 assert.match(activeEntry, /requireWorkerAuth/, 'Narrator active entry must require bearer authentication');
 assert.match(activeEntry, /app\.get\(['"]\/authz['"], requireWorkerAuth/, 'Narrator must expose the protected auth probe');
 assert.match(activeEntry, /app\.post\(['"]\/execute-job['"], requireWorkerAuth/, 'Narrator mutation route must require bearer authentication');
