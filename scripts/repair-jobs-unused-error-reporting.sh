@@ -93,10 +93,14 @@ node - "$AUDIT_DIR/functions-audit-full.json" "$AUDIT_DIR/functions-audit-produc
 const fs = require('node:fs');
 for (const path of process.argv.slice(2)) {
   const report = JSON.parse(fs.readFileSync(path, 'utf8'));
-  const vulnerabilities = report.metadata?.vulnerabilities ?? {};
-  console.log(`${path}: ${JSON.stringify(vulnerabilities)}`);
-  if (Number(vulnerabilities.critical ?? 0) !== 0) {
-    throw new Error(`${path} still contains critical vulnerabilities`);
+  const counts = report.metadata?.vulnerabilities ?? {};
+  const critical = Object.entries(report.vulnerabilities ?? {})
+    .filter(([, value]) => value?.severity === 'critical')
+    .map(([name, value]) => ({ name, via: value.via, range: value.range, fixAvailable: value.fixAvailable }));
+  console.log(`${path}: ${JSON.stringify(counts)}`);
+  if (critical.length > 0) {
+    console.error(`${path} critical advisories: ${JSON.stringify(critical, null, 2)}`);
+    process.exitCode = 1;
   }
 }
 NODE
@@ -116,7 +120,14 @@ while IFS= read -r line; do
 done <<< "$status"
 
 git diff --check
-! git diff -- functions/package.json functions/package-lock.json pnpm-lock.yaml .pnpm/lock.yaml | grep -q '^[+-].*@google-cloud/error-reporting' || true
+
+log "Configuring commit identity"
+GH_LOGIN="$(gh api user --jq .login)"
+GH_ID="$(gh api user --jq .id)"
+[ -n "$GH_LOGIN" ] || fail "Could not resolve GitHub login"
+[ -n "$GH_ID" ] || fail "Could not resolve GitHub user id"
+git config user.name "${GIT_AUTHOR_NAME:-$GH_LOGIN}"
+git config user.email "${GIT_AUTHOR_EMAIL:-${GH_ID}+${GH_LOGIN}@users.noreply.github.com}"
 
 log "Committing exact lockfile repair"
 git add functions/package.json functions/package-lock.json pnpm-lock.yaml .pnpm/lock.yaml
