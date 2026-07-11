@@ -83,7 +83,7 @@ if (firebase) {
   if (firebase.storage?.rules !== 'storage.rules') failures.push('Storage rules path is not canonical');
   const rewrites = Array.isArray(firebase.hosting?.rewrites) ? firebase.hosting.rewrites : [];
   const buildInfoRewrite = rewrites.find((rewrite) => rewrite?.source === '/api/buildinfo');
-  if (buildInfoRewrite?.function !== 'buildInfo') failures.push('/api/buildinfo must route to buildInfo before the SPA fallback');
+  if (buildInfoRewrite?.function !== 'buildinfo') failures.push('/api/buildinfo must route to lowercase buildinfo before the SPA fallback');
   if (!rewrites.some((rewrite) => rewrite?.source === '**' && rewrite?.destination === '/index.html')) {
     failures.push('Hosting must retain the SPA fallback after API rewrites');
   }
@@ -120,6 +120,7 @@ requirePhrases('functions/src/lib/stagingBoundaries.ts', [
 
 requirePhrases('functions/src/index.ts', [
   "from './lib/stagingBoundaries'",
+  'export const buildinfo',
   '...stagingRuntimeBuildInfo()',
   'persisted: false',
   'isSyntheticStagingEmail(body.email)',
