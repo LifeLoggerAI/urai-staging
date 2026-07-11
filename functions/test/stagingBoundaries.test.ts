@@ -37,6 +37,7 @@ describe('staging runtime build identity', () => {
         URAI_RELEASE_CANDIDATE_SHA:
           '0123456789abcdef0123456789abcdef01234567',
         URAI_DEPLOYED_AT: '2026-07-11T17:30:00Z',
+        URAI_DEPLOYMENT_WORKFLOW_RUN_ID: '29164829404',
         K_REVISION: 'buildinfo-00042-abc',
         K_SERVICE: 'buildinfo',
         GCLOUD_PROJECT: 'urai-staging',
@@ -45,6 +46,7 @@ describe('staging runtime build identity', () => {
     ).toEqual({
       releaseCandidateSha: '0123456789abcdef0123456789abcdef01234567',
       deployedAt: '2026-07-11T17:30:00Z',
+      deploymentWorkflowRunId: '29164829404',
       providerRevision: 'buildinfo-00042-abc',
       providerService: 'buildinfo',
       runtimeProjectId: 'urai-staging',
@@ -56,6 +58,7 @@ describe('staging runtime build identity', () => {
     expect(stagingRuntimeBuildInfo({})).toEqual({
       releaseCandidateSha: 'unknown',
       deployedAt: 'unknown',
+      deploymentWorkflowRunId: 'unknown',
       providerRevision: 'unknown',
       providerService: 'unknown',
       runtimeProjectId: 'unknown',
