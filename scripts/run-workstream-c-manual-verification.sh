@@ -47,16 +47,21 @@ use_node() {
 
 ensure_pnpm() {
   local version="$1"
-  if ! command -v pnpm >/dev/null 2>&1 || [ "$(pnpm --version 2>/dev/null || true)" != "$version" ]; then
-    npm install --global "pnpm@$version"
+  local prefix="$ROOT/tooling/pnpm-$version"
+  mkdir -p "$prefix"
+  if [ ! -x "$prefix/bin/pnpm" ]; then
+    npm install --global --prefix "$prefix" "pnpm@$version"
   fi
+  export PATH="$prefix/bin:$PATH"
+  hash -r
+  test "$(command -v pnpm)" = "$prefix/bin/pnpm"
   test "$(pnpm --version)" = "$version"
 }
 
 ensure_java() {
   local major=0
   if command -v java >/dev/null 2>&1; then
-    major="$(java -version 2>&1 | awk -F'[".]' '/version/ {print $2; exit}')"
+    major="$(java -version 2>&1 | awk -F'[\".]' '/version/ {print $2; exit}')"
   fi
   if [ "${major:-0}" -ge 21 ]; then
     return 0
