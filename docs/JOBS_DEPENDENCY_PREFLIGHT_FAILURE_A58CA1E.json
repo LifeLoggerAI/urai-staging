@@ -1,0 +1,40 @@
+{
+  "schema": "urai-jobs-dependency-preflight-failure-1",
+  "receiptId": "URAI-WSC-20260711-JOBS-DEPENDENCY-PREFLIGHT-FAIL-001",
+  "observedAt": "2026-07-11T22:12:01Z",
+  "controlRepository": "LifeLoggerAI/urai-staging",
+  "controlHead": "a58ca1e99ec6a2decd2695d4c8bc91ea6306590a",
+  "jobsRepository": "LifeLoggerAI/urai-jobs",
+  "jobsHead": "1515ff2bbf66f764d125eb2abe7b615c88cedb59",
+  "operator": "scripts/repair-jobs-unused-error-reporting.sh",
+  "status": "FAILED_CLOSED_BEFORE_MUTATION",
+  "findings": [
+    {
+      "code": "UNSUPPORTED_GIT_PATHSPEC",
+      "detail": "Cloud Shell Git rejected the :!_audit/** exclusion expression."
+    },
+    {
+      "code": "NARRATOR_FIREBASE_ADMIN_SOURCE_USE",
+      "detail": "workers/narrator-worker/index.js imports firebase-admin, initializes it, reads jobs from Firestore, writes jobResults and updates job status."
+    }
+  ],
+  "artifactDisposition": {
+    "preparedReceipt013": "SUPERSEDED_SOURCE_INCOMPLETE",
+    "preparedBundle013": "FORENSIC_HISTORY_ONLY_DO_NOT_APPLY",
+    "executionReceipt014": "NOT_ISSUED"
+  },
+  "correctiveActions": [
+    "Replace unsupported pathspec exclusions with portable grep output filtering.",
+    "Retain and upgrade firebase-admin for asset-worker and narrator-worker.",
+    "Remove only unused firebase-admin declarations from spatial-worker and studio-worker.",
+    "Generate execution receipt URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-015 only after all corrected gates pass."
+  ],
+  "mutations": {
+    "jobsRepositoryChanged": false,
+    "jobsBranchPushed": false,
+    "merge": false,
+    "deployment": false,
+    "productionData": false
+  },
+  "authoritativeCorrectedControlHeadAtRecording": "932e572dea54160531e343a8175d8716e7d5ed71"
+}
