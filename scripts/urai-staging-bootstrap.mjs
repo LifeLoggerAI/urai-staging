@@ -56,7 +56,7 @@ if (problems.length) {
 }
 
 const commands = [
-  ['npm', ['--prefix', 'functions', 'ci']],
+  ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts']],
   ['npm', ['run', 'doctor']],
   ['npm', ['run', 'check:deploy']],
   ['npm', ['run', 'check:lockfile']],
