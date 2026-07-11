@@ -1,0 +1,44 @@
+{
+  "schema": "urai-jobs-narrator-build-input-correction-1",
+  "receiptId": "URAI-WSC-20260711-JOBS-NARRATOR-BUILD-INPUT-016",
+  "recordedAt": "2026-07-11T22:24:00Z",
+  "controlRepository": "LifeLoggerAI/urai-staging",
+  "jobsRepository": "LifeLoggerAI/urai-jobs",
+  "jobsHead": "1515ff2bbf66f764d125eb2abe7b615c88cedb59",
+  "finding": "The legacy workers/narrator-worker/index.js imports firebase-admin but is not part of the deployed narrator image or TypeScript build input.",
+  "activeBuildContract": {
+    "packageMain": "dist/index.js",
+    "packageBuild": "tsc",
+    "typescriptRootDir": "src",
+    "typescriptOutDir": "dist",
+    "typescriptInclude": ["src/**/*.ts"],
+    "dockerCopies": ["package.json", "tsconfig.json", "src"],
+    "dockerCommand": ["node", "dist/index.js"],
+    "dockerCopiesLegacyRootIndex": false
+  },
+  "sourceInspection": {
+    "activeTypeScriptEntry": "workers/narrator-worker/src/index.ts",
+    "activeEntryUsesBearerAuth": true,
+    "activeEntryExposesAuthzProbe": true,
+    "activeSourceUsesFirebaseAdmin": false,
+    "legacyRootIndex": "workers/narrator-worker/index.js",
+    "legacyRootIndexIsBuildInput": false
+  },
+  "correctiveAction": {
+    "retainFirebaseAdmin": ["asset-worker"],
+    "removeUnusedFirebaseAdmin": ["narrator-worker", "spatial-worker", "studio-worker"],
+    "nextExecutionReceipt": "URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-016"
+  },
+  "priorEvidenceDisposition": {
+    "preparedReceipt013": "SUPERSEDED_SOURCE_INCOMPLETE",
+    "executionReceipt014": "NOT_ISSUED",
+    "plannedReceipt015": "SUPERSEDED_BEFORE_EXECUTION"
+  },
+  "mutations": {
+    "jobsRepositoryChanged": false,
+    "jobsBranchPushed": false,
+    "merge": false,
+    "deployment": false,
+    "productionData": false
+  }
+}
