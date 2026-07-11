@@ -4,7 +4,7 @@ Use this only while GitHub-hosted runners are not assigning jobs.
 
 ## Current controlled execution
 
-The current Jobs candidate has one unresolved critical Functions audit finding. The package associated with the old dependency subtree is unused outside active manifests and lockfiles. Run the guarded repair chain before the next standalone verifier run:
+The current Jobs candidate still contains the dependency set identified by the completed isolated audit. The isolated rebuild proved the exact zero-finding repair, but that prepared branch is not release evidence and must not be merged independently. Run the guarded operator before the next standalone verifier run:
 
 ```bash
 cd ~/urai-staging-manual
@@ -14,20 +14,26 @@ git clean -fd
 bash scripts/repair-jobs-unused-error-reporting.sh
 ```
 
-The repair script:
+The repair operator:
 
+- proves the verifier checkout is clean and exactly equals the current remote control-branch head;
 - requires Jobs to remain exactly at `1515ff2bbf66f764d125eb2abe7b615c88cedb59`;
-- proves `@google-cloud/error-reporting` has no runtime or source references;
-- removes only that direct dependency;
-- regenerates `functions/package-lock.json`, `pnpm-lock.yaml`, and `.pnpm/lock.yaml`;
-- runs npm and pnpm frozen installs;
-- captures full and production audit JSON and stops if any critical finding remains;
-- runs exact-head contracts, source verification, typecheck, build, and tests;
-- allows only the four expected manifest and lockfile changes;
+- confines every disposable repair directory directly below `/tmp` and rejects symlinks or unsafe override paths;
+- proves `@google-cloud/error-reporting` and the three removable Firebase Admin declarations are unused;
+- merges the audited transitive pins into any existing override maps instead of replacing prior controls;
+- uses only `https://registry.npmjs.org/` without changing persistent pnpm registry configuration;
+- regenerates `functions/package-lock.json`, `pnpm-lock.yaml`, and `.pnpm/lock.yaml` and rejects internal registry URLs or divergent lock mirrors;
+- runs deterministic npm and pnpm frozen installs;
+- captures npm full, npm production, and pnpm workspace audit JSON;
+- rejects missing audit metadata, every nonzero severity count, and every nonzero audit command exit;
+- runs Functions and asset-worker module-load smoke plus exact-head contracts, source verification, typecheck, build, and tests;
+- creates immutable receipt `URAI-WSC-20260711-JOBS-DEPENDENCY-AUDIT-014` with control SHA, audit exit codes, vulnerability counts, report hashes, artifact hashes, and nonmutation declarations;
+- permits only the exact audited manifest, lockfile, and receipt changes;
+- rechecks the remote Jobs SHA immediately before pushing;
 - commits and pushes only after every gate passes;
-- launches the complete Workstream C verifier using the new Jobs SHA.
+- launches the complete Workstream C source/emulator verifier on the resulting Jobs SHA.
 
-If the Jobs branch moved or any gate fails, the script stops before pushing.
+If the verifier branch, Jobs branch, filesystem boundary, registry identity, audit result, source gate, or expected changed-file set differs, the operator stops before pushing.
 
 ## Standalone verifier run
 
@@ -50,7 +56,7 @@ cd ~/urai-staging-manual
 bash scripts/repair-jobs-unused-error-reporting.sh
 ```
 
-The Cloud Shell launcher currently defaults to these repaired exact candidates:
+The Cloud Shell launcher currently defaults to these exact candidates:
 
 - Admin: `d10dd517bbf806bae0a92d53383e0c6d620ba523`
 - Privacy: `bf9d6f42cba961169c5d6e0aaa24b07a64ba6c01`
@@ -58,13 +64,14 @@ The Cloud Shell launcher currently defaults to these repaired exact candidates:
 
 The preceding complete manual run established that Admin install, registry contracts, security, active Functions, lint, typecheck, tests, build and fail-closed production preflight passed. It also exposed and led to repairs for generated Admin Functions residue, Privacy YAML/schema and pagination typing, and a truncated Jobs queue processor.
 
-The candidate SHAs can be overridden through `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA`. The verifier records its own exact `urai-staging` commit. Every identity must be a lowercase full 40-character SHA.
+The candidate SHAs can be overridden through `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA`. Every identity must be a lowercase full 40-character SHA. The launcher now also proves its clean verifier checkout equals the current remote control-branch head before cleaning workspaces or running any candidate.
 
 The launcher:
 
 - removes only prior `urai-workstream-c-manual-*` workspaces and package-manager caches;
 - requires at least 8 GiB free in `/tmp` before execution;
 - places repositories, package stores, Python caches, Firebase emulator downloads and temporary files under a timestamped `/tmp` workspace;
+- forces public npm registry resolution for verifier installs;
 - isolates Firebase and Cloud SDK configuration from user credentials;
 - leaves global Cloud Shell Node, npm and pnpm installations untouched.
 
