@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ADMIN_SHA="${ADMIN_SHA:-71f4f6d461e09bae30584f2bdef6c5deb9c79787}"
-PRIVACY_SHA="${PRIVACY_SHA:-f8ed46bec72b7be6cd9ba84bc73fc13a636df600}"
+PRIVACY_SHA="${PRIVACY_SHA:-a0805316a9975180b27b4086d3bde3dfa91fb215}"
 JOBS_SHA="${JOBS_SHA:-dc299c7a34bd416433f46d329ce18f6119bc31bf}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
