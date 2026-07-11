@@ -15,11 +15,13 @@ cd ~/urai-staging-manual
 bash scripts/run-workstream-c-manual-verification.sh
 ```
 
-The script checks out these exact candidates:
+The script checks out these exact candidates by default:
 
-- Admin: `11af3f11160c06dc5d84ed7e4513cab82d5319ba`
-- Privacy: `7d48b43b9e5c6b5eb9c35f77d2bc99955ec04d4b`
-- Jobs: `6f04463786ad0b065bd1dcfe4a50bd3906be9d05`
+- Admin: `1c9e41d56b125b7b1124ce69acc23003275a4922`
+- Privacy: `c8732de884186274c42bfc2e11b592737d6c4f4e`
+- Jobs: `dc299c7a34bd416433f46d329ce18f6119bc31bf`
+
+The three SHAs can also be overridden explicitly through the `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA` environment variables. The exact values used are recorded in the generated evidence summary and `heads.tsv`.
 
 It runs source, build, test, security, emulator and fail-closed preflight checks. It does not deploy, create infrastructure, call paid providers or mutate production data.
 
