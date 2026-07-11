@@ -18,6 +18,7 @@ const requiredFiles = [
   'functions/test/stagingBoundaries.test.ts',
   'scripts/smoke-staging.sh',
   'scripts/urai-staging-lock.sh',
+  'scripts/staging-prebuilt-manifest.mjs',
   '.github/workflows/staging-deploy.yml',
   '.github/workflows/urai-production-verify.yml',
   'ENVIRONMENT_AUTHORITY.md',
@@ -47,13 +48,27 @@ function requirePhrases(path, phrases) {
   }
 }
 
+function rejectPhrases(path, phrases) {
+  const content = text(path);
+  for (const phrase of phrases) {
+    if (content.includes(phrase)) failures.push(`${path} contains forbidden contract: ${phrase}`);
+  }
+}
+
+function requireOrder(path, markers, description) {
+  const content = text(path);
+  const indexes = markers.map((marker) => content.indexOf(marker));
+  if (indexes.some((index) => index < 0) || indexes.some((index, position) => position > 0 && index <= indexes[position - 1])) {
+    failures.push(`${path} does not preserve ${description}: ${markers.join(' -> ')}`);
+  }
+}
+
 const firebaserc = json('.firebaserc');
 if (firebaserc) {
   const projects = firebaserc.projects ?? {};
   if (projects.default !== expectedProject) failures.push(`.firebaserc default must be ${expectedProject}`);
   if (projects.staging !== expectedProject) failures.push(`.firebaserc staging must be ${expectedProject}`);
-  const aliases = Object.keys(projects);
-  const unexpected = aliases.filter((alias) => !['default', 'staging'].includes(alias));
+  const unexpected = Object.keys(projects).filter((alias) => !['default', 'staging'].includes(alias));
   if (unexpected.length) failures.push(`Unexpected Firebase aliases: ${unexpected.join(', ')}`);
   if ('production' in projects) failures.push('Staging repository must not define a production alias');
 }
@@ -66,12 +81,18 @@ if (firebase) {
   if (firebase.firestore?.rules !== 'firestore.rules') failures.push('Firestore rules path is not canonical');
   if (firebase.firestore?.indexes !== 'firestore.indexes.json') failures.push('Firestore indexes path is not canonical');
   if (firebase.storage?.rules !== 'storage.rules') failures.push('Storage rules path is not canonical');
+  const rewrites = Array.isArray(firebase.hosting?.rewrites) ? firebase.hosting.rewrites : [];
+  const buildInfoRewrite = rewrites.find((rewrite) => rewrite?.source === '/api/buildinfo');
+  if (buildInfoRewrite?.function !== 'buildInfo') failures.push('/api/buildinfo must route to buildInfo before the SPA fallback');
+  if (!rewrites.some((rewrite) => rewrite?.source === '**' && rewrite?.destination === '/index.html')) {
+    failures.push('Hosting must retain the SPA fallback after API rewrites');
+  }
 }
 
 const rootPackage = json('package.json');
 if (rootPackage) {
   const scripts = rootPackage.scripts ?? {};
-  if (!scripts['check:deploy']?.includes('check-deploy-readiness-v2.mjs')) failures.push('check:deploy must use semantic v2 readiness gate');
+  if (!scripts['check:deploy']?.includes('check-deploy-readiness-v2.mjs')) failures.push('check:deploy must use the semantic readiness gate');
   if (!scripts['deploy:staging']?.includes('lock:staging')) failures.push('deploy:staging must delegate to lock:staging');
   if (!scripts['lock:staging']?.includes('urai-staging-lock.sh')) failures.push('lock:staging must execute the canonical lock');
   for (const name of ['test:rules', 'test:e2e', 'emulators']) {
@@ -93,6 +114,7 @@ requirePhrases('functions/src/lib/stagingBoundaries.ts', [
   "createHash('sha256')",
   'URAI_RELEASE_CANDIDATE_SHA',
   'URAI_DEPLOYED_AT',
+  'URAI_DEPLOYMENT_WORKFLOW_RUN_ID',
   'K_REVISION',
 ]);
 
@@ -105,51 +127,115 @@ requirePhrases('functions/src/index.ts', [
   'stagingWaitlistDocumentId(email)',
   'synthetic: true',
 ]);
-
 const functionsIndex = text('functions/src/index.ts');
 if (functionsIndex.includes("db.collection('staging_events').add") && functionsIndex.includes("type: 'companion_smoke'")) {
   failures.push('Public companion endpoint must not persist smoke events');
 }
-if (functionsIndex.includes("doc(email)")) failures.push('Waitlist document IDs must not contain raw email addresses');
+if (functionsIndex.includes('doc(email)')) failures.push('Waitlist document IDs must not contain raw email addresses');
+
+requirePhrases('scripts/staging-prebuilt-manifest.mjs', [
+  "schemaVersion: 'urai-staging-prebuilt-2'",
+  'assertReviewedSourceUnchanged',
+  "['diff', '--exit-code', '--', '.']",
+  "['diff', '--cached', '--exit-code', '--', '.']",
+  "['ls-files', '--others', '--exclude-standard', '-z']",
+  'allowedGeneratedPrefixes',
+  "'artifacts/launch/'",
+  "'functions/lib/'",
+  "'public/'",
+  "gitText('rev-parse', 'HEAD^{tree}')",
+  'sourceTreeSha',
+  'sourceStateVerifiedClean: true',
+  '--verify-external requires URAI_STAGING_PREBUILT_ROOT outside the repository',
+  '--materialize requires URAI_STAGING_PREBUILT_ROOT outside the repository',
+  'file set, size, or hash',
+  'Refusing to materialize symlink',
+]);
 
 requirePhrases('scripts/smoke-staging.sh', [
+  'Exact staging mutation receipt is required',
   'URAI_RELEASE_CANDIDATE_SHA is required for exact runtime smoke',
-  'releaseCandidateSha',
-  'deployedAt must be a real ISO-8601 deployment timestamp',
+  '/api/buildinfo',
+  'releaseCandidateSha must equal exact candidate',
+  'deployedAt must equal current mutation receipt',
+  'deploymentWorkflowRunId must equal current mutation workflow',
+  'runtimeProjectId must equal',
   'Default release smoke is intentionally non-mutating',
   '/api/companion',
   '/api/waitlist',
 ]);
-const smoke = text('scripts/smoke-staging.sh');
-if (smoke.includes('launch-smoke@example.com')) failures.push('Default smoke must not perform a successful waitlist write');
-if (smoke.includes('Staging smoke check')) failures.push('Default smoke must not perform a successful companion write');
+rejectPhrases('scripts/smoke-staging.sh', ['launch-smoke@example.com', 'Staging smoke check']);
 
 requirePhrases('scripts/urai-staging-lock.sh', [
   'git merge-base --is-ancestor',
-  'git status --porcelain --untracked-files=all',
+  'URAI_STAGING_PREFLIGHT_VERIFIED',
+  'URAI_STAGING_AUTHORITY_SCOPE',
+  'consumer-system mutations',
   'firebase hosting:sites:list --project "$EXPECTED_PROJECT_ID" --json',
+  'exact provider identity',
   'ALLOW_CREATE_STAGING_HOSTING_SITE',
-  'sha256sum "$DEPLOY_LOG_FILE"',
-  'URAI_RELEASE_CANDIDATE_SHA="$RELEASE_SHA"',
-  'non-mutating live smoke',
-  'Exact /api/buildinfo source-SHA and deployment-timestamp match',
+  'scripts/staging-prebuilt-manifest.mjs --verify-materialized',
+  'URAI_RELEASE_CANDIDATE_SHA=$RELEASE_SHA',
+  'URAI_DEPLOYMENT_WORKFLOW_RUN_ID=$GITHUB_RUN_ID',
+  "schemaVersion: 'urai-staging-mutation-1'",
+  'deploymentCommandCompleted',
+  'publicVerificationCompleted: false',
+  'Staging mutation completed; public verification remains required',
 ]);
-const lock = text('scripts/urai-staging-lock.sh');
-if (lock.includes('firebase hosting:sites:create')) failures.push('Deploy lock must not create Hosting infrastructure');
-if (lock.includes('firebase use "$EXPECTED_PROJECT_ID"')) failures.push('Deploy lock must not mutate Firebase active-project state');
+rejectPhrases('scripts/urai-staging-lock.sh', [
+  'firebase hosting:sites:create',
+  'firebase use "$EXPECTED_PROJECT_ID"',
+  'publicVerificationCompleted: true',
+]);
 
 requirePhrases('.github/workflows/staging-deploy.yml', [
   'expected_sha:',
   'rollback_sha:',
+  'run_live_deploy:',
   'environment: staging',
   'ref: ${{ inputs.expected_sha }}',
   'persist-credentials: false',
   'git merge-base --is-ancestor',
-  'URAI_PRODUCTION_DEPLOY_APPROVED: "0"',
-  'ALLOW_CREATE_STAGING_HOSTING_SITE: "0"',
+  'Create and verify source-bound staging artifact',
+  'Download prebuilt artifact outside repository',
+  'Verify external artifact before credentials exist',
+  'Install exact Firebase CLI outside repository',
+  'Materialize verified Functions output before credentials exist',
+  'Require exact staging credential',
+  "URAI_PRODUCTION_DEPLOY_APPROVED: '0'",
+  "ALLOW_CREATE_STAGING_HOSTING_SITE: '0'",
   'Credential project mismatch',
-  'Remove staging credential file',
+  'Destroy staging credentials before evidence handoff',
+  'Upload mutation evidence after credential cleanup',
+  'Public staging verification without cloud identity',
+  'Bind public verification to mutation receipt',
+  'Run non-mutating live smoke',
+  'publicVerificationCompleted:verified',
 ]);
+requireOrder('.github/workflows/staging-deploy.yml', [
+  'Run exact-head staging verification without cloud credentials',
+  'Create and verify source-bound staging artifact',
+  'Download prebuilt artifact outside repository',
+  'Verify external artifact before credentials exist',
+  'Install exact Firebase CLI outside repository',
+  'Materialize verified Functions output before credentials exist',
+  'Require exact staging credential',
+  'Deploy verified artifact to staging only',
+  'Destroy staging credentials before evidence handoff',
+  'Upload mutation evidence after credential cleanup',
+  'Public staging verification without cloud identity',
+], 'credential-free preflight, protected mutation, cleanup, and public verification order');
+
+const deployWorkflow = text('.github/workflows/staging-deploy.yml');
+const credentialStep = deployWorkflow.indexOf('Require exact staging credential');
+if (credentialStep < 0) failures.push('Staging credential boundary is missing');
+else if (deployWorkflow.slice(0, credentialStep).includes('secrets.')) {
+  failures.push('Protected secrets must not be exposed before external artifact verification and materialization');
+}
+const publicSection = deployWorkflow.slice(deployWorkflow.indexOf('public-verify:'));
+if (publicSection.includes('secrets.') || publicSection.includes('environment: staging') || publicSection.includes('firebase deploy')) {
+  failures.push('Public verification must not receive secrets, protected environment authority, or mutation commands');
+}
 
 requirePhrases('.github/workflows/urai-production-verify.yml', [
   'ref: ${{ github.event.pull_request.head.sha || github.sha }}',
