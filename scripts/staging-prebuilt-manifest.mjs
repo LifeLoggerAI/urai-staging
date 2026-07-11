@@ -22,7 +22,6 @@ const allowedGeneratedPrefixes = [
   'artifacts/launch/',
   'artifacts/prebuilt/',
   'functions/lib/',
-  'public/',
 ];
 const modes = {
   write: process.argv.includes('--write'),
