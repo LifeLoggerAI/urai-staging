@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-ADMIN_SHA="${ADMIN_SHA:-71f4f6d461e09bae30584f2bdef6c5deb9c79787}"
-PRIVACY_SHA="${PRIVACY_SHA:-a0805316a9975180b27b4086d3bde3dfa91fb215}"
-JOBS_SHA="${JOBS_SHA:-dc299c7a34bd416433f46d329ce18f6119bc31bf}"
+ADMIN_SHA="${ADMIN_SHA:-d10dd517bbf806bae0a92d53383e0c6d620ba523}"
+PRIVACY_SHA="${PRIVACY_SHA:-bf9d6f42cba961169c5d6e0aaa24b07a64ba6c01}"
+JOBS_SHA="${JOBS_SHA:-1515ff2bbf66f764d125eb2abe7b615c88cedb59}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
 VERIFIER_SHA="$(git -C "$CONTROL_ROOT" rev-parse HEAD)"
 ROOT="${WORKSTREAM_C_ROOT:-$HOME/urai-workstream-c-manual-$STAMP}"
 EVIDENCE="$ROOT/evidence"
 SUMMARY="$EVIDENCE/summary.md"
+FAILURE_EXCERPTS="$EVIDENCE/failure-excerpts.txt"
 FAILURES=0
 SHA_PATTERN='^[0-9a-f]{40}$'
 
@@ -118,6 +119,26 @@ record_final_source_state() {
   printf '%s\t%s\t%s\n' "$lane" 'final-source-clean' "$code" >> "$EVIDENCE/status.tsv"
 }
 
+build_failure_excerpts() {
+  : > "$FAILURE_EXCERPTS"
+  while IFS=$'\t' read -r lane step code; do
+    [ "$lane" = "lane" ] && continue
+    [ "$code" = "0" ] && continue
+    local log_file="$EVIDENCE/logs/${lane}-${step}.log"
+    if [ "$step" = "final-source-clean" ]; then
+      log_file="$EVIDENCE/logs/urai-${lane}-final-git-status.log"
+    fi
+    {
+      printf '\n===== %s :: %s (exit %s) =====\n' "$lane" "$step" "$code"
+      if [ -f "$log_file" ]; then
+        tail -n 30 "$log_file"
+      else
+        echo "No step log was produced."
+      fi
+    } >> "$FAILURE_EXCERPTS"
+  done < "$EVIDENCE/status.tsv"
+}
+
 log "Manual Workstream C verification root: $ROOT"
 log "Verifier exact head: $VERIFIER_SHA"
 ensure_java
@@ -173,11 +194,12 @@ run_shell_step jobs typecheck "$JOBS_DIR" 'pnpm typecheck'
 run_shell_step jobs build "$JOBS_DIR" 'pnpm build'
 run_shell_step jobs tests "$JOBS_DIR" 'pnpm test'
 run_shell_step jobs smoke "$JOBS_DIR" 'pnpm urai-jobs:smoke && pnpm urai-jobs:deploy-precheck'
-run_shell_step jobs emulator-e2e "$JOBS_DIR" 'npx --yes firebase-tools@15.23.0 emulators:exec --only firestore,auth,functions "node scripts/urai-jobs-e2e.mjs"'
+run_shell_step jobs emulator-e2e "$JOBS_DIR" 'NO_GCE_CHECK=true npx --yes firebase-tools@15.23.0 emulators:exec --only firestore,auth,functions,storage,pubsub "node scripts/urai-jobs-e2e.mjs"'
 
 record_final_source_state admin urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
 record_final_source_state privacy urai-privacy "$PRIVACY_SHA" "$PRIVACY_DIR"
 record_final_source_state jobs urai-jobs "$JOBS_SHA" "$JOBS_DIR"
+build_failure_excerpts
 
 {
   echo '# URAI Workstream C Manual Verification'
@@ -201,6 +223,8 @@ record_final_source_state jobs urai-jobs "$JOBS_SHA" "$JOBS_DIR"
     echo '**MANUAL SOURCE/EMULATOR VERIFICATION: PASS**'
   else
     echo '**MANUAL SOURCE/EMULATOR VERIFICATION: FAIL**'
+    echo
+    echo 'Compact log tails are recorded in `failure-excerpts.txt`.'
   fi
   echo
   echo 'This bundle does not authorize production deployment or replace protected staging receipts.'
@@ -216,6 +240,9 @@ tar -C "$ROOT" -czf "$ROOT/urai-workstream-c-manual-evidence-$STAMP.tar.gz" evid
 cat "$SUMMARY"
 echo
 log "Evidence bundle: $ROOT/urai-workstream-c-manual-evidence-$STAMP.tar.gz"
+if [ "$FAILURES" -ne 0 ]; then
+  log "Failure excerpts: $FAILURE_EXCERPTS"
+fi
 
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
   gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true
