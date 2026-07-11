@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-ADMIN_SHA="11af3f11160c06dc5d84ed7e4513cab82d5319ba"
-PRIVACY_SHA="7d48b43b9e5c6b5eb9c35f77d2bc99955ec04d4b"
-JOBS_SHA="6f04463786ad0b065bd1dcfe4a50bd3906be9d05"
+ADMIN_SHA="${ADMIN_SHA:-1c9e41d56b125b7b1124ce69acc23003275a4922}"
+PRIVACY_SHA="${PRIVACY_SHA:-c8732de884186274c42bfc2e11b592737d6c4f4e}"
+JOBS_SHA="${JOBS_SHA:-dc299c7a34bd416433f46d329ce18f6119bc31bf}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 ROOT="${WORKSTREAM_C_ROOT:-$HOME/urai-workstream-c-manual-$STAMP}"
 EVIDENCE="$ROOT/evidence"
@@ -32,7 +32,7 @@ use_node() {
 ensure_java() {
   local major=0
   if command -v java >/dev/null 2>&1; then
-    major="$(java -version 2>&1 | awk -F'[".]' '/version/ {print $2; exit}')"
+    major="$(java -version 2>&1 | awk -F'[\".]' '/version/ {print $2; exit}')"
   fi
   if [ "${major:-0}" -ge 21 ]; then
     return 0
