@@ -5,14 +5,28 @@ ADMIN_SHA="${ADMIN_SHA:-71f4f6d461e09bae30584f2bdef6c5deb9c79787}"
 PRIVACY_SHA="${PRIVACY_SHA:-f8ed46bec72b7be6cd9ba84bc73fc13a636df600}"
 JOBS_SHA="${JOBS_SHA:-dc299c7a34bd416433f46d329ce18f6119bc31bf}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+CONTROL_ROOT="$(git rev-parse --show-toplevel)"
+VERIFIER_SHA="$(git -C "$CONTROL_ROOT" rev-parse HEAD)"
 ROOT="${WORKSTREAM_C_ROOT:-$HOME/urai-workstream-c-manual-$STAMP}"
 EVIDENCE="$ROOT/evidence"
 SUMMARY="$EVIDENCE/summary.md"
 FAILURES=0
+SHA_PATTERN='^[0-9a-f]{40}$'
 
 mkdir -p "$EVIDENCE/logs"
 
 log() { printf '[%s] %s\n' "$(date -u +%FT%TZ)" "$*"; }
+
+for candidate in "$VERIFIER_SHA" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
+  if ! [[ "$candidate" =~ $SHA_PATTERN ]]; then
+    echo "Every verifier and candidate identity must be a full lowercase 40-character SHA: $candidate" >&2
+    exit 64
+  fi
+done
+if [ -n "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ]; then
+  echo "The manual verifier checkout must be clean before execution." >&2
+  exit 64
+fi
 
 use_node() {
   local version="$1"
@@ -42,7 +56,7 @@ ensure_pnpm() {
 ensure_java() {
   local major=0
   if command -v java >/dev/null 2>&1; then
-    major="$(java -version 2>&1 | awk -F'[\".]' '/version/ {print $2; exit}')"
+    major="$(java -version 2>&1 | awk -F'[".]' '/version/ {print $2; exit}')"
   fi
   if [ "${major:-0}" -ge 21 ]; then
     return 0
@@ -53,6 +67,7 @@ ensure_java() {
 
 clone_exact() {
   local repo="$1" sha="$2" dir="$3"
+  [[ "$sha" =~ $SHA_PATTERN ]]
   git clone --filter=blob:none --no-checkout "https://github.com/LifeLoggerAI/$repo.git" "$dir"
   git -C "$dir" fetch --depth 1 origin "$sha"
   git -C "$dir" checkout --detach "$sha"
@@ -84,10 +99,26 @@ run_shell_step() {
   run_step "$lane" "$name" "$dir" bash -c "$command"
 }
 
+record_final_source_state() {
+  local lane="$1" repo="$2" sha="$3" dir="$4"
+  local actual status code=0
+  actual="$(git -C "$dir" rev-parse HEAD)"
+  status="$(git -C "$dir" status --porcelain --untracked-files=all || true)"
+  printf '%s\t%s\t%s\n' "$repo" "$sha" "$actual" >> "$EVIDENCE/heads.tsv"
+  printf '%s\n' "$status" > "$EVIDENCE/logs/${repo}-final-git-status.log"
+  if [ "$actual" != "$sha" ] || [ -n "$status" ]; then
+    code=1
+    FAILURES=$((FAILURES + 1))
+  fi
+  printf '%s\t%s\t%s\n' "$lane" 'final-source-clean' "$code" >> "$EVIDENCE/status.tsv"
+}
+
 log "Manual Workstream C verification root: $ROOT"
+log "Verifier exact head: $VERIFIER_SHA"
 ensure_java
 printf 'lane\tstep\texit_code\n' > "$EVIDENCE/status.tsv"
 printf 'repository\texpected_sha\tactual_sha\n' > "$EVIDENCE/heads.tsv"
+printf 'urai-staging-verifier\t%s\t%s\n' "$VERIFIER_SHA" "$VERIFIER_SHA" >> "$EVIDENCE/heads.tsv"
 
 # ADMIN
 ADMIN_DIR="$ROOT/urai-admin"
@@ -139,18 +170,15 @@ run_shell_step jobs tests "$JOBS_DIR" 'pnpm test'
 run_shell_step jobs smoke "$JOBS_DIR" 'pnpm urai-jobs:smoke && pnpm urai-jobs:deploy-precheck'
 run_shell_step jobs emulator-e2e "$JOBS_DIR" 'npx --yes firebase-tools@15.23.0 emulators:exec --only firestore,auth,functions "node scripts/urai-jobs-e2e.mjs"'
 
-for item in "urai-admin:$ADMIN_SHA:$ADMIN_DIR" "urai-privacy:$PRIVACY_SHA:$PRIVACY_DIR" "urai-jobs:$JOBS_SHA:$JOBS_DIR"; do
-  IFS=: read -r repo sha dir <<< "$item"
-  actual="$(git -C "$dir" rev-parse HEAD)"
-  status="$(git -C "$dir" status --porcelain --untracked-files=all || true)"
-  printf '%s\t%s\t%s\n' "$repo" "$sha" "$actual" >> "$EVIDENCE/heads.tsv"
-  printf '%s\n' "$status" > "$EVIDENCE/logs/${repo}-final-git-status.log"
-done
+record_final_source_state admin urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
+record_final_source_state privacy urai-privacy "$PRIVACY_SHA" "$PRIVACY_DIR"
+record_final_source_state jobs urai-jobs "$JOBS_SHA" "$JOBS_DIR"
 
 {
   echo '# URAI Workstream C Manual Verification'
   echo
   echo "- Generated: $(date -u +%FT%TZ)"
+  echo "- Verifier: \`$VERIFIER_SHA\`"
   echo "- Admin: \`$ADMIN_SHA\`"
   echo "- Privacy: \`$PRIVACY_SHA\`"
   echo "- Jobs: \`$JOBS_SHA\`"
@@ -185,7 +213,7 @@ echo
 log "Evidence bundle: $ROOT/urai-workstream-c-manual-evidence-$STAMP.tar.gz"
 
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-  gh issue comment 47 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true
+  gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true
 fi
 
 if [ "$FAILURES" -ne 0 ]; then
