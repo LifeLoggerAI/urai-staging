@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-ADMIN_SHA="${ADMIN_SHA:-1c9e41d56b125b7b1124ce69acc23003275a4922}"
-PRIVACY_SHA="${PRIVACY_SHA:-c8732de884186274c42bfc2e11b592737d6c4f4e}"
+ADMIN_SHA="${ADMIN_SHA:-71f4f6d461e09bae30584f2bdef6c5deb9c79787}"
+PRIVACY_SHA="${PRIVACY_SHA:-f8ed46bec72b7be6cd9ba84bc73fc13a636df600}"
 JOBS_SHA="${JOBS_SHA:-dc299c7a34bd416433f46d329ce18f6119bc31bf}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 ROOT="${WORKSTREAM_C_ROOT:-$HOME/urai-workstream-c-manual-$STAMP}"
@@ -27,6 +27,16 @@ use_node() {
   fi
   nvm install "$version"
   nvm use "$version"
+  command -v node >/dev/null
+  command -v npm >/dev/null
+}
+
+ensure_pnpm() {
+  local version="$1"
+  if ! command -v pnpm >/dev/null 2>&1 || [ "$(pnpm --version 2>/dev/null || true)" != "$version" ]; then
+    npm install --global "pnpm@$version"
+  fi
+  test "$(pnpm --version)" = "$version"
 }
 
 ensure_java() {
@@ -71,7 +81,7 @@ run_step() {
 
 run_shell_step() {
   local lane="$1" name="$2" dir="$3" command="$4"
-  run_step "$lane" "$name" "$dir" bash -lc "$command"
+  run_step "$lane" "$name" "$dir" bash -c "$command"
 }
 
 log "Manual Workstream C verification root: $ROOT"
@@ -83,7 +93,8 @@ printf 'repository\texpected_sha\tactual_sha\n' > "$EVIDENCE/heads.tsv"
 ADMIN_DIR="$ROOT/urai-admin"
 clone_exact urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
 use_node 22
-run_shell_step admin install "$ADMIN_DIR" 'corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile'
+ensure_pnpm 9.15.0
+run_shell_step admin install "$ADMIN_DIR" 'pnpm install --frozen-lockfile'
 run_shell_step admin registry-contract "$ADMIN_DIR" 'pnpm test:registry'
 run_shell_step admin security-gate "$ADMIN_DIR" 'pnpm security:gate'
 run_shell_step admin active-functions "$ADMIN_DIR" 'pnpm functions:typecheck:active && pnpm functions:build:active'
@@ -118,7 +129,8 @@ run_shell_step privacy release-verifier "$PRIVACY_DIR" 'bash scripts/verify-rele
 JOBS_DIR="$ROOT/urai-jobs"
 clone_exact urai-jobs "$JOBS_SHA" "$JOBS_DIR"
 use_node 22
-run_shell_step jobs install "$JOBS_DIR" 'corepack enable && corepack prepare pnpm@8.15.9 --activate && npm --prefix functions ci --ignore-scripts && pnpm install --frozen-lockfile'
+ensure_pnpm 8.15.9
+run_shell_step jobs install "$JOBS_DIR" 'npm --prefix functions ci --ignore-scripts && pnpm install --frozen-lockfile'
 run_shell_step jobs exact-head-contract "$JOBS_DIR" 'pnpm ci:exact-head'
 run_shell_step jobs source-contracts "$JOBS_DIR" 'pnpm urai-jobs:verify'
 run_shell_step jobs typecheck "$JOBS_DIR" 'pnpm typecheck'
