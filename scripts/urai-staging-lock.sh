@@ -10,7 +10,12 @@ RELEASE_SHA="$URAI_RELEASE_CANDIDATE_SHA"
 ROLLBACK_SHA="$URAI_STAGING_ROLLBACK_SHA"
 DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 FAILURE_REPORT="URAI_STAGING_LOCK_FAILED.md"
+DEPLOY_DIR="artifacts/deploy"
+SITE_LIST_FILE="$DEPLOY_DIR/firebase-hosting-sites.json"
+DEPLOY_LOG_FILE="$DEPLOY_DIR/firebase-deploy.log"
 sha_pattern='^[0-9a-f]{40}$'
+
+mkdir -p "$DEPLOY_DIR"
 
 step() {
   echo "[URAI staging] $1"
@@ -83,22 +88,27 @@ command -v firebase >/dev/null 2>&1 || {
   exit 1
 }
 
-step "Selecting Firebase project"
-firebase use "$EXPECTED_PROJECT_ID"
-
-step "Verifying existing Firebase Hosting site"
-SITE_LIST_FILE="$(mktemp)"
-trap 'rm -f "$SITE_LIST_FILE"' EXIT
-firebase hosting:sites:list --project "$EXPECTED_PROJECT_ID" > "$SITE_LIST_FILE"
-cat "$SITE_LIST_FILE"
-grep -q "$EXPECTED_HOSTING_SITE" "$SITE_LIST_FILE" || {
-  echo "Hosting site $EXPECTED_HOSTING_SITE does not exist in $EXPECTED_PROJECT_ID." >&2
-  echo "Refusing to create billable or externally visible infrastructure from the deploy lock." >&2
-  exit 1
-}
+step "Verifying existing Firebase Hosting site with exact JSON identity"
 rm -f "$SITE_LIST_FILE"
-trap - EXIT
-trap on_error ERR
+firebase hosting:sites:list --project "$EXPECTED_PROJECT_ID" --json > "$SITE_LIST_FILE"
+node - "$SITE_LIST_FILE" "$EXPECTED_HOSTING_SITE" <<'NODE'
+const fs = require('node:fs');
+const [path, expectedSite] = process.argv.slice(2);
+const document = JSON.parse(fs.readFileSync(path, 'utf8'));
+const strings = [];
+function collect(value) {
+  if (typeof value === 'string') strings.push(value);
+  else if (Array.isArray(value)) value.forEach(collect);
+  else if (value && typeof value === 'object') Object.values(value).forEach(collect);
+}
+collect(document);
+const exact = strings.some((value) => value === expectedSite || value.endsWith(`/sites/${expectedSite}`));
+if (!exact) {
+  console.error(`Hosting site ${expectedSite} was not found as an exact provider identity.`);
+  process.exit(1);
+}
+console.log(`Verified existing Hosting site ${expectedSite}.`);
+NODE
 
 step "Installing function dependencies"
 npm --prefix functions ci
@@ -125,28 +135,35 @@ step "Running emulator-backed e2e tests"
 npm run test:e2e
 
 step "Deploying Hosting, Functions, Firestore, and Storage to staging"
+rm -f "$DEPLOY_LOG_FILE"
 URAI_RELEASE_CANDIDATE_SHA="$RELEASE_SHA" \
 URAI_STAGING_ROLLBACK_SHA="$ROLLBACK_SHA" \
 URAI_DEPLOYED_AT="$DEPLOYED_AT" \
 firebase deploy \
   --only hosting:"$EXPECTED_HOSTING_SITE",functions,firestore:rules,firestore:indexes,storage \
   --project "$EXPECTED_PROJECT_ID" \
-  --non-interactive
+  --non-interactive 2>&1 | tee "$DEPLOY_LOG_FILE"
+DEPLOY_LOG_SHA256="$(sha256sum "$DEPLOY_LOG_FILE" | awk '{print $1}')"
 
-step "Running live smoke tests"
-URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" URAI_STAGING_URL="$STAGING_URL" bash scripts/smoke-staging.sh
+step "Running non-mutating live smoke with exact runtime identity"
+URAI_STAGING_PROJECT_ID="$EXPECTED_PROJECT_ID" \
+URAI_STAGING_URL="$STAGING_URL" \
+URAI_RELEASE_CANDIDATE_SHA="$RELEASE_SHA" \
+bash scripts/smoke-staging.sh
 
 step "Writing URAI_STAGING_LOCK.md"
 {
   echo "# URAI Staging Lock"
   echo ""
-  echo "Status: Deployed to staging and live smoke completed."
+  echo "Status: Staging deployment completed; exact runtime build-info identity and non-mutating live smoke passed."
   echo ""
   echo "- Firebase project: $EXPECTED_PROJECT_ID"
   echo "- Firebase Hosting site: $EXPECTED_HOSTING_SITE"
   echo "- Staging URL: $STAGING_URL"
-  echo "- Exact tested/deployed SHA: $RELEASE_SHA"
-  echo "- Approved ancestor rollback SHA: $ROLLBACK_SHA"
+  echo "- Exact tested source SHA: $RELEASE_SHA"
+  echo "- Runtime-reported release SHA: $RELEASE_SHA"
+  echo "- Approved ancestor rollback source SHA: $ROLLBACK_SHA"
+  echo "- Deploy log SHA-256: $DEPLOY_LOG_SHA256"
   echo "- Deployed at: $DEPLOYED_AT"
   echo "- Canonical repo: LifeLoggerAI/urai-staging"
   echo "- Deploy command: npm run deploy:staging"
@@ -155,17 +172,20 @@ step "Writing URAI_STAGING_LOCK.md"
   echo "## Evidence captured"
   echo ""
   echo "- Clean exact checkout and rollback ancestry"
-  echo "- Existing Hosting site; no infrastructure creation"
+  echo "- Existing Hosting site exact provider identity; no infrastructure creation"
   echo "- Dependency install, readiness, lockfile, lint, typecheck, build and unit tests"
   echo "- Emulator-backed e2e/rules tests"
-  echo "- Firebase deploy: Hosting, Functions, Firestore rules/indexes and Storage rules"
-  echo "- Live smoke: /, /u/adamclamp, /api/healthz, /api/buildinfo, /api/companion, /api/waitlist"
+  echo "- Firebase deploy command output with immutable log digest"
+  echo "- Exact /api/buildinfo source-SHA and deployment-timestamp match"
+  echo "- Non-mutating live checks for /, /u/adamclamp, robots, health, buildinfo, companion validation and waitlist validation"
   echo ""
   echo "## Not included"
   echo ""
   echo "- Production deployment"
   echo "- Production credentials or data"
-  echo "- Proof that the approved rollback SHA is the currently deployed prior revision; that requires separate provider evidence"
+  echo "- Live companion or waitlist write proof; those require a separately authorized mutation test"
+  echo "- Independent proof that the approved rollback SHA is the currently deployed prior provider revision"
+  echo "- Independent provider API mapping from source SHA to every deployed Functions revision"
 } > URAI_STAGING_LOCK.md
 
 rm -f "$FAILURE_REPORT"
