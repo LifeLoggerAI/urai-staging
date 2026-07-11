@@ -7,12 +7,16 @@ const stamp = process.argv[2] || new Date().toISOString().replace(/[-:.]/g, '');
 const requested = process.env.WORKSTREAM_C_ROOT || `/tmp/urai-workstream-c-manual-${stamp}`;
 const resolved = path.resolve(requested);
 const parent = path.dirname(resolved);
+const name = path.basename(resolved);
 
 if (parent !== '/tmp') {
   throw new Error('WORKSTREAM_C_ROOT must resolve directly below /tmp.');
 }
-if (!path.basename(resolved).startsWith('urai-workstream-c-manual-')) {
+if (!name.startsWith('urai-workstream-c-manual-')) {
   throw new Error('WORKSTREAM_C_ROOT must use the urai-workstream-c-manual- prefix.');
+}
+if (!/^urai-workstream-c-manual-[A-Za-z0-9._-]+$/.test(name)) {
+  throw new Error('WORKSTREAM_C_ROOT contains unsupported filename characters.');
 }
 
 const parentStat = fs.lstatSync(parent);
