@@ -27,7 +27,7 @@ function expectPass(root, expected) {
 
 function expectFail(root, message) {
   const result = run(root);
-  assert.notEqual(result.status, 0, `Expected failure for ${root}`);
+  assert.notEqual(result.status, 0, `Expected failure for ${JSON.stringify(root)}`);
   assert.match(result.stderr, message);
 }
 
@@ -36,6 +36,7 @@ try {
   expectPass(valid, valid);
   expectFail(`/var/tmp/urai-workstream-c-manual-${suffix}`, /directly below \/tmp/);
   expectFail(`/tmp/not-urai-workstream-c-${suffix}`, /must use the urai-workstream-c-manual- prefix/);
+  expectFail(`/tmp/urai-workstream-c-manual-bad\n${suffix}`, /unsupported filename characters/);
 
   fs.writeFileSync(file, 'not a directory');
   expectFail(file, /must be a real directory/);
