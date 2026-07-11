@@ -8,7 +8,6 @@ CONTROL_BRANCH='workstream-c-manual-verification-20260711'
 PUBLIC_REGISTRY='https://registry.npmjs.org/'
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
-ROOT="${WORKSTREAM_C_ROOT:-/tmp/urai-workstream-c-manual-$STAMP}"
 MIN_FREE_KB="${WORKSTREAM_C_MIN_FREE_KB:-8388608}"
 SHA_PATTERN='^[0-9a-f]{40}$'
 
@@ -23,6 +22,8 @@ CONTROL_SHA="$(git -C "$CONTROL_ROOT" rev-parse HEAD)"
 [[ "$CONTROL_SHA" =~ $SHA_PATTERN ]] || fail 'Verifier checkout SHA is invalid'
 REMOTE_CONTROL_SHA="$(git -C "$CONTROL_ROOT" ls-remote origin "refs/heads/$CONTROL_BRANCH" | awk '{print $1}')"
 [ "$REMOTE_CONTROL_SHA" = "$CONTROL_SHA" ] || fail "Verifier checkout is not the current remote control head: local=$CONTROL_SHA remote=${REMOTE_CONTROL_SHA:-missing}"
+[ -f "$CONTROL_ROOT/scripts/resolve-workstream-c-root.mjs" ] || fail 'Workspace resolver is missing'
+ROOT="$(node "$CONTROL_ROOT/scripts/resolve-workstream-c-root.mjs" "$STAMP")"
 
 cleanup_old_verifier_data() {
   local base path
@@ -42,7 +43,8 @@ cleanup_old_verifier_data() {
 }
 
 cleanup_old_verifier_data
-mkdir -p "$ROOT"/{npm-cache,pnpm-store,pip-cache,xdg-config,gcloud-config,firebase-emulators,tmp}
+mkdir -m 700 -p "$ROOT"/{npm-cache,pnpm-store,pip-cache,xdg-config,gcloud-config,firebase-emulators,tmp}
+[ -d "$ROOT" ] && [ ! -L "$ROOT" ] || fail 'Verifier workspace must remain a real directory'
 
 free_kb="$(df -Pk /tmp | awk 'NR==2 {print $4}')"
 log "Free /tmp workspace: $free_kb KiB"
