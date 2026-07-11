@@ -64,13 +64,17 @@ The Cloud Shell launcher currently defaults to these exact candidates:
 
 The preceding complete manual run established that Admin install, registry contracts, security, active Functions, lint, typecheck, tests, build and fail-closed production preflight passed. It also exposed and led to repairs for generated Admin Functions residue, Privacy YAML/schema and pagination typing, and a truncated Jobs queue processor.
 
-The candidate SHAs can be overridden through `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA`. Every identity must be a lowercase full 40-character SHA. The launcher now also proves its clean verifier checkout equals the current remote control-branch head before cleaning workspaces or running any candidate.
+The candidate SHAs can be overridden through `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA`. Every identity must be a lowercase full 40-character SHA. The launcher also proves its clean verifier checkout equals the current remote control-branch head before cleaning workspaces or running any candidate.
 
 The launcher:
 
+- resolves `WORKSTREAM_C_ROOT` through `scripts/resolve-workstream-c-root.mjs`;
+- permits the verifier workspace only as a direct `/tmp/urai-workstream-c-manual-*` child;
+- rejects wrong-parent paths, wrong prefixes, symbolic links and non-directory existing targets;
+- runs `scripts/test-workstream-c-root-resolver.mjs` through both `npm run check` and the CI bootstrap;
 - removes only prior `urai-workstream-c-manual-*` workspaces and package-manager caches;
 - requires at least 8 GiB free in `/tmp` before execution;
-- places repositories, package stores, Python caches, Firebase emulator downloads and temporary files under a timestamped `/tmp` workspace;
+- places repositories, package stores, Python caches, Firebase emulator downloads and temporary files under the confined workspace;
 - forces public npm registry resolution for verifier installs;
 - isolates Firebase and Cloud SDK configuration from user credentials;
 - leaves global Cloud Shell Node, npm and pnpm installations untouched.
