@@ -3,6 +3,8 @@ set -Eeuo pipefail
 
 EXPECTED_JOBS_SHA="${EXPECTED_JOBS_SHA:-1515ff2bbf66f764d125eb2abe7b615c88cedb59}"
 JOBS_BRANCH="${JOBS_BRANCH:-secure-worker-deploy-20260706}"
+RUN_FULL_VERIFIER_AFTER_REPAIR="${RUN_FULL_VERIFIER_AFTER_REPAIR:-1}"
+CONTROL_ROOT="$(git rev-parse --show-toplevel)"
 ROOT="${JOBS_REPAIR_ROOT:-/tmp/urai-jobs-dependency-repair-$(date -u +%Y%m%dT%H%M%SZ)}"
 REPO="$ROOT/urai-jobs"
 TOOLING="$ROOT/tooling"
@@ -13,6 +15,8 @@ log() { printf '[%s] %s\n' "$(date -u +%FT%TZ)" "$*"; }
 fail() { echo "[repair-jobs-dependency] FAIL: $*" >&2; exit 1; }
 
 [[ "$EXPECTED_JOBS_SHA" =~ $SHA_PATTERN ]] || fail "EXPECTED_JOBS_SHA must be a full lowercase SHA"
+[ -f "$CONTROL_ROOT/scripts/run-workstream-c-cloud-shell.sh" ] || fail "Run this script from the urai-staging verifier checkout"
+[ -z "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ] || fail "The urai-staging verifier checkout must be clean"
 command -v git >/dev/null || fail "git is required"
 command -v gh >/dev/null || fail "GitHub CLI is required"
 gh auth status >/dev/null 2>&1 || fail "GitHub CLI authentication is required"
@@ -151,3 +155,9 @@ The branch was pushed only after frozen installs, zero-critical assertions, sour
 EOF
 
 gh pr comment 75 --repo LifeLoggerAI/urai-jobs --body "Dependency repair completed at exact head \`$NEW_SHA\`: removed unused \`@google-cloud/error-reporting\`, regenerated npm/pnpm locks, required zero critical full and production audit findings, and passed frozen installs, source verification, typecheck, build and tests. No deployment or provider mutation occurred." || true
+
+if [ "$RUN_FULL_VERIFIER_AFTER_REPAIR" = "1" ]; then
+  log "Starting full Workstream C verifier against repaired Jobs head $NEW_SHA"
+  cd "$CONTROL_ROOT"
+  JOBS_SHA="$NEW_SHA" bash scripts/run-workstream-c-cloud-shell.sh
+fi
