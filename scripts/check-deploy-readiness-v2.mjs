@@ -142,8 +142,8 @@ requirePhrases('scripts/staging-prebuilt-manifest.mjs', [
   "['ls-files', '--others', '--exclude-standard', '-z']",
   'allowedGeneratedPrefixes',
   "'artifacts/launch/'",
+  "'artifacts/prebuilt/'",
   "'functions/lib/'",
-  "'public/'",
   "gitText('rev-parse', 'HEAD^{tree}')",
   'sourceTreeSha',
   'sourceStateVerifiedClean: true',
@@ -152,6 +152,12 @@ requirePhrases('scripts/staging-prebuilt-manifest.mjs', [
   'file set, size, or hash',
   'Refusing to materialize symlink',
 ]);
+const prebuiltSource = text('scripts/staging-prebuilt-manifest.mjs');
+const generatedBlock = prebuiltSource.match(/const allowedGeneratedPrefixes = \[([\s\S]*?)\];/);
+if (!generatedBlock) failures.push('Staging prebuilt allowed-generated-prefix block is missing');
+else if (generatedBlock[1].includes("'public/'") || generatedBlock[1].includes('"public/"')) {
+  failures.push('Tracked public Hosting input must not accept arbitrary untracked files');
+}
 
 requirePhrases('scripts/smoke-staging.sh', [
   'Exact staging mutation receipt is required',
