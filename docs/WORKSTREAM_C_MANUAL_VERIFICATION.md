@@ -19,7 +19,7 @@ bash scripts/run-workstream-c-manual-verification.sh
 The script checks out these exact candidates by default:
 
 - Admin: `71f4f6d461e09bae30584f2bdef6c5deb9c79787`
-- Privacy: `f8ed46bec72b7be6cd9ba84bc73fc13a636df600`
+- Privacy: `a0805316a9975180b27b4086d3bde3dfa91fb215`
 - Jobs: `dc299c7a34bd416433f46d329ce18f6119bc31bf`
 
 The candidate SHAs can be overridden explicitly through `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA`. The verifier also records its own exact `urai-staging` commit. Every identity must be a lowercase full 40-character SHA.
