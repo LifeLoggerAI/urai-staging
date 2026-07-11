@@ -18,6 +18,12 @@ const sourceControlledFiles = [
   'storage.rules',
 ];
 const managedRoots = ['functions/lib', 'public'];
+const allowedGeneratedPrefixes = [
+  'artifacts/launch/',
+  'artifacts/prebuilt/',
+  'functions/lib/',
+  'public/',
+];
 const modes = {
   write: process.argv.includes('--write'),
   verifyExternal: process.argv.includes('--verify-external'),
@@ -32,13 +38,40 @@ function sha256(buffer) {
   return createHash('sha256').update(buffer).digest('hex');
 }
 
-function exactSourceSha() {
+function gitText(...args) {
+  return execFileSync('git', args, { cwd: repoRoot, encoding: 'utf8' }).trim();
+}
+
+function exactSourceIdentity() {
   const expected = String(process.env.URAI_RELEASE_CANDIDATE_SHA || '').trim();
-  const actual = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repoRoot, encoding: 'utf8' }).trim();
+  const actual = gitText('rev-parse', 'HEAD');
   if (!/^[0-9a-f]{40}$/.test(expected) || actual !== expected) {
     throw new Error(`Staging prebuilt source mismatch: expected=${expected || '<missing>'} actual=${actual}`);
   }
-  return actual;
+  const sourceTreeSha = gitText('rev-parse', 'HEAD^{tree}');
+  if (!/^[0-9a-f]{40}$/.test(sourceTreeSha)) throw new Error('Invalid Git source tree SHA.');
+  return { sourceSha: actual, sourceTreeSha };
+}
+
+function assertReviewedSourceUnchanged() {
+  try {
+    execFileSync('git', ['diff', '--exit-code', '--', '.'], { cwd: repoRoot, stdio: 'pipe' });
+    execFileSync('git', ['diff', '--cached', '--exit-code', '--', '.'], { cwd: repoRoot, stdio: 'pipe' });
+  } catch {
+    throw new Error('Tracked source changed after verification; refusing to seal staging artifact.');
+  }
+
+  const raw = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '-z'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  const untracked = raw.split('\0').filter(Boolean).map((value) => value.split(path.sep).join('/'));
+  const unexpected = untracked.filter(
+    (file) => !allowedGeneratedPrefixes.some((prefix) => file.startsWith(prefix)),
+  );
+  if (unexpected.length) {
+    throw new Error(`Unexpected untracked staging build inputs or residue: ${unexpected.join(', ')}`);
+  }
 }
 
 function addPath(baseRoot, relative, files) {
@@ -72,27 +105,29 @@ function totals(files) {
   };
 }
 
-function readVerifiedManifest(baseRoot, sourceSha) {
+function readVerifiedManifest(baseRoot, identity) {
   const candidateManifestPath = path.join(baseRoot, manifestRelativePath);
   if (!fs.existsSync(candidateManifestPath)) throw new Error(`Missing staging prebuilt manifest: ${candidateManifestPath}`);
   const manifest = JSON.parse(fs.readFileSync(candidateManifestPath, 'utf8'));
   const files = collect(baseRoot);
   const summary = totals(files);
   const failures = [];
-  if (manifest.schemaVersion !== 'urai-staging-prebuilt-1') failures.push('schema');
+  if (manifest.schemaVersion !== 'urai-staging-prebuilt-2') failures.push('schema');
   if (manifest.repository !== (process.env.GITHUB_REPOSITORY || 'LifeLoggerAI/urai-staging')) failures.push('repository');
-  if (manifest.sourceSha !== sourceSha) failures.push('source SHA');
+  if (manifest.sourceSha !== identity.sourceSha) failures.push('source SHA');
+  if (manifest.sourceTreeSha !== identity.sourceTreeSha) failures.push('source tree SHA');
   if (process.env.GITHUB_RUN_ID && manifest.workflowRunId !== process.env.GITHUB_RUN_ID) failures.push('workflow run');
   if (JSON.stringify(manifest.sourceControlledFiles) !== JSON.stringify(sourceControlledFiles)) failures.push('source file contract');
   if (JSON.stringify(manifest.managedRoots) !== JSON.stringify(managedRoots)) failures.push('managed roots');
+  if (JSON.stringify(manifest.allowedGeneratedPrefixes) !== JSON.stringify(allowedGeneratedPrefixes)) failures.push('generated-output confinement');
   if (JSON.stringify(manifest.files) !== JSON.stringify(files)) failures.push('file set, size, or hash');
   if (manifest.fileCount !== summary.fileCount || manifest.totalBytes !== summary.totalBytes) failures.push('totals');
   if (failures.length) throw new Error(`Staging prebuilt verification failed: ${failures.join(', ')}`);
   return { manifest, files, summary, manifestPath: candidateManifestPath };
 }
 
-function compareControlledSourceToArtifact(sourceSha) {
-  const external = readVerifiedManifest(artifactRoot, sourceSha);
+function compareControlledSourceToArtifact(identity) {
+  const external = readVerifiedManifest(artifactRoot, identity);
   const externalMap = new Map(external.files.map((file) => [file.path, file]));
   const local = [];
   for (const relative of [...sourceControlledFiles, 'public']) addPath(repoRoot, relative, local);
@@ -118,36 +153,40 @@ function copyTree(source, destination) {
   fs.copyFileSync(source, destination, fs.constants.COPYFILE_EXCL);
 }
 
-const sourceSha = exactSourceSha();
+const identity = exactSourceIdentity();
 
 if (modes.write) {
   if (artifactRoot !== repoRoot) throw new Error('--write must run against repository outputs.');
+  assertReviewedSourceUnchanged();
   const files = collect(repoRoot);
   const summary = totals(files);
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
   const manifest = {
-    schemaVersion: 'urai-staging-prebuilt-1',
+    schemaVersion: 'urai-staging-prebuilt-2',
     generatedAt: new Date().toISOString(),
     repository: process.env.GITHUB_REPOSITORY || 'LifeLoggerAI/urai-staging',
     workflowRunId: process.env.GITHUB_RUN_ID || null,
-    sourceSha,
+    sourceSha: identity.sourceSha,
+    sourceTreeSha: identity.sourceTreeSha,
+    sourceStateVerifiedClean: true,
     authorityScope: 'urai-staging-repository-only',
     consumerAssignments: [],
     crossSystemMutationAuthorized: false,
     sourceControlledFiles,
     managedRoots,
+    allowedGeneratedPrefixes,
     files,
     ...summary,
   };
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-  console.log(JSON.stringify({ status: 'WROTE', sourceSha, manifestPath, ...summary }, null, 2));
+  console.log(JSON.stringify({ status: 'WROTE', ...identity, manifestPath, ...summary }, null, 2));
 } else if (modes.verifyExternal) {
   if (artifactRoot === repoRoot) throw new Error('--verify-external requires URAI_STAGING_PREBUILT_ROOT outside the repository.');
-  const verified = compareControlledSourceToArtifact(sourceSha);
-  console.log(JSON.stringify({ status: 'PASS', sourceSha, artifactRoot, ...verified.summary }, null, 2));
+  const verified = compareControlledSourceToArtifact(identity);
+  console.log(JSON.stringify({ status: 'PASS', ...identity, artifactRoot, ...verified.summary }, null, 2));
 } else if (modes.materialize) {
   if (artifactRoot === repoRoot) throw new Error('--materialize requires URAI_STAGING_PREBUILT_ROOT outside the repository.');
-  const verified = compareControlledSourceToArtifact(sourceSha);
+  const verified = compareControlledSourceToArtifact(identity);
   const destination = path.join(repoRoot, 'functions/lib');
   fs.rmSync(destination, { recursive: true, force: true });
   copyTree(path.join(artifactRoot, 'functions/lib'), destination);
@@ -155,9 +194,9 @@ if (modes.write) {
   fs.mkdirSync(path.dirname(localManifest), { recursive: true });
   fs.rmSync(localManifest, { force: true });
   fs.copyFileSync(verified.manifestPath, localManifest, fs.constants.COPYFILE_EXCL);
-  const materialized = readVerifiedManifest(repoRoot, sourceSha);
-  console.log(JSON.stringify({ status: 'MATERIALIZED', sourceSha, ...materialized.summary }, null, 2));
+  const materialized = readVerifiedManifest(repoRoot, identity);
+  console.log(JSON.stringify({ status: 'MATERIALIZED', ...identity, ...materialized.summary }, null, 2));
 } else {
-  const verified = readVerifiedManifest(repoRoot, sourceSha);
-  console.log(JSON.stringify({ status: 'PASS', sourceSha, ...verified.summary }, null, 2));
+  const verified = readVerifiedManifest(repoRoot, identity);
+  console.log(JSON.stringify({ status: 'PASS', ...identity, ...verified.summary }, null, 2));
 }
