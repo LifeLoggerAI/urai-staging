@@ -36,6 +36,7 @@ export function stagingRuntimeBuildInfo(
 ): {
   releaseCandidateSha: string;
   deployedAt: string;
+  deploymentWorkflowRunId: string;
   providerRevision: string;
   providerService: string;
   runtimeProjectId: string;
@@ -44,6 +45,8 @@ export function stagingRuntimeBuildInfo(
   return {
     releaseCandidateSha: environment.URAI_RELEASE_CANDIDATE_SHA ?? 'unknown',
     deployedAt: environment.URAI_DEPLOYED_AT ?? 'unknown',
+    deploymentWorkflowRunId:
+      environment.URAI_DEPLOYMENT_WORKFLOW_RUN_ID ?? 'unknown',
     providerRevision: environment.K_REVISION ?? 'unknown',
     providerService:
       environment.K_SERVICE ?? environment.FUNCTION_TARGET ?? 'unknown',
