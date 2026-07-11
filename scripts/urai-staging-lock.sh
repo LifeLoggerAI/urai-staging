@@ -22,6 +22,7 @@ STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 : "${URAI_STAGING_CONSUMER_ASSIGNMENTS_JSON:?URAI_STAGING_CONSUMER_ASSIGNMENTS_JSON is required}"
 : "${URAI_FIREBASE_CLI_VERSION:?URAI_FIREBASE_CLI_VERSION is required}"
 : "${GOOGLE_APPLICATION_CREDENTIALS:?GOOGLE_APPLICATION_CREDENTIALS is required}"
+: "${GITHUB_RUN_ID:?GITHUB_RUN_ID is required for exact deployment identity}"
 
 RELEASE_SHA="$URAI_RELEASE_CANDIDATE_SHA"
 ROLLBACK_SHA="$URAI_STAGING_ROLLBACK_SHA"
@@ -63,6 +64,7 @@ step() {
 step "Verifying exact source, rollback, and repository-only authority"
 [[ "$RELEASE_SHA" =~ $sha_pattern ]] || { echo "URAI_RELEASE_CANDIDATE_SHA must be a full lowercase SHA" >&2; exit 1; }
 [[ "$ROLLBACK_SHA" =~ $sha_pattern ]] || { echo "URAI_STAGING_ROLLBACK_SHA must be a full lowercase SHA" >&2; exit 1; }
+[[ "$GITHUB_RUN_ID" =~ ^[0-9]+$ ]] || { echo "GITHUB_RUN_ID must be numeric" >&2; exit 1; }
 [ "$RELEASE_SHA" != "$ROLLBACK_SHA" ] || { echo "Release and rollback SHAs must differ" >&2; exit 1; }
 [ "$(git rev-parse HEAD)" = "$RELEASE_SHA" ] || { echo "Checked-out SHA does not match release candidate" >&2; exit 1; }
 git cat-file -e "${ROLLBACK_SHA}^{commit}"
@@ -98,6 +100,7 @@ node scripts/staging-prebuilt-manifest.mjs --verify-materialized
 cat > "$FUNCTIONS_ENV_FILE" <<EOF
 URAI_RELEASE_CANDIDATE_SHA=$RELEASE_SHA
 URAI_DEPLOYED_AT=$DEPLOYED_AT
+URAI_DEPLOYMENT_WORKFLOW_RUN_ID=$GITHUB_RUN_ID
 EOF
 
 step "Verifying existing Firebase Hosting site"
