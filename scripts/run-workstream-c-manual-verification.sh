@@ -1,44 +1,68 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-ADMIN_SHA="${ADMIN_SHA:-d10dd517bbf806bae0a92d53383e0c6d620ba523}"
-PRIVACY_SHA="${PRIVACY_SHA:-bf9d6f42cba961169c5d6e0aaa24b07a64ba6c01}"
-JOBS_SHA="${JOBS_SHA:-1515ff2bbf66f764d125eb2abe7b615c88cedb59}"
+ADMIN_SHA="${ADMIN_SHA:-6d1e84640544098ae71040fca4c7f8893e0f2fd4}"
+PRIVACY_SHA="${PRIVACY_SHA:-371e9a8db9b24a0cbdd3a6753776be6920ce736c}"
+JOBS_SHA="${JOBS_SHA:-ed7f80517e4fa940472a93f22e9d42e080ddeb6c}"
+JOBS_LOCAL_SOURCE="${JOBS_LOCAL_SOURCE:-}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
 VERIFIER_SHA="$(git -C "$CONTROL_ROOT" rev-parse HEAD)"
-ROOT="${WORKSTREAM_C_ROOT:-$HOME/urai-workstream-c-manual-$STAMP}"
+ROOT="${WORKSTREAM_C_ROOT:?WORKSTREAM_C_ROOT must be set by the confined Workstream C wrapper}"
 EVIDENCE="$ROOT/evidence"
 SUMMARY="$EVIDENCE/summary.md"
 FAILURE_EXCERPTS="$EVIDENCE/failure-excerpts.txt"
 FAILURES=0
 SHA_PATTERN='^[0-9a-f]{40}$'
-
-mkdir -p "$EVIDENCE/logs"
+PUBLIC_REGISTRY='https://registry.npmjs.org/'
 
 log() { printf '[%s] %s\n' "$(date -u +%FT%TZ)" "$*"; }
+fail() { echo "[workstream-c-manual] FAIL: $*" >&2; exit 64; }
+
+confined_path() {
+  local name="$1" value="$2" resolved
+  [ -n "$value" ] || fail "$name must be set"
+  resolved="$(realpath -m -- "$value")"
+  case "$resolved" in
+    "$ROOT"|"$ROOT"/*) ;;
+    *) fail "$name must resolve inside the confined verifier root" ;;
+  esac
+}
+
+[ "${WORKSTREAM_C_CONFINED:-}" = '1' ] || fail 'Direct invocation is forbidden; use run-workstream-c-cloud-shell.sh'
+ROOT="$(realpath -m -- "$ROOT")"
+[ "$(dirname -- "$ROOT")" = '/tmp' ] || fail 'WORKSTREAM_C_ROOT must resolve directly below /tmp'
+case "$(basename -- "$ROOT")" in
+  urai-workstream-c-manual-*) ;;
+  *) fail 'WORKSTREAM_C_ROOT basename must start with urai-workstream-c-manual-' ;;
+esac
+[ -d "$ROOT" ] && [ ! -L "$ROOT" ] || fail 'WORKSTREAM_C_ROOT must be a real existing directory'
+[ -z "${FIREBASE_TOKEN:-}" ] || fail 'FIREBASE_TOKEN must be unset'
+[ -z "${GOOGLE_APPLICATION_CREDENTIALS:-}" ] || fail 'GOOGLE_APPLICATION_CREDENTIALS must be unset'
+for pair in \
+  "NPM_CONFIG_CACHE=${NPM_CONFIG_CACHE:-}" \
+  "npm_config_cache=${npm_config_cache:-}" \
+  "npm_config_store_dir=${npm_config_store_dir:-}" \
+  "PIP_CACHE_DIR=${PIP_CACHE_DIR:-}" \
+  "XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-}" \
+  "CLOUDSDK_CONFIG=${CLOUDSDK_CONFIG:-}" \
+  "FIREBASE_EMULATORS_PATH=${FIREBASE_EMULATORS_PATH:-}" \
+  "TMPDIR=${TMPDIR:-}"; do
+  confined_path "${pair%%=*}" "${pair#*=}"
+done
+mkdir -p "$EVIDENCE/logs"
 
 for candidate in "$VERIFIER_SHA" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
-  if ! [[ "$candidate" =~ $SHA_PATTERN ]]; then
-    echo "Every verifier and candidate identity must be a full lowercase 40-character SHA: $candidate" >&2
-    exit 64
-  fi
+  [[ "$candidate" =~ $SHA_PATTERN ]] || fail "Every verifier and candidate identity must be a full lowercase 40-character SHA: $candidate"
 done
-if [ -n "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ]; then
-  echo "The manual verifier checkout must be clean before execution." >&2
-  exit 64
-fi
+[ -z "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ] || fail 'The manual verifier checkout must be clean before execution'
 
 use_node() {
   local version="$1"
   if ! command -v nvm >/dev/null 2>&1; then
-    if [ -s "$HOME/.nvm/nvm.sh" ]; then
-      # shellcheck disable=SC1090
-      . "$HOME/.nvm/nvm.sh"
-    else
-      echo "nvm is required. In Google Cloud Shell it is normally preinstalled." >&2
-      return 1
-    fi
+    [ -s "$HOME/.nvm/nvm.sh" ] || fail 'nvm is required'
+    # shellcheck disable=SC1090
+    . "$HOME/.nvm/nvm.sh"
   fi
   nvm install "$version"
   nvm use "$version"
@@ -51,7 +75,7 @@ ensure_pnpm() {
   local prefix="$ROOT/tooling/pnpm-$version"
   mkdir -p "$prefix"
   if [ ! -x "$prefix/bin/pnpm" ]; then
-    npm install --global --prefix "$prefix" "pnpm@$version"
+    npm install --global --prefix "$prefix" "pnpm@$version" --registry="$PUBLIC_REGISTRY"
   fi
   export PATH="$prefix/bin:$PATH"
   hash -r
@@ -64,18 +88,30 @@ ensure_java() {
   if command -v java >/dev/null 2>&1; then
     major="$(java -version 2>&1 | awk -F'[\".]' '/version/ {print $2; exit}')"
   fi
-  if [ "${major:-0}" -ge 21 ]; then
-    return 0
-  fi
+  if [ "${major:-0}" -ge 21 ]; then return 0; fi
   sudo apt-get update
   sudo apt-get install -y openjdk-21-jre-headless
 }
 
 clone_exact() {
-  local repo="$1" sha="$2" dir="$3"
+  local repo="$1" sha="$2" dir="$3" local_source="${4:-}"
   [[ "$sha" =~ $SHA_PATTERN ]]
-  git clone --filter=blob:none --no-checkout "https://github.com/LifeLoggerAI/$repo.git" "$dir"
-  git -C "$dir" fetch --depth 1 origin "$sha"
+  if [ -n "$local_source" ]; then
+    [ "$repo" = 'urai-jobs' ] || fail 'Only the Jobs lane may use a local pre-push candidate source'
+    local_source="$(realpath -e -- "$local_source")"
+    [ -d "$local_source/.git" ] || fail 'JOBS_LOCAL_SOURCE must be a git checkout'
+    [ ! -L "$local_source" ] || fail 'JOBS_LOCAL_SOURCE must not be a symlink'
+    case "$local_source" in
+      /tmp/urai-jobs-dependency-repair-*/urai-jobs) ;;
+      *) fail 'JOBS_LOCAL_SOURCE must be the confined Jobs repair checkout' ;;
+    esac
+    [ "$(git -C "$local_source" rev-parse HEAD)" = "$sha" ] || fail 'Local Jobs source is not the exact candidate SHA'
+    [ -z "$(git -C "$local_source" status --porcelain --untracked-files=all)" ] || fail 'Local Jobs candidate must be clean'
+    git clone --no-local --no-checkout "$local_source" "$dir"
+  else
+    git clone --filter=blob:none --no-checkout "https://github.com/LifeLoggerAI/$repo.git" "$dir"
+    git -C "$dir" fetch --depth 1 origin "$sha"
+  fi
   git -C "$dir" checkout --detach "$sha"
   test "$(git -C "$dir" rev-parse HEAD)" = "$sha"
   test -z "$(git -C "$dir" status --porcelain --untracked-files=all)"
@@ -87,16 +123,11 @@ run_step() {
   local log_file="$EVIDENCE/logs/${lane}-${name}.log"
   log "$lane :: $name"
   set +e
-  (
-    cd "$dir"
-    "$@"
-  ) 2>&1 | tee "$log_file"
+  (cd "$dir" && "$@") 2>&1 | tee "$log_file"
   local status=${PIPESTATUS[0]}
   set -e
   printf '%s\t%s\t%s\n' "$lane" "$name" "$status" >> "$EVIDENCE/status.tsv"
-  if [ "$status" -ne 0 ]; then
-    FAILURES=$((FAILURES + 1))
-  fi
+  if [ "$status" -ne 0 ]; then FAILURES=$((FAILURES + 1)); fi
   return 0
 }
 
@@ -112,29 +143,20 @@ record_final_source_state() {
   status="$(git -C "$dir" status --porcelain --untracked-files=all || true)"
   printf '%s\t%s\t%s\n' "$repo" "$sha" "$actual" >> "$EVIDENCE/heads.tsv"
   printf '%s\n' "$status" > "$EVIDENCE/logs/${repo}-final-git-status.log"
-  if [ "$actual" != "$sha" ] || [ -n "$status" ]; then
-    code=1
-    FAILURES=$((FAILURES + 1))
-  fi
+  if [ "$actual" != "$sha" ] || [ -n "$status" ]; then code=1; FAILURES=$((FAILURES + 1)); fi
   printf '%s\t%s\t%s\n' "$lane" 'final-source-clean' "$code" >> "$EVIDENCE/status.tsv"
 }
 
 build_failure_excerpts() {
   : > "$FAILURE_EXCERPTS"
   while IFS=$'\t' read -r lane step code; do
-    [ "$lane" = "lane" ] && continue
-    [ "$code" = "0" ] && continue
+    [ "$lane" = 'lane' ] && continue
+    [ "$code" = '0' ] && continue
     local log_file="$EVIDENCE/logs/${lane}-${step}.log"
-    if [ "$step" = "final-source-clean" ]; then
-      log_file="$EVIDENCE/logs/urai-${lane}-final-git-status.log"
-    fi
+    [ "$step" != 'final-source-clean' ] || log_file="$EVIDENCE/logs/urai-${lane}-final-git-status.log"
     {
       printf '\n===== %s :: %s (exit %s) =====\n' "$lane" "$step" "$code"
-      if [ -f "$log_file" ]; then
-        tail -n 30 "$log_file"
-      else
-        echo "No step log was produced."
-      fi
+      if [ -f "$log_file" ]; then tail -n 30 "$log_file"; else echo 'No step log was produced.'; fi
     } >> "$FAILURE_EXCERPTS"
   done < "$EVIDENCE/status.tsv"
 }
@@ -146,7 +168,6 @@ printf 'lane\tstep\texit_code\n' > "$EVIDENCE/status.tsv"
 printf 'repository\texpected_sha\tactual_sha\n' > "$EVIDENCE/heads.tsv"
 printf 'urai-staging-verifier\t%s\t%s\n' "$VERIFIER_SHA" "$VERIFIER_SHA" >> "$EVIDENCE/heads.tsv"
 
-# ADMIN
 ADMIN_DIR="$ROOT/urai-admin"
 clone_exact urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
 use_node 22
@@ -166,7 +187,6 @@ if [ -f "$ADMIN_DIR/docs/release-evidence/admin-system-registry-emulator-receipt
   rm -f "$ADMIN_DIR/docs/release-evidence/admin-system-registry-emulator-receipt.json"
 fi
 
-# PRIVACY
 PRIVACY_DIR="$ROOT/urai-privacy"
 PRIVACY_VENV="$ROOT/privacy-validator-venv"
 clone_exact urai-privacy "$PRIVACY_SHA" "$PRIVACY_DIR"
@@ -182,9 +202,8 @@ run_shell_step privacy emulator-tests "$PRIVACY_DIR" 'npm run check:java && npm 
 run_shell_step privacy security-and-readiness "$PRIVACY_DIR" 'npm run security:gate && bash scripts/assert-production-ready.sh && URAI_PRIVACY_REQUIRE_AUTH_LIVE_PROOF=0 npm run test:live-auth-proof'
 run_shell_step privacy release-verifier "$PRIVACY_DIR" 'bash scripts/verify-release.sh'
 
-# JOBS
 JOBS_DIR="$ROOT/urai-jobs"
-clone_exact urai-jobs "$JOBS_SHA" "$JOBS_DIR"
+clone_exact urai-jobs "$JOBS_SHA" "$JOBS_DIR" "$JOBS_LOCAL_SOURCE"
 use_node 22
 ensure_pnpm 8.15.9
 run_shell_step jobs install "$JOBS_DIR" 'npm --prefix functions ci --ignore-scripts && pnpm install --frozen-lockfile'
@@ -209,15 +228,14 @@ build_failure_excerpts
   echo "- Admin: \`$ADMIN_SHA\`"
   echo "- Privacy: \`$PRIVACY_SHA\`"
   echo "- Jobs: \`$JOBS_SHA\`"
+  echo "- Jobs source: $([ -n "$JOBS_LOCAL_SOURCE" ] && echo 'confined local pre-push candidate' || echo 'canonical GitHub exact commit')"
   echo "- Failed steps: $FAILURES"
   echo
   echo '## Step results'
   echo
   echo '| Lane | Step | Exit |'
   echo '|---|---|---:|'
-  tail -n +2 "$EVIDENCE/status.tsv" | while IFS=$'\t' read -r lane step code; do
-    echo "| $lane | $step | $code |"
-  done
+  tail -n +2 "$EVIDENCE/status.tsv" | while IFS=$'\t' read -r lane step code; do echo "| $lane | $step | $code |"; done
   echo
   if [ "$FAILURES" -eq 0 ]; then
     echo '**MANUAL SOURCE/EMULATOR VERIFICATION: PASS**'
@@ -236,18 +254,13 @@ build_failure_excerpts
 )
 
 tar -C "$ROOT" -czf "$ROOT/urai-workstream-c-manual-evidence-$STAMP.tar.gz" evidence
-
 cat "$SUMMARY"
 echo
 log "Evidence bundle: $ROOT/urai-workstream-c-manual-evidence-$STAMP.tar.gz"
-if [ "$FAILURES" -ne 0 ]; then
-  log "Failure excerpts: $FAILURE_EXCERPTS"
-fi
+if [ "$FAILURES" -ne 0 ]; then log "Failure excerpts: $FAILURE_EXCERPTS"; fi
 
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
   gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true
 fi
 
-if [ "$FAILURES" -ne 0 ]; then
-  exit 1
-fi
+[ "$FAILURES" -eq 0 ] || exit 1
