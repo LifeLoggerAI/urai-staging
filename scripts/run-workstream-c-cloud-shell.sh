@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-ADMIN_SHA="${ADMIN_SHA:-d10dd517bbf806bae0a92d53383e0c6d620ba523}"
-PRIVACY_SHA="${PRIVACY_SHA:-bf9d6f42cba961169c5d6e0aaa24b07a64ba6c01}"
-JOBS_SHA="${JOBS_SHA:-1515ff2bbf66f764d125eb2abe7b615c88cedb59}"
+ADMIN_SHA="${ADMIN_SHA:-6d1e84640544098ae71040fca4c7f8893e0f2fd4}"
+PRIVACY_SHA="${PRIVACY_SHA:-371e9a8db9b24a0cbdd3a6753776be6920ce736c}"
+JOBS_SHA="${JOBS_SHA:-ed7f80517e4fa940472a93f22e9d42e080ddeb6c}"
+JOBS_LOCAL_SOURCE="${JOBS_LOCAL_SOURCE:-}"
 CONTROL_BRANCH='workstream-c-manual-verification-20260711'
 PUBLIC_REGISTRY='https://registry.npmjs.org/'
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -54,6 +55,7 @@ if [ "$free_kb" -lt "$MIN_FREE_KB" ]; then
 fi
 
 unset FIREBASE_TOKEN GOOGLE_APPLICATION_CREDENTIALS
+export WORKSTREAM_C_CONFINED=1
 export WORKSTREAM_C_ROOT="$ROOT"
 export NPM_CONFIG_CACHE="$ROOT/npm-cache"
 export npm_config_cache="$ROOT/npm-cache"
@@ -74,9 +76,14 @@ log "Cloud Shell verifier workspace: $ROOT"
 log "Admin: $ADMIN_SHA"
 log "Privacy: $PRIVACY_SHA"
 log "Jobs: $JOBS_SHA"
+if [ -n "$JOBS_LOCAL_SOURCE" ]; then
+  log "Jobs source: confined local pre-push candidate $JOBS_LOCAL_SOURCE"
+fi
 
 exec env \
+  WORKSTREAM_C_CONFINED=1 \
   ADMIN_SHA="$ADMIN_SHA" \
   PRIVACY_SHA="$PRIVACY_SHA" \
   JOBS_SHA="$JOBS_SHA" \
+  JOBS_LOCAL_SOURCE="$JOBS_LOCAL_SOURCE" \
   bash "$(dirname "$0")/run-workstream-c-manual-verification.sh"
