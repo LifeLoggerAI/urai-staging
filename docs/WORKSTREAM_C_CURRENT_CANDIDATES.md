@@ -3,7 +3,7 @@
 Recorded from the live pull-request heads before this verifier update:
 
 - Admin: `e33f2febd44df793a7ae7e38056af91fd28e6f9d`
-- Privacy: `371e9a8db9b24a0cbdd3a6753776be6920ce736c`
+- Privacy: `3149b83265a61f289272cc719b31ac656c005384`
 - Jobs: `ed7f80517e4fa940472a93f22e9d42e080ddeb6c`
 
 The authoritative machine-readable pins are in `scripts/workstream-c-current-candidates.env`.
