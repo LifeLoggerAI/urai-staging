@@ -7,8 +7,8 @@ Use this verifier to collect confined source and emulator evidence when GitHub-h
 The official wrappers load the canonical pins from `scripts/workstream-c-current-candidates.env`:
 
 - Admin: `d4907967f0f8a6f08824d5ced020926784c97a15`
-- Privacy: `5ab54c76677dd1b22ab10eedb0c107f118dd9650`
-- Jobs: `adad7c38bd3b31ead5e7e202ec734d52104c069a`
+- Privacy: `39e658548a440be2c63462fab5b651c065ff8f53`
+- Jobs: `25afdff62c43037c16e44ad1be88aa9058bb729a`
 
 These values must be refreshed whenever a candidate branch advances. Explicit `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA` overrides are permitted only as full lowercase 40-character SHAs and are preserved by the official wrappers for confined exact-candidate verification.
 
@@ -70,9 +70,17 @@ Any failed command, SHA mismatch, dirty verifier checkout, candidate residue, cr
 
 `scripts/repair-jobs-unused-error-reporting.sh` is a separate repair workflow, not the standalone verifier. It may create one local Jobs candidate only after proving the expected remote Jobs head, exact changed-file boundary, dependency audit state, worker build inputs, frozen installs, source checks, typecheck, build, and tests.
 
-The repair operator then runs the complete confined Admin/Privacy/Jobs verifier against that exact local Jobs commit before any push. It rechecks both the Jobs remote branch and the Staging control branch after verification.
+The repair operator then runs the complete confined Admin/Privacy/Jobs verifier against that exact local Jobs commit and rechecks both the Jobs remote branch and the Staging control branch.
 
-Remote Jobs mutation and receipt publication remain disabled unless a separate explicit publish authorization is supplied. The operator must fail if the push or required PR receipt comment fails; it must never report success after an unrecorded remote mutation.
+The default repair mode performs local verification only and exits before GitHub authentication or remote mutation. Publishing the exact verified repair requires both:
+
+```bash
+JOBS_REPAIR_PUBLISH=1 \
+JOBS_REPAIR_PUBLISH_CONFIRM=PUBLISH_VERIFIED_JOBS_REPAIR \
+bash scripts/repair-jobs-unused-error-reporting.sh
+```
+
+A push or required pull-request receipt comment failure is fatal. The operator must never report success after an unrecorded remote mutation.
 
 This repair path does not authorize deployment, infrastructure creation, provider calls, billing actions, credential changes, or production-data operations.
 
