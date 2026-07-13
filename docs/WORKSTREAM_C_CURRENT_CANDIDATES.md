@@ -4,7 +4,7 @@ Recorded from the live pull-request heads on July 13, 2026:
 
 - Admin: `2ee6574ff9b54b50d2d82293ddeba5643af61bf7`
 - Privacy: `2da8b7140049e7b7fe9342f45c892c64f7a4b226`
-- Jobs: `1c1d452dd28d772f7b44cca3e3398a56a42e76af`
+- Jobs: `e37c74570ffd3c9d7841be7d067efcfd05d1e358`
 
 The authoritative machine-readable pins are in `scripts/workstream-c-current-candidates.env`.
 
