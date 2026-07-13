@@ -2,7 +2,7 @@
 
 Recorded from the live pull-request heads before this verifier update:
 
-- Admin: `92b8b4613bc6a945fd7adf3cad7b2166e4f75468`
+- Admin: `cd94ab504fa628d3bdd781f4e53c0270ba374558`
 - Privacy: `27aa33e60ce8d8603c35ef76606eaae3e15bd9db`
 - Jobs: `1d8efd602b5a2dfe671a7b2388f17d0789b88955`
 
