@@ -122,9 +122,17 @@ for (const marker of [
   "grep -Fx \"ADMIN_SHA='$ADMIN_SHA'\"",
   "grep -Fx \"PRIVACY_SHA='$PRIVACY_SHA'\"",
   "grep -Fx \"EXPECTED_JOBS_SHA='$JOBS_SHA'\"",
+  'case "${JOBS_REPAIR_PUBLISH:-0}" in',
+  'JOBS_REPAIR_PUBLISH_CONFIRM=PUBLISH_VERIFIED_JOBS_REPAIR',
+  'JOBS DEPENDENCY REPAIR: LOCAL VERIFICATION PASS',
+  "strict_comment = masked_comment.removesuffix(' || true')",
+  "! grep -F 'gh pr comment 75' \"$PATCHED\" | grep -F '|| true'",
 ]) {
-  assert.ok(repairEntry.includes(marker), `repair entrypoint missing current-candidate marker: ${marker}`);
+  assert.ok(repairEntry.includes(marker), `repair entrypoint missing current-candidate or publication marker: ${marker}`);
 }
+assert.ok(repairEntry.indexOf('JOBS DEPENDENCY REPAIR: LOCAL VERIFICATION PASS') < repairEntry.indexOf('gh auth setup-git >/dev/null'), 'local no-publish exit must be injected before remote authentication');
+assert.ok(repairEntry.includes("if [ \"${JOBS_REPAIR_PUBLISH:-0}\" = '1' ]"), 'repair wrapper must require explicit publication mode');
+assert.ok(repairEntry.includes("[ \"${JOBS_REPAIR_PUBLISH_CONFIRM:-}\" != 'PUBLISH_VERIFIED_JOBS_REPAIR' ]"), 'repair wrapper must require exact publication confirmation');
 
 assert.ok(manual.includes('case "${WORKSTREAM_C_PUBLISH_SUMMARY:-0}" in'));
 assert.ok(manual.includes('GitHub summary publication disabled (default no-mutation mode)'));
@@ -133,4 +141,4 @@ assert.ok(manual.includes('Summary publication requested but gh is not authentic
 assert.ok(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY"'));
 assert.equal(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true'), false);
 
-console.log('PASS: Workstream C confinement, override authority, no-publication default, and live exact-candidate manifest');
+console.log('PASS: Workstream C confinement, override authority, no-publication defaults, explicit repair publication, and live exact-candidate manifest');
