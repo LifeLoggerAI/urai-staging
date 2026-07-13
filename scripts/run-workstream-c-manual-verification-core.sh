@@ -259,8 +259,19 @@ echo
 log "Evidence bundle: $ROOT/urai-workstream-c-manual-evidence-$STAMP.tar.gz"
 if [ "$FAILURES" -ne 0 ]; then log "Failure excerpts: $FAILURE_EXCERPTS"; fi
 
-if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-  gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true
-fi
+case "${WORKSTREAM_C_PUBLISH_SUMMARY:-0}" in
+  0)
+    log 'GitHub summary publication disabled (default no-mutation mode)'
+    ;;
+  1)
+    [ "$FAILURES" -eq 0 ] || fail 'Summary publication requires a fully passing verifier'
+    command -v gh >/dev/null 2>&1 || fail 'Summary publication requested but gh is unavailable'
+    gh auth status >/dev/null 2>&1 || fail 'Summary publication requested but gh is not authenticated'
+    gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY"
+    ;;
+  *)
+    fail 'WORKSTREAM_C_PUBLISH_SUMMARY must be 0 or 1'
+    ;;
+esac
 
 [ "$FAILURES" -eq 0 ] || exit 1
