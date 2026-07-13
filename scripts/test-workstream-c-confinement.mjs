@@ -130,7 +130,12 @@ for (const marker of [
 ]) {
   assert.ok(repairEntry.includes(marker), `repair entrypoint missing current-candidate or publication marker: ${marker}`);
 }
-assert.ok(repairEntry.indexOf('JOBS DEPENDENCY REPAIR: LOCAL VERIFICATION PASS') < repairEntry.indexOf('gh auth setup-git >/dev/null'), 'local no-publish exit must be injected before remote authentication');
+const injectedGateStart = repairEntry.indexOf("gate = '''case");
+const injectedLocalExit = repairEntry.indexOf('JOBS DEPENDENCY REPAIR: LOCAL VERIFICATION PASS', injectedGateStart);
+const injectedAuthSetup = repairEntry.indexOf('gh auth setup-git >/dev/null', injectedGateStart);
+assert.ok(injectedGateStart >= 0, 'repair wrapper must define the injected publication gate');
+assert.ok(injectedLocalExit > injectedGateStart, 'repair wrapper must inject the local no-publish exit');
+assert.ok(injectedAuthSetup > injectedLocalExit, 'local no-publish exit must be injected before remote authentication');
 assert.ok(repairEntry.includes("if [ \"${JOBS_REPAIR_PUBLISH:-0}\" = '1' ]"), 'repair wrapper must require explicit publication mode');
 assert.ok(repairEntry.includes("[ \"${JOBS_REPAIR_PUBLISH_CONFIRM:-}\" != 'PUBLISH_VERIFIED_JOBS_REPAIR' ]"), 'repair wrapper must require exact publication confirmation');
 
