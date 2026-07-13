@@ -7,8 +7,8 @@ Use this verifier to collect confined source and emulator evidence when GitHub-h
 The official wrappers load the canonical pins from `scripts/workstream-c-current-candidates.env`:
 
 - Admin: `d4907967f0f8a6f08824d5ced020926784c97a15`
-- Privacy: `d205b9c98488d7411eb88ebb00c2f13ee79cdfed`
-- Jobs: `1d8efd602b5a2dfe671a7b2388f17d0789b88955`
+- Privacy: `5ab54c76677dd1b22ab10eedb0c107f118dd9650`
+- Jobs: `adad7c38bd3b31ead5e7e202ec734d52104c069a`
 
 These values must be refreshed whenever a candidate branch advances. Explicit `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA` overrides are permitted only as full lowercase 40-character SHAs and are preserved by the official wrappers for confined exact-candidate verification.
 
