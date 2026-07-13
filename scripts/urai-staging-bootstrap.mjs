@@ -53,6 +53,7 @@ const commands = [
   ['npm', ['--prefix', 'functions', 'install']],
   ['npm', ['run', 'doctor']],
   ['npm', ['run', 'test:workstream-c-root']],
+  ['npm', ['run', 'test:workstream-c-confinement']],
   ['npm', ['run', 'check:deploy']],
   ['npm', ['run', 'check:lockfile']],
   ['npm', ['run', 'check:types']],
