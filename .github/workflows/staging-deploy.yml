@@ -131,7 +131,7 @@ jobs:
           name: urai-staging-authority-${{ env.TARGET_SHA }}-${{ github.run_id }}
           path: artifacts/deploy/staging-authority-verification.md
           if-no-files-found: error
-          retention-days: 365
+          retention-days: 90
 
   deploy:
     name: Deploy exact main to protected staging
@@ -250,4 +250,4 @@ jobs:
             URAI_STAGING_LOCK_FAILED.md
             artifacts/deploy/staging-protected-deploy.md
           if-no-files-found: error
-          retention-days: 365
+          retention-days: 90
