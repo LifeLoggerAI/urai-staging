@@ -6,7 +6,9 @@ const EXPECTED_STAGING_PROJECT = 'urai-staging';
 const EXPECTED_HOSTING_SITE = 'urai-staging';
 const EXPECTED_STAGING_URL = 'https://urai-staging.web.app';
 const DEPRECATED_STAGING_PROJECT = 'urai-staging-35414255';
+const PRODUCTION_PROJECT = 'urai-4dc1d';
 const requiredFiles = [
+  '.env.example',
   '.firebaserc',
   'firebase.json',
   'firestore.rules',
@@ -56,6 +58,37 @@ if (firebaserc) {
   if (projects.default !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.default must be ${EXPECTED_STAGING_PROJECT}`);
   if (aliases.join(',') !== 'default,staging') failures.push('.firebaserc must define only default and staging project aliases');
   if (Object.prototype.hasOwnProperty.call(projects, 'production')) failures.push('.firebaserc must not define a production alias');
+}
+
+const environmentText = readText('ENVIRONMENT.md');
+if (!environmentText.includes('must keep only the nonproduction aliases')) failures.push('ENVIRONMENT.md must require only nonproduction Firebase aliases');
+if (!environmentText.includes('A `production` alias is prohibited')) failures.push('ENVIRONMENT.md must explicitly prohibit the production alias');
+if (environmentText.includes(DEPRECATED_STAGING_PROJECT) || environmentText.includes(PRODUCTION_PROJECT)) {
+  failures.push('ENVIRONMENT.md must not name deprecated staging or production project identifiers');
+}
+
+const canonicalAppText = readText('URAI_STAGING_CANONICAL_APP.md');
+if (!canonicalAppText.includes(`- Staging project: \`${EXPECTED_STAGING_PROJECT}\``)) failures.push(`URAI_STAGING_CANONICAL_APP.md must bind ${EXPECTED_STAGING_PROJECT}`);
+if (!canonicalAppText.includes(`- Staging URL: \`${EXPECTED_STAGING_URL}\``)) failures.push(`URAI_STAGING_CANONICAL_APP.md must bind ${EXPECTED_STAGING_URL}`);
+if (!canonicalAppText.includes('must not define, document as a selectable alias, or deploy to a production Firebase project')) {
+  failures.push('URAI_STAGING_CANONICAL_APP.md must prohibit production project selection and deployment');
+}
+if (canonicalAppText.includes(DEPRECATED_STAGING_PROJECT) || canonicalAppText.includes(PRODUCTION_PROJECT)) {
+  failures.push('URAI_STAGING_CANONICAL_APP.md must not name deprecated staging or production project identifiers');
+}
+
+const envExampleText = readText('.env.example');
+for (const marker of [
+  `URAI_STAGING_PROJECT_ID=${EXPECTED_STAGING_PROJECT}`,
+  `URAI_STAGING_URL=${EXPECTED_STAGING_URL}`,
+  'URAI_PRODUCTION_DEPLOY_APPROVED=0',
+  `GOOGLE_CLOUD_PROJECT=${EXPECTED_STAGING_PROJECT}`,
+  `GCLOUD_PROJECT=${EXPECTED_STAGING_PROJECT}`
+]) {
+  if (!envExampleText.includes(marker)) failures.push(`.env.example must include ${marker}`);
+}
+if (envExampleText.includes('URAI_PRODUCTION_PROJECT_ID=') || envExampleText.includes(PRODUCTION_PROJECT) || envExampleText.includes(DEPRECATED_STAGING_PROJECT)) {
+  failures.push('.env.example must not expose production or deprecated project selectors');
 }
 
 const firebaseJson = readJson('firebase.json');
@@ -111,8 +144,8 @@ if (!javaRunnerText.includes('nix-shell') || !javaRunnerText.includes('command -
 const lockScriptText = readText('scripts/urai-staging-lock.sh');
 if (!lockScriptText.includes(EXPECTED_STAGING_PROJECT)) failures.push(`scripts/urai-staging-lock.sh must explicitly target ${EXPECTED_STAGING_PROJECT}`);
 if (!lockScriptText.includes(`hosting:"$EXPECTED_HOSTING_SITE"`)) failures.push('scripts/urai-staging-lock.sh must deploy the explicit hosting site target');
-if (lockScriptText.includes('--project "$URAI_PRODUCTION_PROJECT_ID"') || lockScriptText.includes('--project $URAI_PRODUCTION_PROJECT_ID')) {
-  failures.push('scripts/urai-staging-lock.sh must not deploy to the production project env var');
+if (lockScriptText.includes('URAI_PRODUCTION_PROJECT_ID') || lockScriptText.includes(PRODUCTION_PROJECT)) {
+  failures.push('scripts/urai-staging-lock.sh must not reference production project selectors');
 }
 
 const smokeScriptText = readText('scripts/smoke-staging.sh');
