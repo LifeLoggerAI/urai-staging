@@ -4,13 +4,9 @@ Use this verifier to collect confined source and emulator evidence when GitHub-h
 
 ## Current exact candidates
 
-The official wrappers load the canonical pins from `scripts/workstream-c-current-candidates.env`:
+The official wrappers load the canonical pins from `scripts/workstream-c-current-candidates.env`. The current values are mirrored in `docs/WORKSTREAM_C_CURRENT_CANDIDATES.md`.
 
-- Admin: `d4907967f0f8a6f08824d5ced020926784c97a15`
-- Privacy: `39e658548a440be2c63462fab5b651c065ff8f53`
-- Jobs: `25afdff62c43037c16e44ad1be88aa9058bb729a`
-
-These values must be refreshed whenever a candidate branch advances. Explicit `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA` overrides are permitted only as full lowercase 40-character SHAs and are preserved by the official wrappers for confined exact-candidate verification.
+Do not duplicate candidate SHAs in this runbook. Refresh the machine-readable manifest and its human mirror together whenever a candidate branch advances. Explicit `ADMIN_SHA`, `PRIVACY_SHA`, and `JOBS_SHA` overrides are permitted only as full lowercase 40-character SHAs and are preserved by the official wrappers for confined exact-candidate verification.
 
 ## Standalone no-mutation verifier
 
@@ -34,6 +30,8 @@ git clone --branch workstream-c-manual-verification-20260711 \
 cd ~/urai-staging-manual
 bash scripts/run-workstream-c-cloud-shell.sh
 ```
+
+`scripts/run-workstream-c-manual-verification.sh` is an equivalent public entrypoint. It routes through `run-workstream-c-cloud-shell.sh`; it cannot call the internal verifier core directly.
 
 The default verifier is read-only with respect to GitHub, cloud infrastructure, provider systems, billing, and production data. It does not deploy, push candidate branches, create infrastructure, call paid providers, seed cloud Firestore, alter credentials, or mutate production data.
 
@@ -61,6 +59,8 @@ The launcher:
 - isolates Firebase and Cloud SDK configuration from user credentials;
 - rejects reachable production credentials and persistent user configuration;
 - leaves global Cloud Shell Node, npm, and pnpm installations untouched.
+
+The public manual entrypoint always enters through this launcher. The launcher invokes the internal verifier core only after remote-head, cleanup, disk, path, and environment controls pass.
 
 The evidence bundle contains exact verifier and candidate identities, step logs and exit codes, the Admin emulator receipt when generated, final Git status, mandatory `final-source-clean` results, compact failure excerpts, and a SHA-256 manifest.
 
