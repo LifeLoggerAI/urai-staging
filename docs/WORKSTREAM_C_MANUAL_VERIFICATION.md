@@ -68,21 +68,19 @@ Any failed command, SHA mismatch, dirty verifier checkout, candidate residue, cr
 
 ## Jobs dependency repair operator
 
-`scripts/repair-jobs-unused-error-reporting.sh` is a separate repair workflow, not the standalone verifier. It may create one local Jobs candidate only after proving the expected remote Jobs head, exact changed-file boundary, dependency audit state, worker build inputs, frozen installs, source checks, typecheck, build, and tests.
+`scripts/repair-jobs-unused-error-reporting.sh` is a separate local repair verifier, not the standalone system verifier. It may create one confined local Jobs candidate only after proving the expected remote Jobs head, exact changed-file boundary, dependency audit state, worker build inputs, frozen installs, source checks, typecheck, build, and tests.
 
 The repair operator then runs the complete confined Admin/Privacy/Jobs verifier against that exact local Jobs commit and rechecks both the Jobs remote branch and the Staging control branch.
 
-The default repair mode performs local verification only and exits before GitHub authentication or remote mutation. Publishing the exact verified repair requires both:
+The official repair command is local-verification-only. It does not require GitHub CLI or authentication, and it removes every push and PR-comment path from the temporary executable before running it:
 
 ```bash
-JOBS_REPAIR_PUBLISH=1 \
-JOBS_REPAIR_PUBLISH_CONFIRM=PUBLISH_VERIFIED_JOBS_REPAIR \
 bash scripts/repair-jobs-unused-error-reporting.sh
 ```
 
-A push or required pull-request receipt comment failure is fatal. The operator must never report success after an unrecorded remote mutation.
+`JOBS_REPAIR_PUBLISH` must remain `0`. Remote publication is intentionally unavailable from this command. A separately reviewed authority would be required to publish any resulting candidate.
 
-This repair path does not authorize deployment, infrastructure creation, provider calls, billing actions, credential changes, or production-data operations.
+This repair path does not authorize deployment, infrastructure creation, provider calls, billing actions, credential changes, GitHub mutation, or production-data operations.
 
 ## Evidence limits
 
