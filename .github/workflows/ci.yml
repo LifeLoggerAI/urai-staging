@@ -45,11 +45,11 @@ jobs:
           cache: npm
           cache-dependency-path: functions/package-lock.json
 
-      - name: Setup Java for Firebase emulators
-        uses: actions/setup-java@v4
+      - name: Setup Java 21 for Firebase emulators
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.7.1
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '21'
 
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
@@ -65,4 +65,82 @@ jobs:
           path: |
             artifacts/launch/staging-bootstrap-report.json
             artifacts/launch/staging-bootstrap-summary.md
-          if-no-files-found: warn
+          if-no-files-found: error
+          retention-days: 365
+
+  cross-service:
+    name: Confined Admin Privacy Jobs exact-head verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact reviewed head
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact clean head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Setup Java 21 for Firebase emulators
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Capture confined cross-service verification
+        id: cross_service
+        shell: bash
+        run: |
+          set +e
+          set -o pipefail
+          evidence_dir="$RUNNER_TEMP/workstream-c-evidence"
+          rm -rf -- "$evidence_dir"
+          mkdir -p -- "$evidence_dir"
+
+          bash scripts/run-workstream-c-cloud-shell.sh 2>&1 | tee "$evidence_dir/verifier.log"
+          status=${PIPESTATUS[0]}
+          printf '%s\n' "$status" > "$evidence_dir/exit-code.txt"
+
+          root="$(find /tmp -maxdepth 1 -type d -name 'urai-workstream-c-manual-*' -print | sort | tail -n 1)"
+          if [ -n "$root" ] && [ -d "$root/evidence" ]; then
+            cp -a "$root/evidence/." "$evidence_dir/"
+          fi
+
+          {
+            echo "verifier_sha=$TARGET_SHA"
+            echo "admin_sha=$(sed -n "s/^ADMIN_SHA='\([^']*\)'/\1/p" scripts/workstream-c-current-candidates.env)"
+            echo "privacy_sha=$(sed -n "s/^PRIVACY_SHA='\([^']*\)'/\1/p" scripts/workstream-c-current-candidates.env)"
+            echo "jobs_sha=$(sed -n "s/^JOBS_SHA='\([^']*\)'/\1/p" scripts/workstream-c-current-candidates.env)"
+            echo "credentialed=false"
+            echo "protected_apply=false"
+          } > "$evidence_dir/authority.env"
+
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload confined cross-service evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: urai-workstream-c-cross-service-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/workstream-c-evidence
+          if-no-files-found: error
+          retention-days: 365
+
+      - name: Prove final clean head
+        if: always()
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Enforce confined cross-service result
+        shell: bash
+        run: test "${{ steps.cross_service.outputs.status }}" = '0'
