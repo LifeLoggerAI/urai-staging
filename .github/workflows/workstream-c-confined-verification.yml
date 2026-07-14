@@ -1,0 +1,109 @@
+name: Workstream C Confined Cross-Repository Verification
+
+on:
+  push:
+    branches:
+      - workstream-c-manual-verification-20260711
+    paths:
+      - '.github/workflows/workstream-c-confined-verification.yml'
+      - 'scripts/run-workstream-c-cloud-shell.sh'
+      - 'scripts/run-workstream-c-cloud-shell-core.sh'
+      - 'scripts/run-workstream-c-manual-verification-core.sh'
+      - 'scripts/resolve-workstream-c-root.mjs'
+      - 'scripts/test-workstream-c-confinement.mjs'
+      - 'scripts/test-workstream-c-root-resolver.mjs'
+      - 'scripts/workstream-c-current-candidates.env'
+      - 'docs/WORKSTREAM_C_CURRENT_CANDIDATES.md'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/workstream-c-confined-verification.yml'
+      - 'scripts/run-workstream-c-cloud-shell.sh'
+      - 'scripts/run-workstream-c-cloud-shell-core.sh'
+      - 'scripts/run-workstream-c-manual-verification-core.sh'
+      - 'scripts/resolve-workstream-c-root.mjs'
+      - 'scripts/test-workstream-c-confinement.mjs'
+      - 'scripts/test-workstream-c-root-resolver.mjs'
+      - 'scripts/workstream-c-current-candidates.env'
+      - 'docs/WORKSTREAM_C_CURRENT_CANDIDATES.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workstream-c-confined-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+env:
+  TARGET_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  WORKSTREAM_C_PUBLISH_SUMMARY: '0'
+
+jobs:
+  verify:
+    name: Verify pinned Admin, Privacy, and Jobs candidates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact verifier head
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact clean verifier head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Install nvm for the confined multi-version verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          export NVM_DIR="$HOME/.nvm"
+          if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+            git clone --depth 1 --branch v0.40.3 https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+          fi
+          . "$NVM_DIR/nvm.sh"
+          nvm --version
+
+      - name: Run confined exact-candidate verification
+        id: verifier
+        shell: bash
+        run: |
+          set -o pipefail
+          bash scripts/run-workstream-c-cloud-shell.sh 2>&1 | tee "$RUNNER_TEMP/workstream-c-confined-verifier.log"
+
+      - name: Collect evidence bundle
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/workstream-c-confined-evidence"
+          cp "$RUNNER_TEMP/workstream-c-confined-verifier.log" "$RUNNER_TEMP/workstream-c-confined-evidence/"
+          while IFS= read -r -d '' bundle; do
+            cp "$bundle" "$RUNNER_TEMP/workstream-c-confined-evidence/"
+          done < <(find /tmp -maxdepth 2 -type f -name 'urai-workstream-c-manual-evidence-*.tar.gz' -print0 2>/dev/null)
+          find "$RUNNER_TEMP/workstream-c-confined-evidence" -maxdepth 1 -type f -print
+
+      - name: Upload exact-head confined evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: workstream-c-confined-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/workstream-c-confined-evidence
+          if-no-files-found: error
+          retention-days: 365
+
+      - name: Prove final clean verifier head
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
