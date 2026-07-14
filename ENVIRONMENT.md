@@ -1,74 +1,72 @@
 # URAI Staging Environment
 
-## Required Runtime
+## Required runtime
 
-- Node.js: 20
-- Package manager: npm
-- Firebase CLI: required for deploy and emulator commands
-- Java: required for Firestore emulator tests
+- Node.js 20
+- npm
+- Java 21 for Firebase emulator tests
+- Firebase CLI `15.23.0` in the protected deploy job
 
-## Firebase Project Binding
+## Firebase project binding
 
-`.firebaserc` must keep:
+`.firebaserc` must keep only the nonproduction aliases:
 
 ```json
 {
   "projects": {
     "default": "urai-staging",
-    "staging": "urai-staging",
-    "production": "urai-4dc1d"
+    "staging": "urai-staging"
   }
 }
 ```
 
-The deploy script refuses to deploy unless the staging project is `urai-staging`.
+A `production` alias is prohibited. Staging commands must not have a local alias or environment selector capable of targeting production.
 
-## Hosting
+## Canonical staging surface
 
+- Project: `urai-staging`
 - Hosting site: `urai-staging`
-- Default URL: `https://urai-staging.web.app`
+- URL: `https://urai-staging.web.app`
 - Public directory: `public`
 - SPA fallback: `public/index.html`
 
-## Optional Environment Variables
+The Hosting site must already exist. Release automation must fail rather than create infrastructure.
 
-| Variable | Default | Purpose |
+## Non-secret staging variables
+
+| Variable | Required value | Purpose |
 |---|---|---|
-| `URAI_STAGING_PROJECT_ID` | `urai-staging` | Must remain `urai-staging` for staging lock and smoke scripts. |
-| `URAI_STAGING_URL` | `https://urai-staging.web.app` | Live smoke target URL. |
-| `URAI_RELEASE_CANDIDATE_SHA` | current git SHA or `unknown` | Stamped into buildinfo and lock report. |
-| `URAI_DEPLOYED_AT` | deploy-time UTC timestamp | Stamped into buildinfo and lock report. |
-| `URAI_PRODUCTION_DEPLOY_APPROVED` | `0` | Must not be `1` during staging deploy. |
+| `URAI_STAGING_PROJECT_ID` | `urai-staging` | Canonical staging project. |
+| `URAI_STAGING_URL` | `https://urai-staging.web.app` | Canonical smoke target. |
+| `URAI_RELEASE_CANDIDATE_SHA` | exact current `main` SHA | Deployed identity. |
+| `URAI_PRODUCTION_DEPLOY_APPROVED` | `0` | Production must remain disabled. |
+| `URAI_STAGING_PROTECTED_DEPLOY` | `1` only in the protected deploy job | Prevents local or ad hoc deploys. |
 
-## Functions
+## Local source and emulator work
 
-Functions use Firebase Admin SDK default credentials inside Firebase. Local emulator runs use Firebase emulator credentials and project binding.
-
-## Local Setup
+Local environments may run noncredentialed checks only:
 
 ```bash
 npm --prefix functions ci
 npm run check:deploy
 npm run check
-```
-
-## Emulator Setup
-
-```bash
-npm run emulators
+npm run test:rules
 npm run test:e2e
 ```
 
-In Firebase Studio or IDX, rebuild the workspace if Java is missing. The Java dependency is provided through Nix.
+Local environments must not run the staging deploy command. The lock script deliberately rejects execution outside its protected GitHub Actions job.
 
-## Deploy Setup
+## Protected deployment
 
-```bash
-firebase login
-firebase use urai-staging
-npm run deploy:staging
-```
+The only deploy authority is `.github/workflows/staging-deploy.yml`, dispatched from `main` with:
 
-## Secrets
+- the exact current `main` SHA;
+- project confirmation `urai-staging`;
+- checks-only mode first;
+- live-deploy mode only after accepted review and evidence.
 
-No production API keys, AI provider keys, or private user data should be committed to this repo. Staging smoke tests should use synthetic data only.
+The credentialed job uses the GitHub `staging` environment and reads `FIREBASE_SERVICE_ACCOUNT_URAI_STAGING`. The credential is written only beneath `RUNNER_TEMP`, used for the exact deploy, and removed afterward.
+
+## Secrets and data
+
+No production API key, provider key, Firebase credential, or private user data belongs in this repository. Staging verification and smoke tests must use synthetic data. Production deployment is outside this repository's authority.

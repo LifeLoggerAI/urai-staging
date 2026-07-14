@@ -27,11 +27,12 @@ This repository owns the URAI staging backend and validation surface:
 
 ## Firebase project binding
 
-- Staging project: `urai-staging-35414255`
-- Staging URL: `https://urai-staging-35414255.web.app`
-- Production project reference: `urai-4dc1d`
+- Staging project: `urai-staging`
+- Staging URL: `https://urai-staging.web.app`
 
-The staging lock script must deploy only to `urai-staging-35414255`. Production deployment is explicitly out of scope for this repo script.
+This repository must not define, document as a selectable alias, or deploy to a production Firebase project. Its `.firebaserc` may contain only `default` and `staging`, both bound to `urai-staging`.
+
+The staging lock script must deploy only to `urai-staging`. Production deployment is explicitly out of scope for this repository and its scripts.
 
 ## Deployment command
 
