@@ -15,6 +15,7 @@ const cloudEntry = fs.readFileSync(path.join(root, 'scripts/run-workstream-c-clo
 const repairEntry = fs.readFileSync(path.join(root, 'scripts/repair-jobs-unused-error-reporting.sh'), 'utf8');
 const candidates = fs.readFileSync(path.join(root, 'scripts/workstream-c-current-candidates.env'), 'utf8');
 const candidateDoc = fs.readFileSync(path.join(root, 'docs/WORKSTREAM_C_CURRENT_CANDIDATES.md'), 'utf8');
+const manualDoc = fs.readFileSync(path.join(root, 'docs/WORKSTREAM_C_MANUAL_VERIFICATION.md'), 'utf8');
 
 for (const marker of [
   'WORKSTREAM_C_ROOT must be set by the confined Workstream C wrapper',
@@ -37,9 +38,14 @@ for (const marker of [
   'CLOUDSDK_CONFIG="$ROOT/gcloud-config"',
   'FIREBASE_EMULATORS_PATH="$ROOT/firebase-emulators"',
   'JOBS_LOCAL_SOURCE="$JOBS_LOCAL_SOURCE"',
+  'REMOTE_CONTROL_SHA=',
+  'cleanup_old_verifier_data',
+  'MIN_FREE_KB',
+  'run-workstream-c-manual-verification-core.sh',
 ]) {
   assert.ok(wrapper.includes(marker), `confined wrapper core missing marker: ${marker}`);
 }
+assert.equal(wrapper.includes('run-workstream-c-manual-verification.sh'), false, 'confined launcher must invoke the internal verifier core directly');
 
 const localCommit = repair.indexOf("git commit -m 'fix(jobs): eliminate dependency audit findings'");
 const fullVerifier = repair.indexOf('bash scripts/run-workstream-c-cloud-shell.sh');
@@ -80,10 +86,13 @@ for (const [name, sha] of Object.entries(expected)) {
   assert.ok(candidateDoc.includes(`\`${sha}\``), `candidate documentation missing ${name}`);
 }
 assert.ok(candidateDoc.includes('scripts/workstream-c-current-candidates.env'));
+assert.ok(manualDoc.includes('docs/WORKSTREAM_C_CURRENT_CANDIDATES.md'));
+assert.ok(manualDoc.includes('scripts/workstream-c-current-candidates.env'));
+assert.doesNotMatch(manualDoc, /^- (?:Admin|Privacy|Jobs): `(?:[0-9a-f]{40})`$/m, 'manual runbook must not duplicate candidate literals');
 
-for (const [name, entry, coreName] of [
-  ['manual', manualEntry, 'run-workstream-c-manual-verification-core.sh'],
-  ['cloud', cloudEntry, 'run-workstream-c-cloud-shell-core.sh'],
+for (const [name, entry] of [
+  ['manual', manualEntry],
+  ['cloud', cloudEntry],
 ]) {
   assert.ok(entry.includes('workstream-c-current-candidates.env'), `${name} entrypoint must source the shared candidate manifest`);
   assert.ok(entry.includes('ADMIN_SHA_OVERRIDE="${ADMIN_SHA-}"'), `${name} entrypoint must preserve Admin override`);
@@ -93,17 +102,19 @@ for (const [name, entry, coreName] of [
   assert.ok(entry.includes('[ -z "$PRIVACY_SHA_OVERRIDE" ] || PRIVACY_SHA="$PRIVACY_SHA_OVERRIDE"'), `${name} entrypoint must restore Privacy override`);
   assert.ok(entry.includes('[ -z "$JOBS_SHA_OVERRIDE" ] || JOBS_SHA="$JOBS_SHA_OVERRIDE"'), `${name} entrypoint must restore Jobs override`);
   assert.ok(entry.includes('export ADMIN_SHA PRIVACY_SHA JOBS_SHA'), `${name} entrypoint must export exact candidates`);
-  assert.ok(entry.includes(coreName), `${name} entrypoint must invoke its preserved core`);
 }
+assert.ok(cloudEntry.includes('run-workstream-c-cloud-shell-core.sh'), 'cloud entrypoint must invoke confined launcher core');
+assert.ok(manualEntry.includes('run-workstream-c-cloud-shell.sh'), 'manual entrypoint must route through the confined launcher');
+assert.equal(manualEntry.includes('run-workstream-c-manual-verification-core.sh'), false, 'manual entrypoint must not invoke verifier core directly');
 
-function proveWrapperOverrides(wrapperName, coreName) {
+function proveWrapperOverrides(wrapperName, delegatedName) {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'urai-workstream-c-wrapper-test-'));
   try {
     fs.copyFileSync(path.join(root, `scripts/${wrapperName}`), path.join(temp, wrapperName));
     fs.copyFileSync(path.join(root, 'scripts/workstream-c-current-candidates.env'), path.join(temp, 'workstream-c-current-candidates.env'));
-    fs.writeFileSync(path.join(temp, coreName), '#!/usr/bin/env bash\nset -euo pipefail\nprintf "%s|%s|%s\\n" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"\n');
+    fs.writeFileSync(path.join(temp, delegatedName), '#!/usr/bin/env bash\nset -euo pipefail\nprintf "%s|%s|%s\\n" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"\n');
     fs.chmodSync(path.join(temp, wrapperName), 0o755);
-    fs.chmodSync(path.join(temp, coreName), 0o755);
+    fs.chmodSync(path.join(temp, delegatedName), 0o755);
     const overrides = { ADMIN_SHA: 'a'.repeat(40), PRIVACY_SHA: 'b'.repeat(40), JOBS_SHA: 'c'.repeat(40) };
     const result = spawnSync('bash', [path.join(temp, wrapperName)], { cwd: temp, encoding: 'utf8', env: { ...process.env, ...overrides } });
     assert.equal(result.status, 0, `${wrapperName} override probe failed: ${result.stderr}`);
@@ -114,7 +125,7 @@ function proveWrapperOverrides(wrapperName, coreName) {
 }
 
 proveWrapperOverrides('run-workstream-c-cloud-shell.sh', 'run-workstream-c-cloud-shell-core.sh');
-proveWrapperOverrides('run-workstream-c-manual-verification.sh', 'run-workstream-c-manual-verification-core.sh');
+proveWrapperOverrides('run-workstream-c-manual-verification.sh', 'run-workstream-c-cloud-shell.sh');
 
 for (const marker of [
   'workstream-c-current-candidates.env',
@@ -146,4 +157,4 @@ assert.ok(manual.includes('Summary publication requested but gh is not authentic
 assert.ok(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY"'));
 assert.equal(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true'), false);
 
-console.log('PASS: Workstream C confinement, override authority, no-publication defaults, explicit repair publication, and live exact-candidate manifest');
+console.log('PASS: Workstream C confinement, launcher routing, override authority, no-publication defaults, explicit repair publication, and live exact-candidate manifest');
