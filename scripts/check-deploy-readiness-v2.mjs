@@ -29,7 +29,7 @@ for (const file of requiredFiles) {
 }
 
 function text(path) {
-  return existsSync(path) ? readFileSync(path, 'utf8') : '';
+  return existsSync(path) ? readFileSync(path, 'utf8').replace(/\r\n?/g, '\n') : '';
 }
 
 function json(path) {
@@ -174,20 +174,29 @@ requirePhrases('scripts/smoke-staging.sh', [
 rejectPhrases('scripts/smoke-staging.sh', ['launch-smoke@example.com', 'Staging smoke check']);
 
 requirePhrases('scripts/urai-staging-lock.sh', [
+  'URAI_STAGING_PROTECTED_DEPLOY',
+  'GITHUB_ACTIONS',
+  'refs/heads/main',
+  'git ls-remote --exit-code origin refs/heads/main',
   'git merge-base --is-ancestor',
   'URAI_STAGING_PREFLIGHT_VERIFIED',
   'URAI_STAGING_AUTHORITY_SCOPE',
   'consumer-system mutations',
+  'RUNNER_TEMP',
   'firebase hosting:sites:list --project "$EXPECTED_PROJECT_ID" --json',
   'exact provider identity',
   'ALLOW_CREATE_STAGING_HOSTING_SITE',
   'scripts/staging-prebuilt-manifest.mjs --verify-materialized',
   'URAI_RELEASE_CANDIDATE_SHA=$RELEASE_SHA',
   'URAI_DEPLOYMENT_WORKFLOW_RUN_ID=$GITHUB_RUN_ID',
-  "schemaVersion: 'urai-staging-mutation-1'",
+  "schemaVersion: 'urai-staging-mutation-2'",
   'deploymentCommandCompleted',
+  'hostingSitePreExisted: true',
+  'productionDeploymentPerformed: false',
+  'secretValuesIncluded: false',
   'publicVerificationCompleted: false',
-  'Staging mutation completed; public verification remains required',
+  'Staging mutation completed for exact main',
+  'public verification remains required',
 ]);
 rejectPhrases('scripts/urai-staging-lock.sh', [
   'firebase hosting:sites:create',
@@ -196,15 +205,17 @@ rejectPhrases('scripts/urai-staging-lock.sh', [
 ]);
 
 requirePhrases('.github/workflows/staging-deploy.yml', [
-  'expected_sha:',
+  'expected_main_sha:',
   'rollback_sha:',
   'run_live_deploy:',
   'environment: staging',
-  'ref: ${{ inputs.expected_sha }}',
+  'ref: ${{ env.TARGET_SHA }}',
   'persist-credentials: false',
+  'git ls-remote --exit-code origin refs/heads/main',
   'git merge-base --is-ancestor',
-  'Create and verify source-bound staging artifact',
-  'Download prebuilt artifact outside repository',
+  'Run credential-free protected staging verification',
+  'Seal source-bound staging prebuilt artifact',
+  'Download source-bound prebuilt artifact outside repository',
   'Verify external artifact before credentials exist',
   'Install exact Firebase CLI outside repository',
   'Materialize verified Functions output before credentials exist',
@@ -213,23 +224,23 @@ requirePhrases('.github/workflows/staging-deploy.yml', [
   "ALLOW_CREATE_STAGING_HOSTING_SITE: '0'",
   'Credential project mismatch',
   'Destroy staging credentials before evidence handoff',
-  'Upload mutation evidence after credential cleanup',
+  'Upload protected staging mutation evidence',
   'Public staging verification without cloud identity',
   'Bind public verification to mutation receipt',
   'Run non-mutating live smoke',
-  'publicVerificationCompleted:verified',
+  'publicVerificationCompleted: verified',
 ]);
 requireOrder('.github/workflows/staging-deploy.yml', [
-  'Run exact-head staging verification without cloud credentials',
-  'Create and verify source-bound staging artifact',
-  'Download prebuilt artifact outside repository',
+  'Run credential-free protected staging verification',
+  'Seal source-bound staging prebuilt artifact',
+  'Download source-bound prebuilt artifact outside repository',
   'Verify external artifact before credentials exist',
   'Install exact Firebase CLI outside repository',
   'Materialize verified Functions output before credentials exist',
   'Require exact staging credential',
   'Deploy verified artifact to staging only',
   'Destroy staging credentials before evidence handoff',
-  'Upload mutation evidence after credential cleanup',
+  'Upload protected staging mutation evidence',
   'Public staging verification without cloud identity',
 ], 'credential-free preflight, protected mutation, cleanup, and public verification order');
 
@@ -245,11 +256,13 @@ if (publicSection.includes('secrets.') || publicSection.includes('environment: s
 }
 
 requirePhrases('.github/workflows/urai-production-verify.yml', [
-  'ref: ${{ github.event.pull_request.head.sha || github.sha }}',
+  'ref: ${{ env.TARGET_SHA }}',
+  'fetch-depth: 0',
   'persist-credentials: false',
-  'Setup Java for Firebase emulators',
+  'Setup Java 21 for Firebase emulators',
   'node scripts/urai-staging-bootstrap.mjs',
   'node scripts/validate-launch-evidence.mjs',
+  'node scripts/urai-production-verify.mjs',
 ]);
 
 requirePhrases('ENVIRONMENT_AUTHORITY.md', [
