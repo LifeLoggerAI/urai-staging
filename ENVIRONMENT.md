@@ -9,17 +9,18 @@
 
 ## Firebase Project Binding
 
-`.firebaserc` must keep:
+`.firebaserc` must keep only the nonproduction aliases:
 
 ```json
 {
   "projects": {
     "default": "urai-staging",
-    "staging": "urai-staging",
-    "production": "urai-4dc1d"
+    "staging": "urai-staging"
   }
 }
 ```
+
+A `production` alias is prohibited in this repository, even when it points at the correct production project. Staging commands must not have a local alias that can select or deploy to production.
 
 The deploy script refuses to deploy unless the staging project is `urai-staging`.
 
