@@ -22,4 +22,4 @@
 
 Source, local-control, and confined cross-repository gates may be called green only for the unchanged exact head named by inspected CI artifacts and recorded PR/Drive receipts.
 
-Protected Firebase staging deploy, live read-back, denial and tenant-isolation proof, secret/environment availability, monitoring, recovery, and rollback remain unproven. Keep this repository unmerged and do not call it live-verified until those receipts exist.
+Protected Firebase staging deploy, live read-back, denial and tenant-isolation proof, secret/environment availability, monitoring, recovery, and rollback remain unproven. This repository must remain unmerged and must not be called live-verified until those receipts exist.
