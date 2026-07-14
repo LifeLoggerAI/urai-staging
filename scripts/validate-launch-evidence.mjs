@@ -16,7 +16,9 @@ if (!problems.length) {
   const passedCommands = commands.filter(
     (command) => command?.status === 'passed' && command?.exitCode === 0,
   );
-  const expectedScore = commands.length * 10;
+  const expectedScore = commands.length === 0
+    ? 0
+    : Math.round((passedCommands.length / commands.length) * 100);
 
   if (report.repo !== 'LifeLoggerAI/urai-staging') problems.push(`Unexpected repo: ${report.repo}`);
   if (report.kind !== 'staging-bootstrap') problems.push(`Unexpected evidence kind: ${report.kind}`);
@@ -35,6 +37,9 @@ if (!problems.length) {
   }
   if (report.launchScore !== expectedScore) {
     problems.push(`Evidence score is ${report.launchScore}, expected ${expectedScore}.`);
+  }
+  if (report.launchScore < 0 || report.launchScore > 100) {
+    problems.push(`Evidence score must remain within 0..100: ${report.launchScore}.`);
   }
   for (const command of commands) {
     if (command.status !== 'passed' || command.exitCode !== 0) {
