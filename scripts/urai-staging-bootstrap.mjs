@@ -44,17 +44,6 @@ if (process.env.URAI_SKIP_RULES === '1') {
   report.skipped.push('URAI_SKIP_RULES was ignored; canonical staging verification always runs emulator-backed rules tests.');
 }
 
-if (problems.length) {
-  report.status = 'failed';
-  report.finishedAt = new Date().toISOString();
-  report.error = problems.join(' ');
-  finalizeScore();
-  writeEvidence();
-  console.error('URAI staging bootstrap cannot continue:');
-  for (const problem of problems) console.error(`- ${problem}`);
-  process.exit(1);
-}
-
 const commands = [
   ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts']],
   ['npm', ['run', 'doctor']],
@@ -69,6 +58,17 @@ const commands = [
   ['npm', ['run', 'build']],
   ['npm', ['run', 'launch:p0']]
 ];
+
+if (problems.length) {
+  report.status = 'failed';
+  report.finishedAt = new Date().toISOString();
+  report.error = problems.join(' ');
+  finalizeScore();
+  writeEvidence();
+  console.error('URAI staging bootstrap cannot continue:');
+  for (const problem of problems) console.error(`- ${problem}`);
+  process.exit(1);
+}
 
 for (const [cmd, args] of commands) {
   const commandText = `${cmd} ${args.join(' ')}`;
@@ -124,8 +124,8 @@ function finalizeScore() {
   report.commandCount = report.commands.length;
   report.passedCount = report.commands.filter((command) => command.status === 'passed').length;
   report.failedCount = report.commands.filter((command) => command.status === 'failed').length;
-  const totalExpected = 10;
-  report.launchScore = Math.round((report.passedCount / totalExpected) * 100);
+  const totalExpected = commands.length;
+  report.launchScore = totalExpected === 0 ? 0 : Math.round((report.passedCount / totalExpected) * 100);
 }
 
 function writeEvidence() {
