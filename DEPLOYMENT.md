@@ -1,83 +1,73 @@
 # URAI Staging Deployment Guide
 
-Repository: LifeLoggerAI/urai-staging
-Firebase project alias: `urai-staging`
-Hosting site: `urai-staging`
-Canonical staging URL: `https://urai-staging.web.app`
+Repository: `LifeLoggerAI/urai-staging`  
+Firebase project: `urai-staging`  
+Hosting site: `urai-staging`  
+Canonical URL: `https://urai-staging.web.app`
 
-## Purpose
+## Authority
 
-This repository deploys the URAI staging backend and validation shell. It is intentionally scoped to staging Firebase infrastructure: Hosting, Cloud Functions, Firestore rules/indexes, Storage rules, and live smoke endpoints.
+Staging deployment is permitted only through `.github/workflows/staging-deploy.yml` (`Staging Deploy Lock`) dispatched from protected `main`.
 
-## Prerequisites
+Direct local deployment is intentionally blocked. Do not run `firebase deploy`, `firebase use`, or `npm run deploy:staging` from a developer shell.
 
-- Node.js 20
-- npm
-- Firebase CLI authenticated with access to `urai-staging`
-- Java/Firebase emulator support for rules tests
-- In Firebase Studio/IDX, use `.idx/dev.nix` for Java instead of installing Java with apt.
+The workflow requires:
 
-## Safe Deploy Path
+- an exact full current-`main` SHA supplied as `expected_main_sha`;
+- `confirm_staging_project` equal to `urai-staging`;
+- an exact, clean checkout equal to unchanged remote `main`;
+- successful readiness, lockfile, lint, typecheck, build, unit, rules, and end-to-end tests;
+- immutable pinned GitHub Actions;
+- a separate `staging` environment for the credentialed job;
+- the `FIREBASE_SERVICE_ACCOUNT_URAI_STAGING` secret available only to that protected job;
+- a pre-existing Firebase Hosting site named `urai-staging`;
+- temporary credentials confined to `RUNNER_TEMP` and removed after use.
 
-```bash
-git clone https://github.com/LifeLoggerAI/urai-staging.git
-cd urai-staging
-git checkout release/urai-staging-v1-integration-audit
-npm --prefix functions ci
-npm run check:deploy
-npm run lint
-npm run typecheck
-npm run build
-npm run test:unit
-npm run test:e2e
-firebase use urai-staging
-npm run deploy:staging
-```
+## Checks-only execution
 
-## What `npm run deploy:staging` Does
+First dispatch `Staging Deploy Lock` from `main` with:
 
-The deploy command delegates to `scripts/urai-staging-lock.sh`, which:
+- `expected_main_sha`: the exact current `main` SHA;
+- `confirm_staging_project`: `urai-staging`;
+- `run_live_deploy`: `false`.
 
-1. Refuses to run if the staging project override is not `urai-staging`.
-2. Refuses to run if a production approval flag is enabled.
-3. Selects Firebase project `urai-staging`.
-4. Confirms or creates Hosting site `urai-staging`.
-5. Installs Functions dependencies.
-6. Runs deploy-readiness checks.
-7. Runs lint, typecheck, build, and unit tests.
-8. Runs emulator-backed E2E tests when `nix-shell` is available.
-9. Deploys Hosting, Functions, Firestore rules, Firestore indexes, and Storage rules.
-10. Runs live smoke checks.
-11. Writes `URAI_STAGING_LOCK.md` on success.
+This produces an immutable checks-only artifact and supplies no staging credentials.
 
-## Manual Smoke After Deploy
+## Protected live deployment
 
-```bash
-URAI_STAGING_PROJECT_ID=urai-staging \
-URAI_STAGING_URL=https://urai-staging.web.app \
-npm run smoke:staging
-```
+Live deployment is allowed only after the exact merged `main` SHA has accepted source, cross-repository, and independent review evidence.
 
-## Direct Endpoint Checks
+Dispatch the same workflow from `main` with:
 
-```bash
-curl -i https://urai-staging.web.app/
-curl -i https://urai-staging.web.app/api/healthz
-curl -i https://urai-staging.web.app/api/buildinfo
-curl -i -X POST https://urai-staging.web.app/api/companion \
-  -H 'Content-Type: application/json' \
-  -d '{"message":"Staging smoke check","source":"manual"}'
-curl -i -X POST https://urai-staging.web.app/api/waitlist \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"launch-smoke@example.com","source":"manual-smoke"}'
-```
+- the unchanged accepted `main` SHA;
+- project confirmation `urai-staging`;
+- `run_live_deploy`: `true`.
 
-## Production Safety
+The workflow re-verifies current remote `main`, enters the protected `staging` environment, materializes a temporary staging credential, and executes the locked deploy script.
 
-Do not deploy this repo to production. Production remains bound to a separate Firebase alias and is intentionally not targeted by `scripts/urai-staging-lock.sh`.
+## Locked deploy behavior
 
-## Evidence to Commit After Successful Deploy
+`scripts/urai-staging-lock.sh`:
 
-- `URAI_STAGING_LOCK.md`
-- Relevant CI/deploy logs copied into release notes or attached to the PR
-- Updated `TEST_REPORT.md` with actual command output summaries
+1. Requires the protected workflow marker and GitHub Actions runtime.
+2. Requires `refs/heads/main`, an exact 40-character candidate SHA, and equality with checkout, workflow SHA, and current remote `main`.
+3. Requires a clean source tree before and after verification.
+4. Requires the canonical staging project and URL and rejects production approval.
+5. Requires a credential file confined under `RUNNER_TEMP`.
+6. Verifies that Hosting site `urai-staging` already exists; it never creates infrastructure.
+7. Runs deploy readiness, lint, typecheck, build, unit tests, rules tests, and end-to-end emulator tests.
+8. Deploys Hosting, Functions, Firestore rules/indexes, and Storage only to `urai-staging`.
+9. Runs strict live smoke tests.
+10. Writes `URAI_STAGING_LOCK.md` containing exact SHA and workflow-run identity.
+
+## Required retained evidence
+
+- checks-only authority artifact;
+- protected deploy artifact;
+- `URAI_STAGING_LOCK.md`;
+- exact workflow run and artifact digests;
+- post-deploy endpoint and build-identity smoke results;
+- denial and tenant-isolation evidence;
+- monitoring, recovery, and rollback receipts.
+
+A successful source or emulator run alone does not make staging live-verified.
