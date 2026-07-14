@@ -11,6 +11,8 @@ STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
 MIN_FREE_KB="${WORKSTREAM_C_MIN_FREE_KB:-8388608}"
 SHA_PATTERN='^[0-9a-f]{40}$'
+ORIGINAL_HOME="${HOME:?HOME must be set}"
+HOST_NVM_DIR="${NVM_DIR:-$ORIGINAL_HOME/.nvm}"
 
 log() { printf '[%s] %s\n' "$(date -u +%FT%TZ)" "$*"; }
 fail() { echo "[workstream-c-cloud-shell] FAIL: $*" >&2; exit 1; }
@@ -28,7 +30,7 @@ ROOT="$(node "$CONTROL_ROOT/scripts/resolve-workstream-c-root.mjs" "$STAMP")"
 
 cleanup_old_verifier_data() {
   local base path
-  for base in "$HOME" /tmp; do
+  for base in "$ORIGINAL_HOME" /tmp; do
     [ -d "$base" ] || continue
     while IFS= read -r -d '' path; do
       log "Removing prior verifier workspace: $path"
@@ -37,15 +39,17 @@ cleanup_old_verifier_data() {
   done
 
   rm -rf -- \
-    "$HOME/.npm/_cacache" \
-    "$HOME/.cache/pnpm" \
-    "$HOME/.local/share/pnpm/store" \
+    "$ORIGINAL_HOME/.npm/_cacache" \
+    "$ORIGINAL_HOME/.cache/pnpm" \
+    "$ORIGINAL_HOME/.local/share/pnpm/store" \
     2>/dev/null || true
 }
 
 cleanup_old_verifier_data
-mkdir -m 700 -p "$ROOT"/{npm-cache,pnpm-store,pip-cache,xdg-config,gcloud-config,firebase-emulators,tmp}
+[ -s "$HOST_NVM_DIR/nvm.sh" ] || fail "nvm is required at $HOST_NVM_DIR"
+mkdir -m 700 -p "$ROOT"/{home,npm-cache,pnpm-store,pip-cache,xdg-config,gcloud-config,firebase-emulators,tmp}
 [ -d "$ROOT" ] && [ ! -L "$ROOT" ] || fail 'Verifier workspace must remain a real directory'
+ln -s "$HOST_NVM_DIR" "$ROOT/home/.nvm"
 
 free_kb="$(df -Pk /tmp | awk 'NR==2 {print $4}')"
 log "Free /tmp workspace: $free_kb KiB"
@@ -57,6 +61,8 @@ fi
 unset FIREBASE_TOKEN GOOGLE_APPLICATION_CREDENTIALS
 export WORKSTREAM_C_CONFINED=1
 export WORKSTREAM_C_ROOT="$ROOT"
+export HOME="$ROOT/home"
+export NVM_DIR="$HOME/.nvm"
 export NPM_CONFIG_CACHE="$ROOT/npm-cache"
 export npm_config_cache="$ROOT/npm-cache"
 export npm_config_store_dir="$ROOT/pnpm-store"
@@ -71,8 +77,12 @@ export TMPDIR="$ROOT/tmp"
 export NO_GCE_CHECK=true
 export CI=1
 
+[ "$HOME" = "$ROOT/home" ] || fail 'Verifier HOME must be confined under the workspace'
+[ ! -e "$HOME/.config/gcloud/application_default_credentials.json" ] || fail 'Ambient Google ADC must not be reachable from confined HOME'
+
 log "Verifier control head: $CONTROL_SHA"
 log "Cloud Shell verifier workspace: $ROOT"
+log "Confined HOME: $HOME"
 log "Admin: $ADMIN_SHA"
 log "Privacy: $PRIVACY_SHA"
 log "Jobs: $JOBS_SHA"
@@ -82,6 +92,9 @@ fi
 
 exec env \
   WORKSTREAM_C_CONFINED=1 \
+  WORKSTREAM_C_ROOT="$ROOT" \
+  HOME="$HOME" \
+  NVM_DIR="$NVM_DIR" \
   ADMIN_SHA="$ADMIN_SHA" \
   PRIVACY_SHA="$PRIVACY_SHA" \
   JOBS_SHA="$JOBS_SHA" \
