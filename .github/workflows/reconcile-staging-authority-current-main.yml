@@ -6,6 +6,13 @@ on:
       - reconcile/staging-authority-current-main-20260714
     paths:
       - .github/workflows/reconcile-staging-authority-current-main.yml
+  pull_request:
+    branches:
+      - main
+    types:
+      - synchronize
+    paths:
+      - .github/workflows/reconcile-staging-authority-current-main.yml
 
 permissions:
   contents: write
@@ -18,14 +25,18 @@ jobs:
   reconcile:
     if: >-
       github.repository == 'LifeLoggerAI/urai-staging' &&
-      github.ref == 'refs/heads/reconcile/staging-authority-current-main-20260714'
+      ((github.event_name == 'push' && github.ref == 'refs/heads/reconcile/staging-authority-current-main-20260714') ||
+       (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'reconcile/staging-authority-current-main-20260714'))
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      AUTHORITY_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      AUTHORITY_BRANCH: reconcile/staging-authority-current-main-20260714
     steps:
       - name: Checkout exact reconciliation head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.AUTHORITY_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -33,8 +44,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$GITHUB_REF" = "refs/heads/reconcile/staging-authority-current-main-20260714"
+          test "$(git rev-parse HEAD)" = "$AUTHORITY_SHA"
+          test "${{ github.event_name }}" = "push" || test "${{ github.event.pull_request.head.ref }}" = "$AUTHORITY_BRANCH"
           test "$(git status --porcelain --untracked-files=all)" = ""
           git fetch --no-tags origin \
             refs/heads/fix/environment-authority-20260706:refs/remotes/origin/fix/environment-authority-20260706
@@ -64,7 +75,7 @@ jobs:
         if: steps.merge.outputs.conflicted == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: staging-authority-reconciliation-conflicts-${{ github.sha }}
+          name: staging-authority-reconciliation-conflicts-${{ env.AUTHORITY_SHA }}
           path: ${{ runner.temp }}/staging-reconciliation
           retention-days: 90
           if-no-files-found: error
@@ -90,7 +101,7 @@ jobs:
           - Current-main base: e789f57d0428c200cb131327cfce963c9ef34792
           - Source authority branch: fix/environment-authority-20260706
           - Source authority head: 9568e09ad536f0fd936b316a5f4deb84fe1ff70d
-          - Trigger SHA: $GITHUB_SHA
+          - Trigger SHA: $AUTHORITY_SHA
           - Deployment performed: false
           - Credential mutation: false
           - Production mutation: false
@@ -113,4 +124,4 @@ jobs:
           git commit -m "Reconcile staging authority onto current main"
           auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
           git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            push origin HEAD:reconcile/staging-authority-current-main-20260714
+            push origin HEAD:$AUTHORITY_BRANCH
