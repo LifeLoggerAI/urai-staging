@@ -86,4 +86,4 @@ exec env \
   PRIVACY_SHA="$PRIVACY_SHA" \
   JOBS_SHA="$JOBS_SHA" \
   JOBS_LOCAL_SOURCE="$JOBS_LOCAL_SOURCE" \
-  bash "$(dirname "$0")/run-workstream-c-manual-verification.sh"
+  bash "$(dirname "$0")/run-workstream-c-manual-verification-core.sh"
