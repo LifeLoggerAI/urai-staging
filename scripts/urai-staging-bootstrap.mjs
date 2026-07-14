@@ -73,7 +73,17 @@ for (const [cmd, args] of commands) {
   const commandText = `${cmd} ${args.join(' ')}`;
   const commandStartedAt = new Date().toISOString();
   console.log(`\n$ ${commandText}`);
-  const result = spawnSync(cmd, args, { cwd: root, stdio: 'inherit', env, shell: process.platform === 'win32' });
+  const result = spawnSync(cmd, args, {
+    cwd: root,
+    env,
+    shell: process.platform === 'win32',
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    maxBuffer: 32 * 1024 * 1024
+  });
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
+  const combinedOutput = `${result.stdout || ''}${result.stderr || ''}`.trim();
   const entry = {
     command: commandText,
     startedAt: commandStartedAt,
@@ -81,6 +91,8 @@ for (const [cmd, args] of commands) {
     status: result.status === 0 ? 'passed' : 'failed',
     exitCode: result.status ?? 1
   };
+  if (result.error) entry.spawnError = result.error.message;
+  if (result.status !== 0) entry.failureExcerpt = combinedOutput.slice(-16000);
   report.commands.push(entry);
   finalizeScore();
   writeEvidence();
@@ -88,6 +100,7 @@ for (const [cmd, args] of commands) {
     report.status = 'failed';
     report.finishedAt = new Date().toISOString();
     report.error = `Failed at: ${commandText}`;
+    report.failureExcerpt = entry.failureExcerpt || entry.spawnError || 'No command output was captured.';
     finalizeScore();
     writeEvidence();
     console.error(`\nURAI staging bootstrap failed at: ${commandText}`);
@@ -136,6 +149,9 @@ function writeSummary() {
   ];
 
   if (report.error) lines.push('## Failure', '', report.error, '');
+  if (report.failureExcerpt) {
+    lines.push('## Failure output', '', '```text', report.failureExcerpt, '```', '');
+  }
   if (report.skipped.length) {
     lines.push('## Skipped / Adjusted', '');
     for (const skipped of report.skipped) lines.push(`- ${skipped}`);
