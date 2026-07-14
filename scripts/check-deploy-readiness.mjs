@@ -50,9 +50,12 @@ function readText(path) {
 
 const firebaserc = readJson('.firebaserc');
 if (firebaserc) {
-  if (firebaserc.projects?.staging !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.staging must be ${EXPECTED_STAGING_PROJECT}`);
-  if (firebaserc.projects?.default !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.default must be ${EXPECTED_STAGING_PROJECT}`);
-  if (firebaserc.projects?.production === EXPECTED_STAGING_PROJECT) failures.push('.firebaserc production alias must not point at staging');
+  const projects = firebaserc.projects ?? {};
+  const aliases = Object.keys(projects).sort();
+  if (projects.staging !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.staging must be ${EXPECTED_STAGING_PROJECT}`);
+  if (projects.default !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.default must be ${EXPECTED_STAGING_PROJECT}`);
+  if (aliases.join(',') !== 'default,staging') failures.push('.firebaserc must define only default and staging project aliases');
+  if (Object.prototype.hasOwnProperty.call(projects, 'production')) failures.push('.firebaserc must not define a production alias');
 }
 
 const firebaseJson = readJson('firebase.json');
