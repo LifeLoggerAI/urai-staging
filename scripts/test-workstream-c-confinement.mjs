@@ -55,8 +55,8 @@ const comment = repair.indexOf('gh pr comment 75');
 assert.ok(localCommit >= 0, 'repair operator core must create one local candidate commit');
 assert.ok(fullVerifier > localCommit, 'complete verifier must run after the exact local candidate exists');
 assert.ok(remoteRecheck > fullVerifier, 'remote head must be rechecked after complete verification');
-assert.ok(push > remoteRecheck, 'push must occur only after verification and remote recheck');
-assert.ok(comment > push, 'receipt publication comment must occur only after the verified push');
+assert.ok(push > remoteRecheck, 'legacy publication template must remain after verification and remote recheck');
+assert.ok(comment > push, 'legacy receipt publication template must remain after the verified push');
 
 for (const marker of [
   "[ \"$RUN_FULL_VERIFIER_AFTER_REPAIR\" = '1' ]",
@@ -133,22 +133,19 @@ for (const marker of [
   "grep -Fx \"ADMIN_SHA='$ADMIN_SHA'\"",
   "grep -Fx \"PRIVACY_SHA='$PRIVACY_SHA'\"",
   "grep -Fx \"EXPECTED_JOBS_SHA='$JOBS_SHA'\"",
-  'case "${JOBS_REPAIR_PUBLISH:-0}" in',
-  'JOBS_REPAIR_PUBLISH_CONFIRM=PUBLISH_VERIFIED_JOBS_REPAIR',
+  "[ \"${JOBS_REPAIR_PUBLISH:-0}\" = '0' ]",
+  'remote publication is not available from this local verification command',
   'JOBS DEPENDENCY REPAIR: LOCAL VERIFICATION PASS',
-  "strict_comment = masked_comment.removesuffix(' || true')",
-  "! grep -F 'gh pr comment 75' \"$PATCHED\" | grep -F '|| true'",
+  "! grep -F 'gh auth' \"$PATCHED\"",
+  "! grep -F 'git push' \"$PATCHED\"",
+  'JOBS_REPAIR_PUBLISH=0 bash "$PATCHED"',
 ]) {
-  assert.ok(repairEntry.includes(marker), `repair entrypoint missing current-candidate or publication marker: ${marker}`);
+  assert.ok(repairEntry.includes(marker), `repair entrypoint missing local-only authority marker: ${marker}`);
 }
-const injectedGateStart = repairEntry.indexOf("gate = '''case");
-const injectedLocalExit = repairEntry.indexOf('JOBS DEPENDENCY REPAIR: LOCAL VERIFICATION PASS', injectedGateStart);
-const injectedAuthSetup = repairEntry.indexOf('gh auth setup-git >/dev/null', injectedGateStart);
-assert.ok(injectedGateStart >= 0, 'repair wrapper must define the injected publication gate');
-assert.ok(injectedLocalExit > injectedGateStart, 'repair wrapper must inject the local no-publish exit');
-assert.ok(injectedAuthSetup > injectedLocalExit, 'local no-publish exit must be injected before remote authentication');
-assert.ok(repairEntry.includes("if [ \"${JOBS_REPAIR_PUBLISH:-0}\" = '1' ]"), 'repair wrapper must require explicit publication mode');
-assert.ok(repairEntry.includes("[ \"${JOBS_REPAIR_PUBLISH_CONFIRM:-}\" != 'PUBLISH_VERIFIED_JOBS_REPAIR' ]"), 'repair wrapper must require exact publication confirmation');
+assert.equal(repairEntry.includes('PUBLISH_VERIFIED_JOBS_REPAIR'), false, 'official repair entrypoint must not expose remote publication confirmation');
+assert.ok(repairEntry.includes("source = source.split(publish_marker, 1)[0]"), 'repair entrypoint must truncate the legacy publication tail');
+assert.ok(repairEntry.includes("! grep -F 'gh api' \"$PATCHED\""), 'repair entrypoint must reject GitHub identity calls');
+assert.ok(repairEntry.includes("! grep -F 'gh pr comment' \"$PATCHED\""), 'repair entrypoint must reject PR comment mutation');
 
 assert.ok(manual.includes('case "${WORKSTREAM_C_PUBLISH_SUMMARY:-0}" in'));
 assert.ok(manual.includes('GitHub summary publication disabled (default no-mutation mode)'));
@@ -157,4 +154,4 @@ assert.ok(manual.includes('Summary publication requested but gh is not authentic
 assert.ok(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY"'));
 assert.equal(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true'), false);
 
-console.log('PASS: Workstream C confinement, launcher routing, override authority, no-publication defaults, explicit repair publication, and live exact-candidate manifest');
+console.log('PASS: Workstream C confinement, launcher routing, override authority, no-publication defaults, local-only Jobs repair, and live exact-candidate manifest');
