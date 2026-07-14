@@ -50,6 +50,12 @@ function readText(path) {
   return existsSync(path) ? readFileSync(path, 'utf8') : '';
 }
 
+function rejectProjectIdentifiers(path, text) {
+  if (text.includes(DEPRECATED_STAGING_PROJECT) || text.includes(PRODUCTION_PROJECT)) {
+    failures.push(`${path} must not name deprecated staging or production project identifiers`);
+  }
+}
+
 const firebaserc = readJson('.firebaserc');
 if (firebaserc) {
   const projects = firebaserc.projects ?? {};
@@ -63,9 +69,7 @@ if (firebaserc) {
 const environmentText = readText('ENVIRONMENT.md');
 if (!environmentText.includes('must keep only the nonproduction aliases')) failures.push('ENVIRONMENT.md must require only nonproduction Firebase aliases');
 if (!environmentText.includes('A `production` alias is prohibited')) failures.push('ENVIRONMENT.md must explicitly prohibit the production alias');
-if (environmentText.includes(DEPRECATED_STAGING_PROJECT) || environmentText.includes(PRODUCTION_PROJECT)) {
-  failures.push('ENVIRONMENT.md must not name deprecated staging or production project identifiers');
-}
+rejectProjectIdentifiers('ENVIRONMENT.md', environmentText);
 
 const canonicalAppText = readText('URAI_STAGING_CANONICAL_APP.md');
 if (!canonicalAppText.includes(`- Staging project: \`${EXPECTED_STAGING_PROJECT}\``)) failures.push(`URAI_STAGING_CANONICAL_APP.md must bind ${EXPECTED_STAGING_PROJECT}`);
@@ -73,9 +77,30 @@ if (!canonicalAppText.includes(`- Staging URL: \`${EXPECTED_STAGING_URL}\``)) fa
 if (!canonicalAppText.includes('must not define, document as a selectable alias, or deploy to a production Firebase project')) {
   failures.push('URAI_STAGING_CANONICAL_APP.md must prohibit production project selection and deployment');
 }
-if (canonicalAppText.includes(DEPRECATED_STAGING_PROJECT) || canonicalAppText.includes(PRODUCTION_PROJECT)) {
-  failures.push('URAI_STAGING_CANONICAL_APP.md must not name deprecated staging or production project identifiers');
+rejectProjectIdentifiers('URAI_STAGING_CANONICAL_APP.md', canonicalAppText);
+
+const launchBlockersText = readText('URAI_STAGING_LAUNCH_BLOCKERS.md');
+for (const marker of [
+  '`.firebaserc` maps default and staging to `urai-staging`',
+  'the lock script targets only `urai-staging`',
+  'Actual protected Firebase staging deploy',
+  'must remain unmerged'
+]) {
+  if (!launchBlockersText.includes(marker)) failures.push(`URAI_STAGING_LAUNCH_BLOCKERS.md must include ${marker}`);
 }
+rejectProjectIdentifiers('URAI_STAGING_LAUNCH_BLOCKERS.md', launchBlockersText);
+
+const definitionOfDoneText = readText('URAI_STAGING_DEFINITION_OF_DONE.md');
+for (const marker of [
+  '`.firebaserc` maps `default` and `staging` to `urai-staging` and defines no production alias',
+  '`firebase use urai-staging`',
+  '`--project urai-staging`',
+  '`https://urai-staging.web.app`',
+  'not complete or live-verified'
+]) {
+  if (!definitionOfDoneText.includes(marker)) failures.push(`URAI_STAGING_DEFINITION_OF_DONE.md must include ${marker}`);
+}
+rejectProjectIdentifiers('URAI_STAGING_DEFINITION_OF_DONE.md', definitionOfDoneText);
 
 const envExampleText = readText('.env.example');
 for (const marker of [
