@@ -12,16 +12,45 @@ if (!fs.existsSync(summaryPath)) problems.push(`Missing summary: ${path.relative
 
 if (!problems.length) {
   const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  const commands = Array.isArray(report.commands) ? report.commands : [];
+  const passedCommands = commands.filter(
+    (command) => command?.status === 'passed' && command?.exitCode === 0,
+  );
+  const expectedScore = commands.length * 10;
+
   if (report.repo !== 'LifeLoggerAI/urai-staging') problems.push(`Unexpected repo: ${report.repo}`);
   if (report.kind !== 'staging-bootstrap') problems.push(`Unexpected evidence kind: ${report.kind}`);
   if (report.status !== 'passed') problems.push(`Evidence status is not passed: ${report.status}`);
-  if (report.launchScore !== 100) problems.push(`Evidence score is ${report.launchScore}, expected 100.`);
-  if (report.failedCount !== 0) problems.push(`Failed command count is ${report.failedCount}, expected 0.`);
-  if (!Array.isArray(report.commands) || report.commands.length === 0) problems.push('No command evidence recorded.');
-  for (const command of report.commands ?? []) {
+  if (commands.length === 0) problems.push('No command evidence recorded.');
+  if (report.commandCount !== commands.length) {
+    problems.push(`Command count is ${report.commandCount}, expected ${commands.length}.`);
+  }
+  if (report.passedCount !== passedCommands.length) {
+    problems.push(`Passed count is ${report.passedCount}, expected ${passedCommands.length}.`);
+  }
+  if (report.failedCount !== commands.length - passedCommands.length) {
+    problems.push(
+      `Failed command count is ${report.failedCount}, expected ${commands.length - passedCommands.length}.`,
+    );
+  }
+  if (report.launchScore !== expectedScore) {
+    problems.push(`Evidence score is ${report.launchScore}, expected ${expectedScore}.`);
+  }
+  for (const command of commands) {
     if (command.status !== 'passed' || command.exitCode !== 0) {
       problems.push(`Command did not pass: ${command.command}`);
     }
+  }
+
+  const summary = fs.readFileSync(summaryPath, 'utf8');
+  for (const marker of [
+    '- Status: passed',
+    `- Launch score: ${expectedScore}/100`,
+    `- Passed commands: ${passedCommands.length}`,
+    '- Failed commands: 0',
+    `- Total commands: ${commands.length}`,
+  ]) {
+    if (!summary.includes(marker)) problems.push(`Summary is missing exact marker: ${marker}`);
   }
 }
 
