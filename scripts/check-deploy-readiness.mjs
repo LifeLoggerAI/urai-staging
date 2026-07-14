@@ -11,6 +11,7 @@ const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const requiredFiles = [
   '.env.example',
   '.firebaserc',
+  '.github/workflows/ci.yml',
   '.github/workflows/staging-deploy.yml',
   'firebase.json',
   'firestore.rules',
@@ -20,11 +21,13 @@ const requiredFiles = [
   'functions/src/index.ts',
   'public/index.html',
   'public/robots.txt',
+  'scripts/repair-jobs-unused-error-reporting.sh',
   'scripts/run-with-java.sh',
   'scripts/urai-staging-lock.sh',
   'scripts/smoke-staging.sh',
   'scripts/workstream-c-current-candidates.env',
   'docs/WORKSTREAM_C_CURRENT_CANDIDATES.md',
+  'docs/WORKSTREAM_C_MANUAL_VERIFICATION.md',
   'DEPLOYMENT.md',
   'ENVIRONMENT.md',
   'RELEASE_NOTES.md',
@@ -165,6 +168,29 @@ if (envExampleText.includes('URAI_PRODUCTION_PROJECT_ID=') || envExampleText.inc
   failures.push('.env.example must not expose production or deprecated project selectors');
 }
 
+const ciWorkflowText = readText('.github/workflows/ci.yml');
+const ciRetentionMarkers = ciWorkflowText.match(/retention-days:\s*90/g) ?? [];
+if (ciRetentionMarkers.length !== 2) failures.push(`.github/workflows/ci.yml must retain both public-repo artifacts for 90 days; found ${ciRetentionMarkers.length}`);
+if (/retention-days:\s*365/.test(ciWorkflowText)) failures.push('.github/workflows/ci.yml must not request unsupported 365-day public-repo retention');
+
+const repairWrapperText = readText('scripts/repair-jobs-unused-error-reporting.sh');
+requireMarkers('scripts/repair-jobs-unused-error-reporting.sh', repairWrapperText, [
+  'remote publication is not available from this local verification command',
+  'JOBS DEPENDENCY REPAIR: LOCAL VERIFICATION PASS',
+  "! grep -F 'gh auth' \"$PATCHED\"",
+  "! grep -F 'git push' \"$PATCHED\"",
+  'JOBS_REPAIR_PUBLISH=0 bash "$PATCHED"'
+]);
+if (repairWrapperText.includes('PUBLISH_VERIFIED_JOBS_REPAIR')) failures.push('The official local Jobs repair wrapper must not expose a publication confirmation path');
+
+const manualVerificationText = readText('docs/WORKSTREAM_C_MANUAL_VERIFICATION.md');
+requireMarkers('docs/WORKSTREAM_C_MANUAL_VERIFICATION.md', manualVerificationText, [
+  'official repair command is local-verification-only',
+  'does not require GitHub CLI or authentication',
+  '`JOBS_REPAIR_PUBLISH` must remain `0`',
+  'Remote publication is intentionally unavailable from this command'
+]);
+
 const deployWorkflowText = readText('.github/workflows/staging-deploy.yml');
 requireMarkers('.github/workflows/staging-deploy.yml', deployWorkflowText, [
   'name: Staging Deploy Lock',
@@ -183,8 +209,9 @@ requireMarkers('.github/workflows/staging-deploy.yml', deployWorkflowText, [
   "URAI_STAGING_PROTECTED_DEPLOY: '1'",
   'firebase-tools@15.23.0',
   'Remove temporary credential',
-  'retention-days: 365'
+  'retention-days: 90'
 ]);
+if (/retention-days:\s*365/.test(deployWorkflowText)) failures.push('.github/workflows/staging-deploy.yml must not request unsupported 365-day public-repo retention');
 const allowedActionRefs = new Set([
   'actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5',
   'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020',
