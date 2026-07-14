@@ -8,11 +8,13 @@ const EXPECTED_STAGING_URL = 'https://urai-staging.web.app';
 const DEPRECATED_STAGING_PROJECT = 'urai-staging-35414255';
 const PRODUCTION_PROJECT = 'urai-4dc1d';
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
+
 const requiredFiles = [
   '.env.example',
   '.firebaserc',
   '.github/workflows/ci.yml',
   '.github/workflows/staging-deploy.yml',
+  '.github/workflows/urai-production-verify.yml',
   'firebase.json',
   'firestore.rules',
   'firestore.indexes.json',
@@ -25,18 +27,22 @@ const requiredFiles = [
   'scripts/run-with-java.sh',
   'scripts/urai-staging-lock.sh',
   'scripts/smoke-staging.sh',
+  'scripts/staging-prebuilt-manifest.mjs',
+  'scripts/urai-staging-bootstrap.mjs',
+  'scripts/validate-launch-evidence.mjs',
   'scripts/workstream-c-current-candidates.env',
   'docs/WORKSTREAM_C_CURRENT_CANDIDATES.md',
   'docs/WORKSTREAM_C_MANUAL_VERIFICATION.md',
   'DEPLOYMENT.md',
   'ENVIRONMENT.md',
+  'ENVIRONMENT_AUTHORITY.md',
   'RELEASE_NOTES.md',
   'SYSTEM_AUDIT.md',
   'TEST_REPORT.md',
   'URAI_STAGING_CANONICAL_APP.md',
   'URAI_STAGING_READINESS_MATRIX.md',
   'URAI_STAGING_LAUNCH_BLOCKERS.md',
-  'URAI_STAGING_DEFINITION_OF_DONE.md'
+  'URAI_STAGING_DEFINITION_OF_DONE.md',
 ];
 
 const failures = [];
@@ -44,28 +50,34 @@ for (const file of requiredFiles) {
   if (!existsSync(file)) failures.push(`Missing required file: ${file}`);
 }
 
-function readJson(path) {
+function readJson(filePath) {
   try {
-    return JSON.parse(readFileSync(path, 'utf8'));
+    return JSON.parse(readFileSync(filePath, 'utf8'));
   } catch (error) {
-    failures.push(`Invalid JSON in ${path}: ${error.message}`);
+    failures.push(`Invalid JSON in ${filePath}: ${error.message}`);
     return null;
   }
 }
 
-function readText(path) {
-  return existsSync(path) ? readFileSync(path, 'utf8').replace(/\r\n?/g, '\n') : '';
+function readText(filePath) {
+  return existsSync(filePath) ? readFileSync(filePath, 'utf8').replace(/\r\n?/g, '\n') : '';
 }
 
-function requireMarkers(path, text, markers) {
+function requireMarkers(filePath, text, markers) {
   for (const marker of markers) {
-    if (!text.includes(marker)) failures.push(`${path} must include ${marker}`);
+    if (!text.includes(marker)) failures.push(`${filePath} must include ${marker}`);
   }
 }
 
-function rejectProjectIdentifiers(path, text) {
+function forbidMarkers(filePath, text, markers) {
+  for (const marker of markers) {
+    if (text.includes(marker)) failures.push(`${filePath} contains forbidden marker: ${marker}`);
+  }
+}
+
+function rejectProjectIdentifiers(filePath, text) {
   if (text.includes(DEPRECATED_STAGING_PROJECT) || text.includes(PRODUCTION_PROJECT)) {
-    failures.push(`${path} must not name deprecated staging or production project identifiers`);
+    failures.push(`${filePath} must not name deprecated staging or production project identifiers`);
   }
 }
 
@@ -92,7 +104,7 @@ const candidateManifestText = readText('scripts/workstream-c-current-candidates.
 const candidateShas = {
   Admin: readCandidateSha(candidateManifestText, 'ADMIN_SHA'),
   Privacy: readCandidateSha(candidateManifestText, 'PRIVACY_SHA'),
-  Jobs: readCandidateSha(candidateManifestText, 'JOBS_SHA')
+  Jobs: readCandidateSha(candidateManifestText, 'JOBS_SHA'),
 };
 const candidateMirrorText = readText('docs/WORKSTREAM_C_CURRENT_CANDIDATES.md');
 for (const [label, sha] of Object.entries(candidateShas)) {
@@ -111,7 +123,7 @@ requireMarkers('ENVIRONMENT.md', environmentText, [
   'The only deploy authority is `.github/workflows/staging-deploy.yml`',
   'Local environments must not run the staging deploy command',
   '`FIREBASE_SERVICE_ACCOUNT_URAI_STAGING`',
-  '`RUNNER_TEMP`'
+  '`RUNNER_TEMP`',
 ]);
 rejectProjectIdentifiers('ENVIRONMENT.md', environmentText);
 
@@ -123,15 +135,26 @@ requireMarkers('DEPLOYMENT.md', deploymentText, [
   '`run_live_deploy`: `false`',
   '`run_live_deploy`: `true`',
   'environment-gated credentialed deploy job',
-  'it never creates infrastructure'
+  'it never creates infrastructure',
 ]);
 rejectProjectIdentifiers('DEPLOYMENT.md', deploymentText);
+
+const authorityText = readText('ENVIRONMENT_AUTHORITY.md');
+requireMarkers('ENVIRONMENT_AUTHORITY.md', authorityText, [
+  'owns only the URAI staging',
+  'Production alias: intentionally absent',
+  'must not deploy to, alias, or imply ownership of the production project',
+  'SOURCE AUTHORITY REPAIRED — NOT VERIFIED OR DEPLOYED',
+  'must not create Hosting sites or other infrastructure',
+  'Billing good standing',
+]);
+rejectProjectIdentifiers('ENVIRONMENT_AUTHORITY.md', authorityText);
 
 const canonicalAppText = readText('URAI_STAGING_CANONICAL_APP.md');
 requireMarkers('URAI_STAGING_CANONICAL_APP.md', canonicalAppText, [
   `- Staging project: \`${EXPECTED_STAGING_PROJECT}\``,
   `- Staging URL: \`${EXPECTED_STAGING_URL}\``,
-  'must not define, document as a selectable alias, or deploy to a production Firebase project'
+  'must not define, document as a selectable alias, or deploy to a production Firebase project',
 ]);
 rejectProjectIdentifiers('URAI_STAGING_CANONICAL_APP.md', canonicalAppText);
 
@@ -140,7 +163,7 @@ requireMarkers('URAI_STAGING_LAUNCH_BLOCKERS.md', launchBlockersText, [
   'Protected deployment authority',
   'Infrastructure mutation boundary',
   'Deploy only through `Staging Deploy Lock` from exact `main`',
-  'must remain unmerged'
+  'must remain unmerged',
 ]);
 rejectProjectIdentifiers('URAI_STAGING_LAUNCH_BLOCKERS.md', launchBlockersText);
 
@@ -151,7 +174,7 @@ requireMarkers('URAI_STAGING_DEFINITION_OF_DONE.md', definitionOfDoneText, [
   'GitHub `staging` environment',
   '`--project urai-staging`',
   '`https://urai-staging.web.app`',
-  'not complete or live-verified'
+  'not complete or live-verified',
 ]);
 rejectProjectIdentifiers('URAI_STAGING_DEFINITION_OF_DONE.md', definitionOfDoneText);
 
@@ -162,7 +185,7 @@ requireMarkers('.env.example', envExampleText, [
   'URAI_PRODUCTION_DEPLOY_APPROVED=0',
   'URAI_STAGING_PROTECTED_DEPLOY=0',
   `GOOGLE_CLOUD_PROJECT=${EXPECTED_STAGING_PROJECT}`,
-  `GCLOUD_PROJECT=${EXPECTED_STAGING_PROJECT}`
+  `GCLOUD_PROJECT=${EXPECTED_STAGING_PROJECT}`,
 ]);
 if (envExampleText.includes('URAI_PRODUCTION_PROJECT_ID=') || envExampleText.includes(PRODUCTION_PROJECT) || envExampleText.includes(DEPRECATED_STAGING_PROJECT)) {
   failures.push('.env.example must not expose production or deprecated project selectors');
@@ -179,7 +202,7 @@ requireMarkers('scripts/repair-jobs-unused-error-reporting.sh', repairWrapperTex
   'JOBS DEPENDENCY REPAIR: LOCAL VERIFICATION PASS',
   "! grep -F 'gh auth' \"$PATCHED\"",
   "! grep -F 'git push' \"$PATCHED\"",
-  'JOBS_REPAIR_PUBLISH=0 bash "$PATCHED"'
+  'JOBS_REPAIR_PUBLISH=0 bash "$PATCHED"',
 ]);
 if (repairWrapperText.includes('PUBLISH_VERIFIED_JOBS_REPAIR')) failures.push('The official local Jobs repair wrapper must not expose a publication confirmation path');
 
@@ -188,7 +211,7 @@ requireMarkers('docs/WORKSTREAM_C_MANUAL_VERIFICATION.md', manualVerificationTex
   'official repair command is local-verification-only',
   'does not require GitHub CLI or authentication',
   '`JOBS_REPAIR_PUBLISH` must remain `0`',
-  'Remote publication is intentionally unavailable from this command'
+  'Remote publication is intentionally unavailable from this command',
 ]);
 
 const deployWorkflowText = readText('.github/workflows/staging-deploy.yml');
@@ -196,50 +219,80 @@ requireMarkers('.github/workflows/staging-deploy.yml', deployWorkflowText, [
   'name: Staging Deploy Lock',
   'workflow_dispatch:',
   'expected_main_sha:',
+  'rollback_sha:',
   "test '${{ github.ref }}' = 'refs/heads/main'",
   "test '${{ github.sha }}' = \"$TARGET_SHA\"",
-  'git ls-remote origin refs/heads/main',
+  'git ls-remote --exit-code origin refs/heads/main',
+  'git merge-base --is-ancestor',
   'persist-credentials: false',
+  'Credential-free exact-main staging preflight',
   'npm --prefix functions ci --ignore-scripts',
-  'Credentialed: false',
-  'Protected apply: false',
+  'node scripts/urai-staging-bootstrap.mjs',
+  'node scripts/validate-launch-evidence.mjs',
+  'staging-prebuilt-manifest.mjs --write',
+  'staging-prebuilt-manifest.mjs --verify-external',
+  'staging-prebuilt-manifest.mjs --materialize',
   'environment: staging',
   'GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/urai-staging-service-account.json',
   'FIREBASE_SERVICE_ACCOUNT_URAI_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_URAI_STAGING }}',
   "URAI_STAGING_PROTECTED_DEPLOY: '1'",
-  'firebase-tools@15.23.0',
-  'Remove temporary credential',
-  'retention-days: 90'
+  "ALLOW_CREATE_STAGING_HOSTING_SITE: '0'",
+  "FIREBASE_CLI_VERSION: '15.23.0'",
+  'Destroy staging credentials before evidence handoff',
+  'Public staging verification without cloud identity',
+  'staging-mutation-receipt.json',
+  'retention-days: 90',
 ]);
 if (/retention-days:\s*365/.test(deployWorkflowText)) failures.push('.github/workflows/staging-deploy.yml must not request unsupported 365-day public-repo retention');
-const allowedActionRefs = new Set([
+
+const allowedDeployActions = new Set([
   'actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5',
   'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020',
   'actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9',
-  'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02'
+  'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02',
+  'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093',
 ]);
-const workflowActionRefs = [...deployWorkflowText.matchAll(/^\s*uses:\s*([^\s#]+)(?:\s+#.*)?$/gm)].map((match) => match[1]);
-for (const actionRef of workflowActionRefs) {
+const deployActionRefs = [...deployWorkflowText.matchAll(/^\s*uses:\s*([^\s#]+)(?:\s+#.*)?$/gm)].map((match) => match[1]);
+for (const actionRef of deployActionRefs) {
   const ref = actionRef.slice(actionRef.lastIndexOf('@') + 1);
   if (!SHA_PATTERN.test(ref)) failures.push(`Staging deploy external action must use a full immutable SHA: ${actionRef}`);
-  if (!allowedActionRefs.has(actionRef)) failures.push(`Unexpected external action in staging deploy workflow: ${actionRef}`);
+  if (!allowedDeployActions.has(actionRef)) failures.push(`Unexpected external action in staging deploy workflow: ${actionRef}`);
 }
-for (const expected of allowedActionRefs) {
-  if (!workflowActionRefs.includes(expected)) failures.push(`Staging deploy workflow must use pinned action ${expected}`);
+for (const expected of allowedDeployActions) {
+  if (!deployActionRefs.includes(expected)) failures.push(`Staging deploy workflow must use pinned action ${expected}`);
 }
-for (const forbidden of [
+forbidMarkers('.github/workflows/staging-deploy.yml', deployWorkflowText, [
   'actions/checkout@v4',
   'actions/setup-node@v4',
   'actions/setup-java@v4',
   'actions/upload-artifact@v4',
+  'actions/download-artifact@v4',
   'pull_request_target:',
   'contents: write',
   'id-token: write',
   'npm install -g firebase-tools',
-  '${{ github.workspace }}/.firebase-service-account.json'
-]) {
-  if (deployWorkflowText.includes(forbidden)) failures.push(`Staging deploy workflow contains forbidden marker: ${forbidden}`);
-}
+  '${{ github.workspace }}/.firebase-service-account.json',
+  'firebase hosting:sites:create',
+]);
+
+const productionVerifyText = readText('.github/workflows/urai-production-verify.yml');
+requireMarkers('.github/workflows/urai-production-verify.yml', productionVerifyText, [
+  'ref: ${{ env.TARGET_SHA }}',
+  'fetch-depth: 0',
+  'persist-credentials: false',
+  'Setup Java 21 for Firebase emulators',
+  'node scripts/urai-staging-bootstrap.mjs',
+  'node scripts/validate-launch-evidence.mjs',
+  'node scripts/urai-production-verify.mjs',
+  'retention-days: 90',
+]);
+forbidMarkers('.github/workflows/urai-production-verify.yml', productionVerifyText, [
+  'actions/checkout@v4',
+  'actions/setup-node@v4',
+  'actions/setup-java@v4',
+  'actions/upload-artifact@v4',
+  'retention-days: 365',
+]);
 
 const firebaseJson = readJson('firebase.json');
 if (firebaseJson) {
@@ -288,26 +341,43 @@ requireMarkers('scripts/urai-staging-lock.sh', lockScriptText, [
   'URAI_STAGING_PROTECTED_DEPLOY',
   'GITHUB_ACTIONS',
   'refs/heads/main',
-  'git ls-remote origin refs/heads/main',
+  'git ls-remote --exit-code origin refs/heads/main',
+  'URAI_RELEASE_CANDIDATE_SHA is required',
+  'URAI_STAGING_ROLLBACK_SHA is required',
+  'git merge-base --is-ancestor',
+  'URAI_STAGING_PREFLIGHT_VERIFIED',
+  'URAI_STAGING_AUTHORITY_SCOPE',
+  'URAI_STAGING_CONSUMER_ASSIGNMENTS_JSON',
   'RUNNER_TEMP',
   'GOOGLE_APPLICATION_CREDENTIALS',
+  'staging-prebuilt-manifest.mjs --verify-materialized',
   'firebase hosting:sites:list',
-  'npm run test:rules',
-  'npm run test:e2e',
   `hosting:"$EXPECTED_HOSTING_SITE"`,
   '--non-interactive',
-  'Hosting site pre-existed: true',
-  'Production deployment performed: false'
+  "schemaVersion: 'urai-staging-mutation-2'",
+  'hostingSitePreExisted: true',
+  'productionDeploymentPerformed: false',
+  'secretValuesIncluded: false',
+  'publicVerificationCompleted: false',
 ]);
-for (const forbidden of [
+forbidMarkers('scripts/urai-staging-lock.sh', lockScriptText, [
   'firebase hosting:sites:create',
   'firebase use ',
   'nix-shell not found; skipping',
   'URAI_PRODUCTION_PROJECT_ID',
-  PRODUCTION_PROJECT
-]) {
-  if (lockScriptText.includes(forbidden)) failures.push(`scripts/urai-staging-lock.sh contains forbidden marker: ${forbidden}`);
-}
+  PRODUCTION_PROJECT,
+]);
+
+const prebuiltText = readText('scripts/staging-prebuilt-manifest.mjs');
+requireMarkers('scripts/staging-prebuilt-manifest.mjs', prebuiltText, [
+  "schemaVersion: 'urai-staging-prebuilt-2'",
+  'sourceTreeSha',
+  'sourceStateVerifiedClean: true',
+  "authorityScope: 'urai-staging-repository-only'",
+  'crossSystemMutationAuthorized: false',
+  '--verify-external',
+  '--materialize',
+]);
 
 const smokeScriptText = readText('scripts/smoke-staging.sh');
 if (!smokeScriptText.includes(EXPECTED_STAGING_URL)) failures.push(`scripts/smoke-staging.sh must target ${EXPECTED_STAGING_URL} by default`);
