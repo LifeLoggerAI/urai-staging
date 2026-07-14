@@ -7,6 +7,7 @@ const EXPECTED_HOSTING_SITE = 'urai-staging';
 const EXPECTED_STAGING_URL = 'https://urai-staging.web.app';
 const DEPRECATED_STAGING_PROJECT = 'urai-staging-35414255';
 const PRODUCTION_PROJECT = 'urai-4dc1d';
+const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const requiredFiles = [
   '.env.example',
   '.firebaserc',
@@ -21,6 +22,8 @@ const requiredFiles = [
   'scripts/run-with-java.sh',
   'scripts/urai-staging-lock.sh',
   'scripts/smoke-staging.sh',
+  'scripts/workstream-c-current-candidates.env',
+  'docs/WORKSTREAM_C_CURRENT_CANDIDATES.md',
   'DEPLOYMENT.md',
   'ENVIRONMENT.md',
   'RELEASE_NOTES.md',
@@ -56,6 +59,15 @@ function rejectProjectIdentifiers(path, text) {
   }
 }
 
+function readCandidateSha(text, variableName) {
+  const match = text.match(new RegExp(`^${variableName}='([0-9a-f]{40})'$`, 'm'));
+  if (!match || !SHA_PATTERN.test(match[1])) {
+    failures.push(`scripts/workstream-c-current-candidates.env must define ${variableName} as one full lowercase SHA`);
+    return '';
+  }
+  return match[1];
+}
+
 const firebaserc = readJson('.firebaserc');
 if (firebaserc) {
   const projects = firebaserc.projects ?? {};
@@ -64,6 +76,22 @@ if (firebaserc) {
   if (projects.default !== EXPECTED_STAGING_PROJECT) failures.push(`.firebaserc projects.default must be ${EXPECTED_STAGING_PROJECT}`);
   if (aliases.join(',') !== 'default,staging') failures.push('.firebaserc must define only default and staging project aliases');
   if (Object.prototype.hasOwnProperty.call(projects, 'production')) failures.push('.firebaserc must not define a production alias');
+}
+
+const candidateManifestText = readText('scripts/workstream-c-current-candidates.env');
+const candidateShas = {
+  Admin: readCandidateSha(candidateManifestText, 'ADMIN_SHA'),
+  Privacy: readCandidateSha(candidateManifestText, 'PRIVACY_SHA'),
+  Jobs: readCandidateSha(candidateManifestText, 'JOBS_SHA')
+};
+const candidateMirrorText = readText('docs/WORKSTREAM_C_CURRENT_CANDIDATES.md');
+for (const [label, sha] of Object.entries(candidateShas)) {
+  if (sha && !candidateMirrorText.includes(`- ${label}: \`${sha}\``)) {
+    failures.push(`docs/WORKSTREAM_C_CURRENT_CANDIDATES.md must mirror ${label} SHA ${sha}`);
+  }
+}
+if (!candidateMirrorText.includes('deploy-readiness gate requires this human mirror to match those exact full SHAs')) {
+  failures.push('docs/WORKSTREAM_C_CURRENT_CANDIDATES.md must declare executable machine/human mirror enforcement');
 }
 
 const environmentText = readText('ENVIRONMENT.md');
