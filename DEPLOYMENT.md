@@ -11,6 +11,8 @@ Staging deployment is permitted only through `.github/workflows/staging-deploy.y
 
 Direct local deployment is intentionally blocked. Do not run `firebase deploy`, `firebase use`, or `npm run deploy:staging` from a developer shell.
 
+The workflow uses a noncredentialed exact-main verification job followed by an environment-gated credentialed deploy job.
+
 The workflow requires:
 
 - an exact full current-`main` SHA supplied as `expected_main_sha`;
