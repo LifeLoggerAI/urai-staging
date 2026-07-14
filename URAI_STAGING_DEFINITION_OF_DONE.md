@@ -13,18 +13,18 @@
 
 ## Local and confined validation
 
-- [x] `npm --prefix functions ci` succeeds.
-- [x] `npm run check:deploy` succeeds.
-- [x] `npm run lint` succeeds.
-- [x] `npm run check:types` succeeds.
-- [x] `npm run build` succeeds.
-- [x] `npm run test:unit` succeeds.
-- [x] `npm run test:rules` succeeds with Java emulator support.
-- [x] The confined exact-head verifier passes Admin, Privacy, and Jobs source, security, build, test, and emulator suites.
+- [x] `npm --prefix functions ci` succeeds on the exact candidate head.
+- [x] `npm run check:deploy` succeeds on the exact candidate head.
+- [x] `npm run lint` succeeds on the exact candidate head.
+- [x] `npm run check:types` succeeds on the exact candidate head.
+- [x] `npm run build` succeeds on the exact candidate head.
+- [x] `npm run test:unit` succeeds on the exact candidate head.
+- [x] `npm run test:rules` succeeds with Java emulator support on the exact candidate head.
+- [x] The confined verifier passes pinned Admin, Privacy, and Jobs source, security, build, test, and emulator suites.
 - [x] The retained evidence manifest validates every recorded artifact hash.
-- [x] All pinned repository heads match and finish clean.
+- [x] All verifier and pinned repository heads match and finish clean.
 
-Exact source/emulator evidence: Staging `29b7dd7540a2819f119da19ae5f2165f244c9c93`, CI run `29348795243`, zero failed verifier steps.
+These checked items are valid only when the current PR head equals the exact SHA in the latest inspected CI artifacts and the corresponding PR and Drive receipts. Any branch or pinned-candidate change makes them pending until rerun and reinspection.
 
 ## Protected staging deploy
 
@@ -72,4 +72,4 @@ Exact source/emulator evidence: Staging `29b7dd7540a2819f119da19ae5f2165f244c9c9
 
 ## Final statement
 
-The current candidate is source- and emulator-verified, but it is not complete or live-verified. Completion requires every unchecked protected-deploy, live-isolation, monitoring, recovery, rollback, and external-system item above to pass for `https://urai-staging.web.app`.
+The current candidate may be source- and emulator-verified, but it is not complete or live-verified. Completion requires every unchecked protected-deploy, live-isolation, monitoring, recovery, rollback, and external-system item above to pass for `https://urai-staging.web.app`.
