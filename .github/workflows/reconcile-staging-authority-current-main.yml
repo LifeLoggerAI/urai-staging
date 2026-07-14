@@ -50,7 +50,7 @@ jobs:
           git fetch --no-tags origin \
             refs/heads/fix/environment-authority-20260706:refs/remotes/origin/fix/environment-authority-20260706
 
-      - name: Attempt source-only reconciliation
+      - name: Merge clean authority files and retain current conflict authorities
         id: merge
         shell: bash
         run: |
@@ -64,38 +64,59 @@ jobs:
           status=$?
           set -e
           printf '%s\n' "$status" > "$RUNNER_TEMP/staging-reconciliation/merge-exit.txt"
-          if [ "$status" -ne 0 ]; then
-            git diff --name-only --diff-filter=U \
-              > "$RUNNER_TEMP/staging-reconciliation/conflicts.txt"
-            git merge --abort || true
-            printf 'conflicted=true\n' >> "$GITHUB_OUTPUT"
+
+          if [ "$status" -eq 0 ]; then
+            printf 'mode=clean\n' >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          printf 'conflicted=false\n' >> "$GITHUB_OUTPUT"
 
-      - name: Upload conflict evidence
-        if: steps.merge.outputs.conflicted == 'true'
+          git diff --name-only --diff-filter=U | sort > "$RUNNER_TEMP/staging-reconciliation/conflicts.txt"
+          cat > "$RUNNER_TEMP/staging-reconciliation/expected-conflicts.txt" <<'EOF'
+          .github/workflows/staging-deploy.yml
+          .github/workflows/urai-production-verify.yml
+          scripts/check-deploy-readiness.mjs
+          scripts/urai-staging-lock.sh
+          EOF
+          sort -o "$RUNNER_TEMP/staging-reconciliation/expected-conflicts.txt" "$RUNNER_TEMP/staging-reconciliation/expected-conflicts.txt"
+
+          if ! cmp -s "$RUNNER_TEMP/staging-reconciliation/conflicts.txt" "$RUNNER_TEMP/staging-reconciliation/expected-conflicts.txt"; then
+            git merge --abort || true
+            printf 'mode=unexpected\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          while IFS= read -r path; do
+            git checkout --ours -- "$path"
+            git add "$path"
+          done < "$RUNNER_TEMP/staging-reconciliation/expected-conflicts.txt"
+          git diff --name-only --diff-filter=U | tee "$RUNNER_TEMP/staging-reconciliation/remaining-conflicts.txt"
+          test ! -s "$RUNNER_TEMP/staging-reconciliation/remaining-conflicts.txt"
+          printf 'mode=partial\n' >> "$GITHUB_OUTPUT"
+
+      - name: Upload reconciliation evidence
+        if: steps.merge.outputs.mode != 'clean'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: staging-authority-reconciliation-conflicts-${{ env.AUTHORITY_SHA }}
+          name: staging-authority-reconciliation-${{ env.AUTHORITY_SHA }}
           path: ${{ runner.temp }}/staging-reconciliation
           retention-days: 90
           if-no-files-found: error
 
-      - name: Fail closed on conflicts
-        if: steps.merge.outputs.conflicted == 'true'
+      - name: Fail closed on unexpected conflicts
+        if: steps.merge.outputs.mode == 'unexpected'
         shell: bash
         run: |
-          echo 'The stale staging authority cannot be merged automatically. Conflict evidence was retained.'
+          echo 'Unexpected staging authority conflicts were retained. No branch mutation is authorized.'
           exit 1
 
-      - name: Finalize clean reconciliation
-        if: steps.merge.outputs.conflicted == 'false'
+      - name: Finalize bounded reconciliation
+        if: steps.merge.outputs.mode == 'clean' || steps.merge.outputs.mode == 'partial'
         shell: bash
         run: |
           set -euo pipefail
           git rm .github/workflows/reconcile-staging-authority-current-main.yml
           mkdir -p docs/release-evidence
+          mode='${{ steps.merge.outputs.mode }}'
           cat > docs/release-evidence/STAGING_AUTHORITY_RECONCILIATION_20260714.md <<EOF
           # Staging authority reconciliation
 
@@ -104,24 +125,34 @@ jobs:
           - Source authority branch: fix/environment-authority-20260706
           - Source authority head: 9568e09ad536f0fd936b316a5f4deb84fe1ff70d
           - Trigger SHA: $AUTHORITY_SHA
+          - Reconciliation mode: $mode
           - Deployment performed: false
           - Credential mutation: false
           - Production mutation: false
 
-          The source-only staging authority merged without conflicts onto current main. Exact-head validation and independent review remain required before any protected staging operation.
+          The clean, non-overlapping staging authority files were transferred onto current main.
+
+          When reconciliation mode is partial, current-main authority was deliberately retained for these four overlapping controls pending focused review:
+
+          - .github/workflows/staging-deploy.yml
+          - .github/workflows/urai-production-verify.yml
+          - scripts/check-deploy-readiness.mjs
+          - scripts/urai-staging-lock.sh
+
+          This receipt does not claim those four paths are reconciled. Exact-head validation, focused path reconciliation and independent review remain required before any protected staging operation.
           EOF
           git add docs/release-evidence/STAGING_AUTHORITY_RECONCILIATION_20260714.md
           git diff --cached --check
           git diff --cached --name-status
 
-      - name: Commit clean reconciliation
-        if: steps.merge.outputs.conflicted == 'false'
+      - name: Commit bounded reconciliation
+        if: steps.merge.outputs.mode == 'clean' || steps.merge.outputs.mode == 'partial'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          git commit -m "Reconcile staging authority onto current main"
+          git commit -m "Reconcile non-overlapping staging authority onto current main"
           auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
           git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
             push origin HEAD:$AUTHORITY_BRANCH
