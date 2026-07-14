@@ -20,4 +20,4 @@ for candidate in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
 done
 
 export ADMIN_SHA PRIVACY_SHA JOBS_SHA
-exec bash "$SCRIPT_DIR/run-workstream-c-manual-verification-core.sh" "$@"
+exec bash "$SCRIPT_DIR/run-workstream-c-cloud-shell.sh" "$@"
