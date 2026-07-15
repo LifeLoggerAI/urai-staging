@@ -4,6 +4,9 @@ set -Eeuo pipefail
 ADMIN_SHA="${ADMIN_SHA:-6d1e84640544098ae71040fca4c7f8893e0f2fd4}"
 PRIVACY_SHA="${PRIVACY_SHA:-371e9a8db9b24a0cbdd3a6753776be6920ce736c}"
 JOBS_SHA="${JOBS_SHA:-ed7f80517e4fa940472a93f22e9d42e080ddeb6c}"
+CONTENT_SHA="${CONTENT_SHA:-227df755844fb5c192dd8298f3e130f0e84f29cc}"
+ANALYTICS_SHA="${ANALYTICS_SHA:-5bf2b2a578b80d05227e8a07e41846d68ff60938}"
+COMMUNICATIONS_SHA="${COMMUNICATIONS_SHA:-180cbab717c858b553440944c1a47ee16d547983}"
 JOBS_LOCAL_SOURCE="${JOBS_LOCAL_SOURCE:-}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
@@ -52,7 +55,7 @@ for pair in \
 done
 mkdir -p "$EVIDENCE/logs"
 
-for candidate in "$VERIFIER_SHA" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
+for candidate in "$VERIFIER_SHA" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA" "$CONTENT_SHA" "$ANALYTICS_SHA" "$COMMUNICATIONS_SHA"; do
   [[ "$candidate" =~ $SHA_PATTERN ]] || fail "Every verifier and candidate identity must be a full lowercase 40-character SHA: $candidate"
 done
 [ -z "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ] || fail 'The manual verifier checkout must be clean before execution'
@@ -215,20 +218,51 @@ run_shell_step jobs tests "$JOBS_DIR" 'pnpm test'
 run_shell_step jobs smoke "$JOBS_DIR" 'pnpm urai-jobs:smoke && pnpm urai-jobs:deploy-precheck'
 run_shell_step jobs emulator-e2e "$JOBS_DIR" 'NO_GCE_CHECK=true npx --yes firebase-tools@15.23.0 emulators:exec --only firestore,auth,functions,storage,pubsub "node scripts/urai-jobs-e2e.mjs"'
 
+CONTENT_DIR="$ROOT/urai-content"
+clone_exact urai-content "$CONTENT_SHA" "$CONTENT_DIR"
+use_node 22
+run_shell_step content install "$CONTENT_DIR" 'npm ci'
+run_shell_step content full-check "$CONTENT_DIR" 'npm run check'
+run_shell_step content web-install "$CONTENT_DIR" 'npm ci --prefix apps/web'
+run_shell_step content web-check "$CONTENT_DIR" 'npm run web:check'
+
+ANALYTICS_DIR="$ROOT/urai-analytics"
+clone_exact urai-analytics "$ANALYTICS_SHA" "$ANALYTICS_DIR"
+use_node 22
+run_shell_step analytics install "$ANALYTICS_DIR" 'npm ci'
+run_shell_step analytics full-check "$ANALYTICS_DIR" 'npm run full:check'
+run_shell_step analytics build "$ANALYTICS_DIR" 'npm run build'
+
+COMMUNICATIONS_DIR="$ROOT/urai-communications"
+clone_exact urai-communications "$COMMUNICATIONS_SHA" "$COMMUNICATIONS_DIR"
+use_node 20
+run_shell_step communications install "$COMMUNICATIONS_DIR" 'npm ci'
+run_shell_step communications lint-typecheck "$COMMUNICATIONS_DIR" 'npm run lint && npm run typecheck'
+run_shell_step communications tests-build "$COMMUNICATIONS_DIR" 'npm run test && npm run build'
+run_shell_step communications smoke-no-live-claims "$COMMUNICATIONS_DIR" 'npm run smoke && npm run verify:no-live-claims'
+
 record_final_source_state admin urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
 record_final_source_state privacy urai-privacy "$PRIVACY_SHA" "$PRIVACY_DIR"
 record_final_source_state jobs urai-jobs "$JOBS_SHA" "$JOBS_DIR"
+record_final_source_state content urai-content "$CONTENT_SHA" "$CONTENT_DIR"
+record_final_source_state analytics urai-analytics "$ANALYTICS_SHA" "$ANALYTICS_DIR"
+record_final_source_state communications urai-communications "$COMMUNICATIONS_SHA" "$COMMUNICATIONS_DIR"
 build_failure_excerpts
 
 {
-  echo '# URAI Workstream C Manual Verification'
+  echo '# URAI Workstream C Six-Service Verification'
   echo
   echo "- Generated: $(date -u +%FT%TZ)"
   echo "- Verifier: \`$VERIFIER_SHA\`"
   echo "- Admin: \`$ADMIN_SHA\`"
   echo "- Privacy: \`$PRIVACY_SHA\`"
   echo "- Jobs: \`$JOBS_SHA\`"
+  echo "- Content: \`$CONTENT_SHA\`"
+  echo "- Analytics: \`$ANALYTICS_SHA\`"
+  echo "- Communications: \`$COMMUNICATIONS_SHA\`"
   echo "- Jobs source: $([ -n "$JOBS_LOCAL_SOURCE" ] && echo 'confined local pre-push candidate' || echo 'canonical GitHub exact commit')"
+  echo "- Credentialed: false"
+  echo "- Protected apply: false"
   echo "- Failed steps: $FAILURES"
   echo
   echo '## Step results'
@@ -238,14 +272,14 @@ build_failure_excerpts
   tail -n +2 "$EVIDENCE/status.tsv" | while IFS=$'\t' read -r lane step code; do echo "| $lane | $step | $code |"; done
   echo
   if [ "$FAILURES" -eq 0 ]; then
-    echo '**MANUAL SOURCE/EMULATOR VERIFICATION: PASS**'
+    echo '**SIX-SERVICE SOURCE/BUILD/TEST VERIFICATION: PASS**'
   else
-    echo '**MANUAL SOURCE/EMULATOR VERIFICATION: FAIL**'
+    echo '**SIX-SERVICE SOURCE/BUILD/TEST VERIFICATION: FAIL**'
     echo
     echo 'Compact log tails are recorded in `failure-excerpts.txt`.'
   fi
   echo
-  echo 'This bundle does not authorize production deployment or replace protected staging receipts.'
+  echo 'This bundle does not authorize protected staging apply, production deployment, provider delivery or production-data mutation.'
 } > "$SUMMARY"
 
 (
