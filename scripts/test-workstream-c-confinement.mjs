@@ -16,6 +16,7 @@ const repairEntry = fs.readFileSync(path.join(root, 'scripts/repair-jobs-unused-
 const candidates = fs.readFileSync(path.join(root, 'scripts/workstream-c-current-candidates.env'), 'utf8');
 const candidateDoc = fs.readFileSync(path.join(root, 'docs/WORKSTREAM_C_CURRENT_CANDIDATES.md'), 'utf8');
 const manualDoc = fs.readFileSync(path.join(root, 'docs/WORKSTREAM_C_MANUAL_VERIFICATION.md'), 'utf8');
+const ciWorkflow = fs.readFileSync(path.join(root, '.github/workflows/ci.yml'), 'utf8');
 
 for (const marker of [
   'WORKSTREAM_C_ROOT must be set by the confined Workstream C wrapper',
@@ -46,6 +47,20 @@ for (const marker of [
   assert.ok(wrapper.includes(marker), `confined wrapper core missing marker: ${marker}`);
 }
 assert.equal(wrapper.includes('run-workstream-c-manual-verification.sh'), false, 'confined launcher must invoke the internal verifier core directly');
+
+for (const marker of [
+  'Confined Admin Privacy Jobs exact-head verification',
+  "github.head_ref == 'workstream-c-manual-verification-20260711'",
+  "startsWith(github.head_ref, 'repin/current-core-candidates-')",
+  "github.ref == 'refs/heads/workstream-c-manual-verification-20260711'",
+  "startsWith(github.ref, 'refs/heads/repin/current-core-candidates-')",
+  'credentialed=false',
+  'protected_apply=false',
+  'Enforce confined cross-service result',
+]) {
+  assert.ok(ciWorkflow.includes(marker), `CI cross-service authority missing marker: ${marker}`);
+}
+assert.equal(ciWorkflow.includes("github.head_ref == 'repin/current-core-candidates-20260715'"), false, 'CI must authorize the bounded repin prefix rather than one date-specific branch');
 
 const localCommit = repair.indexOf("git commit -m 'fix(jobs): eliminate dependency audit findings'");
 const fullVerifier = repair.indexOf('bash scripts/run-workstream-c-cloud-shell.sh');
@@ -154,4 +169,4 @@ assert.ok(manual.includes('Summary publication requested but gh is not authentic
 assert.ok(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY"'));
 assert.equal(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true'), false);
 
-console.log('PASS: Workstream C confinement, launcher routing, override authority, no-publication defaults, local-only Jobs repair, and live exact-candidate manifest');
+console.log('PASS: Workstream C confinement, launcher routing, bounded repin CI authority, override authority, no-publication defaults, local-only Jobs repair, and live exact-candidate manifest');
