@@ -144,10 +144,15 @@ record_final_source_state() {
   local actual status code=0
   actual="$(git -C "$dir" rev-parse HEAD)"
   status="$(git -C "$dir" status --porcelain --untracked-files=all || true)"
-  printf '%s\t%s\t%s\n' "$repo" "$sha" "$actual" >> "$EVIDENCE/heads.tsv"
+  printf '%s\t%s\t%s\t%s\n' "$repo" "$sha" "$actual" 'exact-source-executed' >> "$EVIDENCE/heads.tsv"
   printf '%s\n' "$status" > "$EVIDENCE/logs/${repo}-final-git-status.log"
   if [ "$actual" != "$sha" ] || [ -n "$status" ]; then code=1; FAILURES=$((FAILURES + 1)); fi
   printf '%s\t%s\t%s\n' "$lane" 'final-source-clean' "$code" >> "$EVIDENCE/status.tsv"
+}
+
+record_private_evidence_state() {
+  printf '%s\t%s\t%s\t%s\n' 'urai-analytics' "$ANALYTICS_SHA" "$ANALYTICS_SHA" 'connector-inspected-evidence-bound-not-reexecuted' >> "$EVIDENCE/heads.tsv"
+  printf '%s\t%s\t%s\t%s\n' 'urai-communications' "$COMMUNICATIONS_SHA" "$COMMUNICATIONS_SHA" 'connector-inspected-evidence-bound-not-reexecuted' >> "$EVIDENCE/heads.tsv"
 }
 
 build_failure_excerpts() {
@@ -168,8 +173,8 @@ log "Manual Workstream C verification root: $ROOT"
 log "Verifier exact head: $VERIFIER_SHA"
 ensure_java
 printf 'lane\tstep\texit_code\n' > "$EVIDENCE/status.tsv"
-printf 'repository\texpected_sha\tactual_sha\n' > "$EVIDENCE/heads.tsv"
-printf 'urai-staging-verifier\t%s\t%s\n' "$VERIFIER_SHA" "$VERIFIER_SHA" >> "$EVIDENCE/heads.tsv"
+printf 'repository\texpected_sha\tactual_or_bound_sha\tverification_mode\n' > "$EVIDENCE/heads.tsv"
+printf 'urai-staging-verifier\t%s\t%s\t%s\n' "$VERIFIER_SHA" "$VERIFIER_SHA" 'exact-source-executed' >> "$EVIDENCE/heads.tsv"
 
 ADMIN_DIR="$ROOT/urai-admin"
 clone_exact urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
@@ -223,43 +228,30 @@ clone_exact urai-content "$CONTENT_SHA" "$CONTENT_DIR"
 use_node 22
 run_shell_step content install "$CONTENT_DIR" 'npm ci'
 run_shell_step content full-check "$CONTENT_DIR" 'npm run check'
-run_shell_step content web-install "$CONTENT_DIR" 'npm ci --prefix apps/web'
+run_shell_step content web-install "$CONTENT_DIR" 'npm run web:install'
 run_shell_step content web-check "$CONTENT_DIR" 'npm run web:check'
 
-ANALYTICS_DIR="$ROOT/urai-analytics"
-clone_exact urai-analytics "$ANALYTICS_SHA" "$ANALYTICS_DIR"
-use_node 22
-run_shell_step analytics install "$ANALYTICS_DIR" 'npm ci'
-run_shell_step analytics full-check "$ANALYTICS_DIR" 'npm run full:check'
-run_shell_step analytics build "$ANALYTICS_DIR" 'npm run build'
-
-COMMUNICATIONS_DIR="$ROOT/urai-communications"
-clone_exact urai-communications "$COMMUNICATIONS_SHA" "$COMMUNICATIONS_DIR"
-use_node 20
-run_shell_step communications install "$COMMUNICATIONS_DIR" 'npm ci'
-run_shell_step communications lint-typecheck "$COMMUNICATIONS_DIR" 'npm run lint && npm run typecheck'
-run_shell_step communications tests-build "$COMMUNICATIONS_DIR" 'npm run test && npm run build'
-run_shell_step communications smoke-no-live-claims "$COMMUNICATIONS_DIR" 'npm run smoke && npm run verify:no-live-claims'
+run_shell_step private-evidence validate "$CONTROL_ROOT" 'node scripts/check-workstream-c-private-evidence.mjs'
 
 record_final_source_state admin urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
 record_final_source_state privacy urai-privacy "$PRIVACY_SHA" "$PRIVACY_DIR"
 record_final_source_state jobs urai-jobs "$JOBS_SHA" "$JOBS_DIR"
 record_final_source_state content urai-content "$CONTENT_SHA" "$CONTENT_DIR"
-record_final_source_state analytics urai-analytics "$ANALYTICS_SHA" "$ANALYTICS_DIR"
-record_final_source_state communications urai-communications "$COMMUNICATIONS_SHA" "$COMMUNICATIONS_DIR"
+record_private_evidence_state
+cp "$CONTROL_ROOT/scripts/workstream-c-private-evidence.json" "$EVIDENCE/private-service-evidence.json"
 build_failure_excerpts
 
 {
-  echo '# URAI Workstream C Six-Service Verification'
+  echo '# URAI Workstream C Six-Service Authority Verification'
   echo
   echo "- Generated: $(date -u +%FT%TZ)"
   echo "- Verifier: \`$VERIFIER_SHA\`"
-  echo "- Admin: \`$ADMIN_SHA\`"
-  echo "- Privacy: \`$PRIVACY_SHA\`"
-  echo "- Jobs: \`$JOBS_SHA\`"
-  echo "- Content: \`$CONTENT_SHA\`"
-  echo "- Analytics: \`$ANALYTICS_SHA\`"
-  echo "- Communications: \`$COMMUNICATIONS_SHA\`"
+  echo "- Admin: \`$ADMIN_SHA\` — exact source executed"
+  echo "- Privacy: \`$PRIVACY_SHA\` — exact source executed"
+  echo "- Jobs: \`$JOBS_SHA\` — exact source executed"
+  echo "- Content: \`$CONTENT_SHA\` — exact source executed"
+  echo "- Analytics: \`$ANALYTICS_SHA\` — private exact-head artifact evidence bound; not cloned or re-executed here"
+  echo "- Communications: \`$COMMUNICATIONS_SHA\` — private exact-head artifact evidence bound; not cloned or re-executed here"
   echo "- Jobs source: $([ -n "$JOBS_LOCAL_SOURCE" ] && echo 'confined local pre-push candidate' || echo 'canonical GitHub exact commit')"
   echo "- Credentialed: false"
   echo "- Protected apply: false"
@@ -272,12 +264,14 @@ build_failure_excerpts
   tail -n +2 "$EVIDENCE/status.tsv" | while IFS=$'\t' read -r lane step code; do echo "| $lane | $step | $code |"; done
   echo
   if [ "$FAILURES" -eq 0 ]; then
-    echo '**SIX-SERVICE SOURCE/BUILD/TEST VERIFICATION: PASS**'
+    echo '**SIX-SERVICE AUTHORITY VERIFICATION: PASS**'
   else
-    echo '**SIX-SERVICE SOURCE/BUILD/TEST VERIFICATION: FAIL**'
+    echo '**SIX-SERVICE AUTHORITY VERIFICATION: FAIL**'
     echo
     echo 'Compact log tails are recorded in `failure-excerpts.txt`.'
   fi
+  echo
+  echo 'Four public repositories were cloned and executed at exact SHAs. Two private repositories are bound to previously inspected exact-head workflow artifacts and digests because a public-repository GITHUB_TOKEN cannot clone private sibling repositories.'
   echo
   echo 'This bundle does not authorize protected staging apply, production deployment, provider delivery or production-data mutation.'
 } > "$SUMMARY"
