@@ -18,6 +18,9 @@ const candidateDoc = fs.readFileSync(path.join(root, 'docs/WORKSTREAM_C_CURRENT_
 const manualDoc = fs.readFileSync(path.join(root, 'docs/WORKSTREAM_C_MANUAL_VERIFICATION.md'), 'utf8');
 const ciWorkflow = fs.readFileSync(path.join(root, '.github/workflows/ci.yml'), 'utf8');
 
+const candidateKeys = ['ADMIN_SHA', 'PRIVACY_SHA', 'JOBS_SHA', 'CONTENT_SHA', 'ANALYTICS_SHA', 'COMMUNICATIONS_SHA'];
+const candidateLabels = ['Admin', 'Privacy', 'Jobs', 'Content', 'Analytics', 'Communications'];
+
 for (const marker of [
   'WORKSTREAM_C_ROOT must be set by the confined Workstream C wrapper',
   "[ \"${WORKSTREAM_C_CONFINED:-}\" = '1' ]",
@@ -27,8 +30,15 @@ for (const marker of [
   'GOOGLE_APPLICATION_CREDENTIALS must be unset',
   'confined_path',
   'JOBS_LOCAL_SOURCE must be the confined Jobs repair checkout',
+  'clone_exact urai-content "$CONTENT_SHA"',
+  'clone_exact urai-analytics "$ANALYTICS_SHA"',
+  'clone_exact urai-communications "$COMMUNICATIONS_SHA"',
+  'record_final_source_state content',
+  'record_final_source_state analytics',
+  'record_final_source_state communications',
+  'SIX-SERVICE SOURCE/BUILD/TEST VERIFICATION',
 ]) {
-  assert.ok(manual.includes(marker), `manual verifier core missing confinement marker: ${marker}`);
+  assert.ok(manual.includes(marker), `manual verifier core missing marker: ${marker}`);
 }
 assert.equal(manual.includes('$HOME/urai-workstream-c-manual-'), false, 'manual verifier core must not default evidence into persistent HOME');
 
@@ -39,6 +49,9 @@ for (const marker of [
   'CLOUDSDK_CONFIG="$ROOT/gcloud-config"',
   'FIREBASE_EMULATORS_PATH="$ROOT/firebase-emulators"',
   'JOBS_LOCAL_SOURCE="$JOBS_LOCAL_SOURCE"',
+  'CONTENT_SHA="$CONTENT_SHA"',
+  'ANALYTICS_SHA="$ANALYTICS_SHA"',
+  'COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA"',
   'REMOTE_CONTROL_SHA=',
   'cleanup_old_verifier_data',
   'MIN_FREE_KB',
@@ -49,18 +62,23 @@ for (const marker of [
 assert.equal(wrapper.includes('run-workstream-c-manual-verification.sh'), false, 'confined launcher must invoke the internal verifier core directly');
 
 for (const marker of [
-  'Confined Admin Privacy Jobs exact-head verification',
+  'Confined six-service exact-head verification',
   "github.head_ref == 'workstream-c-manual-verification-20260711'",
   "startsWith(github.head_ref, 'repin/current-core-candidates-')",
+  "startsWith(github.head_ref, 'repin/current-six-core-candidates-')",
   "github.ref == 'refs/heads/workstream-c-manual-verification-20260711'",
   "startsWith(github.ref, 'refs/heads/repin/current-core-candidates-')",
+  "startsWith(github.ref, 'refs/heads/repin/current-six-core-candidates-')",
+  'content_sha=',
+  'analytics_sha=',
+  'communications_sha=',
   'credentialed=false',
   'protected_apply=false',
   'Enforce confined cross-service result',
 ]) {
-  assert.ok(ciWorkflow.includes(marker), `CI cross-service authority missing marker: ${marker}`);
+  assert.ok(ciWorkflow.includes(marker), `CI six-service authority missing marker: ${marker}`);
 }
-assert.equal(ciWorkflow.includes("github.head_ref == 'repin/current-core-candidates-20260715'"), false, 'CI must authorize the bounded repin prefix rather than one date-specific branch');
+assert.equal(ciWorkflow.includes("github.head_ref == 'repin/current-six-core-candidates-20260715'"), false, 'CI must authorize the bounded repin prefix rather than one date-specific branch');
 
 const localCommit = repair.indexOf("git commit -m 'fix(jobs): eliminate dependency audit findings'");
 const fullVerifier = repair.indexOf('bash scripts/run-workstream-c-cloud-shell.sh');
@@ -79,14 +97,13 @@ for (const marker of [
   'JOBS_LOCAL_SOURCE="$REPO"',
   'ADMIN_SHA="$ADMIN_SHA"',
   'PRIVACY_SHA="$PRIVACY_SHA"',
-  'The commit and this receipt may be pushed only after the complete confined Admin/Privacy/Jobs verifier passes',
 ]) {
   assert.ok(repair.includes(marker), `repair operator core missing pre-push gate: ${marker}`);
 }
 
 function parseCandidates(source) {
   const parsed = {};
-  for (const key of ['ADMIN_SHA', 'PRIVACY_SHA', 'JOBS_SHA']) {
+  for (const key of candidateKeys) {
     const match = source.match(new RegExp(`^${key}='([0-9a-f]{40})'$`, 'm'));
     assert.ok(match, `candidate manifest must define full lowercase ${key}`);
     parsed[key] = match[1];
@@ -95,28 +112,29 @@ function parseCandidates(source) {
 }
 
 const expected = parseCandidates(candidates);
-assert.equal(new Set(Object.values(expected)).size, 3, 'candidate manifest must pin three distinct exact SHAs');
-for (const [name, sha] of Object.entries(expected)) {
+assert.equal(new Set(Object.values(expected)).size, 6, 'candidate manifest must pin six distinct exact SHAs');
+for (let index = 0; index < candidateKeys.length; index += 1) {
+  const key = candidateKeys[index];
+  const sha = expected[key];
   assert.match(sha, /^[0-9a-f]{40}$/);
-  assert.ok(candidateDoc.includes(`\`${sha}\``), `candidate documentation missing ${name}`);
+  assert.ok(candidateDoc.includes(`- ${candidateLabels[index]}: \`${sha}\``), `candidate documentation missing ${key}`);
 }
 assert.ok(candidateDoc.includes('scripts/workstream-c-current-candidates.env'));
+assert.ok(candidateDoc.includes('credential-free source, build, test and emulator verification only'));
 assert.ok(manualDoc.includes('docs/WORKSTREAM_C_CURRENT_CANDIDATES.md'));
 assert.ok(manualDoc.includes('scripts/workstream-c-current-candidates.env'));
-assert.doesNotMatch(manualDoc, /^- (?:Admin|Privacy|Jobs): `(?:[0-9a-f]{40})`$/m, 'manual runbook must not duplicate candidate literals');
+assert.doesNotMatch(manualDoc, /^- (?:Admin|Privacy|Jobs|Content|Analytics|Communications): `(?:[0-9a-f]{40})`$/m, 'manual runbook must not duplicate candidate literals');
 
 for (const [name, entry] of [
   ['manual', manualEntry],
   ['cloud', cloudEntry],
 ]) {
   assert.ok(entry.includes('workstream-c-current-candidates.env'), `${name} entrypoint must source the shared candidate manifest`);
-  assert.ok(entry.includes('ADMIN_SHA_OVERRIDE="${ADMIN_SHA-}"'), `${name} entrypoint must preserve Admin override`);
-  assert.ok(entry.includes('PRIVACY_SHA_OVERRIDE="${PRIVACY_SHA-}"'), `${name} entrypoint must preserve Privacy override`);
-  assert.ok(entry.includes('JOBS_SHA_OVERRIDE="${JOBS_SHA-}"'), `${name} entrypoint must preserve Jobs override`);
-  assert.ok(entry.includes('[ -z "$ADMIN_SHA_OVERRIDE" ] || ADMIN_SHA="$ADMIN_SHA_OVERRIDE"'), `${name} entrypoint must restore Admin override`);
-  assert.ok(entry.includes('[ -z "$PRIVACY_SHA_OVERRIDE" ] || PRIVACY_SHA="$PRIVACY_SHA_OVERRIDE"'), `${name} entrypoint must restore Privacy override`);
-  assert.ok(entry.includes('[ -z "$JOBS_SHA_OVERRIDE" ] || JOBS_SHA="$JOBS_SHA_OVERRIDE"'), `${name} entrypoint must restore Jobs override`);
-  assert.ok(entry.includes('export ADMIN_SHA PRIVACY_SHA JOBS_SHA'), `${name} entrypoint must export exact candidates`);
+  for (const key of candidateKeys) {
+    assert.ok(entry.includes(`${key}_OVERRIDE="${'${'}${key}-}"`), `${name} entrypoint must preserve ${key} override`);
+    assert.ok(entry.includes(`[ -z "$${key}_OVERRIDE" ] || ${key}="$${key}_OVERRIDE"`), `${name} entrypoint must restore ${key} override`);
+  }
+  assert.ok(entry.includes('export ADMIN_SHA PRIVACY_SHA JOBS_SHA CONTENT_SHA ANALYTICS_SHA COMMUNICATIONS_SHA'), `${name} entrypoint must export all six exact candidates`);
 }
 assert.ok(cloudEntry.includes('run-workstream-c-cloud-shell-core.sh'), 'cloud entrypoint must invoke confined launcher core');
 assert.ok(manualEntry.includes('run-workstream-c-cloud-shell.sh'), 'manual entrypoint must route through the confined launcher');
@@ -127,13 +145,20 @@ function proveWrapperOverrides(wrapperName, delegatedName) {
   try {
     fs.copyFileSync(path.join(root, `scripts/${wrapperName}`), path.join(temp, wrapperName));
     fs.copyFileSync(path.join(root, 'scripts/workstream-c-current-candidates.env'), path.join(temp, 'workstream-c-current-candidates.env'));
-    fs.writeFileSync(path.join(temp, delegatedName), '#!/usr/bin/env bash\nset -euo pipefail\nprintf "%s|%s|%s\\n" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"\n');
+    fs.writeFileSync(path.join(temp, delegatedName), `#!/usr/bin/env bash\nset -euo pipefail\nprintf "%s|%s|%s|%s|%s|%s\\n" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA" "$CONTENT_SHA" "$ANALYTICS_SHA" "$COMMUNICATIONS_SHA"\n`);
     fs.chmodSync(path.join(temp, wrapperName), 0o755);
     fs.chmodSync(path.join(temp, delegatedName), 0o755);
-    const overrides = { ADMIN_SHA: 'a'.repeat(40), PRIVACY_SHA: 'b'.repeat(40), JOBS_SHA: 'c'.repeat(40) };
+    const overrides = {
+      ADMIN_SHA: 'a'.repeat(40),
+      PRIVACY_SHA: 'b'.repeat(40),
+      JOBS_SHA: 'c'.repeat(40),
+      CONTENT_SHA: 'd'.repeat(40),
+      ANALYTICS_SHA: 'e'.repeat(40),
+      COMMUNICATIONS_SHA: 'f'.repeat(40),
+    };
     const result = spawnSync('bash', [path.join(temp, wrapperName)], { cwd: temp, encoding: 'utf8', env: { ...process.env, ...overrides } });
     assert.equal(result.status, 0, `${wrapperName} override probe failed: ${result.stderr}`);
-    assert.equal(result.stdout.trim(), `${overrides.ADMIN_SHA}|${overrides.PRIVACY_SHA}|${overrides.JOBS_SHA}`);
+    assert.equal(result.stdout.trim(), candidateKeys.map((key) => overrides[key]).join('|'));
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
@@ -169,4 +194,4 @@ assert.ok(manual.includes('Summary publication requested but gh is not authentic
 assert.ok(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY"'));
 assert.equal(manual.includes('gh issue comment 46 --repo LifeLoggerAI/urai-admin --body-file "$SUMMARY" || true'), false);
 
-console.log('PASS: Workstream C confinement, launcher routing, bounded repin CI authority, override authority, no-publication defaults, local-only Jobs repair, and live exact-candidate manifest');
+console.log('PASS: six-service Workstream C confinement, launcher routing, bounded repin authority, override authority, no-publication defaults and exact-candidate manifest');
