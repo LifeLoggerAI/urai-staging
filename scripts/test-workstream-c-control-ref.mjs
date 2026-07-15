@@ -9,7 +9,7 @@ for (const marker of [
   'WORKSTREAM_C_CONTROL_REF',
   'GITHUB_HEAD_REF',
   'GITHUB_REF_NAME',
-  "REPINS_PATTERN='^repin/current-core-candidates-[0-9]{8}$'",
+  "REPINS_PATTERN='^repin/current-(core|six-core)-candidates-[0-9]{8}$'",
   "[ \"$CONTROL_REF\" != 'workstream-c-manual-verification-20260711' ]",
   'Control ref is outside the bounded verifier authority',
   'ls-remote origin "refs/heads/$CONTROL_REF"',
@@ -23,4 +23,18 @@ for (const marker of [
 assert.equal(source.includes("CONTROL_BRANCH='workstream-c-manual-verification-20260711'"), false);
 assert.equal(source.includes('ls-remote origin "refs/heads/$CONTROL_BRANCH"'), false);
 
-console.log('PASS: bounded Workstream C control refs and exact remote-head identity');
+for (const allowed of [
+  'repin/current-core-candidates-20260715',
+  'repin/current-six-core-candidates-20260715',
+]) {
+  assert.match(allowed, /^repin\/current-(core|six-core)-candidates-[0-9]{8}$/);
+}
+for (const rejected of [
+  'repin/current-six-core-candidates-',
+  'repin/current-six-core-candidates-20260715-extra',
+  'feature/current-six-core-candidates-20260715',
+]) {
+  assert.doesNotMatch(rejected, /^repin\/current-(core|six-core)-candidates-[0-9]{8}$/);
+}
+
+console.log('PASS: bounded three-service/six-service Workstream C control refs and exact remote-head identity');
