@@ -4,6 +4,9 @@ set -Eeuo pipefail
 ADMIN_SHA="${ADMIN_SHA:-6d1e84640544098ae71040fca4c7f8893e0f2fd4}"
 PRIVACY_SHA="${PRIVACY_SHA:-371e9a8db9b24a0cbdd3a6753776be6920ce736c}"
 JOBS_SHA="${JOBS_SHA:-ed7f80517e4fa940472a93f22e9d42e080ddeb6c}"
+CONTENT_SHA="${CONTENT_SHA:-227df755844fb5c192dd8298f3e130f0e84f29cc}"
+ANALYTICS_SHA="${ANALYTICS_SHA:-5bf2b2a578b80d05227e8a07e41846d68ff60938}"
+COMMUNICATIONS_SHA="${COMMUNICATIONS_SHA:-180cbab717c858b553440944c1a47ee16d547983}"
 JOBS_LOCAL_SOURCE="${JOBS_LOCAL_SOURCE:-}"
 CONTROL_REF="${WORKSTREAM_C_CONTROL_REF:-${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-workstream-c-manual-verification-20260711}}}"
 PUBLIC_REGISTRY='https://registry.npmjs.org/'
@@ -11,14 +14,14 @@ STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
 MIN_FREE_KB="${WORKSTREAM_C_MIN_FREE_KB:-8388608}"
 SHA_PATTERN='^[0-9a-f]{40}$'
-REPINS_PATTERN='^repin/current-core-candidates-[0-9]{8}$'
+REPINS_PATTERN='^repin/current-(core|six-core)-candidates-[0-9]{8}$'
 ORIGINAL_HOME="${HOME:?HOME must be set}"
 HOST_NVM_DIR="${NVM_DIR:-$ORIGINAL_HOME/.nvm}"
 
 log() { printf '[%s] %s\n' "$(date -u +%FT%TZ)" "$*"; }
 fail() { echo "[workstream-c-cloud-shell] FAIL: $*" >&2; exit 1; }
 
-for candidate in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
+for candidate in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA" "$CONTENT_SHA" "$ANALYTICS_SHA" "$COMMUNICATIONS_SHA"; do
   [[ "$candidate" =~ $SHA_PATTERN ]] || fail "Candidate identity must be a full lowercase SHA: $candidate"
 done
 if [ "$CONTROL_REF" != 'workstream-c-manual-verification-20260711' ] && [[ ! "$CONTROL_REF" =~ $REPINS_PATTERN ]]; then
@@ -92,6 +95,9 @@ log "Confined HOME: $HOME"
 log "Admin: $ADMIN_SHA"
 log "Privacy: $PRIVACY_SHA"
 log "Jobs: $JOBS_SHA"
+log "Content: $CONTENT_SHA"
+log "Analytics: $ANALYTICS_SHA"
+log "Communications: $COMMUNICATIONS_SHA"
 if [ -n "$JOBS_LOCAL_SOURCE" ]; then
   log "Jobs source: confined local pre-push candidate $JOBS_LOCAL_SOURCE"
 fi
@@ -105,5 +111,8 @@ exec env \
   ADMIN_SHA="$ADMIN_SHA" \
   PRIVACY_SHA="$PRIVACY_SHA" \
   JOBS_SHA="$JOBS_SHA" \
+  CONTENT_SHA="$CONTENT_SHA" \
+  ANALYTICS_SHA="$ANALYTICS_SHA" \
+  COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA" \
   JOBS_LOCAL_SOURCE="$JOBS_LOCAL_SOURCE" \
   bash "$(dirname "$0")/run-workstream-c-manual-verification-core.sh"
