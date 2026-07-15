@@ -71,8 +71,12 @@ jobs:
   cross-service:
     name: Confined Admin Privacy Jobs exact-head verification
     if: >-
-      (github.event_name == 'pull_request' && github.head_ref == 'workstream-c-manual-verification-20260711') ||
-      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/workstream-c-manual-verification-20260711')
+      (github.event_name == 'pull_request' &&
+        (github.head_ref == 'workstream-c-manual-verification-20260711' ||
+         startsWith(github.head_ref, 'repin/current-core-candidates-'))) ||
+      (github.event_name == 'workflow_dispatch' &&
+        (github.ref == 'refs/heads/workstream-c-manual-verification-20260711' ||
+         startsWith(github.ref, 'refs/heads/repin/current-core-candidates-')))
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
