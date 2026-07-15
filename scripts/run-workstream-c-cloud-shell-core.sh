@@ -5,12 +5,13 @@ ADMIN_SHA="${ADMIN_SHA:-6d1e84640544098ae71040fca4c7f8893e0f2fd4}"
 PRIVACY_SHA="${PRIVACY_SHA:-371e9a8db9b24a0cbdd3a6753776be6920ce736c}"
 JOBS_SHA="${JOBS_SHA:-ed7f80517e4fa940472a93f22e9d42e080ddeb6c}"
 JOBS_LOCAL_SOURCE="${JOBS_LOCAL_SOURCE:-}"
-CONTROL_BRANCH='workstream-c-manual-verification-20260711'
+CONTROL_REF="${WORKSTREAM_C_CONTROL_REF:-${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-workstream-c-manual-verification-20260711}}}"
 PUBLIC_REGISTRY='https://registry.npmjs.org/'
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
 MIN_FREE_KB="${WORKSTREAM_C_MIN_FREE_KB:-8388608}"
 SHA_PATTERN='^[0-9a-f]{40}$'
+REPINS_PATTERN='^repin/current-core-candidates-[0-9]{8}$'
 ORIGINAL_HOME="${HOME:?HOME must be set}"
 HOST_NVM_DIR="${NVM_DIR:-$ORIGINAL_HOME/.nvm}"
 
@@ -20,11 +21,14 @@ fail() { echo "[workstream-c-cloud-shell] FAIL: $*" >&2; exit 1; }
 for candidate in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
   [[ "$candidate" =~ $SHA_PATTERN ]] || fail "Candidate identity must be a full lowercase SHA: $candidate"
 done
+if [ "$CONTROL_REF" != 'workstream-c-manual-verification-20260711' ] && [[ ! "$CONTROL_REF" =~ $REPINS_PATTERN ]]; then
+  fail "Control ref is outside the bounded verifier authority: $CONTROL_REF"
+fi
 [ -z "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ] || fail 'Verifier checkout must be clean'
 CONTROL_SHA="$(git -C "$CONTROL_ROOT" rev-parse HEAD)"
 [[ "$CONTROL_SHA" =~ $SHA_PATTERN ]] || fail 'Verifier checkout SHA is invalid'
-REMOTE_CONTROL_SHA="$(git -C "$CONTROL_ROOT" ls-remote origin "refs/heads/$CONTROL_BRANCH" | awk '{print $1}')"
-[ "$REMOTE_CONTROL_SHA" = "$CONTROL_SHA" ] || fail "Verifier checkout is not the current remote control head: local=$CONTROL_SHA remote=${REMOTE_CONTROL_SHA:-missing}"
+REMOTE_CONTROL_SHA="$(git -C "$CONTROL_ROOT" ls-remote origin "refs/heads/$CONTROL_REF" | awk '{print $1}')"
+[ "$REMOTE_CONTROL_SHA" = "$CONTROL_SHA" ] || fail "Verifier checkout is not the current remote control head: ref=$CONTROL_REF local=$CONTROL_SHA remote=${REMOTE_CONTROL_SHA:-missing}"
 [ -f "$CONTROL_ROOT/scripts/resolve-workstream-c-root.mjs" ] || fail 'Workspace resolver is missing'
 ROOT="$(node "$CONTROL_ROOT/scripts/resolve-workstream-c-root.mjs" "$STAMP")"
 
@@ -60,6 +64,7 @@ fi
 
 unset FIREBASE_TOKEN GOOGLE_APPLICATION_CREDENTIALS
 export WORKSTREAM_C_CONFINED=1
+export WORKSTREAM_C_CONTROL_REF="$CONTROL_REF"
 export WORKSTREAM_C_ROOT="$ROOT"
 export HOME="$ROOT/home"
 export NVM_DIR="$HOME/.nvm"
@@ -80,6 +85,7 @@ export CI=1
 [ "$HOME" = "$ROOT/home" ] || fail 'Verifier HOME must be confined under the workspace'
 [ ! -e "$HOME/.config/gcloud/application_default_credentials.json" ] || fail 'Ambient Google ADC must not be reachable from confined HOME'
 
+log "Verifier control ref: $CONTROL_REF"
 log "Verifier control head: $CONTROL_SHA"
 log "Cloud Shell verifier workspace: $ROOT"
 log "Confined HOME: $HOME"
@@ -92,6 +98,7 @@ fi
 
 exec env \
   WORKSTREAM_C_CONFINED=1 \
+  WORKSTREAM_C_CONTROL_REF="$CONTROL_REF" \
   WORKSTREAM_C_ROOT="$ROOT" \
   HOME="$HOME" \
   NVM_DIR="$NVM_DIR" \
