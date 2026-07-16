@@ -144,39 +144,38 @@
 <body>
   <main>
     <aside class="notice" role="note" aria-label="staging environment notice">
-      <strong>Staging environment.</strong> This page is for URAI validation only. It is not the production app, not a public launch surface, and should use synthetic staging data only.
+      <strong>Staging source shell.</strong> This repository is configured for URAI validation only. The page is not proof that a protected deployment is live, and it must use synthetic staging data only.
     </aside>
     <section class="hero" aria-labelledby="title">
       <div class="card copy">
         <div class="kicker">URAI Staging Lock Surface</div>
-        <h1 id="title">URAI life OS staging is online.</h1>
+        <h1 id="title">URAI staging validation shell.</h1>
         <p>
-          This environment validates the Firebase staging system for URAI: hosting, Cloud Functions,
+          This source is prepared to validate the Firebase staging system for URAI: hosting, Cloud Functions,
           Firestore rules, Storage rules, companion smoke flow, waitlist persistence, admin gates,
-          and deployment safety checks.
+          and deployment safety checks. A live deployment is not certified until the protected workflow produces exact receipts.
         </p>
         <div class="status-grid" aria-label="staging status summary">
           <div class="status"><strong>Project</strong><span>urai-staging</span></div>
-          <div class="status"><strong>Hosting</strong><span>https://urai-staging.web.app</span></div>
-          <div class="status"><strong>Core shell</strong><span>home, orb, ground, companion smoke</span></div>
-          <div class="status"><strong>Privacy posture</strong><span>default-deny rules + scoped staging writes</span></div>
+          <div class="status"><strong>Configured hosting</strong><span>https://urai-staging.web.app</span></div>
+          <div class="status"><strong>Source shell</strong><span>static UI + guarded endpoints</span></div>
+          <div class="status"><strong>Runtime evidence</strong><span>live deploy receipt required</span></div>
         </div>
         <nav class="path" aria-label="staging smoke links">
-          <a href="/api/healthz">Health</a>
-          <a href="/api/buildinfo">Build info</a>
-          <a href="/u/adamclamp">Adam route smoke</a>
+          <a href="/api/healthz">Health after deploy</a>
+          <a href="/api/buildinfo">Build info after deploy</a>
+          <a href="/u/adamclamp">Route smoke after deploy</a>
         </nav>
       </div>
-      <div class="card stage" aria-label="symbolic URAI staging home preview">
+      <div class="card stage" aria-label="symbolic URAI staging source preview">
         <div class="orb" role="img" aria-label="URAI companion aura orb"></div>
         <div class="ground" aria-hidden="true"></div>
       </div>
     </section>
     <section class="card api" aria-labelledby="api-title">
-      <h2 id="api-title">Smoke endpoints</h2>
+      <h2 id="api-title">Protected smoke endpoints</h2>
       <p>
-        POST <code>/api/companion</code> with a non-empty <code>message</code> to verify the companion endpoint.
-        POST <code>/api/waitlist</code> with a synthetic <code>email</code> to verify staging waitlist persistence.
+        These endpoints are meaningful only after an exact-main protected deployment. Current runtime evidence gaps are tracked in the staging issue register; source availability alone is not live-service proof.
       </p>
     </section>
   </main>
