@@ -86,20 +86,32 @@ remote_main_sha="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
   exit 1
 }
 
-[ -n "${RUNNER_TEMP:-}" ] || {
-  echo 'Refusing deploy without RUNNER_TEMP confinement.' >&2
+[ -n "${GITHUB_WORKSPACE:-}" ] || {
+  echo 'Refusing deploy without GITHUB_WORKSPACE confinement.' >&2
   exit 1
 }
 [ -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" ] || {
-  echo 'Refusing deploy without the managed staging credential path.' >&2
+  echo 'Refusing deploy without ephemeral WIF Application Default Credentials.' >&2
+  exit 1
+}
+[ -n "${GOOGLE_GHA_CREDS_PATH:-}" ] || {
+  echo 'Refusing deploy without google-github-actions credential provenance.' >&2
+  exit 1
+}
+[ "$GOOGLE_APPLICATION_CREDENTIALS" = "$GOOGLE_GHA_CREDS_PATH" ] || {
+  echo 'Refusing deploy when ADC path does not match the GitHub auth credential path.' >&2
   exit 1
 }
 case "$GOOGLE_APPLICATION_CREDENTIALS" in
-  "$RUNNER_TEMP"/*) ;;
-  *) echo 'Refusing deploy: credential path must stay under RUNNER_TEMP.' >&2; exit 1 ;;
+  "$GITHUB_WORKSPACE"/gha-creds-*.json) ;;
+  *) echo 'Refusing deploy: ADC must be the ephemeral google-github-actions file under GITHUB_WORKSPACE.' >&2; exit 1 ;;
 esac
 [ -f "$GOOGLE_APPLICATION_CREDENTIALS" ] || {
-  echo 'Refusing deploy: managed staging credential file is missing.' >&2
+  echo 'Refusing deploy: ephemeral WIF credential file is missing.' >&2
+  exit 1
+}
+git check-ignore -q "$GOOGLE_APPLICATION_CREDENTIALS" || {
+  echo 'Refusing deploy: ephemeral credential path must be gitignored.' >&2
   exit 1
 }
 
@@ -169,6 +181,7 @@ step 'Writing immutable staging lock receipt'
   echo "- GitHub workflow run: ${GITHUB_RUN_ID:-missing}"
   echo "- GitHub actor: ${GITHUB_ACTOR:-missing}"
   echo '- Protected environment: staging'
+  echo '- Credential class: WIF/ephemeral ADC'
   echo '- Hosting site pre-existed: true'
   echo '- Production approval enabled: false'
   echo '- Production deployment performed: false'

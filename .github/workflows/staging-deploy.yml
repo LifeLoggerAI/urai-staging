@@ -140,8 +140,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     environment: staging
-    env:
-      GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/urai-staging-service-account.json
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
     steps:
       - name: Checkout exact verified main
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -183,6 +185,40 @@ jobs:
           echo "$RUNNER_TEMP/firebase-cli/bin" >> "$GITHUB_PATH"
           "$RUNNER_TEMP/firebase-cli/bin/firebase" --version
 
+      - name: Require protected WIF deploy identity
+        shell: bash
+        env:
+          WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+          DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          test -n "$WIF_PROVIDER" || { echo 'GCP_WIF_PROVIDER is required; stored Firebase service-account credentials are prohibited.' >&2; exit 1; }
+          test -n "$DEPLOY_SERVICE_ACCOUNT" || { echo 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT is required; stored Firebase service-account credentials are prohibited.' >&2; exit 1; }
+
+      - name: Authenticate to Google Cloud with WIF
+        id: google-auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Verify ephemeral WIF credential boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test -f "$GOOGLE_APPLICATION_CREDENTIALS"
+          test -n "${GOOGLE_GHA_CREDS_PATH:-}"
+          test "$GOOGLE_APPLICATION_CREDENTIALS" = "$GOOGLE_GHA_CREDS_PATH"
+          case "$GOOGLE_APPLICATION_CREDENTIALS" in
+            "$GITHUB_WORKSPACE"/gha-creds-*.json) ;;
+            *) echo 'WIF credential must be the ephemeral google-github-actions file under GITHUB_WORKSPACE.' >&2; exit 1 ;;
+          esac
+          git check-ignore -q "$GOOGLE_APPLICATION_CREDENTIALS"
+
       - name: Initialize protected deploy receipt
         shell: bash
         run: |
@@ -197,22 +233,18 @@ jobs:
             echo "- Environment: staging"
             echo "- Firebase project: $EXPECTED_STAGING_PROJECT"
             echo "- Staging URL: $URAI_STAGING_URL"
+            echo "- Credential class: WIF/ephemeral ADC"
             echo "- Started: $(date -u +%FT%TZ)"
           } > artifacts/deploy/staging-protected-deploy.md
 
-      - name: Materialize credential and run locked staging deploy
+      - name: Run locked staging deploy with WIF
         id: deploy
         env:
-          FIREBASE_SERVICE_ACCOUNT_URAI_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_URAI_STAGING }}
           URAI_STAGING_PROTECTED_DEPLOY: '1'
           URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING"
-          umask 077
-          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING" > "$GOOGLE_APPLICATION_CREDENTIALS"
-          trap 'rm -f -- "$GOOGLE_APPLICATION_CREDENTIALS"' EXIT
           npm run deploy:staging
           test -f URAI_STAGING_LOCK.md
 
@@ -234,11 +266,6 @@ jobs:
             fi
           } >> artifacts/deploy/staging-protected-deploy.md
           cat artifacts/deploy/staging-protected-deploy.md >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Remove temporary credential
-        if: always()
-        shell: bash
-        run: rm -f -- "$GOOGLE_APPLICATION_CREDENTIALS"
 
       - name: Upload protected staging deploy evidence
         if: always()
