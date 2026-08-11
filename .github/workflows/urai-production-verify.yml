@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: urai-staging-production-verify-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
@@ -16,13 +17,15 @@ env:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    name: Verify exact staging candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - name: Checkout exact reviewed head
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           ref: ${{ env.TARGET_SHA }}
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
           show-progress: false
 
@@ -40,6 +43,12 @@ jobs:
           cache: npm
           cache-dependency-path: functions/package-lock.json
 
+      - name: Setup Java 21 for Firebase emulators
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
       - name: Install exact functions dependency graph
         run: npm --prefix functions ci --ignore-scripts
 
@@ -47,5 +56,22 @@ jobs:
         shell: bash
         run: test -z "$(git status --porcelain --untracked-files=all)"
 
-      - name: Verify
+      - name: Run canonical staging bootstrap
+        run: node scripts/urai-staging-bootstrap.mjs
+
+      - name: Validate launch evidence
+        run: node scripts/validate-launch-evidence.mjs
+
+      - name: Run repository production-verification suite
         run: node scripts/urai-production-verify.mjs
+
+      - name: Upload exact-head staging verification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: urai-staging-production-verify-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: |
+            artifacts/launch/staging-bootstrap-report.json
+            artifacts/launch/staging-bootstrap-summary.md
+          if-no-files-found: error
+          retention-days: 90
