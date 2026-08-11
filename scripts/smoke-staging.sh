@@ -92,7 +92,7 @@ const body = JSON.parse(fs.readFileSync(bodyPath, 'utf8'));
 const receipt = JSON.parse(fs.readFileSync(receiptPath, 'utf8'));
 const failures = [];
 
-if (receipt.schemaVersion !== 'urai-staging-mutation-1') failures.push('mutation receipt schema must be urai-staging-mutation-1');
+if (receipt.schemaVersion !== 'urai-staging-mutation-2') failures.push('mutation receipt schema must be urai-staging-mutation-2');
 if (receipt.sourceSha !== expectedSha) failures.push(`mutation receipt sourceSha must equal ${expectedSha}`);
 if (receipt.projectId !== expectedProject) failures.push(`mutation receipt projectId must equal ${expectedProject}`);
 if (receipt.hostingUrl !== expectedUrl) failures.push(`mutation receipt hostingUrl must equal ${expectedUrl}`);
