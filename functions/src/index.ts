@@ -3,6 +3,13 @@ import * as functions from 'firebase-functions';
 import { getCompletionSummary, FEATURE_MATRIX, ROADMAP_PHASES } from './lib/featureRegistry';
 import { requireAdmin, requireAuth } from './lib/auth';
 import {
+  STAGING_HOSTING_URL,
+  STAGING_PROJECT_ID,
+  isSyntheticStagingEmail,
+  stagingRuntimeBuildInfo,
+  stagingWaitlistDocumentId,
+} from './lib/stagingBoundaries';
+import {
   assertPlainObject,
   optionalPlainObject,
   optionalString,
@@ -15,8 +22,6 @@ admin.initializeApp();
 
 const db = admin.firestore();
 const serverTimestamp = admin.firestore.FieldValue.serverTimestamp;
-const STAGING_PROJECT_ID = 'urai-staging';
-const STAGING_HOSTING_URL = 'https://urai-staging.web.app';
 
 function setJsonHeaders(response: functions.Response): void {
   response.set('Access-Control-Allow-Origin', '*');
@@ -46,10 +51,6 @@ function bodyAsPlainObject(body: unknown): Record<string, unknown> {
   return {};
 }
 
-function isLikelyEmail(value: unknown): value is string {
-  return typeof value === 'string' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value) && value.length <= 254;
-}
-
 export const healthz = functions.https.onRequest((request, response) => {
   if (handleOptions(request, response)) return;
   if (request.method !== 'GET') {
@@ -77,9 +78,7 @@ export const buildinfo = functions.https.onRequest((request, response) => {
     service: 'urai-staging',
     projectId: STAGING_PROJECT_ID,
     hostingUrl: STAGING_HOSTING_URL,
-    releaseCandidateSha: process.env.URAI_RELEASE_CANDIDATE_SHA ?? 'unknown',
-    deployedAt: process.env.URAI_DEPLOYED_AT ?? 'unknown',
-    nodeEnv: process.env.NODE_ENV ?? 'unknown',
+    ...stagingRuntimeBuildInfo(),
   });
 });
 
@@ -101,19 +100,10 @@ export const companion = functions.https.onRequest(async (request, response) => 
     return;
   }
 
-  await db.collection('staging_events').add({
-    type: 'companion_smoke',
-    payload: {
-      messagePreview: message.slice(0, 120),
-      source: typeof body.source === 'string' ? body.source.slice(0, 80) : 'staging-smoke',
-    },
-    actorUid: 'system:public-smoke',
-    createdAt: serverTimestamp(),
-  });
-
   sendJson(response, 200, {
     status: 'ok',
     service: 'urai-staging-companion',
+    persisted: false,
     reply: 'URAI staging companion endpoint is reachable. Full AI provider wiring is intentionally validated by environment-specific smoke tests.',
   });
 });
@@ -126,15 +116,17 @@ export const waitlist = functions.https.onRequest(async (request, response) => {
   }
 
   const body = bodyAsPlainObject(request.body);
-  if (!isLikelyEmail(body.email)) {
+  if (!isSyntheticStagingEmail(body.email)) {
     sendJson(response, 400, {
       status: 'error',
-      error: 'valid_email_required',
+      error: 'synthetic_email_required',
+      message: 'The staging waitlist accepts reserved synthetic email domains only.',
     });
     return;
   }
 
   const email = body.email.trim().toLowerCase();
+  const documentId = stagingWaitlistDocumentId(email);
   const entry = {
     email,
     source: typeof body.source === 'string' ? body.source.slice(0, 120) : 'staging',
@@ -142,14 +134,16 @@ export const waitlist = functions.https.onRequest(async (request, response) => {
     intent: typeof body.intent === 'string' ? body.intent.slice(0, 160) : null,
     createdAt: serverTimestamp(),
     environment: 'staging',
+    synthetic: true,
   };
 
-  await db.collection('staging_waitlist').doc(email).set(entry, { merge: true });
+  await db.collection('staging_waitlist').doc(documentId).set(entry, { merge: true });
 
   sendJson(response, 200, {
     status: 'ok',
     service: 'urai-staging-waitlist',
     stored: true,
+    synthetic: true,
   });
 });
 
