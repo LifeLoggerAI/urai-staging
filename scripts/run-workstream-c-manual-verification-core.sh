@@ -4,6 +4,9 @@ set -Eeuo pipefail
 ADMIN_SHA="${ADMIN_SHA:-6d1e84640544098ae71040fca4c7f8893e0f2fd4}"
 PRIVACY_SHA="${PRIVACY_SHA:-371e9a8db9b24a0cbdd3a6753776be6920ce736c}"
 JOBS_SHA="${JOBS_SHA:-ed7f80517e4fa940472a93f22e9d42e080ddeb6c}"
+CONTENT_SHA="${CONTENT_SHA:-227df755844fb5c192dd8298f3e130f0e84f29cc}"
+ANALYTICS_SHA="${ANALYTICS_SHA:-5bf2b2a578b80d05227e8a07e41846d68ff60938}"
+COMMUNICATIONS_SHA="${COMMUNICATIONS_SHA:-180cbab717c858b553440944c1a47ee16d547983}"
 JOBS_LOCAL_SOURCE="${JOBS_LOCAL_SOURCE:-}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 CONTROL_ROOT="$(git rev-parse --show-toplevel)"
@@ -52,7 +55,7 @@ for pair in \
 done
 mkdir -p "$EVIDENCE/logs"
 
-for candidate in "$VERIFIER_SHA" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
+for candidate in "$VERIFIER_SHA" "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA" "$CONTENT_SHA" "$ANALYTICS_SHA" "$COMMUNICATIONS_SHA"; do
   [[ "$candidate" =~ $SHA_PATTERN ]] || fail "Every verifier and candidate identity must be a full lowercase 40-character SHA: $candidate"
 done
 [ -z "$(git -C "$CONTROL_ROOT" status --porcelain --untracked-files=all)" ] || fail 'The manual verifier checkout must be clean before execution'
@@ -141,10 +144,15 @@ record_final_source_state() {
   local actual status code=0
   actual="$(git -C "$dir" rev-parse HEAD)"
   status="$(git -C "$dir" status --porcelain --untracked-files=all || true)"
-  printf '%s\t%s\t%s\n' "$repo" "$sha" "$actual" >> "$EVIDENCE/heads.tsv"
+  printf '%s\t%s\t%s\t%s\n' "$repo" "$sha" "$actual" 'exact-source-executed' >> "$EVIDENCE/heads.tsv"
   printf '%s\n' "$status" > "$EVIDENCE/logs/${repo}-final-git-status.log"
   if [ "$actual" != "$sha" ] || [ -n "$status" ]; then code=1; FAILURES=$((FAILURES + 1)); fi
   printf '%s\t%s\t%s\n' "$lane" 'final-source-clean' "$code" >> "$EVIDENCE/status.tsv"
+}
+
+record_private_evidence_state() {
+  printf '%s\t%s\t%s\t%s\n' 'urai-analytics' "$ANALYTICS_SHA" "$ANALYTICS_SHA" 'connector-inspected-evidence-bound-not-reexecuted' >> "$EVIDENCE/heads.tsv"
+  printf '%s\t%s\t%s\t%s\n' 'urai-communications' "$COMMUNICATIONS_SHA" "$COMMUNICATIONS_SHA" 'connector-inspected-evidence-bound-not-reexecuted' >> "$EVIDENCE/heads.tsv"
 }
 
 build_failure_excerpts() {
@@ -165,8 +173,8 @@ log "Manual Workstream C verification root: $ROOT"
 log "Verifier exact head: $VERIFIER_SHA"
 ensure_java
 printf 'lane\tstep\texit_code\n' > "$EVIDENCE/status.tsv"
-printf 'repository\texpected_sha\tactual_sha\n' > "$EVIDENCE/heads.tsv"
-printf 'urai-staging-verifier\t%s\t%s\n' "$VERIFIER_SHA" "$VERIFIER_SHA" >> "$EVIDENCE/heads.tsv"
+printf 'repository\texpected_sha\tactual_or_bound_sha\tverification_mode\n' > "$EVIDENCE/heads.tsv"
+printf 'urai-staging-verifier\t%s\t%s\t%s\n' "$VERIFIER_SHA" "$VERIFIER_SHA" 'exact-source-executed' >> "$EVIDENCE/heads.tsv"
 
 ADMIN_DIR="$ROOT/urai-admin"
 clone_exact urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
@@ -215,20 +223,38 @@ run_shell_step jobs tests "$JOBS_DIR" 'pnpm test'
 run_shell_step jobs smoke "$JOBS_DIR" 'pnpm urai-jobs:smoke && pnpm urai-jobs:deploy-precheck'
 run_shell_step jobs emulator-e2e "$JOBS_DIR" 'NO_GCE_CHECK=true npx --yes firebase-tools@15.23.0 emulators:exec --only firestore,auth,functions,storage,pubsub "node scripts/urai-jobs-e2e.mjs"'
 
+CONTENT_DIR="$ROOT/urai-content"
+clone_exact urai-content "$CONTENT_SHA" "$CONTENT_DIR"
+use_node 22
+run_shell_step content install "$CONTENT_DIR" 'npm ci'
+run_shell_step content full-check "$CONTENT_DIR" 'npm run check'
+run_shell_step content web-install "$CONTENT_DIR" 'npm run web:install'
+run_shell_step content web-check "$CONTENT_DIR" 'npm run web:check'
+
+run_shell_step private-evidence validate "$CONTROL_ROOT" 'node scripts/check-workstream-c-private-evidence.mjs'
+
 record_final_source_state admin urai-admin "$ADMIN_SHA" "$ADMIN_DIR"
 record_final_source_state privacy urai-privacy "$PRIVACY_SHA" "$PRIVACY_DIR"
 record_final_source_state jobs urai-jobs "$JOBS_SHA" "$JOBS_DIR"
+record_final_source_state content urai-content "$CONTENT_SHA" "$CONTENT_DIR"
+record_private_evidence_state
+cp "$CONTROL_ROOT/scripts/workstream-c-private-evidence.json" "$EVIDENCE/private-service-evidence.json"
 build_failure_excerpts
 
 {
-  echo '# URAI Workstream C Manual Verification'
+  echo '# URAI Workstream C Six-Service Authority Verification'
   echo
   echo "- Generated: $(date -u +%FT%TZ)"
   echo "- Verifier: \`$VERIFIER_SHA\`"
-  echo "- Admin: \`$ADMIN_SHA\`"
-  echo "- Privacy: \`$PRIVACY_SHA\`"
-  echo "- Jobs: \`$JOBS_SHA\`"
+  echo "- Admin: \`$ADMIN_SHA\` — exact source executed"
+  echo "- Privacy: \`$PRIVACY_SHA\` — exact source executed"
+  echo "- Jobs: \`$JOBS_SHA\` — exact source executed"
+  echo "- Content: \`$CONTENT_SHA\` — exact source executed"
+  echo "- Analytics: \`$ANALYTICS_SHA\` — private exact-head artifact evidence bound; not cloned or re-executed here"
+  echo "- Communications: \`$COMMUNICATIONS_SHA\` — private exact-head artifact evidence bound; not cloned or re-executed here"
   echo "- Jobs source: $([ -n "$JOBS_LOCAL_SOURCE" ] && echo 'confined local pre-push candidate' || echo 'canonical GitHub exact commit')"
+  echo "- Credentialed: false"
+  echo "- Protected apply: false"
   echo "- Failed steps: $FAILURES"
   echo
   echo '## Step results'
@@ -238,14 +264,16 @@ build_failure_excerpts
   tail -n +2 "$EVIDENCE/status.tsv" | while IFS=$'\t' read -r lane step code; do echo "| $lane | $step | $code |"; done
   echo
   if [ "$FAILURES" -eq 0 ]; then
-    echo '**MANUAL SOURCE/EMULATOR VERIFICATION: PASS**'
+    echo '**SIX-SERVICE AUTHORITY VERIFICATION: PASS**'
   else
-    echo '**MANUAL SOURCE/EMULATOR VERIFICATION: FAIL**'
+    echo '**SIX-SERVICE AUTHORITY VERIFICATION: FAIL**'
     echo
     echo 'Compact log tails are recorded in `failure-excerpts.txt`.'
   fi
   echo
-  echo 'This bundle does not authorize production deployment or replace protected staging receipts.'
+  echo 'Four public repositories were cloned and executed at exact SHAs. Two private repositories are bound to previously inspected exact-head workflow artifacts and digests because a public-repository GITHUB_TOKEN cannot clone private sibling repositories.'
+  echo
+  echo 'This bundle does not authorize protected staging apply, production deployment, provider delivery or production-data mutation.'
 } > "$SUMMARY"
 
 (

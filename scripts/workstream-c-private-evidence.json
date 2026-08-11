@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-15T16:30:00Z",
+  "classification": "exact-head-source-evidence-only-no-live-certification",
+  "credentialedStagingExecution": false,
+  "protectedApply": false,
+  "services": {
+    "Analytics": {
+      "repository": "LifeLoggerAI/urai-analytics",
+      "sha": "5bf2b2a578b80d05227e8a07e41846d68ff60938",
+      "workflows": [
+        {
+          "name": "URAI Analytics CI",
+          "runId": 29380490773,
+          "conclusion": "success",
+          "artifactId": 8329532521,
+          "artifactDigest": "sha256:445b99e710e9ac9f62b0962d4e11fff6cc3430462f91d8f6dc393a2594617f1c"
+        },
+        {
+          "name": "Privacy adoption",
+          "runId": 29380490802,
+          "conclusion": "success"
+        }
+      ],
+      "boundary": "Private repository evidence was inspected through authorized read-only connector access. Public Staging CI does not clone or re-execute this source. No live deployment or persistence is certified."
+    },
+    "Communications": {
+      "repository": "LifeLoggerAI/urai-communications",
+      "sha": "180cbab717c858b553440944c1a47ee16d547983",
+      "workflows": [
+        {
+          "name": "CI",
+          "runId": 29372754823,
+          "conclusion": "success",
+          "artifactId": 8326733672,
+          "artifactDigest": "sha256:5baff2d1e7b42356d65000972c53f9027f40829bf2c9b82c5c0710b966333a87"
+        },
+        {
+          "name": "URAI Production Verify",
+          "runId": 29372754798,
+          "conclusion": "success",
+          "artifactId": 8326709808,
+          "artifactDigest": "sha256:7cdfb2de033836e6d3fc470b1ee41406c7758cf51453d755663dab5998fde848"
+        }
+      ],
+      "boundary": "Private repository evidence was inspected through authorized read-only connector access. Public Staging CI does not clone or re-execute this source. Real delivery remains disabled and no live provider operation is certified."
+    }
+  }
+}
