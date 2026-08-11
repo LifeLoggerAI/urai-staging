@@ -76,7 +76,7 @@ const generatedBlock = prebuiltSource.match(/const allowedGeneratedPrefixes = \[
 if (!generatedBlock) failures.push('Staging prebuilt allowed-generated-prefix block is missing');
 else if (generatedBlock[1].includes("'public/'") || generatedBlock[1].includes('"public/"')) failures.push('Tracked public Hosting input must not accept arbitrary untracked files');
 
-requirePhrases('scripts/smoke-staging.sh', ['Exact staging mutation receipt is required', 'URAI_RELEASE_CANDIDATE_SHA is required for exact runtime smoke', '/api/buildinfo', 'releaseCandidateSha must equal exact candidate', 'deployedAt must equal current mutation receipt', 'deploymentWorkflowRunId must equal current mutation workflow', 'runtimeProjectId must equal', 'Default release smoke is intentionally non-mutating', '/api/companion', '/api/waitlist']);
+requirePhrases('scripts/smoke-staging.sh', ['Exact staging mutation receipt is required', 'URAI_RELEASE_CANDIDATE_SHA is required for exact runtime smoke', "schemaVersion !== 'urai-staging-mutation-2'", '/api/buildinfo', 'releaseCandidateSha must equal exact candidate', 'deployedAt must equal current mutation receipt', 'deploymentWorkflowRunId must equal current mutation workflow', 'runtimeProjectId must equal', 'Default release smoke is intentionally non-mutating', '/api/companion', '/api/waitlist']);
 rejectPhrases('scripts/smoke-staging.sh', ['launch-smoke@example.com', 'Staging smoke check']);
 
 requirePhrases('scripts/urai-staging-lock.sh', [
