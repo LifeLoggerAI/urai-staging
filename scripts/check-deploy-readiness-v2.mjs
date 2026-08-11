@@ -182,7 +182,13 @@ requirePhrases('scripts/urai-staging-lock.sh', [
   'URAI_STAGING_PREFLIGHT_VERIFIED',
   'URAI_STAGING_AUTHORITY_SCOPE',
   'consumer-system mutations',
-  'RUNNER_TEMP',
+  'GITHUB_WORKSPACE',
+  'GOOGLE_APPLICATION_CREDENTIALS',
+  'GOOGLE_GHA_CREDS_PATH',
+  'gha-creds-*.json',
+  'git check-ignore',
+  'GOOGLE_CLOUD_PROJECT',
+  'WIF project identity mismatch',
   'firebase hosting:sites:list --project "$EXPECTED_PROJECT_ID" --json',
   'exact provider identity',
   'ALLOW_CREATE_STAGING_HOSTING_SITE',
@@ -195,6 +201,7 @@ requirePhrases('scripts/urai-staging-lock.sh', [
   'productionDeploymentPerformed: false',
   'secretValuesIncluded: false',
   'publicVerificationCompleted: false',
+  'Credential class: WIF/ephemeral ADC',
   'Staging mutation completed for exact main',
   'public verification remains required',
 ]);
@@ -202,6 +209,9 @@ rejectPhrases('scripts/urai-staging-lock.sh', [
   'firebase hosting:sites:create',
   'firebase use "$EXPECTED_PROJECT_ID"',
   'publicVerificationCompleted: true',
+  'FIREBASE_SERVICE_ACCOUNT_URAI_STAGING',
+  'credentials_json',
+  'private_key',
 ]);
 
 requirePhrases('.github/workflows/staging-deploy.yml', [
@@ -209,6 +219,7 @@ requirePhrases('.github/workflows/staging-deploy.yml', [
   'rollback_sha:',
   'run_live_deploy:',
   'environment: staging',
+  'id-token: write',
   'ref: ${{ env.TARGET_SHA }}',
   'persist-credentials: false',
   'git ls-remote --exit-code origin refs/heads/main',
@@ -220,9 +231,16 @@ requirePhrases('.github/workflows/staging-deploy.yml', [
   'Install exact Firebase CLI outside repository',
   'Materialize verified Functions output before credentials exist',
   'Require exact staging credential',
+  'GCP_WIF_PROVIDER',
+  'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT',
+  'google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093',
+  'create_credentials_file: true',
+  'export_environment_variables: true',
+  'GOOGLE_GHA_CREDS_PATH',
+  'gha-creds-*.json',
+  'WIF credential project mismatch',
   "URAI_PRODUCTION_DEPLOY_APPROVED: '0'",
   "ALLOW_CREATE_STAGING_HOSTING_SITE: '0'",
-  'Credential project mismatch',
   'Destroy staging credentials before evidence handoff',
   'Upload protected staging mutation evidence',
   'Public staging verification without cloud identity',
@@ -249,6 +267,14 @@ const credentialStep = deployWorkflow.indexOf('Require exact staging credential'
 if (credentialStep < 0) failures.push('Staging credential boundary is missing');
 else if (deployWorkflow.slice(0, credentialStep).includes('secrets.')) {
   failures.push('Protected secrets must not be exposed before external artifact verification and materialization');
+}
+for (const forbidden of [
+  'FIREBASE_SERVICE_ACCOUNT_URAI_STAGING',
+  'credentials_json:',
+  'GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/urai-staging-service-account.json',
+  'printf \'%s\' "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING"',
+]) {
+  if (deployWorkflow.includes(forbidden)) failures.push(`Staging deploy workflow contains retired long-lived credential path: ${forbidden}`);
 }
 const publicSection = deployWorkflow.slice(deployWorkflow.indexOf('public-verify:'));
 if (publicSection.includes('secrets.') || publicSection.includes('environment: staging') || publicSection.includes('firebase deploy')) {
