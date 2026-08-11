@@ -13,6 +13,7 @@ const requiredFiles = [
   '.firebaserc',
   '.github/workflows/ci.yml',
   '.github/workflows/staging-deploy.yml',
+  '.gitignore',
   'firebase.json',
   'firestore.rules',
   'firestore.indexes.json',
@@ -110,8 +111,11 @@ requireMarkers('ENVIRONMENT.md', environmentText, [
   'A `production` alias is prohibited',
   'The only deploy authority is `.github/workflows/staging-deploy.yml`',
   'Local environments must not run the staging deploy command',
+  '`GCP_WIF_PROVIDER`',
+  '`GCP_STAGING_DEPLOY_SERVICE_ACCOUNT`',
   '`FIREBASE_SERVICE_ACCOUNT_URAI_STAGING`',
-  '`RUNNER_TEMP`'
+  '`GITHUB_WORKSPACE`',
+  '`gha-creds-*.json`'
 ]);
 rejectProjectIdentifiers('ENVIRONMENT.md', environmentText);
 
@@ -122,7 +126,9 @@ requireMarkers('DEPLOYMENT.md', deploymentText, [
   '`expected_main_sha`',
   '`run_live_deploy`: `false`',
   '`run_live_deploy`: `true`',
-  'environment-gated credentialed deploy job',
+  'environment-gated WIF-authenticated deploy job',
+  '`GCP_WIF_PROVIDER`',
+  '`GCP_STAGING_DEPLOY_SERVICE_ACCOUNT`',
   'it never creates infrastructure'
 ]);
 rejectProjectIdentifiers('DEPLOYMENT.md', deploymentText);
@@ -168,6 +174,9 @@ if (envExampleText.includes('URAI_PRODUCTION_PROJECT_ID=') || envExampleText.inc
   failures.push('.env.example must not expose production or deprecated project selectors');
 }
 
+const gitignoreText = readText('.gitignore');
+if (!gitignoreText.includes('gha-creds-*.json')) failures.push('.gitignore must ignore google-github-actions ephemeral credential files');
+
 const ciWorkflowText = readText('.github/workflows/ci.yml');
 const ciRetentionMarkers = ciWorkflowText.match(/retention-days:\s*90/g) ?? [];
 if (ciRetentionMarkers.length !== 2) failures.push(`.github/workflows/ci.yml must retain both public-repo artifacts for 90 days; found ${ciRetentionMarkers.length}`);
@@ -204,11 +213,17 @@ requireMarkers('.github/workflows/staging-deploy.yml', deployWorkflowText, [
   'Credentialed: false',
   'Protected apply: false',
   'environment: staging',
-  'GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/urai-staging-service-account.json',
-  'FIREBASE_SERVICE_ACCOUNT_URAI_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_URAI_STAGING }}',
+  'id-token: write',
+  'GCP_WIF_PROVIDER',
+  'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT',
+  'google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093',
+  'create_credentials_file: true',
+  'export_environment_variables: true',
+  'GOOGLE_GHA_CREDS_PATH',
+  'gha-creds-*.json',
   "URAI_STAGING_PROTECTED_DEPLOY: '1'",
   'firebase-tools@15.23.0',
-  'Remove temporary credential',
+  'Credential class: WIF/ephemeral ADC',
   'retention-days: 90'
 ]);
 if (/retention-days:\s*365/.test(deployWorkflowText)) failures.push('.github/workflows/staging-deploy.yml must not request unsupported 365-day public-repo retention');
@@ -216,7 +231,8 @@ const allowedActionRefs = new Set([
   'actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5',
   'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020',
   'actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9',
-  'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02'
+  'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02',
+  'google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093'
 ]);
 const workflowActionRefs = [...deployWorkflowText.matchAll(/^\s*uses:\s*([^\s#]+)(?:\s+#.*)?$/gm)].map((match) => match[1]);
 for (const actionRef of workflowActionRefs) {
@@ -232,11 +248,15 @@ for (const forbidden of [
   'actions/setup-node@v4',
   'actions/setup-java@v4',
   'actions/upload-artifact@v4',
+  'google-github-actions/auth@v3',
   'pull_request_target:',
   'contents: write',
-  'id-token: write',
   'npm install -g firebase-tools',
-  '${{ github.workspace }}/.firebase-service-account.json'
+  '${{ github.workspace }}/.firebase-service-account.json',
+  'GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/urai-staging-service-account.json',
+  'FIREBASE_SERVICE_ACCOUNT_URAI_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_URAI_STAGING }}',
+  'credentials_json:',
+  'printf \'%s\' "$FIREBASE_SERVICE_ACCOUNT_URAI_STAGING"'
 ]) {
   if (deployWorkflowText.includes(forbidden)) failures.push(`Staging deploy workflow contains forbidden marker: ${forbidden}`);
 }
@@ -289,13 +309,17 @@ requireMarkers('scripts/urai-staging-lock.sh', lockScriptText, [
   'GITHUB_ACTIONS',
   'refs/heads/main',
   'git ls-remote origin refs/heads/main',
-  'RUNNER_TEMP',
+  'GITHUB_WORKSPACE',
   'GOOGLE_APPLICATION_CREDENTIALS',
+  'GOOGLE_GHA_CREDS_PATH',
+  'gha-creds-*.json',
+  'git check-ignore',
   'firebase hosting:sites:list',
   'npm run test:rules',
   'npm run test:e2e',
   `hosting:"$EXPECTED_HOSTING_SITE"`,
   '--non-interactive',
+  'Credential class: WIF/ephemeral ADC',
   'Hosting site pre-existed: true',
   'Production deployment performed: false'
 ]);
@@ -304,6 +328,8 @@ for (const forbidden of [
   'firebase use ',
   'nix-shell not found; skipping',
   'URAI_PRODUCTION_PROJECT_ID',
+  'FIREBASE_SERVICE_ACCOUNT_URAI_STAGING',
+  'credentials_json',
   PRODUCTION_PROJECT
 ]) {
   if (lockScriptText.includes(forbidden)) failures.push(`scripts/urai-staging-lock.sh contains forbidden marker: ${forbidden}`);
