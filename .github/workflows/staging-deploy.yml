@@ -4,15 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       expected_main_sha:
-        description: 'Exact current main SHA to verify and, when requested, deploy'
+        description: Exact current main SHA to verify and optionally deploy
+        required: true
+        type: string
+      rollback_sha:
+        description: Distinct approved ancestor SHA for staging rollback
         required: true
         type: string
       confirm_staging_project:
-        description: 'Type the exact Firebase staging project ID'
+        description: Type urai-staging to confirm the exact Firebase project
         required: true
         type: string
       run_live_deploy:
-        description: 'Deploy to Firebase staging after exact-main verification'
+        description: Deploy the verified prebuilt artifact to Firebase staging
         required: true
         default: false
         type: boolean
@@ -27,18 +31,22 @@ concurrency:
 
 env:
   TARGET_SHA: ${{ inputs.expected_main_sha }}
+  ROLLBACK_SHA: ${{ inputs.rollback_sha }}
+  NODE_VERSION: '20'
+  FIREBASE_CLI_VERSION: '15.23.0'
   EXPECTED_STAGING_PROJECT: urai-staging
   URAI_STAGING_PROJECT_ID: urai-staging
   URAI_STAGING_URL: https://urai-staging.web.app
   URAI_PRODUCTION_DEPLOY_APPROVED: '0'
 
 jobs:
-  verify:
-    name: Verify exact protected staging authority
+  preflight:
+    name: Credential-free exact-main staging preflight
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     outputs:
       target_sha: ${{ steps.authority.outputs.target_sha }}
+      rollback_sha: ${{ steps.authority.outputs.rollback_sha }}
     steps:
       - name: Validate manual dispatch authority
         id: authority
@@ -48,35 +56,40 @@ jobs:
           test '${{ github.ref }}' = 'refs/heads/main'
           test '${{ inputs.confirm_staging_project }}' = "$EXPECTED_STAGING_PROJECT"
           [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$ROLLBACK_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$TARGET_SHA" != "$ROLLBACK_SHA"
           test '${{ github.sha }}' = "$TARGET_SHA"
           echo "target_sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
+          echo "rollback_sha=$ROLLBACK_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout exact main authority
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Checkout exact current main
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           ref: ${{ env.TARGET_SHA }}
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
           show-progress: false
 
-      - name: Prove exact clean current main
+      - name: Prove exact clean current main and rollback ancestry
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TARGET_SHA"
           test -z "$(git status --porcelain --untracked-files=all)"
-          remote_main_sha="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          remote_main_sha="$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')"
           test "$remote_main_sha" = "$TARGET_SHA"
+          git cat-file -e "$ROLLBACK_SHA^{commit}"
+          git merge-base --is-ancestor "$ROLLBACK_SHA" "$TARGET_SHA"
 
       - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: functions/package-lock.json
 
       - name: Setup Java 21 for Firebase emulators
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.7.1
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
         with:
           distribution: temurin
           java-version: '21'
@@ -84,7 +97,7 @@ jobs:
       - name: Install exact Functions dependency graph
         run: npm --prefix functions ci --ignore-scripts
 
-      - name: Run protected staging checks
+      - name: Run credential-free protected staging verification
         shell: bash
         run: |
           set -euo pipefail
@@ -97,95 +110,148 @@ jobs:
           npm run test:unit
           npm run test:rules
           npm run test:e2e
+          node scripts/urai-staging-bootstrap.mjs
+          node scripts/validate-launch-evidence.mjs
 
-      - name: Prove verification preserved exact source
-        shell: bash
+      - name: Seal source-bound staging prebuilt artifact
+        env:
+          URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
-          test -z "$(git status --porcelain --untracked-files=all)"
+          node scripts/staging-prebuilt-manifest.mjs --write
+          node scripts/staging-prebuilt-manifest.mjs --verify-materialized
 
-      - name: Write checks-only authority receipt
+      - name: Write credential-free preflight receipt
         if: always()
         shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
           mkdir -p artifacts/deploy
-          {
-            echo '# URAI Staging Protected Authority Verification'
-            echo
-            echo "- Repository: $GITHUB_REPOSITORY"
-            echo "- Exact main SHA: $TARGET_SHA"
-            echo "- Run ID: $GITHUB_RUN_ID"
-            echo "- Staging project: $EXPECTED_STAGING_PROJECT"
-            echo "- Live deploy requested: ${{ inputs.run_live_deploy }}"
-            echo "- Credentialed: false"
-            echo "- Protected apply: false"
-            echo "- Generated: $(date -u +%FT%TZ)"
-          } > artifacts/deploy/staging-authority-verification.md
+          node - <<'NODE'
+          const fs = require('node:fs');
+          fs.writeFileSync('artifacts/deploy/staging-preflight.json', `${JSON.stringify({
+            schemaVersion: 'urai-staging-preflight-2',
+            generatedAt: new Date().toISOString(),
+            repository: process.env.GITHUB_REPOSITORY,
+            workflowRunId: process.env.GITHUB_RUN_ID,
+            sourceSha: process.env.TARGET_SHA,
+            rollbackSha: process.env.ROLLBACK_SHA,
+            projectId: process.env.EXPECTED_STAGING_PROJECT,
+            status: process.env.JOB_STATUS,
+            cloudAuthenticated: false,
+            deploymentPerformed: false,
+            authorityScope: 'urai-staging-repository-only',
+            consumerAssignments: [],
+            crossSystemMutationAuthorized: false,
+          }, null, 2)}\n`);
+          NODE
 
-      - name: Upload checks-only authority receipt
+      - name: Upload credential-free preflight evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: urai-staging-authority-${{ env.TARGET_SHA }}-${{ github.run_id }}
-          path: artifacts/deploy/staging-authority-verification.md
+          name: urai-staging-preflight-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: |
+            artifacts/deploy/staging-preflight.json
+            artifacts/launch/staging-bootstrap-report.json
+            artifacts/launch/staging-bootstrap-summary.md
           if-no-files-found: error
           retention-days: 90
 
+      - name: Upload exact staging prebuilt artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-staging-prebuilt-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: |
+            .firebaserc
+            firebase.json
+            firestore.indexes.json
+            firestore.rules
+            functions/lib/
+            functions/package-lock.json
+            functions/package.json
+            public/
+            storage.rules
+            artifacts/prebuilt/staging-prebuilt-manifest.json
+          if-no-files-found: error
+          retention-days: 7
+
   deploy:
-    name: Deploy exact main to protected staging
+    name: Protected staging mutation
+    needs: preflight
     if: ${{ inputs.run_live_deploy }}
-    needs: verify
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 30
     environment: staging
     permissions:
       contents: read
       actions: read
       id-token: write
+    env:
+      TARGET_SHA: ${{ needs.preflight.outputs.target_sha }}
+      ROLLBACK_SHA: ${{ needs.preflight.outputs.rollback_sha }}
+      PREBUILT_ROOT: ${{ runner.temp }}/urai-staging-prebuilt
     steps:
       - name: Checkout exact verified main
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
-          ref: ${{ needs.verify.outputs.target_sha }}
-          fetch-depth: 1
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
           persist-credentials: false
           show-progress: false
 
-      - name: Re-prove protected deployment authority
+      - name: Re-prove exact protected mutation authority
         shell: bash
         run: |
           set -euo pipefail
           test '${{ github.ref }}' = 'refs/heads/main'
+          test '${{ github.sha }}' = "$TARGET_SHA"
           test "$(git rev-parse HEAD)" = "$TARGET_SHA"
           test -z "$(git status --porcelain --untracked-files=all)"
-          remote_main_sha="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          remote_main_sha="$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')"
           test "$remote_main_sha" = "$TARGET_SHA"
+          git merge-base --is-ancestor "$ROLLBACK_SHA" "$TARGET_SHA"
 
       - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '20'
-          cache: npm
-          cache-dependency-path: functions/package-lock.json
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup Java 21 for Firebase emulators
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.7.1
+      - name: Download source-bound prebuilt artifact outside repository
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          distribution: temurin
-          java-version: '21'
+          name: urai-staging-prebuilt-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: ${{ env.PREBUILT_ROOT }}
 
-      - name: Install exact deployment tooling
+      - name: Verify external artifact before credentials exist
+        env:
+          URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
+          URAI_STAGING_PREBUILT_ROOT: ${{ env.PREBUILT_ROOT }}
+        run: |
+          set -euo pipefail
+          node scripts/staging-prebuilt-manifest.mjs --verify-external
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Install exact Firebase CLI outside repository
         shell: bash
         run: |
           set -euo pipefail
-          npm --prefix functions ci --ignore-scripts
-          npm install --global --prefix "$RUNNER_TEMP/firebase-cli" firebase-tools@15.23.0 --ignore-scripts
-          echo "$RUNNER_TEMP/firebase-cli/bin" >> "$GITHUB_PATH"
-          "$RUNNER_TEMP/firebase-cli/bin/firebase" --version
+          CLI_ROOT="$RUNNER_TEMP/firebase-cli"
+          mkdir -p "$CLI_ROOT"
+          npm install --prefix "$CLI_ROOT" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
+          test "$("$CLI_ROOT/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
+          echo "$CLI_ROOT/node_modules/.bin" >> "$GITHUB_PATH"
+          test -z "$(git status --porcelain --untracked-files=all)"
 
-      - name: Require protected WIF deploy identity
+      - name: Materialize verified Functions output before credentials exist
+        env:
+          URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
+          URAI_STAGING_PREBUILT_ROOT: ${{ env.PREBUILT_ROOT }}
+        run: node scripts/staging-prebuilt-manifest.mjs --materialize
+
+      - name: Require exact staging credential
         shell: bash
         env:
           WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
@@ -197,7 +263,7 @@ jobs:
 
       - name: Authenticate to Google Cloud with WIF
         id: google-auth
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
         with:
           project_id: urai-staging
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
@@ -218,63 +284,167 @@ jobs:
             *) echo 'WIF credential must be the ephemeral google-github-actions file under GITHUB_WORKSPACE.' >&2; exit 1 ;;
           esac
           git check-ignore -q "$GOOGLE_APPLICATION_CREDENTIALS"
+          test "${GOOGLE_CLOUD_PROJECT:-urai-staging}" = 'urai-staging' || { echo 'WIF credential project mismatch' >&2; exit 1; }
 
-      - name: Initialize protected deploy receipt
+      - name: Deploy verified artifact to staging only
+        id: deploy
+        env:
+          FIREBASE_PROJECT_ID: urai-staging
+          URAI_STAGING_PROJECT_ID: urai-staging
+          URAI_STAGING_DEPLOY_CONFIRM: DEPLOY_URAI_STAGING
+          URAI_STAGING_PROTECTED_DEPLOY: '1'
+          URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
+          URAI_STAGING_ROLLBACK_SHA: ${{ env.ROLLBACK_SHA }}
+          URAI_STAGING_PREFLIGHT_VERIFIED: '1'
+          URAI_STAGING_AUTHORITY_SCOPE: urai-staging-repository-only
+          URAI_STAGING_CONSUMER_ASSIGNMENTS_JSON: '[]'
+          URAI_FIREBASE_CLI_VERSION: ${{ env.FIREBASE_CLI_VERSION }}
+          URAI_PRODUCTION_DEPLOY_APPROVED: '0'
+          ALLOW_CREATE_STAGING_HOSTING_SITE: '0'
+        run: bash scripts/urai-staging-lock.sh
+
+      - name: Destroy staging credentials before evidence handoff
+        if: always()
         shell: bash
+        run: |
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          echo 'GOOGLE_APPLICATION_CREDENTIALS=' >> "$GITHUB_ENV"
+          echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
+
+      - name: Upload protected staging mutation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-staging-mutation-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: |
+            artifacts/deploy/firebase-hosting-sites.json
+            artifacts/deploy/firebase-deploy.log
+            artifacts/deploy/staging-mutation-receipt.json
+            artifacts/prebuilt/staging-prebuilt-manifest.json
+            URAI_STAGING_LOCK_FAILED.md
+          if-no-files-found: warn
+          retention-days: 90
+
+  public-verify:
+    name: Public staging verification without cloud identity
+    needs:
+      - preflight
+      - deploy
+    if: ${{ inputs.run_live_deploy }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    env:
+      TARGET_SHA: ${{ needs.preflight.outputs.target_sha }}
+      ROLLBACK_SHA: ${{ needs.preflight.outputs.rollback_sha }}
+    steps:
+      - name: Checkout exact public verifier source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+          show-progress: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download mutation evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: urai-staging-mutation-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: mutation-evidence
+
+      - name: Bind public verification to mutation receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          RECEIPT="$(find mutation-evidence -type f -name staging-mutation-receipt.json -print -quit)"
+          test -n "$RECEIPT"
+          RECEIPT="$RECEIPT" node - <<'NODE'
+          const fs = require('node:fs');
+          const receipt = JSON.parse(fs.readFileSync(process.env.RECEIPT, 'utf8'));
+          const failures = [];
+          if (receipt.schemaVersion !== 'urai-staging-mutation-2') failures.push('schema');
+          if (receipt.sourceSha !== process.env.TARGET_SHA) failures.push('source SHA');
+          if (receipt.rollbackSha !== process.env.ROLLBACK_SHA) failures.push('rollback SHA');
+          if (receipt.projectId !== 'urai-staging' || receipt.hostingSite !== 'urai-staging') failures.push('staging identity');
+          if (receipt.authorityScope !== 'urai-staging-repository-only') failures.push('authority scope');
+          if (!Array.isArray(receipt.consumerAssignments) || receipt.consumerAssignments.length !== 0) failures.push('consumer assignments');
+          if (receipt.crossSystemMutationAuthorized !== false) failures.push('cross-system boundary');
+          if (receipt.deploymentCommandCompleted !== true || receipt.secretValuesIncluded !== false) failures.push('mutation result');
+          if (receipt.credentialClass !== 'WIF/ephemeral ADC') failures.push('credential class');
+          if (receipt.publicVerificationCompleted !== false) failures.push('phase state');
+          if (failures.length) throw new Error(`Staging mutation receipt mismatch: ${failures.join(', ')}`);
+          NODE
+
+      - name: Run non-mutating live smoke
+        id: live_smoke
+        env:
+          URAI_STAGING_PROJECT_ID: urai-staging
+          URAI_STAGING_URL: https://urai-staging.web.app
+          URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
+        run: bash scripts/smoke-staging.sh
+
+      - name: Finalize outcome-exact staging lock
+        if: always()
+        shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
+          SMOKE_OUTCOME: ${{ steps.live_smoke.outcome }}
         run: |
           set -euo pipefail
           mkdir -p artifacts/deploy
-          {
-            echo '# URAI Staging Protected Deploy Receipt'
-            echo
-            echo "- Repository: $GITHUB_REPOSITORY"
-            echo "- Exact main SHA: $TARGET_SHA"
-            echo "- Run ID: $GITHUB_RUN_ID"
-            echo "- Environment: staging"
-            echo "- Firebase project: $EXPECTED_STAGING_PROJECT"
-            echo "- Staging URL: $URAI_STAGING_URL"
-            echo "- Credential class: WIF/ephemeral ADC"
-            echo "- Started: $(date -u +%FT%TZ)"
-          } > artifacts/deploy/staging-protected-deploy.md
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const verified = process.env.SMOKE_OUTCOME === 'success';
+          const receipt = {
+            schemaVersion: 'urai-staging-public-verification-2',
+            generatedAt: new Date().toISOString(),
+            repository: process.env.GITHUB_REPOSITORY,
+            workflowRunId: process.env.GITHUB_RUN_ID,
+            sourceSha: process.env.TARGET_SHA,
+            rollbackSha: process.env.ROLLBACK_SHA,
+            projectId: 'urai-staging',
+            hostingSite: 'urai-staging',
+            hostingUrl: 'https://urai-staging.web.app',
+            status: process.env.JOB_STATUS,
+            smokeOutcome: process.env.SMOKE_OUTCOME || 'not-run',
+            cloudAuthenticated: false,
+            authorityScope: 'urai-staging-repository-only',
+            consumerAssignments: [],
+            crossSystemMutationAuthorized: false,
+            publicVerificationCompleted: verified,
+          };
+          fs.writeFileSync('artifacts/deploy/staging-public-verification.json', `${JSON.stringify(receipt, null, 2)}\n`);
+          const lines = [
+            '# URAI Staging Lock', '',
+            `- Exact source SHA: ${receipt.sourceSha}`,
+            `- Approved rollback SHA: ${receipt.rollbackSha}`,
+            `- Firebase project: ${receipt.projectId}`,
+            `- Hosting site: ${receipt.hostingSite}`,
+            `- Hosting URL: ${receipt.hostingUrl}`,
+            `- Public smoke: ${receipt.smokeOutcome}`,
+            '- Cloud authenticated during public verification: no',
+            '- Hosting site pre-existed: true',
+            '- Production deployment performed: false',
+            '- Cross-system mutation authority: none',
+            `- Release classification: ${verified ? 'STAGING VERIFIED' : 'BLOCKED'}`, ''
+          ];
+          fs.writeFileSync('URAI_STAGING_LOCK.md', `${lines.join('\n')}\n`);
+          NODE
 
-      - name: Run locked staging deploy with WIF
-        id: deploy
-        env:
-          URAI_STAGING_PROTECTED_DEPLOY: '1'
-          URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run deploy:staging
-          test -f URAI_STAGING_LOCK.md
-
-      - name: Finalize protected deploy receipt
+      - name: Upload final public verification evidence
         if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          {
-            echo "- Deploy step outcome: ${{ steps.deploy.outcome }}"
-            echo "- Finished: $(date -u +%FT%TZ)"
-            if [ -f URAI_STAGING_LOCK.md ]; then
-              echo '- Lock receipt generated: true'
-              grep -q -- "$TARGET_SHA" URAI_STAGING_LOCK.md
-              grep -q -- "$EXPECTED_STAGING_PROJECT" URAI_STAGING_LOCK.md
-              grep -q -- "$URAI_STAGING_URL" URAI_STAGING_LOCK.md
-            else
-              echo '- Lock receipt generated: false'
-            fi
-          } >> artifacts/deploy/staging-protected-deploy.md
-          cat artifacts/deploy/staging-protected-deploy.md >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload protected staging deploy evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: urai-staging-protected-deploy-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          name: urai-staging-public-verification-${{ env.TARGET_SHA }}-${{ github.run_id }}
           path: |
             URAI_STAGING_LOCK.md
-            URAI_STAGING_LOCK_FAILED.md
-            artifacts/deploy/staging-protected-deploy.md
+            artifacts/deploy/staging-public-verification.json
           if-no-files-found: error
           retention-days: 90
