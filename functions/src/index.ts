@@ -3,8 +3,8 @@ import * as functions from 'firebase-functions';
 import { getCompletionSummary, FEATURE_MATRIX, ROADMAP_PHASES } from './lib/featureRegistry';
 import { requireAdmin, requireAuth } from './lib/auth';
 import {
-  STAGING_HOSTING_URL,
-  STAGING_PROJECT_ID,
+  STAGING_HOSTING_URL as BOUNDARY_STAGING_HOSTING_URL,
+  STAGING_PROJECT_ID as BOUNDARY_STAGING_PROJECT_ID,
   isSyntheticStagingEmail,
   stagingRuntimeBuildInfo,
   stagingWaitlistDocumentId,
@@ -17,6 +17,14 @@ import {
   requiredSlug,
   requiredString,
 } from './lib/validation';
+
+// Keep the externally reported staging identity explicit at the Functions entrypoint,
+// while fail-closing if the shared staging-boundary authority ever drifts.
+const STAGING_PROJECT_ID = 'urai-staging';
+const STAGING_HOSTING_URL = 'https://urai-staging.web.app';
+if (STAGING_PROJECT_ID !== BOUNDARY_STAGING_PROJECT_ID || STAGING_HOSTING_URL !== BOUNDARY_STAGING_HOSTING_URL) {
+  throw new Error('Staging boundary identity drift detected');
+}
 
 admin.initializeApp();
 const db = admin.firestore();
