@@ -49,7 +49,7 @@ Latest repo-side completion commits include:
 
 ## Implemented in this branch
 
-- Explicit Firebase aliases for `default`, `staging`, and `production` with staging locked to `urai-staging`.
+- Explicit Firebase aliases for `default` and `staging`, both locked to `urai-staging`; a `production` alias is intentionally absent. Production public-product authority belongs to `LifeLoggerAI/urai-spatial`, whose release contract references the separate `urai-4dc1d` production target.
 - Firebase Hosting shell in `public/index.html`, presented as a URAI V1-aligned staging surface with orb, ground layer, companion smoke framing, reduced-motion support, smoke endpoint links, and a visible not-production staging disclaimer.
 - `public/robots.txt` blocks indexing for the staging environment.
 - Hosting rewrites for `/api/healthz`, `/api/buildinfo`, `/api/companion`, and `/api/waitlist`.
