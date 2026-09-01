@@ -51,6 +51,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Validate staging deploy workflow definition
+        run: node scripts/validate-staging-deploy-workflow.mjs
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
