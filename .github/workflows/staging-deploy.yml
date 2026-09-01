@@ -192,7 +192,7 @@ jobs:
     env:
       TARGET_SHA: ${{ needs.preflight.outputs.target_sha }}
       ROLLBACK_SHA: ${{ needs.preflight.outputs.rollback_sha }}
-      PREBUILT_ROOT: ${{ runner.temp }}/urai-staging-prebuilt
+      PREBUILT_ROOT: /tmp/urai-staging-prebuilt
     steps:
       - name: Checkout exact verified main
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
