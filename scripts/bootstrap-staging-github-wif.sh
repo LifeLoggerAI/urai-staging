@@ -76,7 +76,7 @@ for role in roles/viewer roles/iam.securityReviewer roles/iam.workloadIdentityPo
     --condition=None >/dev/null
 done
 
-USER_KEYS="$(gcloud iam service-accounts keys list --iam-account="$SERVICE_ACCOUNT_EMAIL" --project="$PROJECT_ID" --managed-by=user --format='value(name)' 2>/dev/null || true)"
+USER_KEYS="$(gcloud iam service-accounts keys list --iam-account="$SERVICE_ACCOUNT_EMAIL" --project="$PROJECT_ID" --filter='keyType=USER_MANAGED' --format='value(name)' 2>/dev/null || true)"
 [ -z "$USER_KEYS" ] || { echo 'Refusing completion: user-managed service-account keys exist.' >&2; exit 6; }
 
 PROVIDER_JSON="$(gcloud iam workload-identity-pools providers describe "$PROVIDER_ID" --workload-identity-pool="$POOL_ID" --location=global --project="$PROJECT_ID" --format=json)"
