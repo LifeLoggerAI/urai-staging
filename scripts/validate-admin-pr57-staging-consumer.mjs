@@ -23,21 +23,24 @@ const required = [
   'create_credentials_file: true',
   'provider read-only IAM probe is green',
   'exit 78',
+  'test -z "${FIREBASE_TOKEN:-}"',
 ];
 for (const marker of required) {
   if (!text.includes(marker)) throw new Error(`missing Admin staging consumer workflow marker: ${marker}`);
 }
-for (const forbidden of [
-  'FIREBASE_TOKEN:',
-  'credentials_json:',
-  'service_account_key',
-  '--project urai-4dc1d',
-  '-P urai-4dc1d',
-  'environment: production',
-  'firebase deploy --only firestore',
-  'firebase deploy --only storage',
-  'firebase deploy --only hosting,functions,firestore,storage',
-]) {
-  if (text.includes(forbidden)) throw new Error(`forbidden Admin staging consumer workflow marker: ${forbidden}`);
+
+const forbiddenPatterns = [
+  [/^\s*FIREBASE_TOKEN\s*:/m, 'FIREBASE_TOKEN YAML key'],
+  [/^\s*credentials_json\s*:/m, 'credentials_json input'],
+  [/service_account_key/i, 'service-account key path'],
+  [/--project\s+urai-4dc1d/, 'production project CLI target'],
+  [/-P\s+urai-4dc1d/, 'production Firebase project target'],
+  [/^\s*environment:\s*production\s*$/m, 'production environment'],
+  [/firebase deploy --only firestore/, 'project-wide Firestore deploy'],
+  [/firebase deploy --only storage/, 'project-wide Storage deploy'],
+  [/firebase deploy --only hosting,functions,firestore,storage/, 'project-wide full deploy'],
+];
+for (const [pattern, label] of forbiddenPatterns) {
+  if (pattern.test(text)) throw new Error(`forbidden Admin staging consumer workflow marker: ${label}`);
 }
 console.log('Admin PR57 staging consumer workflow contract OK');
