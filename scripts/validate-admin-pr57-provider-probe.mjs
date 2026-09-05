@@ -36,8 +36,8 @@ for (const [label, pattern] of [
   if (!pattern.test(workflow)) failures.push(`missing provider-probe boundary: ${label}`);
 }
 
-if (/^\s+paths:\s*$/m.test(workflow)) {
-  failures.push('provider probe must run on every main SHA; push path filters are forbidden');
+if (/^\s+paths(?:-ignore)?:\s*/m.test(workflow)) {
+  failures.push('provider probe must run on every main SHA; push paths and paths-ignore filters are forbidden');
 }
 
 for (const forbidden of [
