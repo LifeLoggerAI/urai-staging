@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "urai-staging-consumers-1",
+  "projectId": "urai-staging",
+  "environment": "staging",
+  "mutationAuthorityRepository": "LifeLoggerAI/urai-staging",
+  "productionAllowed": false,
+  "consumers": [
+    {
+      "id": "urai-admin-pr57-runtime-closure",
+      "repository": "LifeLoggerAI/urai-admin",
+      "repositoryId": 1150887043,
+      "pullRequest": 57,
+      "exactSha": "fb255310d6b183a59e4252da80c685f45e5cf536",
+      "sourceRef": "refs/pull/57/head",
+      "mode": "synthetic-runtime-validation",
+      "dataPolicy": "synthetic-only",
+      "providerProject": "urai-staging",
+      "allowedEnvironment": "staging",
+      "allowedDeployScopes": [
+        "functions-explicit-only",
+        "hosting-preview-only"
+      ],
+      "projectWideRuleMutationAuthorized": false,
+      "productionDeploymentAuthorized": false,
+      "productionDataAuthorized": false,
+      "longLivedCredentialsAuthorized": false
+    }
+  ]
+}
