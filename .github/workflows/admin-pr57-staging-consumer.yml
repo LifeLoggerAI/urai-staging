@@ -1,0 +1,252 @@
+name: Admin PR57 Staging Consumer
+
+on:
+  workflow_dispatch:
+    inputs:
+      admin_sha:
+        description: Exact Admin PR #57 SHA authorized by config/staging-consumers.json
+        required: true
+        default: fb255310d6b183a59e4252da80c685f45e5cf536
+        type: string
+      expected_controller_sha:
+        description: Exact current urai-staging main SHA
+        required: true
+        type: string
+      confirm_staging_project:
+        description: Type urai-staging
+        required: true
+        type: string
+      run_provider_mutation:
+        description: Permit provider mutation only after WIF/IAM evidence is green
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: urai-admin-pr57-staging-consumer
+  cancel-in-progress: false
+
+env:
+  ADMIN_REPOSITORY: LifeLoggerAI/urai-admin
+  ADMIN_PR_NUMBER: '57'
+  STAGING_PROJECT_ID: urai-staging
+  EXPECTED_ENVIRONMENT: staging
+  FIREBASE_CLI_VERSION: '15.23.0'
+  NODE_VERSION: '22'
+  URAI_PRODUCTION_DEPLOY_APPROVED: '0'
+
+jobs:
+  preflight:
+    name: Exact-head credential-free Admin staging admission
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    outputs:
+      admin_sha: ${{ steps.authority.outputs.admin_sha }}
+      controller_sha: ${{ steps.authority.outputs.controller_sha }}
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ inputs.expected_controller_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove governed consumer authority
+        id: authority
+        shell: bash
+        env:
+          ADMIN_SHA: ${{ inputs.admin_sha }}
+          CONTROLLER_SHA: ${{ inputs.expected_controller_sha }}
+          CONFIRM_STAGING_PROJECT: ${{ inputs.confirm_staging_project }}
+        run: |
+          set -euo pipefail
+          test "$CONFIRM_STAGING_PROJECT" = 'urai-staging'
+          test '${{ github.ref }}' = 'refs/heads/main'
+          test '${{ github.sha }}' = "$CONTROLLER_SHA"
+          test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          remote_controller_sha="$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')"
+          test "$remote_controller_sha" = "$CONTROLLER_SHA"
+          [[ "$ADMIN_SHA" =~ ^[0-9a-f]{40}$ ]]
+          node scripts/validate-staging-consumers.mjs
+          ADMIN_SHA="$ADMIN_SHA" node <<'NODE'
+          const fs = require('node:fs');
+          const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json', 'utf8'));
+          const c = authority.consumers.find((entry) => entry.id === 'urai-admin-pr57-runtime-closure');
+          if (!c) throw new Error('Admin PR57 consumer assignment missing');
+          if (c.exactSha !== process.env.ADMIN_SHA) throw new Error('Admin SHA is not the governed exact consumer SHA');
+          if (c.providerProject !== 'urai-staging' || c.allowedEnvironment !== 'staging') throw new Error('consumer staging identity mismatch');
+          if (c.projectWideRuleMutationAuthorized !== false) throw new Error('project-wide rules mutation must remain denied');
+          if (c.productionDeploymentAuthorized !== false || c.productionDataAuthorized !== false) throw new Error('production authority must remain denied');
+          if (c.longLivedCredentialsAuthorized !== false) throw new Error('long-lived credentials must remain denied');
+          NODE
+          live_admin_sha="$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-admin.git refs/pull/57/head | awk '{print $1}')"
+          test "$live_admin_sha" = "$ADMIN_SHA"
+          echo "admin_sha=$ADMIN_SHA" >> "$GITHUB_OUTPUT"
+          echo "controller_sha=$CONTROLLER_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact Admin candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: LifeLoggerAI/urai-admin
+          ref: ${{ steps.authority.outputs.admin_sha }}
+          path: admin-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact clean Admin source and staging-safe deployment scope
+        shell: bash
+        env:
+          ADMIN_SHA: ${{ steps.authority.outputs.admin_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C admin-source rev-parse HEAD)" = "$ADMIN_SHA"
+          test -z "$(git -C admin-source status --porcelain --untracked-files=all)"
+          grep -q 'export const nextServer' admin-source/functions/src/index.ts
+          grep -q 'export const aggregateAnalytics' admin-source/functions/src/index.ts
+          grep -q 'aggregateUraiAnalyticsV1' admin-source/functions/src/index.ts
+          test "$(grep -RIl --exclude-dir=node_modules -E 'urai-4dc1d' admin-source/.firebaserc | wc -l | tr -d ' ')" -ge 1
+          # Production .firebaserc is never used by this staging controller. The staging
+          # workflow will invoke firebase with explicit --project urai-staging and an
+          # isolated generated config. Project-wide Firestore/Storage rules stay denied.
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: admin-source/pnpm-lock.yaml
+
+      - name: Setup pnpm
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@9.15.0 --activate
+          pnpm --version
+
+      - name: Verify Admin exact source before any credentials exist
+        working-directory: admin-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm functions:typecheck:active
+          pnpm functions:build:active
+          pnpm typecheck
+          pnpm test
+          pnpm build
+
+      - name: Write credential-free admission receipt
+        if: always()
+        shell: bash
+        env:
+          ADMIN_SHA: ${{ steps.authority.outputs.admin_sha }}
+          CONTROLLER_SHA: ${{ steps.authority.outputs.controller_sha }}
+          MUTATION_REQUESTED: ${{ inputs.run_provider_mutation }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/admin-pr57
+          node <<'NODE'
+          const fs = require('node:fs');
+          const receipt = {
+            schemaVersion: 'urai-admin-pr57-staging-admission-1',
+            generatedAt: new Date().toISOString(),
+            status: process.env.JOB_STATUS,
+            stagingRepository: process.env.GITHUB_REPOSITORY,
+            stagingControllerSha: process.env.CONTROLLER_SHA,
+            adminRepository: process.env.ADMIN_REPOSITORY,
+            adminPullRequest: Number(process.env.ADMIN_PR_NUMBER),
+            adminCandidateSha: process.env.ADMIN_SHA,
+            projectId: process.env.STAGING_PROJECT_ID,
+            environment: process.env.EXPECTED_ENVIRONMENT,
+            workflowRunId: process.env.GITHUB_RUN_ID,
+            providerMutationRequested: process.env.MUTATION_REQUESTED === 'true',
+            providerMutationPerformed: false,
+            allowedDeployScopes: ['functions-explicit-only','hosting-preview-only'],
+            explicitFunctions: ['nextServer','aggregateAnalytics','aggregateUraiAnalyticsV1'],
+            projectWideRuleMutationAuthorized: false,
+            productionDeploymentAuthorized: false,
+            productionDataAuthorized: false,
+            longLivedCredentialsAuthorized: false,
+          };
+          fs.writeFileSync('artifacts/admin-pr57/admission.json', `${JSON.stringify(receipt, null, 2)}\n`);
+          NODE
+
+      - name: Upload exact admission evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-admin-pr57-staging-admission-${{ inputs.admin_sha }}-${{ github.run_id }}
+          path: artifacts/admin-pr57/admission.json
+          if-no-files-found: error
+          retention-days: 90
+
+  provider-gate:
+    name: Protected provider gate before Admin mutation
+    needs: preflight
+    if: ${{ inputs.run_provider_mutation }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      ADMIN_SHA: ${{ needs.preflight.outputs.admin_sha }}
+      CONTROLLER_SHA: ${{ needs.preflight.outputs.controller_sha }}
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+    steps:
+      - name: Require current protected staging WIF identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$WIF_PROVIDER"
+          test -n "$DEPLOY_SERVICE_ACCOUNT"
+          case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 41 ;; esac
+          case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 42 ;; esac
+          test -z "${FIREBASE_TOKEN:-}"
+          test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"
+
+      - name: Authenticate to urai-staging with WIF only
+        id: google-auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
+      - name: Prove provider identity and deny mutation until read-only probe is green
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test "${GOOGLE_APPLICATION_CREDENTIALS}" = "${GOOGLE_GHA_CREDS_PATH}"
+          test -f "$GOOGLE_APPLICATION_CREDENTIALS"
+          active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
+          test "$active" = "$DEPLOY_SERVICE_ACCOUNT"
+          gcloud projects describe urai-staging --format='value(projectId)' | grep -qx urai-staging
+          echo 'Provider identity is valid, but mutation remains intentionally fenced until the separate provider read-only IAM probe is green and least-privilege deployment grants are evidenced.' >&2
+          exit 78
+
+      - name: Destroy ephemeral WIF credential
+        if: always()
+        shell: bash
+        run: |
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
