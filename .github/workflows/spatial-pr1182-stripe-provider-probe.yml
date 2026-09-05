@@ -338,7 +338,7 @@ jobs:
           echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
 
       - name: Upload sanitized read-only provider evidence
-        if: always()
+        if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: urai-spatial-pr1182-stripe-provider-read-${{ env.SPATIAL_SHA }}-${{ github.run_id }}
