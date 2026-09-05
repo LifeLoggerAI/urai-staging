@@ -7,13 +7,18 @@ const failures = [];
 for (const [label, marker] of [
   ['staging project', "PROJECT_ID='urai-staging'"],
   ['dedicated pool', "POOL_ID='urai-github-staging'"],
-  ['GitHub issuer', "https://token.actions.githubusercontent.com"],
+  ['GitHub issuer', 'https://token.actions.githubusercontent.com'],
   ['owner ID restriction', "GITHUB_OWNER_ID='215797546'"],
   ['repository ID restriction', "GITHUB_REPOSITORY_ID='1150947098'"],
   ['main ref restriction', "EXPECTED_REF='refs/heads/main'"],
   ['staging environment restriction', "EXPECTED_ENVIRONMENT='staging'"],
-  ['workloadIdentityUser', "roles/iam.workloadIdentityUser"],
-  ['user-key rejection', "USER_KEYS="],
+  ['workloadIdentityUser', 'roles/iam.workloadIdentityUser'],
+  ['Cloud Asset API staging enablement', 'gcloud services enable cloudasset.googleapis.com --project="$PROJECT_ID"'],
+  ['Cloud Asset viewer', 'roles/cloudasset.viewer'],
+  ['IAM role viewer', 'roles/iam.roleViewer'],
+  ['service usage consumer', 'roles/serviceusage.serviceUsageConsumer'],
+  ['effective IAM readback marker', 'effective_iam_readback=cloudasset.googleapis.com'],
+  ['user-key rejection', 'USER_KEYS='],
   ['WIF variable output', 'GCP_WIF_PROVIDER='],
   ['service-account variable output', 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT='],
 ]) {
@@ -37,4 +42,4 @@ if (failures.length) {
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
-console.log('PASS staging WIF bootstrap is keyless, staging-only, repository/ref/environment bound');
+console.log('PASS staging WIF bootstrap is keyless, staging-only, repository/ref/environment bound, and effective-IAM-read capable');

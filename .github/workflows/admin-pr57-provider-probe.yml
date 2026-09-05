@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/admin-pr57-provider-probe.yml
       - scripts/validate-admin-pr57-provider-probe.mjs
+      - scripts/bootstrap-staging-github-wif.sh
       - .github/workflows/ci.yml
 
 permissions:
@@ -54,10 +55,8 @@ jobs:
           test '${{ github.ref }}' = 'refs/heads/main'
           test "$(git rev-parse HEAD)" = '${{ github.sha }}'
           test -z "$(git status --porcelain --untracked-files=all)"
-          remote_staging_sha="$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')"
-          test "$remote_staging_sha" = '${{ github.sha }}'
-          admin_pr_sha="$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-admin.git refs/pull/57/head | awk '{print $1}')"
-          test "$admin_pr_sha" = "$ADMIN_SHA"
+          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = '${{ github.sha }}'
+          test "$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-admin.git refs/pull/57/head | awk '{print $1}')" = "$ADMIN_SHA"
           test "$STAGING_PROJECT_ID" = 'urai-staging'
           test "$URAI_PRODUCTION_DEPLOY_APPROVED" = '0'
 
@@ -79,15 +78,14 @@ jobs:
           test -z "$(git -C admin-source status --porcelain --untracked-files=all)"
 
       - name: Write pre-auth evidence boundary
-        id: boundary
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p artifacts/provider
           WIF_PROVIDER="$WIF_PROVIDER" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
           const fs = require('node:fs');
-          const receipt = {
-            schemaVersion: 'urai-admin-pr57-provider-probe-1',
+          fs.writeFileSync('artifacts/provider/pre-auth.json', `${JSON.stringify({
+            schemaVersion: 'urai-admin-pr57-provider-probe-2',
             generatedAt: new Date().toISOString(),
             stagingRepository: process.env.GITHUB_REPOSITORY,
             stagingControllerSha: process.env.GITHUB_SHA,
@@ -104,8 +102,7 @@ jobs:
             wifProviderResource: process.env.WIF_PROVIDER || null,
             deployServiceAccountEmail: process.env.DEPLOY_SERVICE_ACCOUNT || null,
             secretValuesIncluded: false,
-          };
-          fs.writeFileSync('artifacts/provider/pre-auth.json', `${JSON.stringify(receipt, null, 2)}\n`);
+          }, null, 2)}\n`);
           NODE
 
       - name: Require protected staging WIF variables
@@ -116,14 +113,8 @@ jobs:
           set -euo pipefail
           test -n "$WIF_PROVIDER" || { echo 'GCP_WIF_PROVIDER is missing from the staging environment/repository variables.' >&2; exit 41; }
           test -n "$DEPLOY_SERVICE_ACCOUNT" || { echo 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT is missing from the staging environment/repository variables.' >&2; exit 42; }
-          case "$WIF_PROVIDER" in
-            projects/*/locations/global/workloadIdentityPools/*/providers/*) ;;
-            *) echo 'GCP_WIF_PROVIDER is not a full workload identity provider resource.' >&2; exit 43 ;;
-          esac
-          case "$DEPLOY_SERVICE_ACCOUNT" in
-            *@*.iam.gserviceaccount.com) ;;
-            *) echo 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT is not a service-account email.' >&2; exit 44 ;;
-          esac
+          case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 43 ;; esac
+          case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 44 ;; esac
 
       - name: Authenticate with protected WIF
         id: google-auth
@@ -148,10 +139,7 @@ jobs:
           test -n "${GOOGLE_GHA_CREDS_PATH:-}"
           test "$GOOGLE_APPLICATION_CREDENTIALS" = "$GOOGLE_GHA_CREDS_PATH"
           test -f "$GOOGLE_APPLICATION_CREDENTIALS"
-          case "$GOOGLE_APPLICATION_CREDENTIALS" in
-            "$GITHUB_WORKSPACE"/gha-creds-*.json) ;;
-            *) echo 'ADC credential is not the ephemeral google-github-actions file.' >&2; exit 45 ;;
-          esac
+          case "$GOOGLE_APPLICATION_CREDENTIALS" in "$GITHUB_WORKSPACE"/gha-creds-*.json) ;; *) exit 45 ;; esac
           git check-ignore -q "$GOOGLE_APPLICATION_CREDENTIALS"
           test "${GOOGLE_CLOUD_PROJECT:-urai-staging}" = 'urai-staging'
           test -z "${FIREBASE_TOKEN:-}"
@@ -179,7 +167,7 @@ jobs:
           test "$("$cli_root/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
           echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
 
-      - name: Collect provider-native read-only evidence
+      - name: Collect complete provider-native read-only evidence
         id: provider-read
         if: steps.setup-gcloud.outcome == 'success' && steps.firebase-cli.outcome == 'success'
         continue-on-error: true
@@ -190,82 +178,88 @@ jobs:
           rm -rf -- "$raw"
           mkdir -p "$raw" artifacts/provider
 
-          capture() {
-            label="$1"
-            shift
-            set +e
-            "$@" > "$raw/$label.out" 2> "$raw/$label.err"
-            status=$?
-            set -e
-            printf '%s\n' "$status" > "$raw/$label.status"
-          }
-
+          project_json="$(gcloud projects describe "$STAGING_PROJECT_ID" --format=json)"
+          project_number="$(PROJECT_JSON="$project_json" node -e "const p=JSON.parse(process.env.PROJECT_JSON); if(!p.projectNumber) process.exit(1); process.stdout.write(String(p.projectNumber))")"
+          active_json="$(gcloud auth list --filter=status:ACTIVE --format=json)"
           provider_tail="${WIF_PROVIDER#*/workloadIdentityPools/}"
           pool_id="${provider_tail%%/*}"
           provider_id="${WIF_PROVIDER##*/}"
+          provider_json="$(gcloud iam workload-identity-pools providers describe "$provider_id" --workload-identity-pool="$pool_id" --location=global --project="$STAGING_PROJECT_ID" --format=json)"
+          project_iam="$(gcloud projects get-iam-policy "$STAGING_PROJECT_ID" --format=json)"
+          effective_iam="$(gcloud asset get-effective-iam-policy --scope="projects/$STAGING_PROJECT_ID" --names="//cloudresourcemanager.googleapis.com/projects/$project_number" --format=json)"
+          deploy_sa_iam="$(gcloud iam service-accounts get-iam-policy "$DEPLOY_SERVICE_ACCOUNT" --project="$STAGING_PROJECT_ID" --format=json)"
+          keys_json="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project="$STAGING_PROJECT_ID" --format=json)"
+          custom_roles="$(gcloud iam roles list --project="$STAGING_PROJECT_ID" --format=json)"
+          functions_json="$(gcloud functions list --project="$STAGING_PROJECT_ID" --format=json)"
+          run_json="$(gcloud run services list --platform=managed --project="$STAGING_PROJECT_ID" --format=json)"
+          hosting_sites="$(firebase hosting:sites:list --project "$STAGING_PROJECT_ID" --json)"
+          hosting_channels="$(firebase hosting:channel:list --project "$STAGING_PROJECT_ID" --json)"
+          firebase_functions="$(firebase functions:list --project "$STAGING_PROJECT_ID" --json)"
 
-          capture active-principal gcloud auth list --filter=status:ACTIVE --format=json
-          capture project-describe gcloud projects describe "$STAGING_PROJECT_ID" --format=json
-          capture wif-provider gcloud iam workload-identity-pools providers describe "$provider_id" --workload-identity-pool="$pool_id" --location=global --project="$STAGING_PROJECT_ID" --format=json
-          capture project-iam gcloud projects get-iam-policy "$STAGING_PROJECT_ID" --format=json
-          capture deploy-sa-iam gcloud iam service-accounts get-iam-policy "$DEPLOY_SERVICE_ACCOUNT" --project="$STAGING_PROJECT_ID" --format=json
-          capture deploy-sa-keys gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project="$STAGING_PROJECT_ID" --format=json
-          capture project-custom-roles gcloud iam roles list --project="$STAGING_PROJECT_ID" --format=json
-          capture functions gcloud functions list --project="$STAGING_PROJECT_ID" --format=json
-          capture run-services gcloud run services list --platform=managed --project="$STAGING_PROJECT_ID" --format=json
-          capture hosting-sites firebase hosting:sites:list --project "$STAGING_PROJECT_ID" --json
-          capture hosting-channels firebase hosting:channel:list --project "$STAGING_PROJECT_ID" --json
-          capture firebase-functions firebase functions:list --project "$STAGING_PROJECT_ID" --json
-
-          RAW="$raw" WIF_PROVIDER="$WIF_PROVIDER" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
+          PROJECT_JSON="$project_json" ACTIVE_JSON="$active_json" PROVIDER_JSON="$provider_json" PROJECT_IAM="$project_iam" EFFECTIVE_IAM="$effective_iam" DEPLOY_SA_IAM="$deploy_sa_iam" KEYS_JSON="$keys_json" CUSTOM_ROLES="$custom_roles" FUNCTIONS_JSON="$functions_json" RUN_JSON="$run_json" HOSTING_SITES="$hosting_sites" HOSTING_CHANNELS="$hosting_channels" FIREBASE_FUNCTIONS="$firebase_functions" WIF_PROVIDER="$WIF_PROVIDER" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
           const fs = require('node:fs');
-          const path = require('node:path');
-          const raw = process.env.RAW;
-          const readStatus = (name) => {
-            try { return Number(fs.readFileSync(path.join(raw, `${name}.status`), 'utf8').trim()); }
-            catch { return null; }
+          const parse = (name) => { try { return JSON.parse(process.env[name]); } catch { throw new Error(`invalid JSON from required provider read: ${name}`); } };
+          const project = parse('PROJECT_JSON');
+          const active = parse('ACTIVE_JSON');
+          const provider = parse('PROVIDER_JSON');
+          const projectIam = parse('PROJECT_IAM');
+          const effectiveIam = parse('EFFECTIVE_IAM');
+          const deploySaIam = parse('DEPLOY_SA_IAM');
+          const keys = parse('KEYS_JSON');
+          const customRoles = parse('CUSTOM_ROLES');
+          const functions = parse('FUNCTIONS_JSON');
+          const runServices = parse('RUN_JSON');
+          const hostingSites = parse('HOSTING_SITES');
+          const hostingChannels = parse('HOSTING_CHANNELS');
+          const firebaseFunctions = parse('FIREBASE_FUNCTIONS');
+          const expectedCondition = "assertion.repository_owner_id=='215797546' && assertion.repository_id=='1150947098' && assertion.ref=='refs/heads/main' && assertion.environment=='staging'";
+          const failures = [];
+          const activePrincipal = active.find((entry) => entry.status === 'ACTIVE')?.account || active[0]?.account || null;
+          if (project.projectId !== 'urai-staging' || !project.projectNumber) failures.push('project identity');
+          if (activePrincipal !== process.env.DEPLOY_SERVICE_ACCOUNT) failures.push('authenticated principal');
+          if (provider.name !== process.env.WIF_PROVIDER) failures.push('provider resource');
+          if (provider.oidc?.issuerUri !== 'https://token.actions.githubusercontent.com') failures.push('issuer');
+          if (provider.attributeCondition !== expectedCondition) failures.push('attribute condition');
+          const mapping = provider.attributeMapping || {};
+          for (const key of ['google.subject','attribute.repository_id','attribute.repository_owner_id','attribute.ref','attribute.environment']) if (!mapping[key]) failures.push(`mapping ${key}`);
+          const userManagedKeys = Array.isArray(keys) ? keys.filter((key) => key.keyType === 'USER_MANAGED') : [];
+          if (userManagedKeys.length) failures.push('user-managed service-account key');
+
+          const effectiveBroadBindings = [];
+          const visit = (value, attachedResource = null) => {
+            if (!value || typeof value !== 'object') return;
+            const here = value.attachedResource || value.fullResourceName || attachedResource;
+            if (Array.isArray(value.bindings)) {
+              for (const binding of value.bindings) {
+                if (binding?.role === 'roles/owner' || binding?.role === 'roles/editor') {
+                  effectiveBroadBindings.push({ attachedResource: here, role: binding.role, members: binding.members || [] });
+                }
+              }
+            }
+            for (const child of Object.values(value)) visit(child, here);
           };
-          const readJson = (name) => {
-            try {
-              const text = fs.readFileSync(path.join(raw, `${name}.out`), 'utf8').trim();
-              return text ? JSON.parse(text) : null;
-            } catch { return null; }
-          };
-          const provider = readJson('wif-provider') || {};
-          const projectIam = readJson('project-iam') || {};
-          const serviceAccountIam = readJson('deploy-sa-iam') || {};
-          const keys = readJson('deploy-sa-keys') || [];
-          const functions = readJson('functions') || [];
-          const runServices = readJson('run-services') || [];
-          const activePrincipals = readJson('active-principal') || [];
-          const customRoles = readJson('project-custom-roles') || [];
-          const hostingSites = readJson('hosting-sites');
-          const hostingChannels = readJson('hosting-channels');
-          const firebaseFunctions = readJson('firebase-functions');
-          const deployMember = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
-          const projectBindings = Array.isArray(projectIam.bindings) ? projectIam.bindings : [];
-          const deployProjectRoles = projectBindings
-            .filter((binding) => Array.isArray(binding.members) && binding.members.includes(deployMember))
-            .map((binding) => binding.role);
-          const broadRoleReliance = deployProjectRoles.filter((role) => role === 'roles/owner' || role === 'roles/editor');
-          const userManagedKeys = Array.isArray(keys)
-            ? keys.filter((key) => key.keyType === 'USER_MANAGED').map((key) => ({ name: key.name, validAfterTime: key.validAfterTime, validBeforeTime: key.validBeforeTime }))
-            : [];
+          visit(effectiveIam);
+          const target = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
+          const directBroad = effectiveBroadBindings.filter((b) => b.members.includes(target));
+          const uncertainBroad = effectiveBroadBindings.filter((b) => b.members.some((m) =>
+            m.startsWith('group:') || m.startsWith('domain:') || m === 'allAuthenticatedUsers' || m === 'allUsers' || m.startsWith('principalSet:') || m.startsWith('principal:')
+          ));
+          if (directBroad.length) failures.push('effective Owner/Editor reliance');
+          if (uncertainBroad.length) failures.push('Owner/Editor group/broad-principal membership cannot be disproven');
+          if (failures.length) throw new Error(`Provider read-only proof failed closed: ${failures.join(', ')}`);
+
           const runtimeIdentities = [];
-          if (Array.isArray(functions)) {
-            for (const fn of functions) {
-              const email = fn?.serviceConfig?.serviceAccountEmail || fn?.serviceAccountEmail || null;
-              if (email) runtimeIdentities.push({ kind: 'cloud-function', name: fn.name || null, serviceAccountEmail: email, state: fn.state || null, updateTime: fn.updateTime || null, environment: fn.environment || null });
-            }
+          for (const fn of Array.isArray(functions) ? functions : []) {
+            const email = fn?.serviceConfig?.serviceAccountEmail || fn?.serviceAccountEmail || null;
+            if (email) runtimeIdentities.push({ kind: 'cloud-function', name: fn.name || null, serviceAccountEmail: email, state: fn.state || null, updateTime: fn.updateTime || null, environment: fn.environment || null });
           }
-          if (Array.isArray(runServices)) {
-            for (const service of runServices) {
-              const email = service?.spec?.template?.spec?.serviceAccountName || service?.spec?.template?.spec?.serviceAccount || null;
-              if (email) runtimeIdentities.push({ kind: 'cloud-run', name: service.metadata?.name || service.name || null, serviceAccountEmail: email, latestReadyRevisionName: service.status?.latestReadyRevisionName || null });
-            }
+          for (const service of Array.isArray(runServices) ? runServices : []) {
+            const email = service?.spec?.template?.spec?.serviceAccountName || service?.spec?.template?.spec?.serviceAccount || null;
+            if (email) runtimeIdentities.push({ kind: 'cloud-run', name: service.metadata?.name || service.name || null, serviceAccountEmail: email, latestReadyRevisionName: service.status?.latestReadyRevisionName || null });
           }
-          const receipt = {
-            schemaVersion: 'urai-admin-pr57-provider-probe-1',
+          const directProjectRoles = (projectIam.bindings || []).filter((b) => (b.members || []).includes(target)).map((b) => b.role);
+          fs.writeFileSync('artifacts/provider/provider-probe.json', `${JSON.stringify({
+            schemaVersion: 'urai-admin-pr57-provider-probe-2',
             generatedAt: new Date().toISOString(),
             stagingRepository: process.env.GITHUB_REPOSITORY,
             stagingControllerSha: process.env.GITHUB_SHA,
@@ -273,36 +267,31 @@ jobs:
             adminPullRequest: Number(process.env.ADMIN_PR_NUMBER),
             adminCandidateSha: process.env.ADMIN_SHA,
             workflowRunId: process.env.GITHUB_RUN_ID,
-            projectId: process.env.STAGING_PROJECT_ID,
+            projectId: project.projectId,
+            projectNumber: String(project.projectNumber),
             probeMode: 'provider-read-only',
             mutationAuthorized: false,
             productionDeploymentApproved: false,
             credentialClass: 'GitHub OIDC + WIF + ephemeral ADC',
-            authenticatedGooglePrincipal: activePrincipals.find((entry) => entry.status === 'ACTIVE')?.account || activePrincipals[0]?.account || null,
-            wifProvider: {
-              resource: provider.name || process.env.WIF_PROVIDER,
-              state: provider.state || null,
-              issuer: provider.oidc?.issuerUri || null,
-              allowedAudiences: provider.oidc?.allowedAudiences || [],
-              attributeMapping: provider.attributeMapping || {},
-              attributeCondition: provider.attributeCondition || null,
-            },
+            authenticatedGooglePrincipal: activePrincipal,
+            wifProvider: { resource: provider.name, state: provider.state || null, issuer: provider.oidc?.issuerUri || null, allowedAudiences: provider.oidc?.allowedAudiences || [], attributeMapping: mapping, attributeCondition: provider.attributeCondition || null },
             deployServiceAccountEmail: process.env.DEPLOY_SERVICE_ACCOUNT,
-            deployServiceAccountProjectRoles: deployProjectRoles,
-            deployServiceAccountIamBindings: Array.isArray(serviceAccountIam.bindings) ? serviceAccountIam.bindings : [],
-            ownerEditorNegativeProof: broadRoleReliance.length === 0,
-            broadRoleReliance,
-            userManagedServiceAccountKeys: userManagedKeys,
-            auditConfigs: Array.isArray(projectIam.auditConfigs) ? projectIam.auditConfigs : [],
-            customRoles: Array.isArray(customRoles) ? customRoles.map((role) => ({ name: role.name, title: role.title, stage: role.stage, includedPermissions: role.includedPermissions || [] })) : [],
+            deployServiceAccountDirectProjectRoles: directProjectRoles,
+            deployServiceAccountIamBindings: deploySaIam.bindings || [],
+            effectiveIamReadback: true,
+            effectiveOwnerEditorBindings: effectiveBroadBindings,
+            ownerEditorNegativeProof: directBroad.length === 0 && uncertainBroad.length === 0,
+            ownerEditorGroupOrBroadPrincipalUncertainty: uncertainBroad,
+            userManagedServiceAccountKeys: [],
+            auditConfigs: projectIam.auditConfigs || [],
+            customRoles: (Array.isArray(customRoles) ? customRoles : []).map((role) => ({ name: role.name, title: role.title, stage: role.stage, includedPermissions: role.includedPermissions || [] })),
             runtimeIdentities,
             hostingSites,
             hostingChannels,
             firebaseFunctions,
-            commandStatus: Object.fromEntries(['active-principal','project-describe','wif-provider','project-iam','deploy-sa-iam','deploy-sa-keys','project-custom-roles','functions','run-services','hosting-sites','hosting-channels','firebase-functions'].map((name) => [name, readStatus(name)])),
+            requiredProviderReadsComplete: true,
             secretValuesIncluded: false,
-          };
-          fs.writeFileSync('artifacts/provider/provider-probe.json', `${JSON.stringify(receipt, null, 2)}\n`);
+          }, null, 2)}\n`);
           NODE
           rm -rf -- "$raw"
 
@@ -329,8 +318,8 @@ jobs:
           mkdir -p artifacts/provider
           node <<'NODE'
           const fs = require('node:fs');
-          const summary = {
-            schemaVersion: 'urai-admin-pr57-provider-probe-summary-1',
+          fs.writeFileSync('artifacts/provider/summary.json', `${JSON.stringify({
+            schemaVersion: 'urai-admin-pr57-provider-probe-summary-2',
             generatedAt: new Date().toISOString(),
             stagingControllerSha: process.env.GITHUB_SHA,
             adminCandidateSha: process.env.ADMIN_SHA,
@@ -343,8 +332,7 @@ jobs:
             providerReadOutcome: process.env.PROVIDER_READ_OUTCOME || 'skipped',
             productionDeploymentPerformed: false,
             providerMutationPerformed: false,
-          };
-          fs.writeFileSync('artifacts/provider/summary.json', `${JSON.stringify(summary, null, 2)}\n`);
+          }, null, 2)}\n`);
           NODE
 
       - name: Upload exact provider probe evidence

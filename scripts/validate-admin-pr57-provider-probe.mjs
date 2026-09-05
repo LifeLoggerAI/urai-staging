@@ -21,6 +21,17 @@ for (const [label, pattern] of [
   ['read-only provider mode', /probeMode: 'provider-read-only'/],
   ['mutation disabled', /mutationAuthorized: false/],
   ['no production deploy', /productionDeploymentPerformed: false/],
+  ['effective IAM command', /gcloud asset get-effective-iam-policy/],
+  ['effective IAM project scope', /--scope="projects\/\$STAGING_PROJECT_ID"/],
+  ['effective IAM project resource', /cloudresourcemanager\.googleapis\.com\/projects\/\$project_number/],
+  ['required provider reads complete', /requiredProviderReadsComplete: true/],
+  ['effective IAM readback receipt', /effectiveIamReadback: true/],
+  ['effective Owner Editor receipt', /effectiveOwnerEditorBindings/],
+  ['group or broad principal uncertainty', /Owner\/Editor group\/broad-principal membership cannot be disproven/],
+  ['authenticated principal binding', /activePrincipal !== process\.env\.DEPLOY_SERVICE_ACCOUNT/],
+  ['provider resource binding', /provider\.name !== process\.env\.WIF_PROVIDER/],
+  ['user-managed key rejection', /userManagedKeys\.length/],
+  ['provider proof fail closed', /Provider read-only proof failed closed/],
 ]) {
   if (!pattern.test(workflow)) failures.push(`missing provider-probe boundary: ${label}`);
 }
@@ -36,10 +47,14 @@ for (const forbidden of [
   if (workflow.includes(forbidden)) failures.push(`forbidden provider-probe mutation/credential path: ${forbidden}`);
 }
 
+if (/ownerEditorNegativeProof:\s*broadRoleReliance\.length\s*===\s*0/.test(workflow)) {
+  failures.push('direct project IAM must not be represented as effective Owner/Editor negative proof');
+}
+
 if (failures.length) {
   console.error('Admin PR57 provider probe definition is invalid:');
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
-console.log('PASS Admin PR57 provider probe is exact-head, WIF-only, staging-only, and read-only');
+console.log('PASS Admin PR57 provider probe is exact-head, WIF-only, staging-only, read-only, complete-read, and effective-IAM fail-closed');

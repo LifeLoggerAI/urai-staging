@@ -24,9 +24,15 @@ for (const [value, label] of [
   ['workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}', 'WIF provider variable'],
   ['service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}', 'staging deploy service account variable'],
   ['create_credentials_file: true', 'ephemeral ADC'],
+  ['gcloud asset get-effective-iam-policy', 'effective IAM read'],
+  ['--scope="projects/urai-staging"', 'effective IAM staging scope'],
   ['roles/owner', 'Owner rejection'],
   ['roles/editor', 'Editor rejection'],
   ["key.keyType === 'USER_MANAGED'", 'user-managed key rejection'],
+  ['Owner/Editor group/broad-principal membership cannot be disproven', 'broad principal fail-closed'],
+  ['effectiveIamReadback: true', 'effective IAM gate receipt'],
+  ['ownerEditorNegativeProof: true', 'effective Owner Editor negative proof'],
+  ['Provider safety gate failed closed', 'provider safety fail-closed'],
   ['bash scripts/admin-pr57-staging-lock.sh', 'runtime lock invocation'],
   ['manifest.adminSha !== process.env.ADMIN_SHA', 'prebuilt Admin SHA binding'],
   ['manifest.controllerSha !== process.env.CONTROLLER_SHA', 'prebuilt controller SHA binding'],
@@ -39,7 +45,7 @@ requirePattern(workflow, /initialFunctionDeploymentAllowlist[\s\S]{0,800}nextSer
 requirePattern(workflow, /scheduledAnalyticsDeploymentAuthorized\s*!==\s*false/, 'scheduled analytics denial');
 requirePattern(workflow, /hostingLiveChannelMutationAuthorized\s*!==\s*false/, 'live Hosting denial');
 requirePattern(workflow, /projectWideRuleMutationAuthorized\s*!==\s*false/, 'project-wide rule denial');
-requirePattern(workflow, /urai-admin-pr57-runtime-prebuilt-\$\{\{[^\n]+ADMIN_SHA[^\n]+\}\}-\$\{\{\s*github\.run_id\s*\}\}/, 'source-bound prebuilt artifact name');
+requirePattern(workflow, /urai-admin-pr57-runtime-prebuilt-\$\{\{[^\n]+admin_sha[^\n]+\}\}-\$\{\{\s*github\.run_id\s*\}\}/i, 'source-bound prebuilt artifact name');
 
 for (const [value, label] of [
   ["EXPECTED_PROJECT_ID='urai-staging'", 'lock staging project'],
@@ -86,4 +92,4 @@ if (failures.length) {
   console.error(`Admin PR57 governed runtime deployment contract invalid: ${failures.join('; ')}`);
   process.exit(1);
 }
-console.log('Admin PR57 governed staging runtime deployment contract OK');
+console.log('Admin PR57 governed staging runtime deployment contract OK with effective-IAM fail-closed mutation gate');

@@ -22,7 +22,7 @@ on:
         required: true
         type: string
       execute_staging_mutation:
-        description: Execute the isolated Admin staging mutation after provider-native safety checks
+        description: Execute isolated Admin staging mutation after provider-native safety checks
         required: true
         default: false
         type: boolean
@@ -117,11 +117,9 @@ jobs:
 
       - name: Prove exact clean Admin source
         shell: bash
-        env:
-          ADMIN_SHA: ${{ steps.authority.outputs.admin_sha }}
         run: |
           set -euo pipefail
-          test "$(git -C admin-source rev-parse HEAD)" = "$ADMIN_SHA"
+          test "$(git -C admin-source rev-parse HEAD)" = '${{ steps.authority.outputs.admin_sha }}'
           test -z "$(git -C admin-source status --porcelain --untracked-files=all)"
           grep -q 'export const nextServer' admin-source/functions/src/index.ts
           grep -q 'export const aggregateAnalytics' admin-source/functions/src/index.ts
@@ -140,7 +138,6 @@ jobs:
           set -euo pipefail
           corepack enable
           corepack prepare pnpm@9.15.0 --activate
-          pnpm --version
 
       - name: Verify and package exact Admin candidate without credentials
         working-directory: admin-source
@@ -174,31 +171,10 @@ jobs:
           const path = require('node:path');
           const root = process.env.ROOT;
           const files = [];
-          function walk(dir) {
-            for (const name of fs.readdirSync(dir).sort()) {
-              const full = path.join(dir, name);
-              const stat = fs.statSync(full);
-              if (stat.isDirectory()) walk(full);
-              else if (stat.isFile()) files.push(full);
-            }
-          }
+          const walk = (dir) => { for (const name of fs.readdirSync(dir).sort()) { const full = path.join(dir, name); const stat = fs.statSync(full); if (stat.isDirectory()) walk(full); else if (stat.isFile()) files.push(full); } };
           walk(path.join(root, 'functions'));
-          const entries = files.map((full) => ({
-            path: path.relative(root, full).replaceAll('\\', '/'),
-            sha256: crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex'),
-            bytes: fs.statSync(full).size,
-          }));
-          const manifest = {
-            schemaVersion: 'urai-admin-pr57-prebuilt-1',
-            adminSha: process.env.ADMIN_SHA,
-            controllerSha: process.env.CONTROLLER_SHA,
-            explicitFunctionDeploymentAllowlist: ['nextServer'],
-            scheduledAnalyticsDeploymentAuthorized: false,
-            projectWideRuleMutationAuthorized: false,
-            productionDeploymentAuthorized: false,
-            entries,
-          };
-          fs.writeFileSync(path.join(root, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+          const entries = files.map((full) => ({ path: path.relative(root, full).replaceAll('\\', '/'), sha256: crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex'), bytes: fs.statSync(full).size }));
+          fs.writeFileSync(path.join(root, 'manifest.json'), `${JSON.stringify({ schemaVersion: 'urai-admin-pr57-prebuilt-1', adminSha: process.env.ADMIN_SHA, controllerSha: process.env.CONTROLLER_SHA, explicitFunctionDeploymentAllowlist: ['nextServer'], scheduledAnalyticsDeploymentAuthorized: false, projectWideRuleMutationAuthorized: false, productionDeploymentAuthorized: false, entries }, null, 2)}\n`);
           NODE
 
       - name: Upload source-bound Admin runtime prebuilt
@@ -210,7 +186,7 @@ jobs:
           retention-days: 7
 
   provider-gate:
-    name: Protected provider-native safety gate
+    name: Protected effective-IAM provider safety gate
     needs: preflight
     if: ${{ inputs.execute_staging_mutation }}
     runs-on: ubuntu-24.04
@@ -251,7 +227,6 @@ jobs:
           test -z "${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}"
 
       - name: Authenticate to urai-staging with WIF only
-        id: google-auth
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
         with:
           project_id: urai-staging
@@ -265,7 +240,7 @@ jobs:
         with:
           project_id: urai-staging
 
-      - name: Verify WIF provider, IAM boundary, and keyless identity
+      - name: Verify WIF provider effective IAM and keyless identity
         shell: bash
         run: |
           set -euo pipefail
@@ -274,16 +249,17 @@ jobs:
           test -f "$GOOGLE_APPLICATION_CREDENTIALS"
           active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
           test "$active" = "$DEPLOY_SERVICE_ACCOUNT"
-          gcloud projects describe urai-staging --format='value(projectId)' | grep -qx urai-staging
+          project_number="$(gcloud projects describe urai-staging --format='value(projectNumber)')"
+          [[ "$project_number" =~ ^[0-9]+$ ]]
           provider_tail="${WIF_PROVIDER#*/workloadIdentityPools/}"
           pool_id="${provider_tail%%/*}"
           provider_id="${WIF_PROVIDER##*/}"
           provider_json="$(gcloud iam workload-identity-pools providers describe "$provider_id" --workload-identity-pool="$pool_id" --location=global --project=urai-staging --format=json)"
-          project_iam="$(gcloud projects get-iam-policy urai-staging --format=json)"
+          effective_iam="$(gcloud asset get-effective-iam-policy --scope="projects/urai-staging" --names="//cloudresourcemanager.googleapis.com/projects/$project_number" --format=json)"
           keys_json="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project=urai-staging --format=json)"
-          WIF_PROVIDER="$WIF_PROVIDER" PROVIDER_JSON="$provider_json" PROJECT_IAM="$project_iam" KEYS_JSON="$keys_json" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
+          WIF_PROVIDER="$WIF_PROVIDER" PROVIDER_JSON="$provider_json" EFFECTIVE_IAM="$effective_iam" KEYS_JSON="$keys_json" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
           const provider = JSON.parse(process.env.PROVIDER_JSON);
-          const iam = JSON.parse(process.env.PROJECT_IAM);
+          const effective = JSON.parse(process.env.EFFECTIVE_IAM);
           const keys = JSON.parse(process.env.KEYS_JSON);
           const expectedCondition = "assertion.repository_owner_id=='215797546' && assertion.repository_id=='1150947098' && assertion.ref=='refs/heads/main' && assertion.environment=='staging'";
           const failures = [];
@@ -292,19 +268,26 @@ jobs:
           if (provider.attributeCondition !== expectedCondition) failures.push('attribute condition');
           const mapping = provider.attributeMapping || {};
           for (const key of ['google.subject','attribute.repository_id','attribute.repository_owner_id','attribute.ref','attribute.environment']) if (!mapping[key]) failures.push(`mapping ${key}`);
-          const member = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
-          const roles = (iam.bindings || []).filter((b) => (b.members || []).includes(member)).map((b) => b.role);
-          if (roles.includes('roles/owner') || roles.includes('roles/editor')) failures.push('Owner/Editor reliance');
-          if ((keys || []).some((key) => key.keyType === 'USER_MANAGED')) failures.push('user-managed service-account key');
-          if (failures.length) throw new Error(`Provider safety gate failed: ${failures.join(', ')}`);
-          console.log(JSON.stringify({ provider: provider.name, serviceAccount: process.env.DEPLOY_SERVICE_ACCOUNT, projectRoles: roles, ownerEditorReliance: false, userManagedKeys: 0 }));
+          if ((Array.isArray(keys) ? keys : []).some((key) => key.keyType === 'USER_MANAGED')) failures.push('user-managed service-account key');
+          const broad = [];
+          const visit = (value, attachedResource = null) => {
+            if (!value || typeof value !== 'object') return;
+            const here = value.attachedResource || value.fullResourceName || attachedResource;
+            if (Array.isArray(value.bindings)) for (const binding of value.bindings) if (binding?.role === 'roles/owner' || binding?.role === 'roles/editor') broad.push({ attachedResource: here, role: binding.role, members: binding.members || [] });
+            for (const child of Object.values(value)) visit(child, here);
+          };
+          visit(effective);
+          const target = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
+          if (broad.some((b) => b.members.includes(target))) failures.push('effective Owner/Editor reliance');
+          if (broad.some((b) => b.members.some((m) => m.startsWith('group:') || m.startsWith('domain:') || m === 'allAuthenticatedUsers' || m === 'allUsers' || m.startsWith('principalSet:') || m.startsWith('principal:')))) failures.push('Owner/Editor group/broad-principal membership cannot be disproven');
+          if (failures.length) throw new Error(`Provider safety gate failed closed: ${failures.join(', ')}`);
+          console.log(JSON.stringify({ provider: provider.name, serviceAccount: process.env.DEPLOY_SERVICE_ACCOUNT, effectiveIamReadback: true, ownerEditorNegativeProof: true, userManagedKeys: 0 }));
           NODE
 
       - name: Destroy ephemeral WIF credential
         if: always()
         shell: bash
-        run: |
-          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+        run: rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
 
   runtime-deploy:
     name: Isolated Admin nextServer and Hosting preview mutation
@@ -358,23 +341,14 @@ jobs:
         run: |
           set -euo pipefail
           ADMIN_SHA="$ADMIN_SHA" CONTROLLER_SHA="$CONTROLLER_SHA" PREBUILT_ROOT="$PREBUILT_ROOT" node <<'NODE'
-          const fs = require('node:fs');
-          const crypto = require('node:crypto');
-          const path = require('node:path');
-          const root = process.env.PREBUILT_ROOT;
-          const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
-          const failures = [];
+          const fs = require('node:fs'); const crypto = require('node:crypto'); const path = require('node:path');
+          const root = process.env.PREBUILT_ROOT; const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8')); const failures = [];
           if (manifest.schemaVersion !== 'urai-admin-pr57-prebuilt-1') failures.push('schema');
           if (manifest.adminSha !== process.env.ADMIN_SHA) failures.push('Admin SHA');
           if (manifest.controllerSha !== process.env.CONTROLLER_SHA) failures.push('controller SHA');
           if (JSON.stringify(manifest.explicitFunctionDeploymentAllowlist) !== JSON.stringify(['nextServer'])) failures.push('function allowlist');
           if (manifest.scheduledAnalyticsDeploymentAuthorized !== false || manifest.projectWideRuleMutationAuthorized !== false || manifest.productionDeploymentAuthorized !== false) failures.push('mutation fences');
-          for (const entry of manifest.entries || []) {
-            const full = path.join(root, entry.path);
-            if (!fs.existsSync(full)) { failures.push(`missing ${entry.path}`); continue; }
-            const digest = crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex');
-            if (digest !== entry.sha256) failures.push(`digest ${entry.path}`);
-          }
+          for (const entry of manifest.entries || []) { const full = path.join(root, entry.path); if (!fs.existsSync(full)) { failures.push(`missing ${entry.path}`); continue; } if (crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex') !== entry.sha256) failures.push(`digest ${entry.path}`); }
           if (failures.length) throw new Error(`Admin prebuilt verification failed: ${failures.join(', ')}`);
           NODE
           test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
