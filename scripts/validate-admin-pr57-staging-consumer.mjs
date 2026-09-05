@@ -24,6 +24,7 @@ const required = [
   'provider read-only IAM probe is green',
   'exit 78',
   'test -z "${FIREBASE_TOKEN:-}"',
+  'test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"',
 ];
 for (const marker of required) {
   if (!text.includes(marker)) throw new Error(`missing Admin staging consumer workflow marker: ${marker}`);
@@ -31,8 +32,8 @@ for (const marker of required) {
 
 const forbiddenPatterns = [
   [/^\s*FIREBASE_TOKEN\s*:/m, 'FIREBASE_TOKEN YAML key'],
+  [/^\s*FIREBASE_SERVICE_ACCOUNT_KEY\s*:/m, 'service-account key YAML key'],
   [/^\s*credentials_json\s*:/m, 'credentials_json input'],
-  [/service_account_key/i, 'service-account key path'],
   [/--project\s+urai-4dc1d/, 'production project CLI target'],
   [/-P\s+urai-4dc1d/, 'production Firebase project target'],
   [/^\s*environment:\s*production\s*$/m, 'production environment'],
