@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - .github/workflows/admin-pr57-provider-probe.yml
-      - scripts/validate-admin-pr57-provider-probe.mjs
-      - scripts/bootstrap-staging-github-wif.sh
-      - .github/workflows/ci.yml
 
 permissions:
   contents: read
