@@ -60,6 +60,9 @@ jobs:
       - name: Validate staging WIF bootstrap contract
         run: node scripts/validate-staging-wif-bootstrap.mjs
 
+      - name: Validate staging consumer authority
+        run: node scripts/validate-staging-consumers.mjs
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
