@@ -36,6 +36,10 @@ for (const [label, pattern] of [
   if (!pattern.test(workflow)) failures.push(`missing provider-probe boundary: ${label}`);
 }
 
+if (/^\s+paths(?:-ignore)?:\s*/m.test(workflow)) {
+  failures.push('provider probe must run on every main SHA; push paths and paths-ignore filters are forbidden');
+}
+
 for (const forbidden of [
   'FIREBASE_SERVICE_ACCOUNT_KEY: ${{',
   'FIREBASE_TOKEN: ${{',
@@ -57,4 +61,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('PASS Admin PR57 provider probe is exact-head, WIF-only, staging-only, read-only, complete-read, and effective-IAM fail-closed');
+console.log('PASS Admin PR57 provider probe is exact-head, WIF-only, staging-only, read-only, complete-read, effective-IAM fail-closed, and runs on every staging main SHA');
