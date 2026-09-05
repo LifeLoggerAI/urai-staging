@@ -63,6 +63,9 @@ jobs:
       - name: Validate staging consumer authority
         run: node scripts/validate-staging-consumers.mjs
 
+      - name: Validate Admin PR57 staging consumer workflow
+        run: node scripts/validate-admin-pr57-staging-consumer.mjs
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
