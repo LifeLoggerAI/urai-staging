@@ -258,17 +258,45 @@ jobs:
           test "$active" = "$DEPLOY_SERVICE_ACCOUNT"
           gcloud projects describe urai-staging --format='value(projectId)' | grep -qx urai-staging
 
-      - name: Read current non-production runtime topology without mutation
+      - name: Read and sanitize current non-production runtime topology without mutation
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p artifacts/spatial-pr1182-stripe/provider-read
-          firebase apphosting:backends:list --project urai-staging --json > artifacts/spatial-pr1182-stripe/provider-read/apphosting-backends.json
-          firebase hosting:sites:list --project urai-staging --json > artifacts/spatial-pr1182-stripe/provider-read/hosting-sites.json
-          gcloud run services list --project=urai-staging --platform=managed --format=json > artifacts/spatial-pr1182-stripe/provider-read/cloud-run-services.json
-          gcloud functions list --project=urai-staging --format=json > artifacts/spatial-pr1182-stripe/provider-read/cloud-functions.json
+          out='artifacts/spatial-pr1182-stripe/provider-read'
+          raw="$RUNNER_TEMP/urai-spatial-pr1182-provider-read-raw"
+          rm -rf -- "$out" "$raw"
+          mkdir -p "$out" "$raw"
+          firebase apphosting:backends:list --project urai-staging --json > "$raw/apphosting-backends.json"
+          firebase hosting:sites:list --project urai-staging --json > "$raw/hosting-sites.json"
+          gcloud run services list --project=urai-staging --platform=managed --format=json > "$raw/cloud-run-services.json"
+          gcloud functions list --project=urai-staging --format=json > "$raw/cloud-functions.json"
+          RAW="$raw" OUT="$out" node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const raw = process.env.RAW;
+          const out = process.env.OUT;
+          const files = ['apphosting-backends.json','hosting-sites.json','cloud-run-services.json','cloud-functions.json'];
+          const sensitiveKey = /(?:^|_)(?:env|environmentvariables|secretenvironmentvariables|secret|secrets|token|tokens|credential|credentials|password|privatekey|apikey|api_key|keymaterial)(?:$|_)/i;
+          const sanitize = (value) => {
+            if (Array.isArray(value)) return value.map(sanitize);
+            if (!value || typeof value !== 'object') return value;
+            const clean = {};
+            for (const [key, child] of Object.entries(value)) {
+              const normalized = key.replace(/[^A-Za-z0-9_]/g, '').toLowerCase();
+              if (sensitiveKey.test(normalized)) continue;
+              clean[key] = sanitize(child);
+            }
+            return clean;
+          };
+          for (const file of files) {
+            const parsed = JSON.parse(fs.readFileSync(path.join(raw, file), 'utf8'));
+            fs.writeFileSync(path.join(out, file), `${JSON.stringify(sanitize(parsed), null, 2)}\n`);
+          }
+          NODE
+          rm -rf -- "$raw"
+          ! grep -RIl -E '(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_(live|test)_[A-Za-z0-9]+|rk_(live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|private_key|client_secret|secretEnvironmentVariables|environmentVariables)' "$out"
 
-      - name: Seal read-only provider receipt
+      - name: Seal sanitized read-only provider receipt
         shell: bash
         run: |
           set -euo pipefail
@@ -277,7 +305,7 @@ jobs:
           const root = 'artifacts/spatial-pr1182-stripe/provider-read';
           const read = (name) => JSON.parse(fs.readFileSync(`${root}/${name}`, 'utf8'));
           const receipt = {
-            schemaVersion: 'urai-spatial-pr1182-stripe-provider-read-1',
+            schemaVersion: 'urai-spatial-pr1182-stripe-provider-read-2',
             generatedAt: new Date().toISOString(),
             stagingRepository: process.env.GITHUB_REPOSITORY,
             stagingControllerSha: process.env.CONTROLLER_SHA,
@@ -288,16 +316,18 @@ jobs:
             environment: process.env.EXPECTED_ENVIRONMENT,
             stripeMode: 'test-only',
             providerAuthenticated: true,
+            evidenceSanitizedBeforeRetention: true,
             appHostingBackends: read('apphosting-backends.json'),
             hostingSites: read('hosting-sites.json'),
             cloudRunServices: read('cloud-run-services.json'),
             cloudFunctions: read('cloud-functions.json'),
             providerMutationPerformed: false,
             productionDeploymentPerformed: false,
-            nextDecision: 'Derive the smallest exact runtime mutation only from this provider-native inventory; do not infer App Hosting or framework Hosting authority before this receipt exists.',
+            nextDecision: 'Derive the smallest exact runtime mutation only from this sanitized provider-native inventory; do not infer App Hosting or framework Hosting authority before this receipt exists.',
           };
           fs.writeFileSync(`${root}/provider-read-receipt.json`, `${JSON.stringify(receipt, null, 2)}\n`);
           NODE
+          ! grep -RIl -E '(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_(live|test)_[A-Za-z0-9]+|rk_(live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|private_key|client_secret|secretEnvironmentVariables|environmentVariables)' artifacts/spatial-pr1182-stripe/provider-read
 
       - name: Destroy ephemeral WIF credential
         if: always()
@@ -307,7 +337,7 @@ jobs:
           echo 'GOOGLE_APPLICATION_CREDENTIALS=' >> "$GITHUB_ENV"
           echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
 
-      - name: Upload read-only provider evidence
+      - name: Upload sanitized read-only provider evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
