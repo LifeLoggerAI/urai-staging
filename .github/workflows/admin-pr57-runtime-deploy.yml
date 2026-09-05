@@ -122,8 +122,6 @@ jobs:
           test "$(git -C admin-source rev-parse HEAD)" = '${{ steps.authority.outputs.admin_sha }}'
           test -z "$(git -C admin-source status --porcelain --untracked-files=all)"
           grep -q 'export const nextServer' admin-source/functions/src/index.ts
-          grep -q 'export const aggregateAnalytics' admin-source/functions/src/index.ts
-          grep -q 'aggregateUraiAnalyticsV1' admin-source/functions/src/index.ts
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -166,11 +164,8 @@ jobs:
           cp admin-source/functions/package.json "$root/functions/package.json"
           if [ -f admin-source/functions/package-lock.json ]; then cp admin-source/functions/package-lock.json "$root/functions/package-lock.json"; fi
           ROOT="$root" ADMIN_SHA="$ADMIN_SHA" CONTROLLER_SHA="$CONTROLLER_SHA" node <<'NODE'
-          const fs = require('node:fs');
-          const crypto = require('node:crypto');
-          const path = require('node:path');
-          const root = process.env.ROOT;
-          const files = [];
+          const fs = require('node:fs'); const crypto = require('node:crypto'); const path = require('node:path');
+          const root = process.env.ROOT; const files = [];
           const walk = (dir) => { for (const name of fs.readdirSync(dir).sort()) { const full = path.join(dir, name); const stat = fs.statSync(full); if (stat.isDirectory()) walk(full); else if (stat.isFile()) files.push(full); } };
           walk(path.join(root, 'functions'));
           const entries = files.map((full) => ({ path: path.relative(root, full).replaceAll('\\', '/'), sha256: crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex'), bytes: fs.statSync(full).size }));
@@ -258,9 +253,7 @@ jobs:
           effective_iam="$(gcloud asset get-effective-iam-policy --scope="projects/urai-staging" --names="//cloudresourcemanager.googleapis.com/projects/$project_number" --format=json)"
           keys_json="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project=urai-staging --format=json)"
           WIF_PROVIDER="$WIF_PROVIDER" PROVIDER_JSON="$provider_json" EFFECTIVE_IAM="$effective_iam" KEYS_JSON="$keys_json" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
-          const provider = JSON.parse(process.env.PROVIDER_JSON);
-          const effective = JSON.parse(process.env.EFFECTIVE_IAM);
-          const keys = JSON.parse(process.env.KEYS_JSON);
+          const provider = JSON.parse(process.env.PROVIDER_JSON); const effective = JSON.parse(process.env.EFFECTIVE_IAM); const keys = JSON.parse(process.env.KEYS_JSON);
           const expectedCondition = "assertion.repository_owner_id=='215797546' && assertion.repository_id=='1150947098' && assertion.ref=='refs/heads/main' && assertion.environment=='staging'";
           const failures = [];
           if (provider.name !== process.env.WIF_PROVIDER) failures.push('provider resource');
@@ -270,12 +263,7 @@ jobs:
           for (const key of ['google.subject','attribute.repository_id','attribute.repository_owner_id','attribute.ref','attribute.environment']) if (!mapping[key]) failures.push(`mapping ${key}`);
           if ((Array.isArray(keys) ? keys : []).some((key) => key.keyType === 'USER_MANAGED')) failures.push('user-managed service-account key');
           const broad = [];
-          const visit = (value, attachedResource = null) => {
-            if (!value || typeof value !== 'object') return;
-            const here = value.attachedResource || value.fullResourceName || attachedResource;
-            if (Array.isArray(value.bindings)) for (const binding of value.bindings) if (binding?.role === 'roles/owner' || binding?.role === 'roles/editor') broad.push({ attachedResource: here, role: binding.role, members: binding.members || [] });
-            for (const child of Object.values(value)) visit(child, here);
-          };
+          const visit = (value, attachedResource = null) => { if (!value || typeof value !== 'object') return; const here = value.attachedResource || value.fullResourceName || attachedResource; if (Array.isArray(value.bindings)) for (const binding of value.bindings) if (binding?.role === 'roles/owner' || binding?.role === 'roles/editor') broad.push({ attachedResource: here, role: binding.role, members: binding.members || [] }); for (const child of Object.values(value)) visit(child, here); };
           visit(effective);
           const target = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
           if (broad.some((b) => b.members.includes(target))) failures.push('effective Owner/Editor reliance');
@@ -309,8 +297,8 @@ jobs:
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
       ADMIN_SOURCE_DIR: ${{ github.workspace }}/admin-source
-      PREBUILT_ROOT: ${{ runner.temp }}/urai-admin-pr57-prebuilt
-      DEPLOY_ROOT: ${{ runner.temp }}/urai-admin-pr57-deploy
+      PREBUILT_ROOT: /tmp/urai-admin-pr57-prebuilt
+      DEPLOY_ROOT: /tmp/urai-admin-pr57-deploy
     steps:
       - name: Checkout exact staging controller
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5

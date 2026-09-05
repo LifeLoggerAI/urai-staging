@@ -46,6 +46,9 @@ requirePattern(workflow, /scheduledAnalyticsDeploymentAuthorized\s*!==\s*false/,
 requirePattern(workflow, /hostingLiveChannelMutationAuthorized\s*!==\s*false/, 'live Hosting denial');
 requirePattern(workflow, /projectWideRuleMutationAuthorized\s*!==\s*false/, 'project-wide rule denial');
 requirePattern(workflow, /urai-admin-pr57-runtime-prebuilt-\$\{\{[^\n]+admin_sha[^\n]+\}\}-\$\{\{\s*github\.run_id\s*\}\}/i, 'source-bound prebuilt artifact name');
+requirePattern(workflow, /^      PREBUILT_ROOT: \/tmp\/urai-admin-pr57-prebuilt\s*$/m, 'runtime external prebuilt root');
+requirePattern(workflow, /^      DEPLOY_ROOT: \/tmp\/urai-admin-pr57-deploy\s*$/m, 'runtime external deploy root');
+forbidPattern(workflow, /^\s*(?:PREBUILT_ROOT|DEPLOY_ROOT):\s*\$\{\{[^\n}]*runner\./mi, 'runner context in job-level env');
 
 for (const [value, label] of [
   ["EXPECTED_PROJECT_ID='urai-staging'", 'lock staging project'],
