@@ -55,7 +55,7 @@ for (const [value, label] of [
   ['URAI_ADMIN_SOURCE_SHA=$ADMIN_SHA', 'runtime Admin SHA marker'],
   ['URAI_STAGING_CONTROLLER_SHA=$CONTROLLER_SHA', 'runtime controller SHA marker'],
   ['URAI_PRODUCTION_DEPLOY_APPROVED=0', 'runtime production fence'],
-  ['Existing nextServer is not authorized for replacement', 'collision fail-closed check'],
+  ['Pre-existing nextServer is not authorized for replacement', 'collision fail-closed check'],
   ['Existing nextServer SHA marker does not match the explicitly expected prior Admin SHA', 'prior SHA replacement binding'],
 ]) requireText(lock, value, label);
 
