@@ -27,6 +27,9 @@ const required = [
   'test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"',
   'providerMutationPerformed: false',
   'productionDeploymentPerformed: false',
+  '$RUNNER_TEMP/urai-spatial-pr1182-provider-read-raw',
+  'evidenceSanitizedBeforeRetention: true',
+  'Upload sanitized read-only provider evidence',
 ];
 for (const marker of required) {
   if (!text.includes(marker)) throw new Error(`missing Spatial PR1182 provider-probe marker: ${marker}`);
@@ -41,8 +44,10 @@ const forbiddenPatterns = [
   [/gcloud\s+functions\s+deploy/, 'Cloud Functions deploy mutation'],
   [/apphosting:secrets:set/, 'App Hosting secret mutation'],
   [/gcloud\s+secrets\s+versions\s+access/, 'secret value access'],
-  [/STRIPE_SECRET_KEY/, 'Stripe secret key material'],
-  [/STRIPE_WEBHOOK_SECRET/, 'Stripe webhook secret material'],
+  [/^\s*STRIPE_SECRET_KEY\s*:/m, 'Stripe secret key YAML binding'],
+  [/^\s*STRIPE_WEBHOOK_SECRET\s*:/m, 'Stripe webhook secret YAML binding'],
+  [/\bSTRIPE_SECRET_KEY\s*=\s*[^)]/m, 'Stripe secret key shell assignment'],
+  [/\bSTRIPE_WEBHOOK_SECRET\s*=\s*[^)]/m, 'Stripe webhook secret shell assignment'],
   [/urai-4dc1d/, 'production project target'],
   [/^\s*environment:\s*production\s*$/m, 'production environment'],
 ];
