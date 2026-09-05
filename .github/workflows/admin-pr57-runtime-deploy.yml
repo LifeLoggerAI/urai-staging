@@ -1,0 +1,428 @@
+name: Admin PR57 Governed Staging Runtime Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      admin_sha:
+        description: Exact Admin PR #57 SHA authorized by config/staging-consumers.json
+        required: true
+        default: fb255310d6b183a59e4252da80c685f45e5cf536
+        type: string
+      expected_controller_sha:
+        description: Exact current urai-staging main SHA
+        required: true
+        type: string
+      expected_existing_admin_sha:
+        description: Exact previously managed Admin SHA when replacing or rolling back; leave empty for first deployment
+        required: false
+        default: ''
+        type: string
+      confirm_staging_project:
+        description: Type urai-staging
+        required: true
+        type: string
+      execute_staging_mutation:
+        description: Execute the isolated Admin staging mutation after provider-native safety checks
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: urai-admin-pr57-governed-staging-runtime
+  cancel-in-progress: false
+
+env:
+  ADMIN_REPOSITORY: LifeLoggerAI/urai-admin
+  ADMIN_PR_NUMBER: '57'
+  STAGING_PROJECT_ID: urai-staging
+  EXPECTED_ENVIRONMENT_NAME: staging
+  FIREBASE_CLI_VERSION: '15.23.0'
+  NODE_VERSION: '22'
+  URAI_PRODUCTION_DEPLOY_APPROVED: '0'
+
+jobs:
+  preflight:
+    name: Exact-head credential-free runtime preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    outputs:
+      admin_sha: ${{ steps.authority.outputs.admin_sha }}
+      controller_sha: ${{ steps.authority.outputs.controller_sha }}
+      expected_existing_admin_sha: ${{ steps.authority.outputs.expected_existing_admin_sha }}
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ inputs.expected_controller_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact governed authority
+        id: authority
+        shell: bash
+        env:
+          ADMIN_SHA: ${{ inputs.admin_sha }}
+          CONTROLLER_SHA: ${{ inputs.expected_controller_sha }}
+          EXPECTED_EXISTING_ADMIN_SHA: ${{ inputs.expected_existing_admin_sha }}
+          CONFIRM_STAGING_PROJECT: ${{ inputs.confirm_staging_project }}
+        run: |
+          set -euo pipefail
+          test "$CONFIRM_STAGING_PROJECT" = 'urai-staging'
+          test '${{ github.ref }}' = 'refs/heads/main'
+          test '${{ github.sha }}' = "$CONTROLLER_SHA"
+          test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
+          [[ "$ADMIN_SHA" =~ ^[0-9a-f]{40}$ ]]
+          if [ -n "$EXPECTED_EXISTING_ADMIN_SHA" ]; then [[ "$EXPECTED_EXISTING_ADMIN_SHA" =~ ^[0-9a-f]{40}$ ]]; fi
+          node scripts/validate-staging-consumers.mjs
+          ADMIN_SHA="$ADMIN_SHA" node <<'NODE'
+          const fs = require('node:fs');
+          const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json', 'utf8'));
+          const c = authority.consumers.find((entry) => entry.id === 'urai-admin-pr57-runtime-closure');
+          const failures = [];
+          if (!c) failures.push('consumer missing');
+          if (c) {
+            if (c.repository !== 'LifeLoggerAI/urai-admin' || c.repositoryId !== 1150887043 || c.pullRequest !== 57) failures.push('Admin identity');
+            if (c.exactSha !== process.env.ADMIN_SHA || c.sourceRef !== 'refs/pull/57/head') failures.push('Admin exact SHA/ref');
+            if (c.providerProject !== 'urai-staging' || c.allowedEnvironment !== 'staging') failures.push('provider scope');
+            if (JSON.stringify(c.initialFunctionDeploymentAllowlist) !== JSON.stringify(['nextServer'])) failures.push('function allowlist');
+            if (c.scheduledAnalyticsDeploymentAuthorized !== false) failures.push('scheduled analytics');
+            if (c.hostingLiveChannelMutationAuthorized !== false) failures.push('live Hosting');
+            if (c.projectWideRuleMutationAuthorized !== false) failures.push('project-wide rules');
+            if (c.productionDeploymentAuthorized !== false || c.productionDataAuthorized !== false) failures.push('production authority');
+            if (c.longLivedCredentialsAuthorized !== false) failures.push('long-lived credentials');
+          }
+          if (failures.length) throw new Error(`Admin runtime authority mismatch: ${failures.join(', ')}`);
+          NODE
+          test "$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-admin.git refs/pull/57/head | awk '{print $1}')" = "$ADMIN_SHA"
+          echo "admin_sha=$ADMIN_SHA" >> "$GITHUB_OUTPUT"
+          echo "controller_sha=$CONTROLLER_SHA" >> "$GITHUB_OUTPUT"
+          echo "expected_existing_admin_sha=$EXPECTED_EXISTING_ADMIN_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact Admin candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: LifeLoggerAI/urai-admin
+          ref: ${{ steps.authority.outputs.admin_sha }}
+          path: admin-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact clean Admin source
+        shell: bash
+        env:
+          ADMIN_SHA: ${{ steps.authority.outputs.admin_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C admin-source rev-parse HEAD)" = "$ADMIN_SHA"
+          test -z "$(git -C admin-source status --porcelain --untracked-files=all)"
+          grep -q 'export const nextServer' admin-source/functions/src/index.ts
+          grep -q 'export const aggregateAnalytics' admin-source/functions/src/index.ts
+          grep -q 'aggregateUraiAnalyticsV1' admin-source/functions/src/index.ts
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: admin-source/pnpm-lock.yaml
+
+      - name: Setup pnpm
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@9.15.0 --activate
+          pnpm --version
+
+      - name: Verify and package exact Admin candidate without credentials
+        working-directory: admin-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm functions:typecheck:active
+          pnpm functions:build:active
+          pnpm typecheck
+          pnpm test
+          pnpm build
+
+      - name: Seal exact Admin runtime prebuilt artifact
+        shell: bash
+        env:
+          ADMIN_SHA: ${{ steps.authority.outputs.admin_sha }}
+          CONTROLLER_SHA: ${{ steps.authority.outputs.controller_sha }}
+        run: |
+          set -euo pipefail
+          root='artifacts/admin-pr57/prebuilt'
+          rm -rf -- "$root"
+          mkdir -p "$root/functions"
+          cp -a admin-source/functions/lib "$root/functions/lib"
+          cp -a admin-source/functions/apps "$root/functions/apps"
+          cp admin-source/functions/package.json "$root/functions/package.json"
+          if [ -f admin-source/functions/package-lock.json ]; then cp admin-source/functions/package-lock.json "$root/functions/package-lock.json"; fi
+          ROOT="$root" ADMIN_SHA="$ADMIN_SHA" CONTROLLER_SHA="$CONTROLLER_SHA" node <<'NODE'
+          const fs = require('node:fs');
+          const crypto = require('node:crypto');
+          const path = require('node:path');
+          const root = process.env.ROOT;
+          const files = [];
+          function walk(dir) {
+            for (const name of fs.readdirSync(dir).sort()) {
+              const full = path.join(dir, name);
+              const stat = fs.statSync(full);
+              if (stat.isDirectory()) walk(full);
+              else if (stat.isFile()) files.push(full);
+            }
+          }
+          walk(path.join(root, 'functions'));
+          const entries = files.map((full) => ({
+            path: path.relative(root, full).replaceAll('\\', '/'),
+            sha256: crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex'),
+            bytes: fs.statSync(full).size,
+          }));
+          const manifest = {
+            schemaVersion: 'urai-admin-pr57-prebuilt-1',
+            adminSha: process.env.ADMIN_SHA,
+            controllerSha: process.env.CONTROLLER_SHA,
+            explicitFunctionDeploymentAllowlist: ['nextServer'],
+            scheduledAnalyticsDeploymentAuthorized: false,
+            projectWideRuleMutationAuthorized: false,
+            productionDeploymentAuthorized: false,
+            entries,
+          };
+          fs.writeFileSync(path.join(root, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+          NODE
+
+      - name: Upload source-bound Admin runtime prebuilt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-admin-pr57-runtime-prebuilt-${{ steps.authority.outputs.admin_sha }}-${{ github.run_id }}
+          path: artifacts/admin-pr57/prebuilt
+          if-no-files-found: error
+          retention-days: 7
+
+  provider-gate:
+    name: Protected provider-native safety gate
+    needs: preflight
+    if: ${{ inputs.execute_staging_mutation }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      ADMIN_SHA: ${{ needs.preflight.outputs.admin_sha }}
+      CONTROLLER_SHA: ${{ needs.preflight.outputs.controller_sha }}
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ env.CONTROLLER_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Require exact protected WIF values
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ github.ref }}' = 'refs/heads/main'
+          test '${{ github.sha }}' = "$CONTROLLER_SHA"
+          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
+          test "$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-admin.git refs/pull/57/head | awk '{print $1}')" = "$ADMIN_SHA"
+          test -n "$WIF_PROVIDER"
+          test -n "$DEPLOY_SERVICE_ACCOUNT"
+          case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 41 ;; esac
+          case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 42 ;; esac
+          test -z "${FIREBASE_TOKEN:-}"
+          test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}"
+
+      - name: Authenticate to urai-staging with WIF only
+        id: google-auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Setup pinned gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
+      - name: Verify WIF provider, IAM boundary, and keyless identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test "$GOOGLE_APPLICATION_CREDENTIALS" = "$GOOGLE_GHA_CREDS_PATH"
+          test -f "$GOOGLE_APPLICATION_CREDENTIALS"
+          active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
+          test "$active" = "$DEPLOY_SERVICE_ACCOUNT"
+          gcloud projects describe urai-staging --format='value(projectId)' | grep -qx urai-staging
+          provider_tail="${WIF_PROVIDER#*/workloadIdentityPools/}"
+          pool_id="${provider_tail%%/*}"
+          provider_id="${WIF_PROVIDER##*/}"
+          provider_json="$(gcloud iam workload-identity-pools providers describe "$provider_id" --workload-identity-pool="$pool_id" --location=global --project=urai-staging --format=json)"
+          project_iam="$(gcloud projects get-iam-policy urai-staging --format=json)"
+          keys_json="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project=urai-staging --format=json)"
+          WIF_PROVIDER="$WIF_PROVIDER" PROVIDER_JSON="$provider_json" PROJECT_IAM="$project_iam" KEYS_JSON="$keys_json" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
+          const provider = JSON.parse(process.env.PROVIDER_JSON);
+          const iam = JSON.parse(process.env.PROJECT_IAM);
+          const keys = JSON.parse(process.env.KEYS_JSON);
+          const expectedCondition = "assertion.repository_owner_id=='215797546' && assertion.repository_id=='1150947098' && assertion.ref=='refs/heads/main' && assertion.environment=='staging'";
+          const failures = [];
+          if (provider.name !== process.env.WIF_PROVIDER) failures.push('provider resource');
+          if (provider.oidc?.issuerUri !== 'https://token.actions.githubusercontent.com') failures.push('issuer');
+          if (provider.attributeCondition !== expectedCondition) failures.push('attribute condition');
+          const mapping = provider.attributeMapping || {};
+          for (const key of ['google.subject','attribute.repository_id','attribute.repository_owner_id','attribute.ref','attribute.environment']) if (!mapping[key]) failures.push(`mapping ${key}`);
+          const member = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
+          const roles = (iam.bindings || []).filter((b) => (b.members || []).includes(member)).map((b) => b.role);
+          if (roles.includes('roles/owner') || roles.includes('roles/editor')) failures.push('Owner/Editor reliance');
+          if ((keys || []).some((key) => key.keyType === 'USER_MANAGED')) failures.push('user-managed service-account key');
+          if (failures.length) throw new Error(`Provider safety gate failed: ${failures.join(', ')}`);
+          console.log(JSON.stringify({ provider: provider.name, serviceAccount: process.env.DEPLOY_SERVICE_ACCOUNT, projectRoles: roles, ownerEditorReliance: false, userManagedKeys: 0 }));
+          NODE
+
+      - name: Destroy ephemeral WIF credential
+        if: always()
+        shell: bash
+        run: |
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+
+  runtime-deploy:
+    name: Isolated Admin nextServer and Hosting preview mutation
+    needs:
+      - preflight
+      - provider-gate
+    if: ${{ inputs.execute_staging_mutation }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      ADMIN_SHA: ${{ needs.preflight.outputs.admin_sha }}
+      CONTROLLER_SHA: ${{ needs.preflight.outputs.controller_sha }}
+      EXPECTED_EXISTING_ADMIN_SHA: ${{ needs.preflight.outputs.expected_existing_admin_sha }}
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+      ADMIN_SOURCE_DIR: ${{ github.workspace }}/admin-source
+      PREBUILT_ROOT: ${{ runner.temp }}/urai-admin-pr57-prebuilt
+      DEPLOY_ROOT: ${{ runner.temp }}/urai-admin-pr57-deploy
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ env.CONTROLLER_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Checkout exact Admin candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: LifeLoggerAI/urai-admin
+          ref: ${{ env.ADMIN_SHA }}
+          path: admin-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Download exact source-bound Admin prebuilt
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: urai-admin-pr57-runtime-prebuilt-${{ env.ADMIN_SHA }}-${{ github.run_id }}
+          path: ${{ env.PREBUILT_ROOT }}
+
+      - name: Verify downloaded prebuilt manifest before credentials exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          ADMIN_SHA="$ADMIN_SHA" CONTROLLER_SHA="$CONTROLLER_SHA" PREBUILT_ROOT="$PREBUILT_ROOT" node <<'NODE'
+          const fs = require('node:fs');
+          const crypto = require('node:crypto');
+          const path = require('node:path');
+          const root = process.env.PREBUILT_ROOT;
+          const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
+          const failures = [];
+          if (manifest.schemaVersion !== 'urai-admin-pr57-prebuilt-1') failures.push('schema');
+          if (manifest.adminSha !== process.env.ADMIN_SHA) failures.push('Admin SHA');
+          if (manifest.controllerSha !== process.env.CONTROLLER_SHA) failures.push('controller SHA');
+          if (JSON.stringify(manifest.explicitFunctionDeploymentAllowlist) !== JSON.stringify(['nextServer'])) failures.push('function allowlist');
+          if (manifest.scheduledAnalyticsDeploymentAuthorized !== false || manifest.projectWideRuleMutationAuthorized !== false || manifest.productionDeploymentAuthorized !== false) failures.push('mutation fences');
+          for (const entry of manifest.entries || []) {
+            const full = path.join(root, entry.path);
+            if (!fs.existsSync(full)) { failures.push(`missing ${entry.path}`); continue; }
+            const digest = crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex');
+            if (digest !== entry.sha256) failures.push(`digest ${entry.path}`);
+          }
+          if (failures.length) throw new Error(`Admin prebuilt verification failed: ${failures.join(', ')}`);
+          NODE
+          test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
+          test "$(git -C admin-source rev-parse HEAD)" = "$ADMIN_SHA"
+          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
+          test "$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-admin.git refs/pull/57/head | awk '{print $1}')" = "$ADMIN_SHA"
+
+      - name: Authenticate to urai-staging with WIF only
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Setup pinned gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
+      - name: Install pinned Firebase CLI outside repositories
+        shell: bash
+        run: |
+          set -euo pipefail
+          cli_root="$RUNNER_TEMP/firebase-cli"
+          mkdir -p "$cli_root"
+          npm install --prefix "$cli_root" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
+          test "$("$cli_root/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
+          echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Execute governed isolated staging runtime lock
+        shell: bash
+        run: bash scripts/admin-pr57-staging-lock.sh
+
+      - name: Destroy ephemeral WIF credential before evidence handoff
+        if: always()
+        shell: bash
+        run: |
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          echo 'GOOGLE_APPLICATION_CREDENTIALS=' >> "$GITHUB_ENV"
+          echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
+
+      - name: Upload exact runtime evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-admin-pr57-runtime-${{ env.ADMIN_SHA }}-${{ github.run_id }}
+          path: artifacts/admin-pr57-runtime
+          if-no-files-found: warn
+          retention-days: 90
