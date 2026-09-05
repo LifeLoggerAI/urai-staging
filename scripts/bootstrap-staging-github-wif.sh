@@ -22,6 +22,11 @@ CURRENT_PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
 PROJECT_NUMBER="$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')"
 [[ "$PROJECT_NUMBER" =~ ^[0-9]+$ ]] || { echo 'Could not resolve project number.' >&2; exit 5; }
 
+# Effective/inherited IAM proof uses Cloud Asset Inventory. This API enablement is
+# confined to the isolated staging project and is performed only by the approved
+# human Google Cloud administrator running this bootstrap.
+gcloud services enable cloudasset.googleapis.com --project="$PROJECT_ID" >/dev/null
+
 PROVIDER_RESOURCE="projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}"
 ATTRIBUTE_MAPPING='google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.repository_id=assertion.repository_id,attribute.repository_owner=assertion.repository_owner,attribute.repository_owner_id=assertion.repository_owner_id,attribute.ref=assertion.ref,attribute.environment=assertion.environment'
 ATTRIBUTE_CONDITION="assertion.repository_owner_id=='${GITHUB_OWNER_ID}' && assertion.repository_id=='${GITHUB_REPOSITORY_ID}' && assertion.ref=='${EXPECTED_REF}' && assertion.environment=='${EXPECTED_ENVIRONMENT}'"
@@ -67,9 +72,16 @@ gcloud iam service-accounts add-iam-policy-binding "$SERVICE_ACCOUNT_EMAIL" \
   --member="$WIF_MEMBER" >/dev/null
 
 # Read-only permissions are sufficient for the first protected provider probe.
-# Deployment permissions are intentionally NOT granted here; they must be derived
-# from provider/runtime evidence before a later least-privilege deployment grant.
-for role in roles/viewer roles/iam.securityReviewer roles/iam.workloadIdentityPoolViewer; do
+# Cloud Asset/role/service-usage reads are included so the probe can distinguish
+# direct project IAM from effective inherited IAM. Deployment mutation roles are
+# intentionally NOT granted here.
+for role in \
+  roles/viewer \
+  roles/iam.securityReviewer \
+  roles/iam.workloadIdentityPoolViewer \
+  roles/cloudasset.viewer \
+  roles/iam.roleViewer \
+  roles/serviceusage.serviceUsageConsumer; do
   gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:${SERVICE_ACCOUNT_EMAIL}" \
     --role="$role" \
@@ -102,6 +114,7 @@ repository=$GITHUB_REPOSITORY
 repository_id=$GITHUB_REPOSITORY_ID
 ref=$EXPECTED_REF
 environment=$EXPECTED_ENVIRONMENT
+effective_iam_readback=cloudasset.googleapis.com
 human_operator=$ACTIVE_ACCOUNT
 
 Set these NON-SECRET GitHub staging environment/repository variables exactly:
