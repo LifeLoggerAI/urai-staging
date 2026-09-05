@@ -66,6 +66,13 @@ jobs:
       - name: Validate Admin PR57 staging consumer workflow
         run: node scripts/validate-admin-pr57-staging-consumer.mjs
 
+      - name: Validate governed Admin PR57 runtime deployment path
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/validate-admin-pr57-runtime-deploy.mjs
+          bash -n scripts/admin-pr57-staging-lock.sh
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
