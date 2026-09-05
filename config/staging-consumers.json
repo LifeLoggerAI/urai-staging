@@ -29,6 +29,28 @@
       "productionDeploymentAuthorized": false,
       "productionDataAuthorized": false,
       "longLivedCredentialsAuthorized": false
+    },
+    {
+      "id": "urai-spatial-pr1182-stripe-test-e2e",
+      "repository": "LifeLoggerAI/urai-spatial",
+      "repositoryId": 1167675641,
+      "pullRequest": 1182,
+      "exactSha": "a79a0e7bd152bb4e04687c368a585eac00add402",
+      "sourceRef": "refs/pull/1182/head",
+      "mode": "stripe-test-provider-readiness",
+      "dataPolicy": "synthetic-only",
+      "providerProject": "urai-staging",
+      "allowedEnvironment": "staging",
+      "allowedDeployScopes": [],
+      "providerReadOnlyAuthorized": true,
+      "appHostingRolloutAuthorized": false,
+      "hostingPreviewMutationAuthorized": false,
+      "projectWideRuleMutationAuthorized": false,
+      "productionDeploymentAuthorized": false,
+      "productionDataAuthorized": false,
+      "longLivedCredentialsAuthorized": false,
+      "stripeTestModeOnly": true,
+      "stripeLiveModeAuthorized": false
     }
   ]
 }
