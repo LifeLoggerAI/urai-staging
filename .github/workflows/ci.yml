@@ -54,6 +54,9 @@ jobs:
       - name: Validate staging deploy workflow definition
         run: node scripts/validate-staging-deploy-workflow.mjs
 
+      - name: Validate Admin PR57 provider probe definition
+        run: node scripts/validate-admin-pr57-provider-probe.mjs
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 

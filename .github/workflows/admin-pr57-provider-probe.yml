@@ -1,0 +1,368 @@
+name: Admin PR57 Protected Provider Probe
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/admin-pr57-provider-probe.yml
+      - scripts/validate-admin-pr57-provider-probe.mjs
+      - .github/workflows/ci.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: urai-admin-pr57-provider-probe
+  cancel-in-progress: false
+
+env:
+  STAGING_PROJECT_ID: urai-staging
+  ADMIN_REPOSITORY: LifeLoggerAI/urai-admin
+  ADMIN_PR_NUMBER: '57'
+  ADMIN_SHA: fb255310d6b183a59e4252da80c685f45e5cf536
+  FIREBASE_CLI_VERSION: '15.23.0'
+  URAI_PRODUCTION_DEPLOY_APPROVED: '0'
+
+jobs:
+  provider-probe:
+    name: Read-only WIF IAM and runtime identity probe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact staging and Admin authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ github.ref }}' = 'refs/heads/main'
+          test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          test -z "$(git status --porcelain --untracked-files=all)"
+          remote_staging_sha="$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')"
+          test "$remote_staging_sha" = '${{ github.sha }}'
+          admin_pr_sha="$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-admin.git refs/pull/57/head | awk '{print $1}')"
+          test "$admin_pr_sha" = "$ADMIN_SHA"
+          test "$STAGING_PROJECT_ID" = 'urai-staging'
+          test "$URAI_PRODUCTION_DEPLOY_APPROVED" = '0'
+
+      - name: Checkout exact reviewed Admin candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: LifeLoggerAI/urai-admin
+          ref: ${{ env.ADMIN_SHA }}
+          path: admin-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact clean Admin candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C admin-source rev-parse HEAD)" = "$ADMIN_SHA"
+          test -z "$(git -C admin-source status --porcelain --untracked-files=all)"
+
+      - name: Write pre-auth evidence boundary
+        id: boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/provider
+          WIF_PROVIDER="$WIF_PROVIDER" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
+          const fs = require('node:fs');
+          const receipt = {
+            schemaVersion: 'urai-admin-pr57-provider-probe-1',
+            generatedAt: new Date().toISOString(),
+            stagingRepository: process.env.GITHUB_REPOSITORY,
+            stagingControllerSha: process.env.GITHUB_SHA,
+            adminRepository: process.env.ADMIN_REPOSITORY,
+            adminPullRequest: Number(process.env.ADMIN_PR_NUMBER),
+            adminCandidateSha: process.env.ADMIN_SHA,
+            projectId: process.env.STAGING_PROJECT_ID,
+            workflowRunId: process.env.GITHUB_RUN_ID,
+            productionDeploymentApproved: false,
+            mutationAuthorized: false,
+            probeMode: 'provider-read-only',
+            wifProviderConfigured: Boolean(process.env.WIF_PROVIDER),
+            deployServiceAccountConfigured: Boolean(process.env.DEPLOY_SERVICE_ACCOUNT),
+            wifProviderResource: process.env.WIF_PROVIDER || null,
+            deployServiceAccountEmail: process.env.DEPLOY_SERVICE_ACCOUNT || null,
+            secretValuesIncluded: false,
+          };
+          fs.writeFileSync('artifacts/provider/pre-auth.json', `${JSON.stringify(receipt, null, 2)}\n`);
+          NODE
+
+      - name: Require protected staging WIF variables
+        id: require-wif
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$WIF_PROVIDER" || { echo 'GCP_WIF_PROVIDER is missing from the staging environment/repository variables.' >&2; exit 41; }
+          test -n "$DEPLOY_SERVICE_ACCOUNT" || { echo 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT is missing from the staging environment/repository variables.' >&2; exit 42; }
+          case "$WIF_PROVIDER" in
+            projects/*/locations/global/workloadIdentityPools/*/providers/*) ;;
+            *) echo 'GCP_WIF_PROVIDER is not a full workload identity provider resource.' >&2; exit 43 ;;
+          esac
+          case "$DEPLOY_SERVICE_ACCOUNT" in
+            *@*.iam.gserviceaccount.com) ;;
+            *) echo 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT is not a service-account email.' >&2; exit 44 ;;
+          esac
+
+      - name: Authenticate with protected WIF
+        id: google-auth
+        if: steps.require-wif.outcome == 'success'
+        continue-on-error: true
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Verify ephemeral ADC provenance
+        id: adc-boundary
+        if: steps.google-auth.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test -n "${GOOGLE_GHA_CREDS_PATH:-}"
+          test "$GOOGLE_APPLICATION_CREDENTIALS" = "$GOOGLE_GHA_CREDS_PATH"
+          test -f "$GOOGLE_APPLICATION_CREDENTIALS"
+          case "$GOOGLE_APPLICATION_CREDENTIALS" in
+            "$GITHUB_WORKSPACE"/gha-creds-*.json) ;;
+            *) echo 'ADC credential is not the ephemeral google-github-actions file.' >&2; exit 45 ;;
+          esac
+          git check-ignore -q "$GOOGLE_APPLICATION_CREDENTIALS"
+          test "${GOOGLE_CLOUD_PROJECT:-urai-staging}" = 'urai-staging'
+          test -z "${FIREBASE_TOKEN:-}"
+          test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}"
+
+      - name: Setup pinned gcloud
+        id: setup-gcloud
+        if: steps.adc-boundary.outcome == 'success'
+        continue-on-error: true
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
+      - name: Install pinned Firebase CLI outside repositories
+        id: firebase-cli
+        if: steps.adc-boundary.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          cli_root="$RUNNER_TEMP/firebase-cli"
+          mkdir -p "$cli_root"
+          npm install --prefix "$cli_root" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
+          test "$("$cli_root/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
+          echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Collect provider-native read-only evidence
+        id: provider-read
+        if: steps.setup-gcloud.outcome == 'success' && steps.firebase-cli.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          raw="$RUNNER_TEMP/urai-admin-pr57-provider-raw"
+          rm -rf -- "$raw"
+          mkdir -p "$raw" artifacts/provider
+
+          capture() {
+            label="$1"
+            shift
+            set +e
+            "$@" > "$raw/$label.out" 2> "$raw/$label.err"
+            status=$?
+            set -e
+            printf '%s\n' "$status" > "$raw/$label.status"
+          }
+
+          provider_tail="${WIF_PROVIDER#*/workloadIdentityPools/}"
+          pool_id="${provider_tail%%/*}"
+          provider_id="${WIF_PROVIDER##*/}"
+
+          capture active-principal gcloud auth list --filter=status:ACTIVE --format=json
+          capture project-describe gcloud projects describe "$STAGING_PROJECT_ID" --format=json
+          capture wif-provider gcloud iam workload-identity-pools providers describe "$provider_id" --workload-identity-pool="$pool_id" --location=global --project="$STAGING_PROJECT_ID" --format=json
+          capture project-iam gcloud projects get-iam-policy "$STAGING_PROJECT_ID" --format=json
+          capture deploy-sa-iam gcloud iam service-accounts get-iam-policy "$DEPLOY_SERVICE_ACCOUNT" --project="$STAGING_PROJECT_ID" --format=json
+          capture deploy-sa-keys gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project="$STAGING_PROJECT_ID" --format=json
+          capture project-custom-roles gcloud iam roles list --project="$STAGING_PROJECT_ID" --format=json
+          capture functions gcloud functions list --project="$STAGING_PROJECT_ID" --format=json
+          capture run-services gcloud run services list --platform=managed --project="$STAGING_PROJECT_ID" --format=json
+          capture hosting-sites firebase hosting:sites:list --project "$STAGING_PROJECT_ID" --json
+          capture hosting-channels firebase hosting:channel:list --project "$STAGING_PROJECT_ID" --json
+          capture firebase-functions firebase functions:list --project "$STAGING_PROJECT_ID" --json
+
+          RAW="$raw" WIF_PROVIDER="$WIF_PROVIDER" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const raw = process.env.RAW;
+          const readStatus = (name) => {
+            try { return Number(fs.readFileSync(path.join(raw, `${name}.status`), 'utf8').trim()); }
+            catch { return null; }
+          };
+          const readJson = (name) => {
+            try {
+              const text = fs.readFileSync(path.join(raw, `${name}.out`), 'utf8').trim();
+              return text ? JSON.parse(text) : null;
+            } catch { return null; }
+          };
+          const provider = readJson('wif-provider') || {};
+          const projectIam = readJson('project-iam') || {};
+          const serviceAccountIam = readJson('deploy-sa-iam') || {};
+          const keys = readJson('deploy-sa-keys') || [];
+          const functions = readJson('functions') || [];
+          const runServices = readJson('run-services') || [];
+          const activePrincipals = readJson('active-principal') || [];
+          const customRoles = readJson('project-custom-roles') || [];
+          const hostingSites = readJson('hosting-sites');
+          const hostingChannels = readJson('hosting-channels');
+          const firebaseFunctions = readJson('firebase-functions');
+          const deployMember = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
+          const projectBindings = Array.isArray(projectIam.bindings) ? projectIam.bindings : [];
+          const deployProjectRoles = projectBindings
+            .filter((binding) => Array.isArray(binding.members) && binding.members.includes(deployMember))
+            .map((binding) => binding.role);
+          const broadRoleReliance = deployProjectRoles.filter((role) => role === 'roles/owner' || role === 'roles/editor');
+          const userManagedKeys = Array.isArray(keys)
+            ? keys.filter((key) => key.keyType === 'USER_MANAGED').map((key) => ({ name: key.name, validAfterTime: key.validAfterTime, validBeforeTime: key.validBeforeTime }))
+            : [];
+          const runtimeIdentities = [];
+          if (Array.isArray(functions)) {
+            for (const fn of functions) {
+              const email = fn?.serviceConfig?.serviceAccountEmail || fn?.serviceAccountEmail || null;
+              if (email) runtimeIdentities.push({ kind: 'cloud-function', name: fn.name || null, serviceAccountEmail: email, state: fn.state || null, updateTime: fn.updateTime || null, environment: fn.environment || null });
+            }
+          }
+          if (Array.isArray(runServices)) {
+            for (const service of runServices) {
+              const email = service?.spec?.template?.spec?.serviceAccountName || service?.spec?.template?.spec?.serviceAccount || null;
+              if (email) runtimeIdentities.push({ kind: 'cloud-run', name: service.metadata?.name || service.name || null, serviceAccountEmail: email, latestReadyRevisionName: service.status?.latestReadyRevisionName || null });
+            }
+          }
+          const receipt = {
+            schemaVersion: 'urai-admin-pr57-provider-probe-1',
+            generatedAt: new Date().toISOString(),
+            stagingRepository: process.env.GITHUB_REPOSITORY,
+            stagingControllerSha: process.env.GITHUB_SHA,
+            adminRepository: process.env.ADMIN_REPOSITORY,
+            adminPullRequest: Number(process.env.ADMIN_PR_NUMBER),
+            adminCandidateSha: process.env.ADMIN_SHA,
+            workflowRunId: process.env.GITHUB_RUN_ID,
+            projectId: process.env.STAGING_PROJECT_ID,
+            probeMode: 'provider-read-only',
+            mutationAuthorized: false,
+            productionDeploymentApproved: false,
+            credentialClass: 'GitHub OIDC + WIF + ephemeral ADC',
+            authenticatedGooglePrincipal: activePrincipals.find((entry) => entry.status === 'ACTIVE')?.account || activePrincipals[0]?.account || null,
+            wifProvider: {
+              resource: provider.name || process.env.WIF_PROVIDER,
+              state: provider.state || null,
+              issuer: provider.oidc?.issuerUri || null,
+              allowedAudiences: provider.oidc?.allowedAudiences || [],
+              attributeMapping: provider.attributeMapping || {},
+              attributeCondition: provider.attributeCondition || null,
+            },
+            deployServiceAccountEmail: process.env.DEPLOY_SERVICE_ACCOUNT,
+            deployServiceAccountProjectRoles: deployProjectRoles,
+            deployServiceAccountIamBindings: Array.isArray(serviceAccountIam.bindings) ? serviceAccountIam.bindings : [],
+            ownerEditorNegativeProof: broadRoleReliance.length === 0,
+            broadRoleReliance,
+            userManagedServiceAccountKeys: userManagedKeys,
+            auditConfigs: Array.isArray(projectIam.auditConfigs) ? projectIam.auditConfigs : [],
+            customRoles: Array.isArray(customRoles) ? customRoles.map((role) => ({ name: role.name, title: role.title, stage: role.stage, includedPermissions: role.includedPermissions || [] })) : [],
+            runtimeIdentities,
+            hostingSites,
+            hostingChannels,
+            firebaseFunctions,
+            commandStatus: Object.fromEntries(['active-principal','project-describe','wif-provider','project-iam','deploy-sa-iam','deploy-sa-keys','project-custom-roles','functions','run-services','hosting-sites','hosting-channels','firebase-functions'].map((name) => [name, readStatus(name)])),
+            secretValuesIncluded: false,
+          };
+          fs.writeFileSync('artifacts/provider/provider-probe.json', `${JSON.stringify(receipt, null, 2)}\n`);
+          NODE
+          rm -rf -- "$raw"
+
+      - name: Destroy ephemeral WIF credential before evidence handoff
+        if: always()
+        shell: bash
+        run: |
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          echo 'GOOGLE_APPLICATION_CREDENTIALS=' >> "$GITHUB_ENV"
+          echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
+
+      - name: Write terminal probe summary
+        if: always()
+        shell: bash
+        env:
+          REQUIRE_WIF_OUTCOME: ${{ steps.require-wif.outcome }}
+          AUTH_OUTCOME: ${{ steps.google-auth.outcome }}
+          ADC_OUTCOME: ${{ steps.adc-boundary.outcome }}
+          GCLOUD_OUTCOME: ${{ steps.setup-gcloud.outcome }}
+          FIREBASE_CLI_OUTCOME: ${{ steps.firebase-cli.outcome }}
+          PROVIDER_READ_OUTCOME: ${{ steps.provider-read.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/provider
+          node <<'NODE'
+          const fs = require('node:fs');
+          const summary = {
+            schemaVersion: 'urai-admin-pr57-provider-probe-summary-1',
+            generatedAt: new Date().toISOString(),
+            stagingControllerSha: process.env.GITHUB_SHA,
+            adminCandidateSha: process.env.ADMIN_SHA,
+            workflowRunId: process.env.GITHUB_RUN_ID,
+            requireWifOutcome: process.env.REQUIRE_WIF_OUTCOME || 'skipped',
+            authOutcome: process.env.AUTH_OUTCOME || 'skipped',
+            adcBoundaryOutcome: process.env.ADC_OUTCOME || 'skipped',
+            gcloudOutcome: process.env.GCLOUD_OUTCOME || 'skipped',
+            firebaseCliOutcome: process.env.FIREBASE_CLI_OUTCOME || 'skipped',
+            providerReadOutcome: process.env.PROVIDER_READ_OUTCOME || 'skipped',
+            productionDeploymentPerformed: false,
+            providerMutationPerformed: false,
+          };
+          fs.writeFileSync('artifacts/provider/summary.json', `${JSON.stringify(summary, null, 2)}\n`);
+          NODE
+
+      - name: Upload exact provider probe evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-admin-pr57-provider-probe-${{ github.sha }}-${{ github.run_id }}
+          path: artifacts/provider/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce successful protected provider probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.require-wif.outcome }}' = 'success'
+          test '${{ steps.google-auth.outcome }}' = 'success'
+          test '${{ steps.adc-boundary.outcome }}' = 'success'
+          test '${{ steps.setup-gcloud.outcome }}' = 'success'
+          test '${{ steps.firebase-cli.outcome }}' = 'success'
+          test '${{ steps.provider-read.outcome }}' = 'success'
