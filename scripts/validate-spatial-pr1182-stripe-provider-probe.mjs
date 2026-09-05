@@ -30,6 +30,7 @@ const required = [
   '$RUNNER_TEMP/urai-spatial-pr1182-provider-read-raw',
   'evidenceSanitizedBeforeRetention: true',
   'Upload sanitized read-only provider evidence',
+  'if: ${{ success() }}',
 ];
 for (const marker of required) {
   if (!text.includes(marker)) throw new Error(`missing Spatial PR1182 provider-probe marker: ${marker}`);
@@ -44,8 +45,10 @@ const forbiddenPatterns = [
   [/gcloud\s+functions\s+deploy/, 'Cloud Functions deploy mutation'],
   [/apphosting:secrets:set/, 'App Hosting secret mutation'],
   [/gcloud\s+secrets\s+versions\s+access/, 'secret value access'],
-  [/^\s*STRIPE_SECRET_KEY\s*:/m, 'Stripe secret key YAML binding'],
-  [/^\s*STRIPE_WEBHOOK_SECRET\s*:/m, 'Stripe webhook secret YAML binding'],
+  [/\bsecrets\s*\.\s*STRIPE_SECRET_KEY\b/i, 'direct Stripe secret key GitHub secret-context reference'],
+  [/\bsecrets\s*\.\s*STRIPE_WEBHOOK_SECRET\b/i, 'direct Stripe webhook secret GitHub secret-context reference'],
+  [/^\s*["']?STRIPE_SECRET_KEY["']?\s*:/m, 'Stripe secret key YAML binding'],
+  [/^\s*["']?STRIPE_WEBHOOK_SECRET["']?\s*:/m, 'Stripe webhook secret YAML binding'],
   [/\bSTRIPE_SECRET_KEY\s*=\s*[^)]/m, 'Stripe secret key shell assignment'],
   [/\bSTRIPE_WEBHOOK_SECRET\s*=\s*[^)]/m, 'Stripe webhook secret shell assignment'],
   [/urai-4dc1d/, 'production project target'],
