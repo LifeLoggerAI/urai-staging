@@ -20,6 +20,11 @@
         "functions-explicit-only",
         "hosting-preview-only"
       ],
+      "initialFunctionDeploymentAllowlist": [
+        "nextServer"
+      ],
+      "scheduledAnalyticsDeploymentAuthorized": false,
+      "hostingLiveChannelMutationAuthorized": false,
       "projectWideRuleMutationAuthorized": false,
       "productionDeploymentAuthorized": false,
       "productionDataAuthorized": false,
