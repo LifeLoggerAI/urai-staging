@@ -66,6 +66,9 @@ jobs:
       - name: Validate Admin PR57 staging consumer workflow
         run: node scripts/validate-admin-pr57-staging-consumer.mjs
 
+      - name: Validate Spatial PR1182 Stripe TEST provider probe
+        run: node scripts/validate-spatial-pr1182-stripe-provider-probe.mjs
+
       - name: Validate governed Admin PR57 runtime deployment path
         shell: bash
         run: |

@@ -1,0 +1,347 @@
+name: Spatial PR1182 Stripe TEST Provider Probe
+
+on:
+  workflow_dispatch:
+    inputs:
+      spatial_sha:
+        description: Exact urai-spatial PR #1182 SHA authorized by config/staging-consumers.json
+        required: true
+        default: f909c0e30c08b4307d6e8c248364227fd4e42820
+        type: string
+      expected_controller_sha:
+        description: Exact current urai-staging main SHA
+        required: true
+        type: string
+      confirm_staging_project:
+        description: Type urai-staging
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: urai-spatial-pr1182-stripe-test-provider-probe
+  cancel-in-progress: false
+
+env:
+  SPATIAL_REPOSITORY: LifeLoggerAI/urai-spatial
+  SPATIAL_PR_NUMBER: '1182'
+  STAGING_PROJECT_ID: urai-staging
+  EXPECTED_ENVIRONMENT: staging
+  NODE_VERSION: '22'
+  FIREBASE_CLI_VERSION: '15.23.0'
+  URAI_STRIPE_TEST_ONLY: '1'
+  URAI_PRODUCTION_DEPLOY_APPROVED: '0'
+
+jobs:
+  preflight:
+    name: Exact-head credential-free Spatial Stripe TEST admission
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    outputs:
+      spatial_sha: ${{ steps.authority.outputs.spatial_sha }}
+      controller_sha: ${{ steps.authority.outputs.controller_sha }}
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ inputs.expected_controller_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove governed read-only consumer authority
+        id: authority
+        shell: bash
+        env:
+          SPATIAL_SHA: ${{ inputs.spatial_sha }}
+          CONTROLLER_SHA: ${{ inputs.expected_controller_sha }}
+          CONFIRM_STAGING_PROJECT: ${{ inputs.confirm_staging_project }}
+        run: |
+          set -euo pipefail
+          test "$CONFIRM_STAGING_PROJECT" = 'urai-staging'
+          test '${{ github.ref }}' = 'refs/heads/main'
+          test '${{ github.sha }}' = "$CONTROLLER_SHA"
+          test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
+          [[ "$SPATIAL_SHA" =~ ^[0-9a-f]{40}$ ]]
+          node scripts/validate-staging-consumers.mjs
+          SPATIAL_SHA="$SPATIAL_SHA" node <<'NODE'
+          const fs = require('node:fs');
+          const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json', 'utf8'));
+          const c = authority.consumers.find((entry) => entry.id === 'urai-spatial-pr1182-stripe-test-e2e');
+          const failures = [];
+          if (!c) failures.push('consumer missing');
+          if (c) {
+            if (c.repository !== 'LifeLoggerAI/urai-spatial' || c.repositoryId !== 1167675641 || c.pullRequest !== 1182) failures.push('Spatial identity');
+            if (c.exactSha !== process.env.SPATIAL_SHA || c.sourceRef !== 'refs/pull/1182/head') failures.push('Spatial exact SHA/ref');
+            if (c.providerProject !== 'urai-staging' || c.allowedEnvironment !== 'staging') failures.push('provider scope');
+            if (c.mode !== 'stripe-test-provider-readiness' || c.dataPolicy !== 'synthetic-only') failures.push('test/data mode');
+            if (c.providerReadOnlyAuthorized !== true) failures.push('provider read-only authority');
+            if (c.appHostingRolloutAuthorized !== false || c.hostingPreviewMutationAuthorized !== false) failures.push('runtime mutation authority');
+            if (c.projectWideRuleMutationAuthorized !== false) failures.push('project-wide rules');
+            if (c.productionDeploymentAuthorized !== false || c.productionDataAuthorized !== false) failures.push('production authority');
+            if (c.longLivedCredentialsAuthorized !== false) failures.push('long-lived credentials');
+            if (c.stripeTestModeOnly !== true || c.stripeLiveModeAuthorized !== false) failures.push('Stripe mode authority');
+            if (!Array.isArray(c.allowedDeployScopes) || c.allowedDeployScopes.length !== 0) failures.push('deploy scopes must be empty before provider inventory');
+          }
+          if (failures.length) throw new Error(`Spatial Stripe TEST consumer authority mismatch: ${failures.join(', ')}`);
+          NODE
+          live_spatial_sha="$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-spatial.git refs/pull/1182/head | awk '{print $1}')"
+          test "$live_spatial_sha" = "$SPATIAL_SHA"
+          echo "spatial_sha=$SPATIAL_SHA" >> "$GITHUB_OUTPUT"
+          echo "controller_sha=$CONTROLLER_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact Spatial PR1182 candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: LifeLoggerAI/urai-spatial
+          ref: ${{ steps.authority.outputs.spatial_sha }}
+          path: spatial-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact clean Stripe TEST source boundary
+        shell: bash
+        env:
+          SPATIAL_SHA: ${{ steps.authority.outputs.spatial_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C spatial-source rev-parse HEAD)" = "$SPATIAL_SHA"
+          test -z "$(git -C spatial-source status --porcelain --untracked-files=all)"
+          grep -q 'URAI_STRIPE_MODE' spatial-source/urai-tier1/src/lib/server/stripe-runtime-config.ts
+          grep -q 'stripe.webhooks.constructEvent' spatial-source/urai-tier1/src/app/api/stripe/webhook/route.ts
+          grep -q 'create-checkout-session' spatial-source/urai-tier1/scripts/tier-lock/tier-config.mjs
+          grep -q 'create-portal-session' spatial-source/urai-tier1/scripts/tier-lock/tier-config.mjs
+          test -f spatial-source/urai-tier1/tests/stripe-checkout-config.test.mjs
+          test -f spatial-source/urai-tier1/tests/stripe-event-order.test.mjs
+          ! grep -RIl --exclude-dir=node_modules -E 'sk_live_|rk_live_|whsec_[A-Za-z0-9]+' spatial-source/urai-tier1 spatial-source/docs/STRIPE_TEST_E2E.md
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare pnpm@10.0.0 --activate
+
+      - name: Verify exact Spatial Stripe source behavior
+        working-directory: spatial-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack pnpm install --frozen-lockfile
+          corepack pnpm --filter urai-tier1 typecheck
+          cd urai-tier1
+          node --import tsx --test tests/stripe-checkout-config.test.mjs tests/stripe-event-order.test.mjs
+
+      - name: Write credential-free admission receipt
+        if: always()
+        shell: bash
+        env:
+          SPATIAL_SHA: ${{ steps.authority.outputs.spatial_sha }}
+          CONTROLLER_SHA: ${{ steps.authority.outputs.controller_sha }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/spatial-pr1182-stripe
+          node <<'NODE'
+          const fs = require('node:fs');
+          fs.writeFileSync('artifacts/spatial-pr1182-stripe/admission.json', `${JSON.stringify({
+            schemaVersion: 'urai-spatial-pr1182-stripe-test-admission-1',
+            generatedAt: new Date().toISOString(),
+            status: process.env.JOB_STATUS,
+            stagingRepository: process.env.GITHUB_REPOSITORY,
+            stagingControllerSha: process.env.CONTROLLER_SHA,
+            spatialRepository: process.env.SPATIAL_REPOSITORY,
+            spatialPullRequest: Number(process.env.SPATIAL_PR_NUMBER),
+            spatialCandidateSha: process.env.SPATIAL_SHA,
+            projectId: process.env.STAGING_PROJECT_ID,
+            environment: process.env.EXPECTED_ENVIRONMENT,
+            stripeMode: 'test-only',
+            dataPolicy: 'synthetic-only',
+            providerReadOnlyAuthorized: true,
+            providerMutationPerformed: false,
+            productionDeploymentPerformed: false,
+          }, null, 2)}\n`);
+          NODE
+
+      - name: Upload exact admission evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-spatial-pr1182-stripe-test-admission-${{ inputs.spatial_sha }}-${{ github.run_id }}
+          path: artifacts/spatial-pr1182-stripe/admission.json
+          if-no-files-found: error
+          retention-days: 90
+
+  provider-read:
+    name: Protected read-only staging runtime topology probe
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      SPATIAL_SHA: ${{ needs.preflight.outputs.spatial_sha }}
+      CONTROLLER_SHA: ${{ needs.preflight.outputs.controller_sha }}
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ env.CONTROLLER_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Require exact protected WIF values
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ github.ref }}' = 'refs/heads/main'
+          test '${{ github.sha }}' = "$CONTROLLER_SHA"
+          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
+          test "$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-spatial.git refs/pull/1182/head | awk '{print $1}')" = "$SPATIAL_SHA"
+          test -n "$WIF_PROVIDER" || { echo 'GCP_WIF_PROVIDER is required for the read-only staging provider probe.' >&2; exit 41; }
+          test -n "$DEPLOY_SERVICE_ACCOUNT" || { echo 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT is required for the read-only staging provider probe.' >&2; exit 42; }
+          case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 43 ;; esac
+          case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 44 ;; esac
+          test -z "${FIREBASE_TOKEN:-}"
+          test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}"
+
+      - name: Authenticate to urai-staging with WIF only
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Setup pinned gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
+      - name: Install pinned Firebase CLI outside repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          cli_root="$RUNNER_TEMP/firebase-cli"
+          mkdir -p "$cli_root"
+          npm install --prefix "$cli_root" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
+          test "$("$cli_root/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
+          echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Verify read-only provider identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test "${GOOGLE_APPLICATION_CREDENTIALS}" = "${GOOGLE_GHA_CREDS_PATH}"
+          test -f "$GOOGLE_APPLICATION_CREDENTIALS"
+          active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
+          test "$active" = "$DEPLOY_SERVICE_ACCOUNT"
+          gcloud projects describe urai-staging --format='value(projectId)' | grep -qx urai-staging
+
+      - name: Read and sanitize current non-production runtime topology without mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='artifacts/spatial-pr1182-stripe/provider-read'
+          raw="$RUNNER_TEMP/urai-spatial-pr1182-provider-read-raw"
+          rm -rf -- "$out" "$raw"
+          mkdir -p "$out" "$raw"
+          firebase apphosting:backends:list --project urai-staging --json > "$raw/apphosting-backends.json"
+          firebase hosting:sites:list --project urai-staging --json > "$raw/hosting-sites.json"
+          gcloud run services list --project=urai-staging --platform=managed --format=json > "$raw/cloud-run-services.json"
+          gcloud functions list --project=urai-staging --format=json > "$raw/cloud-functions.json"
+          RAW="$raw" OUT="$out" node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const raw = process.env.RAW;
+          const out = process.env.OUT;
+          const files = ['apphosting-backends.json','hosting-sites.json','cloud-run-services.json','cloud-functions.json'];
+          const sensitiveKey = /(?:^|_)(?:env|environmentvariables|secretenvironmentvariables|secret|secrets|token|tokens|credential|credentials|password|privatekey|apikey|api_key|keymaterial)(?:$|_)/i;
+          const sanitize = (value) => {
+            if (Array.isArray(value)) return value.map(sanitize);
+            if (!value || typeof value !== 'object') return value;
+            const clean = {};
+            for (const [key, child] of Object.entries(value)) {
+              const normalized = key.replace(/[^A-Za-z0-9_]/g, '').toLowerCase();
+              if (sensitiveKey.test(normalized)) continue;
+              clean[key] = sanitize(child);
+            }
+            return clean;
+          };
+          for (const file of files) {
+            const parsed = JSON.parse(fs.readFileSync(path.join(raw, file), 'utf8'));
+            fs.writeFileSync(path.join(out, file), `${JSON.stringify(sanitize(parsed), null, 2)}\n`);
+          }
+          NODE
+          rm -rf -- "$raw"
+          ! grep -RIl -E '(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_(live|test)_[A-Za-z0-9]+|rk_(live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|private_key|client_secret|secretEnvironmentVariables|environmentVariables)' "$out"
+
+      - name: Seal sanitized read-only provider receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+          const root = 'artifacts/spatial-pr1182-stripe/provider-read';
+          const read = (name) => JSON.parse(fs.readFileSync(`${root}/${name}`, 'utf8'));
+          const receipt = {
+            schemaVersion: 'urai-spatial-pr1182-stripe-provider-read-2',
+            generatedAt: new Date().toISOString(),
+            stagingRepository: process.env.GITHUB_REPOSITORY,
+            stagingControllerSha: process.env.CONTROLLER_SHA,
+            spatialRepository: process.env.SPATIAL_REPOSITORY,
+            spatialPullRequest: Number(process.env.SPATIAL_PR_NUMBER),
+            spatialCandidateSha: process.env.SPATIAL_SHA,
+            projectId: process.env.STAGING_PROJECT_ID,
+            environment: process.env.EXPECTED_ENVIRONMENT,
+            stripeMode: 'test-only',
+            providerAuthenticated: true,
+            evidenceSanitizedBeforeRetention: true,
+            appHostingBackends: read('apphosting-backends.json'),
+            hostingSites: read('hosting-sites.json'),
+            cloudRunServices: read('cloud-run-services.json'),
+            cloudFunctions: read('cloud-functions.json'),
+            providerMutationPerformed: false,
+            productionDeploymentPerformed: false,
+            nextDecision: 'Derive the smallest exact runtime mutation only from this sanitized provider-native inventory; do not infer App Hosting or framework Hosting authority before this receipt exists.',
+          };
+          fs.writeFileSync(`${root}/provider-read-receipt.json`, `${JSON.stringify(receipt, null, 2)}\n`);
+          NODE
+          ! grep -RIl -E '(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_(live|test)_[A-Za-z0-9]+|rk_(live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|private_key|client_secret|secretEnvironmentVariables|environmentVariables)' artifacts/spatial-pr1182-stripe/provider-read
+
+      - name: Destroy ephemeral WIF credential
+        if: always()
+        shell: bash
+        run: |
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          echo 'GOOGLE_APPLICATION_CREDENTIALS=' >> "$GITHUB_ENV"
+          echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
+
+      - name: Upload sanitized read-only provider evidence
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-spatial-pr1182-stripe-provider-read-${{ env.SPATIAL_SHA }}-${{ github.run_id }}
+          path: artifacts/spatial-pr1182-stripe/provider-read
+          if-no-files-found: warn
+          retention-days: 90
