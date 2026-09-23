@@ -31,12 +31,12 @@
       "longLivedCredentialsAuthorized": false
     },
     {
-      "id": "urai-spatial-pr1182-stripe-test-e2e",
+      "id": "urai-spatial-pr1296-stripe-test-readiness",
       "repository": "LifeLoggerAI/urai-spatial",
       "repositoryId": 1167675641,
-      "pullRequest": 1182,
-      "exactSha": "32fc608b413323d94315ed62d2baa92d605ca773",
-      "sourceRef": "refs/pull/1182/head",
+      "pullRequest": 1296,
+      "exactSha": "9868da609a0e5d544fd215570eebaff3b80d1a03",
+      "sourceRef": "refs/pull/1296/head",
       "mode": "stripe-test-provider-readiness",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
