@@ -32,12 +32,12 @@ const adminScopes = new Set(admin.allowedDeployScopes || []);
 for (const scope of ['functions-explicit-only', 'hosting-preview-only']) if (!adminScopes.has(scope)) failures.push(`admin missing ${scope}`);
 for (const forbidden of ['firestore', 'storage', 'production', 'generic-source', 'hosting-live']) if (adminScopes.has(forbidden)) failures.push(`admin forbidden ${forbidden}`);
 
-const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1182-stripe-test-e2e') || {};
+const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1296-stripe-test-readiness') || {};
 if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial repository');
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
-if (spatial.pullRequest !== 1182) failures.push('spatial pullRequest');
-if (spatial.exactSha !== '32fc608b413323d94315ed62d2baa92d605ca773') failures.push('spatial exactSha');
-if (spatial.sourceRef !== 'refs/pull/1182/head') failures.push('spatial sourceRef');
+if (spatial.pullRequest !== 1296) failures.push('spatial pullRequest');
+if (spatial.exactSha !== '9868da609a0e5d544fd215570eebaff3b80d1a03') failures.push('spatial exactSha');
+if (spatial.sourceRef !== 'refs/pull/1296/head') failures.push('spatial sourceRef');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (spatial.dataPolicy !== 'synthetic-only') failures.push('spatial dataPolicy');
 if (spatial.providerProject !== 'urai-staging') failures.push('spatial providerProject');
