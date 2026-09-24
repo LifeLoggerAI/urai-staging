@@ -271,6 +271,39 @@ jobs:
             rm -f functions/.env.urai-staging
           fi
 
+      - name: Prove delivery switches rolled back OFF
+        if: success()
+        working-directory: communications-source
+        shell: bash
+        env:
+          ENABLE_REAL_DELIVERY: 'false'
+          ENABLE_TWILIO_SMS: 'false'
+          TWILIO_TRIAL_MODE: 'true'
+          TWILIO_MESSAGING_SERVICE_SID: ''
+        run: |
+          set -euo pipefail
+          npm run verify:staging:delivery -- --staging --sms 2>&1 | tee "$RUNNER_TEMP/twilio-rollback-readback.log" && exit 61 || true
+          code="$(curl --silent --show-error --output "$RUNNER_TEMP/twilio-readiness.json" --write-out '%{http_code}'             -H "authorization: Bearer $STAGING_FIREBASE_ID_TOKEN"             -H 'content-type: application/json'             -d "{"tenantId":"$STAGING_TENANT_ID"}"             "${STAGING_FUNCTIONS_BASE_URL%/}/adminProviderReadiness")"
+          test "$code" = "200"
+          node <<'NODE'
+          const fs=require('node:fs');
+          const body=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/twilio-readiness.json','utf8'));
+          if (body?.realDeliveryEnabled !== false) throw new Error('real_delivery_not_rolled_back');
+          if (body?.twilio?.smsEnabled !== false) throw new Error('twilio_sms_not_rolled_back');
+          fs.mkdirSync('artifacts/communications-twilio',{recursive:true});
+          fs.writeFileSync('artifacts/communications-twilio/rollback.json', JSON.stringify({
+            schemaVersion:'urai-communications-twilio-trial-rollback-1',
+            stagingControllerSha:process.env.CONTROLLER_SHA,
+            communicationsSha:process.env.COMMUNICATIONS_SHA,
+            projectId:'urai-staging',
+            realDeliveryEnabled:false,
+            twilioSmsEnabled:false,
+            rollbackProven:true,
+            secretMaterialRetained:false
+          },null,2)+'\n');
+          NODE
+          rm -f "$RUNNER_TEMP/twilio-readiness.json" "$RUNNER_TEMP/twilio-rollback-readback.log"
+
       - name: Destroy ephemeral credentials
         if: always()
         shell: bash
@@ -285,6 +318,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: urai-communications-twilio-trial-e2e-${{ env.COMMUNICATIONS_SHA }}-${{ github.run_id }}
-          path: artifacts/communications-twilio/receipt.json
+          path: |
+            artifacts/communications-twilio/receipt.json
+            artifacts/communications-twilio/rollback.json
           if-no-files-found: error
           retention-days: 90
