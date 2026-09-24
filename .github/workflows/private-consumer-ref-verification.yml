@@ -65,9 +65,9 @@ jobs:
             stagingSha:process.env.GITHUB_SHA,
             verificationMode:'protected-github-api',
             results,
-            productionMutationPerformed:false,
-            providerMutationPerformed:false,
-            secretMaterialRetained:false,
+            productionMutationPerformed: false,
+            providerMutationPerformed: false,
+            secretMaterialRetained: false,
           },null,2)+'\n');
           NODE
 
