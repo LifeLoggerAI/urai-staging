@@ -6,6 +6,7 @@ export const MAX_STAGING_HTTP_BODY_BYTES = 8 * 1024;
 export const STAGING_HTTP_RATE_WINDOW_MS = 60_000;
 export const STAGING_COMPANION_REQUESTS_PER_WINDOW = 30;
 export const STAGING_WAITLIST_REQUESTS_PER_WINDOW = 10;
+export const STAGING_HTTP_MAX_RATE_BUCKETS = 2048;
 
 export class FixedWindowRateLimiter {
   private readonly buckets = new Map<string, { windowStart: number; count: number }>();
@@ -13,10 +14,22 @@ export class FixedWindowRateLimiter {
   constructor(
     private readonly limit: number,
     private readonly windowMs: number,
+    private readonly maxBuckets = STAGING_HTTP_MAX_RATE_BUCKETS,
   ) {}
 
+  private pruneExpired(now: number): void {
+    for (const [key, bucket] of this.buckets) {
+      if (now - bucket.windowStart >= this.windowMs) this.buckets.delete(key);
+    }
+  }
+
   consume(key: string, now = Date.now()): boolean {
-    const current = this.buckets.get(key);
+    let current = this.buckets.get(key);
+    if (!current && this.buckets.size >= this.maxBuckets) {
+      this.pruneExpired(now);
+      current = this.buckets.get(key);
+      if (!current && this.buckets.size >= this.maxBuckets) return false;
+    }
     if (!current || now - current.windowStart >= this.windowMs) {
       this.buckets.set(key, { windowStart: now, count: 1 });
       return true;
