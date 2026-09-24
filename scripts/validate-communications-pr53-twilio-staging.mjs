@@ -15,6 +15,9 @@ const required = [
   'ENABLE_REAL_DELIVERY=true',
   'ENABLE_TWILIO_SMS=true',
   'TWILIO_TRIAL_MODE=true',
+  'TWILIO_FROM_NUMBER=',
+  "TWILIO_MESSAGING_SERVICE_SID: ''",
+  "senderMode:'provider-assigned-trial-number'",
   'STAGING_TEST_SMS_BODY: sms_appointment_reminders',
   'gcloud secrets versions add TWILIO_AUTH_TOKEN',
   'npm run verify:staging:delivery -- --staging --sms --callback',
@@ -34,6 +37,8 @@ const forbidden = [
   [/hosting:deploy|hosting:channel:deploy|apphosting:rollouts:create/, 'hosting mutation'],
   [/firestore:rules|firestore:indexes|storage/, 'project-wide data-plane mutation'],
   [/TWILIO_MESSAGING_SERVICE_SID=.*MG/, 'production Messaging Service binding'],
+  [/secrets\.TWILIO_FROM_NUMBER/, 'trial sender secret binding'],
+  [/TWILIO_FROM_NUMBER=\$TWILIO_FROM_NUMBER/, 'explicit trial From binding'],
   [/sk_live_|rk_live_/, 'live billing credential'],
 ];
 for (const [pattern,label] of forbidden) if (pattern.test(text)) throw new Error(`forbidden Communications Twilio staging marker: ${label}`);
