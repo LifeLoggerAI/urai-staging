@@ -35,7 +35,7 @@
       "repository": "LifeLoggerAI/urai-spatial",
       "repositoryId": 1167675641,
       "pullRequest": 1296,
-      "exactSha": "19e9c5966d96fb2d29c5f664c06ad93a6aa0f8db",
+      "exactSha": "3c49c27ed0d881b5422a6bce42e26edda1558a62",
       "sourceRef": "refs/pull/1296/head",
       "mode": "stripe-test-provider-readiness",
       "dataPolicy": "synthetic-only",
