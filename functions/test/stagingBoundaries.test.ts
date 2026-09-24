@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  FixedWindowRateLimiter,
   MAX_STAGING_HTTP_BODY_BYTES,
+  STAGING_COMPANION_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_RATE_WINDOW_MS,
   isAllowedStagingOrigin,
   isLikelyEmail,
   isStagingHttpBodyWithinLimit,
   isSyntheticStagingEmail,
+  stagingEphemeralClientKey,
   stagingRuntimeBuildInfo,
   stagingWaitlistDocumentId,
 } from '../src/lib/stagingBoundaries';
@@ -16,6 +20,18 @@ describe('staging HTTP boundaries', () => {
     expect(isAllowedStagingOrigin('http://127.0.0.1:5000')).toBe(true);
     expect(isAllowedStagingOrigin('https://urai.app')).toBe(false);
     expect(isAllowedStagingOrigin('https://evil.example')).toBe(false);
+  });
+
+  it('applies deterministic in-memory fixed-window caps without persisting client identifiers', () => {
+    const limiter = new FixedWindowRateLimiter(2, STAGING_HTTP_RATE_WINDOW_MS);
+    const key = stagingEphemeralClientKey('203.0.113.42');
+    expect(key).toMatch(/^[a-f0-9]{64}$/);
+    expect(key).not.toContain('203.0.113.42');
+    expect(limiter.consume(key, 1_000)).toBe(true);
+    expect(limiter.consume(key, 1_001)).toBe(true);
+    expect(limiter.consume(key, 1_002)).toBe(false);
+    expect(limiter.consume(key, 1_000 + STAGING_HTTP_RATE_WINDOW_MS)).toBe(true);
+    expect(STAGING_COMPANION_REQUESTS_PER_WINDOW).toBeGreaterThan(0);
   });
 
   it('bounds parsed HTTP payload size', () => {
