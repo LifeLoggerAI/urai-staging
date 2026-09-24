@@ -4,7 +4,7 @@ const path = new URL('../config/staging-consumers.json', import.meta.url);
 const doc = JSON.parse(fs.readFileSync(path, 'utf8'));
 const failures = [];
 
-const expectedSpatialSha = '56281a4ab6881fa6e5649f0a9e0a66fb70494ecf';
+const expectedSpatialSha = 'f0461bc835902fe7131b7281464f831845e25deb';
 
 if (doc.schemaVersion !== 'urai-staging-consumers-1') failures.push('schemaVersion');
 if (doc.projectId !== 'urai-staging') failures.push('projectId');
