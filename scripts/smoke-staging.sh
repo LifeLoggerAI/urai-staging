@@ -80,13 +80,29 @@ NODE
 }
 
 require_status GET "$STAGING_URL/" 200
-if ! grep -Eqi '<meta[^>]+name=["'"'"']robots["'"'"'][^>]+content=["'"'"'][^"'"'"']*noindex[^"'"'"']*nofollow|<meta[^>]+content=["'"'"'][^"'"'"']*noindex[^"'"'"']*nofollow[^"'"'"']*["'"'"'][^>]+name=["'"'"']robots["'"'"']' "$BODY_PATH"; then
+if ! grep -Fqi '<meta name="robots" content="noindex,nofollow">' "$BODY_PATH"; then
   echo "Staging root must declare noindex,nofollow." >&2
   exit 1
 fi
 
 require_status GET "$STAGING_URL/robots.txt" 200
-if ! grep -Eqi '^User-agent:[[:space:]]*\*
+if ! grep -Eqi '^User-agent:[[:space:]]*\*$' "$BODY_PATH"; then
+  echo "robots.txt must target all user agents." >&2
+  exit 1
+fi
+if ! grep -Eqi '^Disallow:[[:space:]]*/[[:space:]]*$' "$BODY_PATH"; then
+  echo "robots.txt must disallow the entire Staging site." >&2
+  exit 1
+fi
+if grep -Eqi '^[[:space:]]*(Allow|Sitemap):|urai\.app|/u/adamclamp' "$BODY_PATH"; then
+  echo "robots.txt contains forbidden public/production indexing authority." >&2
+  cat "$BODY_PATH" >&2
+  exit 1
+fi
+
+require_json_api_status GET "$STAGING_URL/api/healthz" 200
+require_json_api_status GET "$STAGING_URL/api/buildinfo" 200
+
 node - "$BODY_PATH" "$STAGING_PROJECT_ID" "$STAGING_URL" "$RELEASE_SHA" "$MUTATION_RECEIPT" <<'NODE'
 const fs = require('node:fs');
 const [bodyPath, expectedProject, expectedUrl, expectedSha, receiptPath] = process.argv.slice(2);
