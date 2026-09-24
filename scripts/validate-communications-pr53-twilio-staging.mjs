@@ -6,7 +6,7 @@ const required = [
   'name: Communications PR53 Twilio Trial Protected Staging E2E',
   'workflow_dispatch:',
   'environment: staging',
-  'refs/pull/53/head',
+  'https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/53',
   'LifeLoggerAI/urai-communications',
   'functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback',
   'ENABLE_WEBHOOK_TEST_MODE=false',
