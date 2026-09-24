@@ -32,7 +32,7 @@ concurrency:
 env:
   TARGET_SHA: ${{ inputs.expected_main_sha }}
   ROLLBACK_SHA: ${{ inputs.rollback_sha }}
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   FIREBASE_CLI_VERSION: '15.23.0'
   EXPECTED_STAGING_PROJECT: urai-staging
   URAI_STAGING_PROJECT_ID: urai-staging
