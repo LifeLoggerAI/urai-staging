@@ -6,7 +6,7 @@ on:
       communications_sha:
         description: Exact urai-communications PR #53 SHA authorized by config/staging-consumers.json
         required: true
-        default: b70baa96edb2288f9685d767fd7ee564e7dad1db
+        default: f6dd6b4b964e0c6abd46ad8badd703f37242ab53
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
@@ -53,7 +53,7 @@ jobs:
       STAGING_TEST_UID: ${{ vars.STAGING_TEST_UID }}
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-      TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
+      TWILIO_FROM_NUMBER: ""
       STAGING_TEST_PHONE: ${{ secrets.STAGING_TEST_PHONE }}
       STAGING_FIREBASE_ID_TOKEN: ${{ secrets.STAGING_FIREBASE_ID_TOKEN }}
       STAGING_TEST_AUTH_EMAIL: ${{ secrets.STAGING_TEST_AUTH_EMAIL }}
@@ -93,7 +93,7 @@ jobs:
           if (c?.rollbackToDeliveryDisabledRequired !== true) failures.push('rollback');
           if (failures.length) throw new Error(failures.join(', '));
           NODE
-          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_FROM_NUMBER STAGING_TEST_PHONE; do
+          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN STAGING_TEST_PHONE; do
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
           done
           TWILIO_CALLBACK_URL="${STAGING_FUNCTIONS_BASE_URL%/}/twilioDeliveryStatusCallback"
@@ -167,7 +167,7 @@ jobs:
           TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID
           TWILIO_TRIAL_MODE=true
           TWILIO_MESSAGING_SERVICE_SID=
-          TWILIO_FROM_NUMBER=$TWILIO_FROM_NUMBER
+          TWILIO_FROM_NUMBER=
           DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
           DEFAULT_TENANT_TIMEZONE=America/Chicago
           EOF
@@ -215,7 +215,6 @@ jobs:
           npm run verify:staging:delivery -- --staging --sms --callback | tee "$RUNNER_TEMP/twilio-e2e.log"
           ! grep -F "$TWILIO_AUTH_TOKEN" "$RUNNER_TEMP/twilio-e2e.log"
           ! grep -F "$STAGING_TEST_PHONE" "$RUNNER_TEMP/twilio-e2e.log"
-          ! grep -F "$TWILIO_FROM_NUMBER" "$RUNNER_TEMP/twilio-e2e.log"
           rm -f "$RUNNER_TEMP/twilio-e2e.log"
 
       - name: Write sanitized E2E receipt
@@ -235,7 +234,7 @@ jobs:
             environment:'staging',
             trialMode:true,
             accountRef:h(process.env.TWILIO_ACCOUNT_SID),
-            senderRef:h(process.env.TWILIO_FROM_NUMBER),
+            senderMode:'provider-assigned-trial-number',
             recipientRef:h(process.env.STAGING_TEST_PHONE),
             protectedE2ECompleted:true,
             productionMessagingAuthorized:false,
@@ -260,7 +259,7 @@ jobs:
             TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID
             TWILIO_TRIAL_MODE=true
             TWILIO_MESSAGING_SERVICE_SID=
-            TWILIO_FROM_NUMBER=$TWILIO_FROM_NUMBER
+            TWILIO_FROM_NUMBER=
             DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
             DEFAULT_TENANT_TIMEZONE=America/Chicago
             EOF
