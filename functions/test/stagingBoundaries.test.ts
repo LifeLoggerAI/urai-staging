@@ -3,6 +3,7 @@ import {
   FixedWindowRateLimiter,
   MAX_STAGING_HTTP_BODY_BYTES,
   STAGING_COMPANION_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_MAX_RATE_BUCKETS,
   STAGING_HTTP_RATE_WINDOW_MS,
   isAllowedStagingOrigin,
   isLikelyEmail,
@@ -32,6 +33,15 @@ describe('staging HTTP boundaries', () => {
     expect(limiter.consume(key, 1_002)).toBe(false);
     expect(limiter.consume(key, 1_000 + STAGING_HTTP_RATE_WINDOW_MS)).toBe(true);
     expect(STAGING_COMPANION_REQUESTS_PER_WINDOW).toBeGreaterThan(0);
+    expect(STAGING_HTTP_MAX_RATE_BUCKETS).toBeGreaterThan(0);
+  });
+
+  it('fails closed when the unique-client bucket cap is exhausted and recovers after expiry', () => {
+    const limiter = new FixedWindowRateLimiter(1, 1_000, 2);
+    expect(limiter.consume('a', 0)).toBe(true);
+    expect(limiter.consume('b', 0)).toBe(true);
+    expect(limiter.consume('c', 1)).toBe(false);
+    expect(limiter.consume('c', 1_000)).toBe(true);
   });
 
   it('bounds parsed HTTP payload size', () => {
