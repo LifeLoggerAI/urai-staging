@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const path = new URL('../config/staging-consumers.json', import.meta.url);
 const doc = JSON.parse(fs.readFileSync(path, 'utf8'));
 const failures = [];
-const expectedCommunicationsSha = 'f4930e0b67b900cc2ae3fc931da5f53668f4dc96';
+const expectedCommunicationsSha = '653c8523912fc3bbcf004791ff8eeffb01111e1e';
 
 if (doc.schemaVersion !== 'urai-staging-consumers-1') failures.push('schemaVersion');
 if (doc.projectId !== 'urai-staging') failures.push('projectId');
