@@ -18,7 +18,7 @@ const lines = [
   `- Repository: ${report.repo}`,
   `- Kind: ${report.kind}`,
   `- Status: ${report.status}`,
-  `- Launch score: ${report.launchScore}/100`,
+  `- Source bootstrap score: ${report.sourceBootstrapScore}/100`,
   `- Started: ${report.startedAt}`,
   `- Finished: ${report.finishedAt ?? 'not finished'}`,
   `- Passed commands: ${report.passedCount}`,
