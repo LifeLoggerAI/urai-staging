@@ -25,6 +25,8 @@ const required = [
   'ENABLE_REAL_DELIVERY=false',
   'ENABLE_TWILIO_SMS=false',
   'Prove delivery switches rolled back OFF',
+  'JSON.stringify({tenantId:process.env.STAGING_TENANT_ID})',
+  '-d "$payload"',
   'realDeliveryEnabled:false',
   'twilioSmsEnabled:false',
   'rollbackProven:true',
@@ -45,6 +47,7 @@ const forbidden = [
   [/TWILIO_MESSAGING_SERVICE_SID=.*MG/, 'production Messaging Service binding'],
   [/secrets\.TWILIO_FROM_NUMBER/, 'trial sender secret binding'],
   [/TWILIO_FROM_NUMBER=\$TWILIO_FROM_NUMBER/, 'explicit trial From binding'],
+  [/-d "\{"tenantId"/, 'malformed rollback readiness JSON'],
   [/sk_live_|rk_live_/, 'live billing credential'],
 ];
 for (const [pattern,label] of forbidden) if (pattern.test(text)) throw new Error(`forbidden Communications Twilio staging marker: ${label}`);
