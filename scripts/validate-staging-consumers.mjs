@@ -23,6 +23,7 @@ for (const c of doc.consumers || []) {
   if (c.productionDataAuthorized !== false) failures.push(`${c.id || 'consumer'} productionDataAuthorized`);
   if (c.longLivedCredentialsAuthorized !== false) failures.push(`${c.id || 'consumer'} longLivedCredentialsAuthorized`);
   if (c.projectWideRuleMutationAuthorized !== false) failures.push(`${c.id || 'consumer'} projectWideRuleMutationAuthorized`);
+  if (!c.refVerification || !['public-git-ls-remote','protected-github-api'].includes(c.refVerification.mode)) failures.push(`${c.id || 'consumer'} refVerification`);
 }
 
 const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1296-stripe-test-readiness') || {};
@@ -37,6 +38,7 @@ if (spatial.appHostingRolloutAuthorized !== false) failures.push('spatial appHos
 if (spatial.hostingPreviewMutationAuthorized !== false) failures.push('spatial hostingPreviewMutationAuthorized');
 if (spatial.stripeTestModeOnly !== true) failures.push('spatial stripeTestModeOnly');
 if (spatial.stripeLiveModeAuthorized !== false) failures.push('spatial stripeLiveModeAuthorized');
+if (spatial.refVerification?.mode !== 'public-git-ls-remote') failures.push('spatial ref verification');
 
 const communications = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr53-twilio-trial-e2e') || {};
 if (communications.repository !== 'LifeLoggerAI/urai-communications') failures.push('communications repository');
@@ -53,6 +55,10 @@ if (communications.hostingMutationAuthorized !== false) failures.push('communica
 if (communications.twilioTrialModeOnly !== true) failures.push('communications Twilio trial mode');
 if (communications.twilioProductionMessagingAuthorized !== false) failures.push('communications production Twilio');
 if (communications.rollbackToDeliveryDisabledRequired !== true) failures.push('communications rollback requirement');
+if (communications.refVerification?.mode !== 'protected-github-api') failures.push('communications ref verification');
+if (communications.refVerification?.environment !== 'staging') failures.push('communications ref verification environment');
+if (communications.refVerification?.requiredSecret !== 'URAI_CROSS_REPO_READ_TOKEN') failures.push('communications ref verification secret contract');
+if (communications.trialSenderMode !== 'provider-assigned') failures.push('communications trial sender mode');
 
 const historicalAdmin = doc.historicalConsumers?.find((entry) => entry.id === 'urai-admin-pr57-runtime-closure') || {};
 if (historicalAdmin.state !== 'historical') failures.push('historical Admin state');
