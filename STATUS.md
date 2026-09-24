@@ -1,154 +1,67 @@
-# URAI Staging Production Status
+# URAI Staging Current Status
 
-Date: 2026-06-30
+Date: 2026-09-24  
 Repo: `LifeLoggerAI/urai-staging`
 
-## Final status
+## Current classification
 
-DONE BUT NEEDS EXTERNAL ENV / RUNNER.
+**SOURCE CONVERGENCE ACTIVE / PROTECTED RUNTIME NO-GO / LIVE CERTIFICATION NOT COMPLETE**
 
-This repo is production-safe as a staging validation environment, but it is not a production app and must not be marked production-ready in the global URAI release plan until current CI/deploy/live-smoke receipts exist.
+URAI Staging is the internal, non-production verification and provider-sandbox control plane for the URAI estate. It is not a production application and must not be presented as a public URAI destination.
 
-Final external receipt blocker:
+## Current source authority
 
-- GitHub Issue #10: `FINAL EXTERNAL STEP: run staging deploy-lock workflow and attach receipts`
+- Default branch: `main`
+- Base main at this reconciliation: `650f9ec9755727605681a109947209b668e8539e`
+- Current convergence successor: PR #44
+- PR #44 is the intended successor to the split Spatial/Stripe PR #40 and Communications/Twilio PR #43 after exact-head CI succeeds.
+- Active consumer authority is machine-readable in `config/staging-consumers.json`.
+- Active consumer refs are re-resolved in CI and must fail closed when an upstream ref moves.
+- Historical Admin PR #57 authority is retained as provenance only and is not an active consumer.
 
-## What this repo is
+## Current runtime truth
 
-`urai-staging` is the Firebase staging backend and validation shell for URAI. It owns:
+At the 2026-09-24 audit checkpoint:
 
-- Firebase Hosting staging shell
-- Cloud Functions smoke and callable endpoints
-- Firestore rules
-- Storage rules
-- indexes
-- unit tests
-- emulator-backed rules tests
-- CI evidence workflow
-- gated staging deploy-lock workflow
-- launch-proof documentation
+- `https://urai-staging.web.app/` returned HTTP 503.
+- `/api/healthz` returned HTTP 503.
+- `/api/buildinfo` returned HTTP 503.
+- `/robots.txt` remained reachable but did not match the canonical all-disallow staging source.
 
-## What this repo is not
-
-This repo does not own:
-
-- the full URAI production UI
-- sibling product modules
-- production deployment
-- real user data
-- public launch claims
+Therefore the current deployed revision is **not certified** and source-green evidence must not be described as a healthy staging runtime.
 
 ## Current implemented guardrails
 
-- Canonical staging project: `urai-staging`
-- Canonical staging URL target: `https://urai-staging.web.app`
-- Public staging shell includes not-production copy.
-- `public/robots.txt` blocks indexing.
-- `.env.example` uses canonical staging values.
-- Deploy script delegates to a staging-only lock script.
-- GitHub Actions has CI evidence artifact upload.
-- GitHub Actions has a manual gated staging deploy-lock workflow.
-- Emulator tests use `scripts/run-with-java.sh`, which supports both Nix and existing Java runtimes.
-- Deploy readiness checks enforce staging labels, robots block, adaptive runner, and staging project binding.
+- Canonical Firebase project: `urai-staging`.
+- Production alias is absent.
+- Production project selection is rejected by staging controls.
+- Synthetic/test data is required for active consumer lanes.
+- WIF/OIDC is the intended protected cloud authentication path.
+- Service-account JSON and long-lived provider credentials are not authorized by the staging control plane.
+- Spatial/Stripe lane is TEST-only and provider-read-only.
+- Communications/Twilio lane is trial-only, one verified recipient, explicit function allowlist, and mandatory rollback to delivery disabled.
+- Node 22 is the current intended Staging runtime on PR #44.
+- Public HTTP endpoints enforce a staging-origin allowlist and bounded request bodies on PR #44.
+- Source bootstrap evidence is named `sourceBootstrapScore`; it is not a launch/runtime score.
+- Product UI, visual canon, accessibility implementation, localization implementation, privacy implementation, and other product systems remain owned by their sibling repositories. Staging consumes their exact-head receipts; it does not duplicate them.
 
-## Latest repo-side completion commits
+## Required before READY
 
-- `bcc43d9b0650ad7c3f6d67242b15d7b5aae4dae6` - align env example with canonical staging project.
-- `7b4f661cd1fd34a3086c86fd14219fcd70d192a8` - add public staging disclaimer.
-- `321a6aec92592a0133e0633e5530e41841718d9f` - upload staging launch evidence artifacts from CI.
-- `da06695ddb14c999ed7001bb87cf39cabc160924` - add gated staging deploy workflow.
-- `65d24b5aa94da704cef1f660aa521941c882127d` - write deploy-lock evidence summary.
-- `5d6f952ffc1309c92db2d73ec116c0da11ba1bb9` - make emulator tests work without a hard Nix dependency.
-- `1d7e065f0c8f484e1ae702b16dd2fd214323473a` - route emulator scripts through adaptive Java runner.
-- `d42b9ee6fcaa6f8ee4cad96e685e428c00f8e1b7` - enforce adaptive emulator runner in deploy readiness.
-- `cf9f0bbf48409b640ef1d316a5ac61bb882df266` - add last-mile completion receipt.
-- `18e44da23aa787b726ad2a74d7dc63f17b9cc7f9` - align README with last-mile status.
-- `b43ce252da5afc3ab16d173f0e49df1fa7d4af27` - add current production status summary.
+1. PR #44 exact-head CI and Production Verify terminal-success.
+2. Final active upstream heads frozen and matching the consumer registry.
+3. Independent exact-head review on the unchanged accepted head.
+4. Main branch/repository release protections verified by repository administration.
+5. Protected `staging` WIF/IAM authority proven with least privilege and no long-lived keys.
+6. Read-only provider diagnosis identifies the current 503 root cause and currently serving revision.
+7. Exact accepted merged-main candidate deployed to `urai-staging`.
+8. `/api/buildinfo` reports the exact deployed SHA, deployment timestamp, workflow run and provider identity.
+9. Root, robots, health, buildinfo and bounded write smoke pass.
+10. Unauthorized origin/write and cross-user/tenant denial evidence passes.
+11. Monitoring, failure/recovery and distinct rollback evidence passes.
+12. Final retained artifacts are inspected and canonical documentation is refreshed.
 
-## Verification receipts available now
+## Truth rule
 
-Repo-inspection receipts are available in:
+`CODE COMPLETE != SYSTEM COMPLETE != DEPLOYED != LIVE VERIFIED`
 
-- `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/README.md`
-- `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/environment-map.md`
-- `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/build-test-deploy-proof.md`
-- `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/blockers.md`
-- `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/actions-hardening.md`
-- `launch-proof/urai-staging-production-lock/2026-06-30T0000Z/last-mile-completion.md`
-- `STATUS.md`
-- GitHub Issue #10
-
-## Verification still required
-
-The following receipts are still required before marking READY:
-
-- current install receipt
-- lint receipt
-- typecheck receipt
-- production build receipt
-- unit test receipt
-- Firestore emulator/rules test receipt
-- deploy-lock receipt if live deploy is requested
-- live smoke receipt if deployed
-
-## Exact proof commands
-
-Checks-only proof:
-
-```bash
-npm install
-npm --prefix functions ci
-npm run doctor
-npm run check:deploy
-npm run check:lockfile
-npm run lint
-npm run typecheck
-npm run build
-npm run test:unit
-npm run test:rules
-```
-
-Full staging deploy-lock proof:
-
-```bash
-firebase use urai-staging
-npm run deploy:staging
-```
-
-GitHub Actions proof path:
-
-- Run workflow: `CI`
-- Preserve artifact: `urai-staging-launch-evidence`
-
-Manual deploy-lock proof path:
-
-- Run workflow: `Staging Deploy Lock`
-- Input `confirm_staging_project`: `urai-staging`
-- Input `run_live_deploy`: `false` for checks-only proof, `true` for full deploy-lock proof when the staging deploy environment is configured.
-- Preserve artifact: `urai-staging-deploy-lock-evidence`
-- Close GitHub Issue #10 only after the required receipts are attached or preserved.
-
-## Feature truth table
-
-| Feature | Status |
-|---|---|
-| Firebase Hosting staging shell | WIRED BUT NEEDS ENV |
-| Public staging disclaimer | LIVE / VERIFIED IN REPO |
-| `public/robots.txt` staging block | LIVE / VERIFIED IN REPO |
-| HTTP health/buildinfo routes | WIRED BUT NEEDS ENV |
-| Companion smoke endpoint | DEMO-GATED |
-| Waitlist staging write smoke | WIRED BUT NEEDS ENV |
-| Callable auth/admin checks | WIRED BUT NEEDS ENV |
-| Firestore rules | WIRED BUT NEEDS RUNNER |
-| Storage rules | WIRED BUT NEEDS RUNNER |
-| Emulator/rules tests | WIRED BUT NEEDS RUNNER |
-| CI evidence artifacts | WIRED BUT NEEDS ACTIONS RUN |
-| Gated staging deploy workflow | WIRED BUT NEEDS ACTIONS RUN |
-| Full production UI | NOT PRESENT |
-| Production deploy | DISABLED FOR SAFETY / NOT PRESENT |
-| Live deploy receipt | NOT PRESENT |
-| Live smoke receipt | NOT PRESENT |
-
-## Ecosystem coordinator summary
-
-`urai-staging` is DONE BUT NEEDS EXTERNAL ENV/RUNNER: repo-side staging guardrails, CI evidence workflow, gated deploy workflow, adaptive emulator runner, public disclaimer, robots block, README/status docs, GitHub Issue #10, and launch-proof receipts are committed; do not mark production-ready until current Actions/deploy/live-smoke artifacts pass.
+No predecessor workflow, review, screenshot, provider receipt or deployment receipt transfers across a changed authority without explicit revalidation.
