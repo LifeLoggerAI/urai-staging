@@ -270,7 +270,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}" "$RUNNER_TEMP/firebase-signin.json" "$RUNNER_TEMP/twilio-e2e.log"
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}" "$RUNNER_TEMP/firebase-signin.json" "$RUNNER_TEMP/twilio-e2e.log" "communications-source/functions/.env.urai-staging"
           echo 'GOOGLE_APPLICATION_CREDENTIALS=' >> "$GITHUB_ENV"
           echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
           echo 'STAGING_FIREBASE_ID_TOKEN=' >> "$GITHUB_ENV"
