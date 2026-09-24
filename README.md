@@ -30,28 +30,19 @@ Do not commit real secrets, service-account files, production data, private user
 
 ## Current status
 
-**DONE BUT NEEDS EXTERNAL ENV / RUNNER.**
+**SOURCE CONVERGENCE ACTIVE / PROTECTED RUNTIME NO-GO / LIVE CERTIFICATION NOT COMPLETE.**
 
-Repo-side staging completion work is implemented and guarded, but this repo must not be marked READY until GitHub Actions or another deploy-capable runner produces current receipts for install, lint, typecheck, build, unit tests, Firestore emulator tests, deploy lock if requested, and live smoke if deployed.
+The current control-plane successor is PR #44. It converges the Spatial/Stripe TEST and Communications/Twilio-trial staging lanes, fails closed when active upstream refs move, and keeps obsolete Admin #57 authority historical rather than active.
 
-Latest last-mile proof path:
+The current public staging runtime is not certified: the September 24 audit observed HTTP 503 on the root, `/api/healthz`, and `/api/buildinfo`. Historical deploy receipts remain provenance only.
 
-```text
-launch-proof/urai-staging-production-lock/2026-06-30T0000Z/
-```
-
-Latest repo-side completion commits include:
-
-- `5d6f952ffc1309c92db2d73ec116c0da11ba1bb9` - adaptive Java runner for emulator tests.
-- `1d7e065f0c8f484e1ae702b16dd2fd214323473a` - root emulator scripts use adaptive Java runner.
-- `d42b9ee6fcaa6f8ee4cad96e685e428c00f8e1b7` - deploy-readiness checker enforces staging disclaimers, robots block, and adaptive runner.
-- `cf9f0bbf48409b640ef1d316a5ac61bb882df266` - last-mile completion receipt.
+See `STATUS.md` and `URAI_STAGING_DEFINITION_OF_DONE.md` for the current terminal gates.
 
 ## Implemented in this branch
 
 - Explicit Firebase aliases for `default` and `staging`, both locked to `urai-staging`; a `production` alias is intentionally absent. Production public-product authority belongs to `LifeLoggerAI/urai-spatial`, whose release contract references the separate `urai-4dc1d` production target.
 - Firebase Hosting shell in `public/index.html`, presented as a URAI V1-aligned staging surface with orb, ground layer, companion smoke framing, reduced-motion support, smoke endpoint links, and a visible not-production staging disclaimer.
-- `public/robots.txt` blocks indexing for the staging environment.
+- `public/robots.txt` is authored to block indexing for the staging environment; live equivalence must be re-proven after the current 503/drift condition is repaired.
 - Hosting rewrites for `/api/healthz`, `/api/buildinfo`, `/api/companion`, and `/api/waitlist`.
 - Callable Functions: `healthCheck`, `authenticatedHealthCheck`, `adminHealthCheck`, `recordStagingEvent`, `getFeatureFlag`, `setFeatureFlag`, `createStagingJob`, and `getStagingCompletionMatrix`.
 - HTTP smoke endpoints for live staging verification.
