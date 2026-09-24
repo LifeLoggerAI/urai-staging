@@ -11,7 +11,7 @@ const required = [
   'STAGING_PROJECT_ID: urai-staging',
   "URAI_STRIPE_TEST_ONLY: '1'",
   'refs/pull/1296/head',
-  'urai-spatial-pr1296-stripe-test-e2e',
+  'urai-spatial-pr1296-stripe-test-admission-',
   'providerReadOnlyAuthorized',
   'appHostingRolloutAuthorized',
   'stripeTestModeOnly',
