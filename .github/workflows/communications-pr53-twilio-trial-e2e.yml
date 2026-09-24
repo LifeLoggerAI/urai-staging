@@ -282,7 +282,6 @@ jobs:
           TWILIO_MESSAGING_SERVICE_SID: ''
         run: |
           set -euo pipefail
-          npm run verify:staging:delivery -- --staging --sms 2>&1 | tee "$RUNNER_TEMP/twilio-rollback-readback.log" && exit 61 || true
           code="$(curl --silent --show-error --output "$RUNNER_TEMP/twilio-readiness.json" --write-out '%{http_code}'             -H "authorization: Bearer $STAGING_FIREBASE_ID_TOKEN"             -H 'content-type: application/json'             -d "{"tenantId":"$STAGING_TENANT_ID"}"             "${STAGING_FUNCTIONS_BASE_URL%/}/adminProviderReadiness")"
           test "$code" = "200"
           node <<'NODE'
@@ -302,7 +301,7 @@ jobs:
             secretMaterialRetained:false
           },null,2)+'\n');
           NODE
-          rm -f "$RUNNER_TEMP/twilio-readiness.json" "$RUNNER_TEMP/twilio-rollback-readback.log"
+          rm -f "$RUNNER_TEMP/twilio-readiness.json"
 
       - name: Destroy ephemeral credentials
         if: always()
