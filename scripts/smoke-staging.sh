@@ -80,8 +80,157 @@ NODE
 }
 
 require_status GET "$STAGING_URL/" 200
-require_status GET "$STAGING_URL/u/adamclamp" 200
+if ! grep -Eqi '<meta[^>]+name=["'"'"']robots["'"'"'][^>]+content=["'"'"'][^"'"'"']*noindex[^"'"'"']*nofollow|<meta[^>]+content=["'"'"'][^"'"'"']*noindex[^"'"'"']*nofollow[^"'"'"']*["'"'"'][^>]+name=["'"'"']robots["'"'"']' "$BODY_PATH"; then
+  echo "Staging root must declare noindex,nofollow." >&2
+  exit 1
+fi
+
 require_status GET "$STAGING_URL/robots.txt" 200
+if ! grep -Eqi '^User-agent:[[:space:]]*\*
+node - "$BODY_PATH" "$STAGING_PROJECT_ID" "$STAGING_URL" "$RELEASE_SHA" "$MUTATION_RECEIPT" <<'NODE'
+const fs = require('node:fs');
+const [bodyPath, expectedProject, expectedUrl, expectedSha, receiptPath] = process.argv.slice(2);
+const body = JSON.parse(fs.readFileSync(bodyPath, 'utf8'));
+const receipt = JSON.parse(fs.readFileSync(receiptPath, 'utf8'));
+const failures = [];
+
+if (receipt.schemaVersion !== 'urai-staging-mutation-2') failures.push('mutation receipt schema must be urai-staging-mutation-2');
+if (receipt.sourceSha !== expectedSha) failures.push(`mutation receipt sourceSha must equal ${expectedSha}`);
+if (receipt.projectId !== expectedProject) failures.push(`mutation receipt projectId must equal ${expectedProject}`);
+if (receipt.hostingUrl !== expectedUrl) failures.push(`mutation receipt hostingUrl must equal ${expectedUrl}`);
+if (receipt.deploymentCommandCompleted !== true) failures.push('mutation receipt must prove a completed deployment command');
+if (typeof receipt.deployedAt !== 'string' || Number.isNaN(Date.parse(receipt.deployedAt))) {
+  failures.push('mutation receipt deployedAt must be a real ISO-8601 deployment timestamp');
+}
+if (!/^\d+$/.test(String(receipt.workflowRunId ?? ''))) {
+  failures.push('mutation receipt workflowRunId must be numeric');
+}
+
+if (body.status !== 'ok') failures.push('status must be ok');
+if (body.service !== 'urai-staging') failures.push('service must be urai-staging');
+if (body.projectId !== expectedProject) failures.push(`projectId must be ${expectedProject}`);
+if (body.hostingUrl !== expectedUrl) failures.push(`hostingUrl must be ${expectedUrl}`);
+if (body.releaseCandidateSha !== expectedSha) {
+  failures.push(`releaseCandidateSha must equal exact candidate ${expectedSha}, received ${String(body.releaseCandidateSha)}`);
+}
+if (body.deployedAt !== receipt.deployedAt) {
+  failures.push(`deployedAt must equal current mutation receipt ${String(receipt.deployedAt)}, received ${String(body.deployedAt)}`);
+}
+if (String(body.deploymentWorkflowRunId ?? '') !== String(receipt.workflowRunId)) {
+  failures.push(`deploymentWorkflowRunId must equal current mutation workflow ${String(receipt.workflowRunId)}, received ${String(body.deploymentWorkflowRunId)}`);
+}
+if (body.runtimeProjectId !== expectedProject) {
+  failures.push(`runtimeProjectId must equal ${expectedProject}, received ${String(body.runtimeProjectId)}`);
+}
+
+if (failures.length) {
+  console.error('Exact staging runtime identity verification failed:');
+  for (const failure of failures) console.error(`- ${failure}`);
+  process.exit(1);
+}
+console.log(`Exact runtime identity verified for ${expectedSha}, mutation workflow ${receipt.workflowRunId}, deployed at ${receipt.deployedAt}.`);
+NODE
+
+# Default release smoke is intentionally non-mutating. It proves the public
+# validation boundaries without writing staging_events or staging_waitlist.
+require_json_api_status POST "$STAGING_URL/api/companion" 400 '{"message":""}'
+require_json_api_status POST "$STAGING_URL/api/waitlist" 400 '{"email":"not-an-email","source":"staging-smoke"}'
+
+# Browser-origin enforcement must fail closed for production/public origins.
+origin_code="$(curl --location --silent --show-error --connect-timeout 15 --max-time 45   -o "$BODY_PATH" -w "%{http_code}" -X POST "$STAGING_URL/api/companion"   -H 'Content-Type: application/json'   -H 'Origin: https://urai.app'   -d '{"message":"staging-origin-denial"}' || true)"
+test "$origin_code" = '403' || {
+  echo "Expected unauthorized browser origin to return HTTP 403, received $origin_code." >&2
+  exit 1
+}
+
+# Oversize requests must be rejected before endpoint work occurs.
+oversize_payload="$(node -e "process.stdout.write(JSON.stringify({message:'x'.repeat(9000)}))")"
+oversize_code="$(curl --location --silent --show-error --connect-timeout 15 --max-time 45   -o "$BODY_PATH" -w "%{http_code}" -X POST "$STAGING_URL/api/companion"   -H 'Content-Type: application/json'   --data-binary "$oversize_payload" || true)"
+test "$oversize_code" = '413' || {
+  echo "Expected oversize staging request to return HTTP 413, received $oversize_code." >&2
+  exit 1
+}
+
+if command -v firebase >/dev/null 2>&1; then
+  active_project=$(firebase use 2>/dev/null | sed -n 's/.*Active Project: //p' | tr -d '[:space:]' || true)
+  if [ -n "$active_project" ] && [ "$active_project" != "$STAGING_PROJECT_ID" ]; then
+    echo "Warning: firebase active project is $active_project, expected $STAGING_PROJECT_ID. Smoke URL checks still passed."
+  fi
+fi
+
+echo "URAI staging non-mutating live smoke passed for $STAGING_URL at exact SHA $RELEASE_SHA and current mutation receipt"
+ "$BODY_PATH"; then
+  echo "robots.txt must target all user agents." >&2
+  exit 1
+fi
+if ! grep -Eqi '^Disallow:[[:space:]]*/[[:space:]]*
+node - "$BODY_PATH" "$STAGING_PROJECT_ID" "$STAGING_URL" "$RELEASE_SHA" "$MUTATION_RECEIPT" <<'NODE'
+const fs = require('node:fs');
+const [bodyPath, expectedProject, expectedUrl, expectedSha, receiptPath] = process.argv.slice(2);
+const body = JSON.parse(fs.readFileSync(bodyPath, 'utf8'));
+const receipt = JSON.parse(fs.readFileSync(receiptPath, 'utf8'));
+const failures = [];
+
+if (receipt.schemaVersion !== 'urai-staging-mutation-2') failures.push('mutation receipt schema must be urai-staging-mutation-2');
+if (receipt.sourceSha !== expectedSha) failures.push(`mutation receipt sourceSha must equal ${expectedSha}`);
+if (receipt.projectId !== expectedProject) failures.push(`mutation receipt projectId must equal ${expectedProject}`);
+if (receipt.hostingUrl !== expectedUrl) failures.push(`mutation receipt hostingUrl must equal ${expectedUrl}`);
+if (receipt.deploymentCommandCompleted !== true) failures.push('mutation receipt must prove a completed deployment command');
+if (typeof receipt.deployedAt !== 'string' || Number.isNaN(Date.parse(receipt.deployedAt))) {
+  failures.push('mutation receipt deployedAt must be a real ISO-8601 deployment timestamp');
+}
+if (!/^\d+$/.test(String(receipt.workflowRunId ?? ''))) {
+  failures.push('mutation receipt workflowRunId must be numeric');
+}
+
+if (body.status !== 'ok') failures.push('status must be ok');
+if (body.service !== 'urai-staging') failures.push('service must be urai-staging');
+if (body.projectId !== expectedProject) failures.push(`projectId must be ${expectedProject}`);
+if (body.hostingUrl !== expectedUrl) failures.push(`hostingUrl must be ${expectedUrl}`);
+if (body.releaseCandidateSha !== expectedSha) {
+  failures.push(`releaseCandidateSha must equal exact candidate ${expectedSha}, received ${String(body.releaseCandidateSha)}`);
+}
+if (body.deployedAt !== receipt.deployedAt) {
+  failures.push(`deployedAt must equal current mutation receipt ${String(receipt.deployedAt)}, received ${String(body.deployedAt)}`);
+}
+if (String(body.deploymentWorkflowRunId ?? '') !== String(receipt.workflowRunId)) {
+  failures.push(`deploymentWorkflowRunId must equal current mutation workflow ${String(receipt.workflowRunId)}, received ${String(body.deploymentWorkflowRunId)}`);
+}
+if (body.runtimeProjectId !== expectedProject) {
+  failures.push(`runtimeProjectId must equal ${expectedProject}, received ${String(body.runtimeProjectId)}`);
+}
+
+if (failures.length) {
+  console.error('Exact staging runtime identity verification failed:');
+  for (const failure of failures) console.error(`- ${failure}`);
+  process.exit(1);
+}
+console.log(`Exact runtime identity verified for ${expectedSha}, mutation workflow ${receipt.workflowRunId}, deployed at ${receipt.deployedAt}.`);
+NODE
+
+# Default release smoke is intentionally non-mutating. It proves the public
+# validation boundaries without writing staging_events or staging_waitlist.
+require_json_api_status POST "$STAGING_URL/api/companion" 400 '{"message":""}'
+require_json_api_status POST "$STAGING_URL/api/waitlist" 400 '{"email":"not-an-email","source":"staging-smoke"}'
+
+if command -v firebase >/dev/null 2>&1; then
+  active_project=$(firebase use 2>/dev/null | sed -n 's/.*Active Project: //p' | tr -d '[:space:]' || true)
+  if [ -n "$active_project" ] && [ "$active_project" != "$STAGING_PROJECT_ID" ]; then
+    echo "Warning: firebase active project is $active_project, expected $STAGING_PROJECT_ID. Smoke URL checks still passed."
+  fi
+fi
+
+echo "URAI staging non-mutating live smoke passed for $STAGING_URL at exact SHA $RELEASE_SHA and current mutation receipt"
+ "$BODY_PATH"; then
+  echo "robots.txt must disallow the entire Staging site." >&2
+  exit 1
+fi
+if grep -Eqi '^[[:space:]]*Allow:|^[[:space:]]*Sitemap:|urai\.app|/u/adamclamp' "$BODY_PATH"; then
+  echo "robots.txt contains forbidden public/production indexing authority." >&2
+  cat "$BODY_PATH" >&2
+  exit 1
+fi
+
 require_json_api_status GET "$STAGING_URL/api/healthz" 200
 require_json_api_status GET "$STAGING_URL/api/buildinfo" 200
 
