@@ -19,7 +19,7 @@ const report = {
   startedAt: new Date().toISOString(),
   finishedAt: null,
   status: 'running',
-  launchScore: 0,
+  sourceBootstrapScore: 0,
   commandCount: 0,
   passedCount: 0,
   failedCount: 0,
@@ -116,7 +116,7 @@ report.finishedAt = new Date().toISOString();
 finalizeScore();
 writeEvidence();
 console.log('\nURAI staging bootstrap completed successfully.');
-console.log(`Launch score: ${report.launchScore}/100`);
+console.log(`Source bootstrap score: ${report.sourceBootstrapScore}/100`);
 console.log(`Evidence written to ${path.relative(root, evidencePath)}`);
 console.log(`Summary written to ${path.relative(root, summaryPath)}`);
 
@@ -125,7 +125,7 @@ function finalizeScore() {
   report.passedCount = report.commands.filter((command) => command.status === 'passed').length;
   report.failedCount = report.commands.filter((command) => command.status === 'failed').length;
   const totalExpected = commands.length;
-  report.launchScore = totalExpected === 0 ? 0 : Math.round((report.passedCount / totalExpected) * 100);
+  report.sourceBootstrapScore = totalExpected === 0 ? 0 : Math.round((report.passedCount / totalExpected) * 100);
 }
 
 function writeEvidence() {
@@ -140,7 +140,7 @@ function writeSummary() {
     `- Repository: ${report.repo}`,
     `- Kind: ${report.kind}`,
     `- Status: ${report.status}`,
-    `- Launch score: ${report.launchScore}/100`,
+    `- Source bootstrap score: ${report.sourceBootstrapScore}/100`,
     `- Started: ${report.startedAt}`,
     `- Finished: ${report.finishedAt ?? 'not finished'}`,
     `- Passed commands: ${report.passedCount}`,
