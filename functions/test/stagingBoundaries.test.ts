@@ -1,10 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import {
+  MAX_STAGING_HTTP_BODY_BYTES,
+  isAllowedStagingOrigin,
   isLikelyEmail,
+  isStagingHttpBodyWithinLimit,
   isSyntheticStagingEmail,
   stagingRuntimeBuildInfo,
   stagingWaitlistDocumentId,
 } from '../src/lib/stagingBoundaries';
+
+describe('staging HTTP boundaries', () => {
+  it('allows only canonical staging and emulator browser origins while preserving no-Origin server smoke', () => {
+    expect(isAllowedStagingOrigin(undefined)).toBe(true);
+    expect(isAllowedStagingOrigin('https://urai-staging.web.app')).toBe(true);
+    expect(isAllowedStagingOrigin('http://127.0.0.1:5000')).toBe(true);
+    expect(isAllowedStagingOrigin('https://urai.app')).toBe(false);
+    expect(isAllowedStagingOrigin('https://evil.example')).toBe(false);
+  });
+
+  it('bounds parsed HTTP payload size', () => {
+    expect(isStagingHttpBodyWithinLimit({ message: 'ok' })).toBe(true);
+    expect(isStagingHttpBodyWithinLimit({ message: 'x'.repeat(MAX_STAGING_HTTP_BODY_BYTES) })).toBe(false);
+  });
+});
 
 describe('staging privacy boundaries', () => {
   it('accepts reserved synthetic email domains only', () => {
