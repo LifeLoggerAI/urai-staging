@@ -102,8 +102,7 @@ function rejectRateLimited(
   response: functions.Response,
   limiter: FixedWindowRateLimiter,
 ): boolean {
-  const forwarded = request.get('x-forwarded-for')?.split(',')[0]?.trim();
-  const key = stagingEphemeralClientKey(forwarded || request.ip);
+  const key = stagingEphemeralClientKey(request.ip);
   if (limiter.consume(key)) return false;
   sendJson(request, response, 429, { status: 'error', error: 'rate_limited' });
   return true;
