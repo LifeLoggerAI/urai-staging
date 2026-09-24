@@ -63,8 +63,11 @@ jobs:
       - name: Validate staging consumer authority
         run: node scripts/validate-staging-consumers.mjs
 
-      - name: Fail closed on stale active consumer refs
+      - name: Fail closed on stale publicly-resolvable active consumer refs
         run: node scripts/validate-active-consumer-refs.mjs
+
+      - name: Validate protected private consumer ref workflow
+        run: node scripts/validate-private-consumer-ref-workflow.mjs
 
       - name: Validate Spatial PR1296 Stripe TEST provider probe
         run: node scripts/validate-spatial-pr1296-stripe-provider-probe.mjs
