@@ -4,6 +4,8 @@ const path = new URL('../config/staging-consumers.json', import.meta.url);
 const doc = JSON.parse(fs.readFileSync(path, 'utf8'));
 const failures = [];
 
+const expectedSpatialSha = '05374b8b2e2ca44c3f5ce5ea21dca94349c0837c';
+
 if (doc.schemaVersion !== 'urai-staging-consumers-1') failures.push('schemaVersion');
 if (doc.projectId !== 'urai-staging') failures.push('projectId');
 if (doc.environment !== 'staging') failures.push('environment');
@@ -36,7 +38,7 @@ const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1296
 if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial repository');
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
 if (spatial.pullRequest !== 1296) failures.push('spatial pullRequest');
-if (spatial.exactSha !== 'ae839a7afb6fadf28f8181373d471ba3da9ddf8a') failures.push('spatial exactSha');
+if (spatial.exactSha !== expectedSpatialSha) failures.push('spatial exactSha');
 if (spatial.sourceRef !== 'refs/pull/1296/head') failures.push('spatial sourceRef');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (spatial.dataPolicy !== 'synthetic-only') failures.push('spatial dataPolicy');
