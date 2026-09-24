@@ -36,7 +36,7 @@ const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1296
 if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial repository');
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
 if (spatial.pullRequest !== 1296) failures.push('spatial pullRequest');
-if (spatial.exactSha !== '3c49c27ed0d881b5422a6bce42e26edda1558a62') failures.push('spatial exactSha');
+if (spatial.exactSha !== '5c4433b9296f7135c0999b25d41154ddee8790a5') failures.push('spatial exactSha');
 if (spatial.sourceRef !== 'refs/pull/1296/head') failures.push('spatial sourceRef');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (spatial.dataPolicy !== 'synthetic-only') failures.push('spatial dataPolicy');
