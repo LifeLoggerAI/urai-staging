@@ -11,7 +11,7 @@
       "repository": "LifeLoggerAI/urai-spatial",
       "repositoryId": 1167675641,
       "pullRequest": 1296,
-      "exactSha": "575c98070757e36bd7a2ba8a6163dd4179716b31",
+      "exactSha": "56281a4ab6881fa6e5649f0a9e0a66fb70494ecf",
       "sourceRef": "refs/pull/1296/head",
       "mode": "stripe-test-provider-readiness",
       "dataPolicy": "synthetic-only",
@@ -26,7 +26,10 @@
       "productionDataAuthorized": false,
       "longLivedCredentialsAuthorized": false,
       "stripeTestModeOnly": true,
-      "stripeLiveModeAuthorized": false
+      "stripeLiveModeAuthorized": false,
+      "refVerification": {
+        "mode": "public-git-ls-remote"
+      }
     },
     {
       "id": "urai-communications-pr53-twilio-trial-e2e",
@@ -34,7 +37,7 @@
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
       "pullRequest": 53,
-      "exactSha": "b70baa96edb2288f9685d767fd7ee564e7dad1db",
+      "exactSha": "23852bf0ca27d75db00a7468ca1d1c5aa756627a",
       "sourceRef": "refs/pull/53/head",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -61,7 +64,13 @@
       "longLivedCredentialsAuthorized": false,
       "twilioTrialModeOnly": true,
       "twilioProductionMessagingAuthorized": false,
-      "rollbackToDeliveryDisabledRequired": true
+      "rollbackToDeliveryDisabledRequired": true,
+      "refVerification": {
+        "mode": "protected-github-api",
+        "environment": "staging",
+        "requiredSecret": "URAI_CROSS_REPO_READ_TOKEN"
+      },
+      "trialSenderMode": "provider-assigned"
     }
   ],
   "historicalConsumers": [
