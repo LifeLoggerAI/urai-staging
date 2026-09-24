@@ -32,7 +32,10 @@ const forbidden = [
   [/firestore:rules|firestore:indexes|storage/, 'project-wide data-plane mutation'],
   [/TWILIO_MESSAGING_SERVICE_SID=.*MG/, 'production Messaging Service binding'],
   [/sk_live_|rk_live_/, 'live billing credential'],
-  [/if:\s*always\(\)[\s\S]{0,800}upload-artifact/, 'failure-path artifact upload']
 ];
 for (const [pattern,label] of forbidden) if (pattern.test(text)) throw new Error(`forbidden Communications Twilio staging marker: ${label}`);
+const uploadStep = text.slice(text.indexOf('- name: Upload sanitized retained proof'));
+if (!uploadStep.startsWith('- name: Upload sanitized retained proof')) throw new Error('sanitized proof upload step missing');
+if (!uploadStep.includes('if: ${{ success() }}')) throw new Error('sanitized proof upload must be success-gated');
+if (/if:\s*always\(\)/.test(uploadStep.split(/\n\s*- name:/, 1)[0])) throw new Error('sanitized proof upload cannot run on failure');
 console.log('Communications PR53 Twilio staging workflow contract OK');
