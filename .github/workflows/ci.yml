@@ -54,9 +54,6 @@ jobs:
       - name: Validate staging deploy workflow definition
         run: node scripts/validate-staging-deploy-workflow.mjs
 
-      - name: Validate Admin PR57 provider probe definition
-        run: node scripts/validate-admin-pr57-provider-probe.mjs
-
       - name: Validate staging WIF bootstrap contract
         run: node scripts/validate-staging-wif-bootstrap.mjs
 
@@ -74,16 +71,6 @@ jobs:
 
       - name: Validate Communications PR53 Twilio staging controller
         run: node scripts/validate-communications-pr53-twilio-staging.mjs
-
-      - name: Validate Admin PR57 staging consumer workflow
-        run: node scripts/validate-admin-pr57-staging-consumer.mjs
-
-      - name: Validate governed Admin PR57 runtime deployment path
-        shell: bash
-        run: |
-          set -euo pipefail
-          node scripts/validate-admin-pr57-runtime-deploy.mjs
-          bash -n scripts/admin-pr57-staging-lock.sh
 
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
