@@ -6,7 +6,7 @@ on:
       communications_sha:
         description: Exact urai-communications PR #53 SHA authorized by config/staging-consumers.json
         required: true
-        default: a4304e6d27ad095bcf377e24646baca69480d52c
+        default: 9e93a67240e6d5ec4d05440224985d850ed7bc28
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
@@ -97,6 +97,9 @@ jobs:
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
           done
           TWILIO_CALLBACK_URL="${STAGING_FUNCTIONS_BASE_URL%/}/twilioDeliveryStatusCallback"
+          STAGING_TEST_PHONE_HASH="$(node -e "const c=require('node:crypto');process.stdout.write(c.createHash('sha256').update(process.env.STAGING_TEST_PHONE).digest('hex'))")"
+          echo "::add-mask::$STAGING_TEST_PHONE_HASH"
+          echo "STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH" >> "$GITHUB_ENV"
           echo "DELIVERY_STATUS_CALLBACK_URL=$TWILIO_CALLBACK_URL" >> "$GITHUB_ENV"
           echo "STAGING_TWILIO_CALLBACK_FUNCTION=twilioDeliveryStatusCallback" >> "$GITHUB_ENV"
           echo "STAGING_SMS_SEND_FUNCTION=adminTwilioTestSend" >> "$GITHUB_ENV"
@@ -168,6 +171,7 @@ jobs:
           TWILIO_TRIAL_MODE=true
           TWILIO_MESSAGING_SERVICE_SID=
           TWILIO_FROM_NUMBER=
+          STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
           DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
           DEFAULT_TENANT_TIMEZONE=America/Chicago
           EOF
