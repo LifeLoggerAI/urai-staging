@@ -21,7 +21,8 @@ const required = [
   'Upload sanitized retained proof',
   'if: ${{ success() }}',
   'productionMessagingAuthorized:false',
-  'secretMaterialRetained:false'
+  'secretMaterialRetained:false',
+  'communications-source/functions/.env.urai-staging'
 ];
 for (const marker of required) if (!text.includes(marker)) throw new Error(`missing Communications Twilio staging marker: ${marker}`);
 
