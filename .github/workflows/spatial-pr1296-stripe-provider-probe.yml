@@ -6,7 +6,7 @@ on:
       spatial_sha:
         description: Exact urai-spatial PR #1296 SHA authorized by config/staging-consumers.json
         required: true
-        default: 5c4433b9296f7135c0999b25d41154ddee8790a5
+        default: ae839a7afb6fadf28f8181373d471ba3da9ddf8a
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
@@ -72,7 +72,7 @@ jobs:
           SPATIAL_SHA="$SPATIAL_SHA" node <<'NODE'
           const fs = require('node:fs');
           const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json', 'utf8'));
-          const c = authority.consumers.find((entry) => entry.id === 'urai-spatial-pr1296-stripe-test-e2e');
+          const c = authority.consumers.find((entry) => entry.id === 'urai-spatial-pr1296-stripe-test-readiness');
           const failures = [];
           if (!c) failures.push('consumer missing');
           if (c) {
