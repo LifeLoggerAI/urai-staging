@@ -63,6 +63,15 @@ jobs:
       - name: Validate staging consumer authority
         run: node scripts/validate-staging-consumers.mjs
 
+      - name: Fail closed on stale active consumer refs
+        run: node scripts/validate-active-consumer-refs.mjs
+
+      - name: Validate Spatial PR1296 Stripe TEST provider probe
+        run: node scripts/validate-spatial-pr1296-stripe-provider-probe.mjs
+
+      - name: Validate Communications PR53 Twilio staging controller
+        run: node scripts/validate-communications-pr53-twilio-staging.mjs
+
       - name: Validate Admin PR57 staging consumer workflow
         run: node scripts/validate-admin-pr57-staging-consumer.mjs
 
