@@ -35,11 +35,11 @@ if (!problems.length) {
       `Failed command count is ${report.failedCount}, expected ${commands.length - passedCommands.length}.`,
     );
   }
-  if (report.launchScore !== expectedScore) {
-    problems.push(`Evidence score is ${report.launchScore}, expected ${expectedScore}.`);
+  if (report.sourceBootstrapScore !== expectedScore) {
+    problems.push(`Source bootstrap score is ${report.sourceBootstrapScore}, expected ${expectedScore}.`);
   }
-  if (report.launchScore < 0 || report.launchScore > 100) {
-    problems.push(`Evidence score must remain within 0..100: ${report.launchScore}.`);
+  if (report.sourceBootstrapScore < 0 || report.sourceBootstrapScore > 100) {
+    problems.push(`Source bootstrap score must remain within 0..100: ${report.sourceBootstrapScore}.`);
   }
   for (const command of commands) {
     if (command.status !== 'passed' || command.exitCode !== 0) {
@@ -50,7 +50,7 @@ if (!problems.length) {
   const summary = fs.readFileSync(summaryPath, 'utf8');
   for (const marker of [
     '- Status: passed',
-    `- Launch score: ${expectedScore}/100`,
+    `- Source bootstrap score: ${expectedScore}/100`,
     `- Passed commands: ${passedCommands.length}`,
     '- Failed commands: 0',
     `- Total commands: ${commands.length}`,
