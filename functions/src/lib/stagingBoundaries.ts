@@ -3,6 +3,34 @@ import { createHash } from 'node:crypto';
 export const STAGING_PROJECT_ID = 'urai-staging';
 export const STAGING_HOSTING_URL = 'https://urai-staging.web.app';
 export const MAX_STAGING_HTTP_BODY_BYTES = 8 * 1024;
+export const STAGING_HTTP_RATE_WINDOW_MS = 60_000;
+export const STAGING_COMPANION_REQUESTS_PER_WINDOW = 30;
+export const STAGING_WAITLIST_REQUESTS_PER_WINDOW = 10;
+
+export class FixedWindowRateLimiter {
+  private readonly buckets = new Map<string, { windowStart: number; count: number }>();
+
+  constructor(
+    private readonly limit: number,
+    private readonly windowMs: number,
+  ) {}
+
+  consume(key: string, now = Date.now()): boolean {
+    const current = this.buckets.get(key);
+    if (!current || now - current.windowStart >= this.windowMs) {
+      this.buckets.set(key, { windowStart: now, count: 1 });
+      return true;
+    }
+    if (current.count >= this.limit) return false;
+    current.count += 1;
+    return true;
+  }
+}
+
+export function stagingEphemeralClientKey(value: unknown): string {
+  const raw = typeof value === 'string' && value.trim() ? value.trim() : 'unknown-client';
+  return createHash('sha256').update(raw).digest('hex');
+}
 
 const ALLOWED_STAGING_ORIGINS = new Set([
   STAGING_HOSTING_URL,
