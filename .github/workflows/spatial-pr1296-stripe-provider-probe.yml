@@ -6,7 +6,7 @@ on:
       spatial_sha:
         description: Exact urai-spatial PR #1296 SHA authorized by config/staging-consumers.json
         required: true
-        default: a74802d54bd6336e31bd61b8aa5b584370e3c4c0
+        default: d2b762bd8b2ba97a8c8e8f160f68d779077b7f7d
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
