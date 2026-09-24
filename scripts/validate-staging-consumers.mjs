@@ -40,11 +40,11 @@ if (spatial.stripeTestModeOnly !== true) failures.push('spatial stripeTestModeOn
 if (spatial.stripeLiveModeAuthorized !== false) failures.push('spatial stripeLiveModeAuthorized');
 if (spatial.refVerification?.mode !== 'public-git-ls-remote') failures.push('spatial ref verification');
 
-const communications = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr53-twilio-trial-e2e') || {};
+const communications = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr58-twilio-trial-e2e') || {};
 if (communications.repository !== 'LifeLoggerAI/urai-communications') failures.push('communications repository');
 if (communications.repositoryId !== 1169785707) failures.push('communications repositoryId');
-if (communications.pullRequest !== 53) failures.push('communications pullRequest');
-if (communications.sourceRef !== 'refs/pull/53/head') failures.push('communications sourceRef');
+if (communications.pullRequest !== 58) failures.push('communications pullRequest');
+if (communications.sourceRef !== 'refs/pull/58/head') failures.push('communications sourceRef');
 if (communications.mode !== 'twilio-trial-protected-staging-e2e') failures.push('communications mode');
 if (JSON.stringify(communications.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('communications allowedDeployScopes');
 if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('communications function allowlist');
