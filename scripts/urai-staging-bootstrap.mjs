@@ -9,6 +9,35 @@ const evidenceDir = path.join(root, 'artifacts', 'launch');
 const evidencePath = path.join(evidenceDir, 'staging-bootstrap-report.json');
 const summaryPath = path.join(evidenceDir, 'staging-bootstrap-summary.md');
 const env = { ...process.env };
+const consumersPath = path.join(root, 'config', 'staging-consumers.json');
+const gitHeadResult = spawnSync('git', ['rev-parse', 'HEAD'], {
+  cwd: root,
+  encoding: 'utf8',
+  stdio: ['ignore', 'pipe', 'pipe'],
+});
+const sourceSha = gitHeadResult.status === 0 ? (gitHeadResult.stdout || '').trim() : '';
+const consumerAuthority = fs.existsSync(consumersPath)
+  ? JSON.parse(fs.readFileSync(consumersPath, 'utf8'))
+  : null;
+const activeConsumers = Array.isArray(consumerAuthority?.consumers)
+  ? consumerAuthority.consumers
+      .filter((entry) => entry?.state === 'active')
+      .map((entry) => ({
+        id: entry.id,
+        repository: entry.repository,
+        repositoryId: entry.repositoryId,
+        pullRequest: entry.pullRequest,
+        exactSha: entry.exactSha,
+        sourceRef: entry.sourceRef,
+        mode: entry.mode,
+        dataPolicy: entry.dataPolicy,
+        providerProject: entry.providerProject,
+        allowedEnvironment: entry.allowedEnvironment,
+        productionDeploymentAuthorized: entry.productionDeploymentAuthorized,
+        productionDataAuthorized: entry.productionDataAuthorized,
+        longLivedCredentialsAuthorized: entry.longLivedCredentialsAuthorized,
+      }))
+  : [];
 delete env.NPM_CONFIG_PREFIX;
 delete env.npm_config_prefix;
 delete env.URAI_SKIP_RULES;
@@ -16,6 +45,15 @@ delete env.URAI_SKIP_RULES;
 const report = {
   repo: 'LifeLoggerAI/urai-staging',
   kind: 'staging-bootstrap',
+  sourceSha,
+  projectId: 'urai-staging',
+  environment: 'staging',
+  productionAllowed: false,
+  activeConsumers,
+  workflowRunId: process.env.GITHUB_RUN_ID ?? null,
+  cloudDeploymentPerformed: false,
+  liveSmokePerformed: false,
+  providerMutationPerformed: false,
   startedAt: new Date().toISOString(),
   finishedAt: null,
   status: 'running',
@@ -31,6 +69,12 @@ fs.mkdirSync(evidenceDir, { recursive: true });
 
 const problems = [];
 if (!fs.existsSync(pkgPath)) problems.push('No package.json found. This must run from the LifeLoggerAI/urai-staging repo root.');
+if (!/^[0-9a-f]{40}$/.test(sourceSha)) problems.push(`Could not prove exact git HEAD SHA: ${sourceSha || 'missing'}`);
+if (!consumerAuthority) problems.push('Missing config/staging-consumers.json; active consumer identity cannot be embedded.');
+if (consumerAuthority && consumerAuthority.projectId !== 'urai-staging') problems.push('Staging consumer authority projectId must be urai-staging.');
+if (consumerAuthority && consumerAuthority.environment !== 'staging') problems.push('Staging consumer authority environment must be staging.');
+if (consumerAuthority && consumerAuthority.productionAllowed !== false) problems.push('Staging consumer authority must keep productionAllowed=false.');
+if (consumerAuthority && activeConsumers.length === 0) problems.push('No active Staging consumer authority found.');
 const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf8')) : null;
 if (pkg && pkg.name !== 'urai-staging') problems.push(`Wrong repo: found package '${pkg.name}'. This bootstrap is for LifeLoggerAI/urai-staging.`);
 if (!fs.existsSync(path.join(root, 'functions', 'package-lock.json'))) {
@@ -139,6 +183,13 @@ function writeSummary() {
     '',
     `- Repository: ${report.repo}`,
     `- Kind: ${report.kind}`,
+    `- Exact source SHA: ${report.sourceSha}`,
+    `- Project: ${report.projectId}`,
+    `- Environment: ${report.environment}`,
+    `- Production allowed: ${report.productionAllowed}`,
+    `- Cloud deployment performed: ${report.cloudDeploymentPerformed}`,
+    `- Live smoke performed: ${report.liveSmokePerformed}`,
+    `- Provider mutation performed: ${report.providerMutationPerformed}`,
     `- Status: ${report.status}`,
     `- Source bootstrap score: ${report.sourceBootstrapScore}/100`,
     `- Started: ${report.startedAt}`,
@@ -148,6 +199,14 @@ function writeSummary() {
     `- Total commands: ${report.commandCount}`,
     ''
   ];
+
+  if (report.activeConsumers.length) {
+    lines.push('## Active consumer authority', '');
+    for (const consumer of report.activeConsumers) {
+      lines.push(`- ${consumer.id}: ${consumer.repository} PR #${consumer.pullRequest} @ ${consumer.exactSha} (${consumer.mode}; ${consumer.dataPolicy})`);
+    }
+    lines.push('');
+  }
 
   if (report.error) lines.push('## Failure', '', report.error, '');
   if (report.failureExcerpt) {
