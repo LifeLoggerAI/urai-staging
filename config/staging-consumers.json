@@ -35,7 +35,7 @@
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
       "pullRequest": 53,
-      "exactSha": "47984e771315bac927c304ff3c9cf25fd9b38f12",
+      "exactSha": "6037b4ee9a0606c65877a162c5ec66fe89c271be",
       "sourceRef": "refs/pull/53/head",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -45,10 +45,10 @@
         "functions-explicit-only"
       ],
       "initialFunctionDeploymentAllowlist": [
-        "adminTestSend",
+        "adminTwilioTestSend",
         "adminProviderReadiness",
         "adminDeliveryProof",
-        "deliveryStatusCallback"
+        "twilioDeliveryStatusCallback"
       ],
       "secretWriteAllowlist": [
         "TWILIO_AUTH_TOKEN"

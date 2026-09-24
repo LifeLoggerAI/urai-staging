@@ -6,7 +6,7 @@ on:
       communications_sha:
         description: Exact urai-communications PR #53 SHA authorized by config/staging-consumers.json
         required: true
-        default: 47984e771315bac927c304ff3c9cf25fd9b38f12
+        default: 6037b4ee9a0606c65877a162c5ec66fe89c271be
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
@@ -51,7 +51,6 @@ jobs:
       STAGING_TENANT_ID: ${{ vars.STAGING_TENANT_ID }}
       STAGING_FIREBASE_API_KEY: ${{ vars.STAGING_FIREBASE_API_KEY }}
       STAGING_TEST_UID: ${{ vars.STAGING_TEST_UID }}
-      DELIVERY_STATUS_CALLBACK_URL: ${{ vars.DELIVERY_STATUS_CALLBACK_URL }}
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
       TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
@@ -87,21 +86,24 @@ jobs:
           if (!c) failures.push('consumer missing');
           if (c?.exactSha !== process.env.COMMUNICATIONS_SHA) failures.push('exact SHA');
           if (c?.providerProject !== 'urai-staging' || c?.allowedEnvironment !== 'staging') failures.push('project/environment');
-          if (JSON.stringify(c?.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTestSend','adminProviderReadiness','adminDeliveryProof','deliveryStatusCallback'])) failures.push('function allowlist');
+          if (JSON.stringify(c?.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('function allowlist');
           if (JSON.stringify(c?.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN'])) failures.push('secret allowlist');
           if (c?.productionDeploymentAuthorized !== false || c?.productionDataAuthorized !== false) failures.push('production authority');
           if (c?.twilioTrialModeOnly !== true || c?.twilioProductionMessagingAuthorized !== false) failures.push('Twilio mode');
           if (c?.rollbackToDeliveryDisabledRequired !== true) failures.push('rollback');
           if (failures.length) throw new Error(failures.join(', '));
           NODE
-          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID DELIVERY_STATUS_CALLBACK_URL TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_FROM_NUMBER STAGING_TEST_PHONE; do
+          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_FROM_NUMBER STAGING_TEST_PHONE; do
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
           done
+          TWILIO_CALLBACK_URL="${STAGING_FUNCTIONS_BASE_URL%/}/twilioDeliveryStatusCallback"
+          echo "DELIVERY_STATUS_CALLBACK_URL=$TWILIO_CALLBACK_URL" >> "$GITHUB_ENV"
+          echo "STAGING_TWILIO_CALLBACK_FUNCTION=twilioDeliveryStatusCallback" >> "$GITHUB_ENV"
+          echo "STAGING_SMS_SEND_FUNCTION=adminTwilioTestSend" >> "$GITHUB_ENV"
           case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 42 ;; esac
           case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 43 ;; esac
           case "$STAGING_FUNCTIONS_BASE_URL" in https://*) ;; *) exit 44 ;; esac
-          case "$DELIVERY_STATUS_CALLBACK_URL" in https://*) ;; *) exit 45 ;; esac
-          test "$DELIVERY_STATUS_CALLBACK_URL" = "${STAGING_FUNCTIONS_BASE_URL%/}/deliveryStatusCallback"
+          case "$TWILIO_CALLBACK_URL" in https://*) ;; *) exit 45 ;; esac
 
       - name: Authenticate WIF to urai-staging
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
@@ -176,7 +178,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$COMMUNICATIONS_SHA"
-          firebase deploy             --project urai-staging             --only functions:adminTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:deliveryStatusCallback             --non-interactive
+          firebase deploy             --project urai-staging             --only functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback             --non-interactive
           rm -f functions/.env.urai-staging
 
       - name: Acquire short-lived staging Firebase ID token if needed
@@ -262,7 +264,7 @@ jobs:
             DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
             DEFAULT_TENANT_TIMEZONE=America/Chicago
             EOF
-            firebase deploy               --project urai-staging               --only functions:adminTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:deliveryStatusCallback               --non-interactive
+            firebase deploy               --project urai-staging               --only functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback               --non-interactive
             rm -f functions/.env.urai-staging
           fi
 

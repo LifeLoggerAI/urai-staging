@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const path = new URL('../config/staging-consumers.json', import.meta.url);
 const doc = JSON.parse(fs.readFileSync(path, 'utf8'));
 const failures = [];
-const expectedCommunicationsSha = '47984e771315bac927c304ff3c9cf25fd9b38f12';
+const expectedCommunicationsSha = '6037b4ee9a0606c65877a162c5ec66fe89c271be';
 
 if (doc.schemaVersion !== 'urai-staging-consumers-1') failures.push('schemaVersion');
 if (doc.projectId !== 'urai-staging') failures.push('projectId');
@@ -44,7 +44,7 @@ if (communications.dataPolicy !== 'synthetic-only') failures.push('communication
 if (communications.providerProject !== 'urai-staging') failures.push('communications providerProject');
 if (communications.allowedEnvironment !== 'staging') failures.push('communications allowedEnvironment');
 if (JSON.stringify(communications.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('communications allowedDeployScopes');
-if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTestSend','adminProviderReadiness','adminDeliveryProof','deliveryStatusCallback'])) failures.push('communications function allowlist');
+if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('communications function allowlist');
 if (JSON.stringify(communications.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN'])) failures.push('communications secret allowlist');
 if (communications.providerMutationAuthorized !== true) failures.push('communications provider mutation');
 if (communications.providerMutationScope !== 'single-verified-trial-recipient-only') failures.push('communications provider mutation scope');
