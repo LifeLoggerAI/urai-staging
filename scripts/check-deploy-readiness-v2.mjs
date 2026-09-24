@@ -116,7 +116,7 @@ const publicSection = deployWorkflow.slice(deployWorkflow.indexOf('public-verify
 if (publicSection.includes('secrets.') || publicSection.includes('environment: staging') || publicSection.includes('firebase deploy')) failures.push('Public verification must not receive secrets, protected environment authority, or mutation commands');
 
 requirePhrases('.github/workflows/urai-production-verify.yml', ['ref: ${{ env.TARGET_SHA }}', 'fetch-depth: 0', 'persist-credentials: false', 'Setup Java 21 for Firebase emulators', 'node scripts/urai-staging-bootstrap.mjs', 'node scripts/validate-launch-evidence.mjs', 'node scripts/urai-production-verify.mjs']);
-requirePhrases('ENVIRONMENT_AUTHORITY.md', ['owns only the URAI staging', 'Production alias: intentionally absent', 'must not deploy to, alias, or imply ownership of the production project', 'SOURCE AUTHORITY REPAIRED — NOT VERIFIED OR DEPLOYED', 'must not create Hosting sites or other infrastructure', 'Billing good standing']);
+requirePhrases('ENVIRONMENT_AUTHORITY.md', ['owns only the URAI staging', 'Production alias: intentionally absent', 'must not deploy to, alias, or imply ownership of the production project', 'SOURCE CONVERGENCE ACTIVE — PROTECTED RUNTIME NO-GO — LIVE CERTIFICATION NOT COMPLETE', 'must not create Hosting sites or other infrastructure', 'Billing good standing']);
 
 if (failures.length) {
   console.error('URAI staging semantic deploy readiness failed:');
