@@ -18,6 +18,7 @@ const required = [
   'TWILIO_FROM_NUMBER=',
   "TWILIO_MESSAGING_SERVICE_SID: ''",
   "senderMode:'provider-assigned-trial-number'",
+  'STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH',
   'STAGING_TEST_SMS_BODY: sms_appointment_reminders',
   'gcloud secrets versions add TWILIO_AUTH_TOKEN',
   'npm run verify:staging:delivery -- --staging --sms --callback',
