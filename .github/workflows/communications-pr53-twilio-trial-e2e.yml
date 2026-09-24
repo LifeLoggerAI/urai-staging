@@ -6,7 +6,7 @@ on:
       communications_sha:
         description: Exact urai-communications PR #53 SHA authorized by config/staging-consumers.json
         required: true
-        default: b70baa96edb2288f9685d767fd7ee564e7dad1db
+        default: 23852bf0ca27d75db00a7468ca1d1c5aa756627a
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
@@ -53,7 +53,8 @@ jobs:
       STAGING_TEST_UID: ${{ vars.STAGING_TEST_UID }}
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-      TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
+      CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+      TWILIO_FROM_NUMBER: ''
       STAGING_TEST_PHONE: ${{ secrets.STAGING_TEST_PHONE }}
       STAGING_FIREBASE_ID_TOKEN: ${{ secrets.STAGING_FIREBASE_ID_TOKEN }}
       STAGING_TEST_AUTH_EMAIL: ${{ secrets.STAGING_TEST_AUTH_EMAIL }}
@@ -76,7 +77,13 @@ jobs:
           test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
           test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
           test "${{ inputs.confirm_staging_project }}" = 'urai-staging'
-          test "$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-communications.git refs/pull/53/head | awk '{print $1}')" = "$COMMUNICATIONS_SHA"
+          test -n "$CROSS_REPO_READ_TOKEN" || { echo 'URAI_CROSS_REPO_READ_TOKEN is required for private Communications ref proof.' >&2; exit 46; }
+          live_communications_sha="$(curl --silent --show-error --fail \
+            -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/53 | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.head.sha)})")"
+          test "$live_communications_sha" = "$COMMUNICATIONS_SHA"
           node scripts/validate-staging-consumers.mjs
           COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA" node <<'NODE'
           const fs = require('node:fs');
@@ -93,7 +100,7 @@ jobs:
           if (c?.rollbackToDeliveryDisabledRequired !== true) failures.push('rollback');
           if (failures.length) throw new Error(failures.join(', '));
           NODE
-          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_FROM_NUMBER STAGING_TEST_PHONE; do
+          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID CROSS_REPO_READ_TOKEN TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN STAGING_TEST_PHONE; do
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
           done
           TWILIO_CALLBACK_URL="${STAGING_FUNCTIONS_BASE_URL%/}/twilioDeliveryStatusCallback"
@@ -167,7 +174,7 @@ jobs:
           TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID
           TWILIO_TRIAL_MODE=true
           TWILIO_MESSAGING_SERVICE_SID=
-          TWILIO_FROM_NUMBER=$TWILIO_FROM_NUMBER
+          TWILIO_FROM_NUMBER=
           DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
           DEFAULT_TENANT_TIMEZONE=America/Chicago
           EOF
@@ -215,7 +222,6 @@ jobs:
           npm run verify:staging:delivery -- --staging --sms --callback | tee "$RUNNER_TEMP/twilio-e2e.log"
           ! grep -F "$TWILIO_AUTH_TOKEN" "$RUNNER_TEMP/twilio-e2e.log"
           ! grep -F "$STAGING_TEST_PHONE" "$RUNNER_TEMP/twilio-e2e.log"
-          ! grep -F "$TWILIO_FROM_NUMBER" "$RUNNER_TEMP/twilio-e2e.log"
           rm -f "$RUNNER_TEMP/twilio-e2e.log"
 
       - name: Write sanitized E2E receipt
@@ -235,7 +241,7 @@ jobs:
             environment:'staging',
             trialMode:true,
             accountRef:h(process.env.TWILIO_ACCOUNT_SID),
-            senderRef:h(process.env.TWILIO_FROM_NUMBER),
+            senderMode:'provider-assigned-trial-number',
             recipientRef:h(process.env.STAGING_TEST_PHONE),
             protectedE2ECompleted:true,
             productionMessagingAuthorized:false,
@@ -260,7 +266,7 @@ jobs:
             TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID
             TWILIO_TRIAL_MODE=true
             TWILIO_MESSAGING_SERVICE_SID=
-            TWILIO_FROM_NUMBER=$TWILIO_FROM_NUMBER
+            TWILIO_FROM_NUMBER=
             DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
             DEFAULT_TENANT_TIMEZONE=America/Chicago
             EOF
