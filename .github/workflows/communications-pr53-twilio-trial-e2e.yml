@@ -1,12 +1,12 @@
-name: Communications PR53 Twilio Trial Protected Staging E2E
+name: Communications PR58 Twilio Trial Protected Staging E2E
 
 on:
   workflow_dispatch:
     inputs:
       communications_sha:
-        description: Exact urai-communications PR #53 SHA authorized by config/staging-consumers.json
+        description: Exact urai-communications PR #58 SHA authorized by config/staging-consumers.json
         required: true
-        default: ed04128fba86c4b3040d7022aea7dcd07e209ce3
+        default: d2c88375bf02dbcc247ba08cb8901cd1119d205f
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
@@ -22,12 +22,12 @@ permissions:
   actions: read
 
 concurrency:
-  group: urai-communications-pr53-twilio-trial-e2e
+  group: urai-communications-pr58-twilio-trial-e2e
   cancel-in-progress: false
 
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
-  COMMUNICATIONS_PR_NUMBER: '53'
+  COMMUNICATIONS_PR_NUMBER: '58'
   STAGING_PROJECT_ID: urai-staging
   EXPECTED_ENVIRONMENT: staging
   FIREBASE_CLI_VERSION: '15.23.0'
@@ -82,13 +82,13 @@ jobs:
             -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/53 | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.head.sha)})")"
+            https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/58 | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.head.sha)})")"
           test "$live_communications_sha" = "$COMMUNICATIONS_SHA"
           node scripts/validate-staging-consumers.mjs
           COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA" node <<'NODE'
           const fs = require('node:fs');
           const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
-          const c = authority.consumers.find((entry) => entry.id === 'urai-communications-pr53-twilio-trial-e2e');
+          const c = authority.consumers.find((entry) => entry.id === 'urai-communications-pr58-twilio-trial-e2e');
           const failures = [];
           if (!c) failures.push('consumer missing');
           if (c?.exactSha !== process.env.COMMUNICATIONS_SHA) failures.push('exact SHA');
@@ -234,7 +234,7 @@ jobs:
           const crypto=require('node:crypto');
           const h=(v)=>crypto.createHash('sha256').update(v).digest('hex').slice(0,16);
           fs.writeFileSync('artifacts/communications-twilio/receipt.json', JSON.stringify({
-            schemaVersion:'urai-communications-twilio-trial-e2e-1',
+            schemaVersion:'urai-communications-pr58-twilio-trial-e2e-1',
             stagingControllerSha:process.env.CONTROLLER_SHA,
             communicationsSha:process.env.COMMUNICATIONS_SHA,
             projectId:'urai-staging',
@@ -287,7 +287,7 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: urai-communications-twilio-trial-e2e-${{ env.COMMUNICATIONS_SHA }}-${{ github.run_id }}
+          name: urai-communications-pr58-twilio-trial-e2e-${{ env.COMMUNICATIONS_SHA }}-${{ github.run_id }}
           path: artifacts/communications-twilio/receipt.json
           if-no-files-found: error
           retention-days: 90
