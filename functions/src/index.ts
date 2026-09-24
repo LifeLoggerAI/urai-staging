@@ -3,12 +3,17 @@ import * as functions from 'firebase-functions';
 import { getCompletionSummary, FEATURE_MATRIX, ROADMAP_PHASES } from './lib/featureRegistry';
 import { requireAdmin, requireAuth } from './lib/auth';
 import {
+  FixedWindowRateLimiter,
   MAX_STAGING_HTTP_BODY_BYTES,
+  STAGING_COMPANION_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_RATE_WINDOW_MS,
+  STAGING_WAITLIST_REQUESTS_PER_WINDOW,
   STAGING_HOSTING_URL,
   STAGING_PROJECT_ID,
   isAllowedStagingOrigin,
   isStagingHttpBodyWithinLimit,
   isSyntheticStagingEmail,
+  stagingEphemeralClientKey,
   stagingRuntimeBuildInfo,
   stagingWaitlistDocumentId,
 } from './lib/stagingBoundaries';
@@ -25,6 +30,19 @@ admin.initializeApp();
 
 const db = admin.firestore();
 const serverTimestamp = admin.firestore.FieldValue.serverTimestamp;
+const companionRateLimiter = new FixedWindowRateLimiter(
+  STAGING_COMPANION_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_RATE_WINDOW_MS,
+);
+const waitlistRateLimiter = new FixedWindowRateLimiter(
+  STAGING_WAITLIST_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_RATE_WINDOW_MS,
+);
+const stagingHttpRuntime = functions.runWith({
+  maxInstances: 2,
+  timeoutSeconds: 15,
+  memory: '256MB',
+});
 
 function setJsonHeaders(request: functions.Request, response: functions.Response): void {
   const origin = request.get('origin');
@@ -79,6 +97,18 @@ function sendJson(
   response.status(statusCode).json(body);
 }
 
+function rejectRateLimited(
+  request: functions.Request,
+  response: functions.Response,
+  limiter: FixedWindowRateLimiter,
+): boolean {
+  const forwarded = request.get('x-forwarded-for')?.split(',')[0]?.trim();
+  const key = stagingEphemeralClientKey(forwarded || request.ip);
+  if (limiter.consume(key)) return false;
+  sendJson(request, response, 429, { status: 'error', error: 'rate_limited' });
+  return true;
+}
+
 function bodyAsPlainObject(body: unknown): Record<string, unknown> {
   if (body !== null && typeof body === 'object' && !Array.isArray(body)) {
     return body as Record<string, unknown>;
@@ -86,15 +116,15 @@ function bodyAsPlainObject(body: unknown): Record<string, unknown> {
   return {};
 }
 
-export const healthz = functions.https.onRequest((request, response) => {
+export const healthz = stagingHttpRuntime.https.onRequest((request, response) => {
   if (handleOptions(request, response)) return;
   if (rejectUnapprovedOrigin(request, response)) return;
   if (request.method !== 'GET') {
-    sendJson(request, 405, { status: 'error', error: 'method_not_allowed' });
+    sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
 
-  sendJson(request, 200, {
+  sendJson(request, response, 200, {
     status: 'ok',
     service: 'urai-staging',
     projectId: STAGING_PROJECT_ID,
@@ -102,15 +132,15 @@ export const healthz = functions.https.onRequest((request, response) => {
   });
 });
 
-export const buildinfo = functions.https.onRequest((request, response) => {
+export const buildinfo = stagingHttpRuntime.https.onRequest((request, response) => {
   if (handleOptions(request, response)) return;
   if (rejectUnapprovedOrigin(request, response)) return;
   if (request.method !== 'GET') {
-    sendJson(request, 405, { status: 'error', error: 'method_not_allowed' });
+    sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
 
-  sendJson(request, 200, {
+  sendJson(request, response, 200, {
     status: 'ok',
     service: 'urai-staging',
     projectId: STAGING_PROJECT_ID,
@@ -119,19 +149,20 @@ export const buildinfo = functions.https.onRequest((request, response) => {
   });
 });
 
-export const companion = functions.https.onRequest(async (request, response) => {
+export const companion = stagingHttpRuntime.https.onRequest(async (request, response) => {
   if (handleOptions(request, response)) return;
   if (rejectUnapprovedOrigin(request, response)) return;
   if (rejectOversizeBody(request, response)) return;
+  if (rejectRateLimited(request, response, companionRateLimiter)) return;
   if (request.method !== 'POST') {
-    sendJson(request, 405, { status: 'error', error: 'method_not_allowed' });
+    sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
 
   const body = bodyAsPlainObject(request.body);
   const message = typeof body.message === 'string' ? body.message.trim() : '';
   if (message.length === 0) {
-    sendJson(request, 400, {
+    sendJson(request, response, 400, {
       status: 'error',
       error: 'message_required',
       message: 'A non-empty message is required for the staging companion smoke endpoint.',
@@ -139,7 +170,7 @@ export const companion = functions.https.onRequest(async (request, response) => 
     return;
   }
 
-  sendJson(request, 200, {
+  sendJson(request, response, 200, {
     status: 'ok',
     service: 'urai-staging-companion',
     persisted: false,
@@ -147,18 +178,19 @@ export const companion = functions.https.onRequest(async (request, response) => 
   });
 });
 
-export const waitlist = functions.https.onRequest(async (request, response) => {
+export const waitlist = stagingHttpRuntime.https.onRequest(async (request, response) => {
   if (handleOptions(request, response)) return;
   if (rejectUnapprovedOrigin(request, response)) return;
   if (rejectOversizeBody(request, response)) return;
+  if (rejectRateLimited(request, response, waitlistRateLimiter)) return;
   if (request.method !== 'POST') {
-    sendJson(request, 405, { status: 'error', error: 'method_not_allowed' });
+    sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
 
   const body = bodyAsPlainObject(request.body);
   if (!isSyntheticStagingEmail(body.email)) {
-    sendJson(request, 400, {
+    sendJson(request, response, 400, {
       status: 'error',
       error: 'synthetic_email_required',
       message: 'The staging waitlist accepts reserved synthetic email domains only.',
@@ -180,7 +212,7 @@ export const waitlist = functions.https.onRequest(async (request, response) => {
 
   await db.collection('staging_waitlist').doc(documentId).set(entry, { merge: true });
 
-  sendJson(request, 200, {
+  sendJson(request, response, 200, {
     status: 'ok',
     service: 'urai-staging-waitlist',
     stored: true,
