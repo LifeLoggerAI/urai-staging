@@ -2,6 +2,26 @@ import { createHash } from 'node:crypto';
 
 export const STAGING_PROJECT_ID = 'urai-staging';
 export const STAGING_HOSTING_URL = 'https://urai-staging.web.app';
+export const MAX_STAGING_HTTP_BODY_BYTES = 8 * 1024;
+
+const ALLOWED_STAGING_ORIGINS = new Set([
+  STAGING_HOSTING_URL,
+  'http://127.0.0.1:5000',
+  'http://localhost:5000',
+]);
+
+export function isAllowedStagingOrigin(value: unknown): boolean {
+  if (value === undefined || value === null || value === '') return true;
+  return typeof value === 'string' && ALLOWED_STAGING_ORIGINS.has(value);
+}
+
+export function isStagingHttpBodyWithinLimit(value: unknown): boolean {
+  try {
+    return Buffer.byteLength(JSON.stringify(value ?? null), 'utf8') <= MAX_STAGING_HTTP_BODY_BYTES;
+  } catch {
+    return false;
+  }
+}
 
 const SYNTHETIC_EMAIL_DOMAINS = new Set([
   'example.com',
