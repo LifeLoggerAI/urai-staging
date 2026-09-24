@@ -29,6 +29,40 @@
       "productionDeploymentAuthorized": false,
       "productionDataAuthorized": false,
       "longLivedCredentialsAuthorized": false
+    },
+    {
+      "id": "urai-communications-pr53-twilio-trial-e2e",
+      "repository": "LifeLoggerAI/urai-communications",
+      "repositoryId": 1169785707,
+      "pullRequest": 53,
+      "exactSha": "47984e771315bac927c304ff3c9cf25fd9b38f12",
+      "sourceRef": "refs/pull/53/head",
+      "mode": "twilio-trial-protected-staging-e2e",
+      "dataPolicy": "synthetic-only",
+      "providerProject": "urai-staging",
+      "allowedEnvironment": "staging",
+      "allowedDeployScopes": [
+        "functions-explicit-only"
+      ],
+      "initialFunctionDeploymentAllowlist": [
+        "adminTestSend",
+        "adminProviderReadiness",
+        "adminDeliveryProof",
+        "deliveryStatusCallback"
+      ],
+      "secretWriteAllowlist": [
+        "TWILIO_AUTH_TOKEN"
+      ],
+      "providerMutationAuthorized": true,
+      "providerMutationScope": "single-verified-trial-recipient-only",
+      "hostingMutationAuthorized": false,
+      "projectWideRuleMutationAuthorized": false,
+      "productionDeploymentAuthorized": false,
+      "productionDataAuthorized": false,
+      "longLivedCredentialsAuthorized": false,
+      "twilioTrialModeOnly": true,
+      "twilioProductionMessagingAuthorized": false,
+      "rollbackToDeliveryDisabledRequired": true
     }
   ]
 }
