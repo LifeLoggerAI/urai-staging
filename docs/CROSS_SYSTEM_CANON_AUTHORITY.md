@@ -8,10 +8,15 @@ Repository role: **non-production staging and TEST-only provider bridge**
 
 Cross-system canon candidate:
 - Repository: `LifeLoggerAI/urai-labs-llc`
-- PR: `#102`
+- PR: `#107`
+- Exact head observed at reconciliation: `e100bbfa2336358b4eb949d2411fe786baddfc3d`
 - Canon path: `docs/canon/`
 
-Until that PR is merged, Staging's current merged runtime/release contracts and the active #44 machine registry remain authoritative for implementation facts. This adoption file transfers no certification, review, deployment, provider, legal, financial, or exact-head evidence.
+PR #107 is the current zero-ambiguity canon successor. Earlier Labs canon candidates, including #101 and #102, are provenance only where superseded.
+
+Until #107 is legitimately merged, Staging's current merged runtime/release contracts and the active #44 machine registry remain authoritative for implementation facts. This adoption file transfers no certification, review, deployment, provider, legal, financial, Gold-Master, runtime, or exact-head evidence.
+
+Authority regression guard: any later reintroduction of Labs #101/#102 as current Staging canon authority is stale and must fail review rather than silently supersede this line.
 
 ## Local invariants
 
@@ -20,6 +25,7 @@ Until that PR is merged, Staging's current merged runtime/release contracts and 
 - TEST-only provider state cannot be substituted with LIVE evidence.
 - Stripe remains TEST-only; Twilio remains trial/synthetic-only unless separately authorized and proven.
 - Long-lived credentials, broad production mutation, production customer data and LIVE provider activation remain unauthorized.
+- Active consumer SHAs remain governed by `config/staging-consumers.json`; canon adoption cannot silently repin them.
 
 ## Evidence integrity
 
@@ -35,4 +41,4 @@ Verified runtime -> merged implementation -> exact-head release evidence -> loca
 
 ## Required adoption action
 
-After upstream PR #102 merges, reconcile Staging's active consumer registry, provider boundaries and release contracts against the merged canon. Classify conflicts as RESOLVED, DEFERRED with an external blocker, or SUPERSEDED with provenance retained.
+After upstream PR #107 merges, reconcile Staging's active consumer registry, provider boundaries and release contracts against the merged canon. Classify conflicts as RESOLVED, DEFERRED with an external blocker, or SUPERSEDED with provenance retained.
