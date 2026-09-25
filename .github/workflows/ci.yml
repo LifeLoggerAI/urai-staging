@@ -78,6 +78,9 @@ jobs:
       - name: Validate staging Functions deploy IAM promotion
         run: node scripts/validate-staging-twilio-function-deploy-iam.mjs
 
+      - name: Validate staging billing fail-closed contract
+        run: node scripts/validate-staging-billing-guard.mjs
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
