@@ -75,6 +75,9 @@ jobs:
       - name: Validate bounded Twilio staging IAM authority
         run: node scripts/validate-staging-twilio-proof-iam.mjs
 
+      - name: Validate staging Functions deploy IAM promotion
+        run: node scripts/validate-staging-twilio-function-deploy-iam.mjs
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
