@@ -17,6 +17,7 @@ const required = [
   'TWILIO_TRIAL_MODE=true',
   "TWILIO_FROM_NUMBER: ''",
   'URAI_CROSS_REPO_READ_TOKEN',
+  'token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}',
   "senderMode:'provider-assigned-trial-number'",
   'STAGING_TEST_SMS_BODY: sms_appointment_reminders',
   'gcloud secrets versions add TWILIO_AUTH_TOKEN',
