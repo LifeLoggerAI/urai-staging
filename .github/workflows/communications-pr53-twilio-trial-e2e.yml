@@ -107,6 +107,9 @@ jobs:
           echo "DELIVERY_STATUS_CALLBACK_URL=$TWILIO_CALLBACK_URL" >> "$GITHUB_ENV"
           echo "STAGING_TWILIO_CALLBACK_FUNCTION=twilioDeliveryStatusCallback" >> "$GITHUB_ENV"
           echo "STAGING_SMS_SEND_FUNCTION=adminTwilioTestSend" >> "$GITHUB_ENV"
+          STAGING_TEST_PHONE_HASH="$(printf '%s' "$STAGING_TEST_PHONE" | sha256sum | awk '{print $1}')"
+          echo "::add-mask::$STAGING_TEST_PHONE_HASH"
+          echo "STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH" >> "$GITHUB_ENV"
           case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 42 ;; esac
           case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 43 ;; esac
           case "$STAGING_FUNCTIONS_BASE_URL" in https://*) ;; *) exit 44 ;; esac
