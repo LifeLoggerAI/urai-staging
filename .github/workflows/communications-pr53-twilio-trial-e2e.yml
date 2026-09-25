@@ -134,6 +134,7 @@ jobs:
         with:
           repository: LifeLoggerAI/urai-communications
           ref: ${{ env.COMMUNICATIONS_SHA }}
+          token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
           path: communications-source
           fetch-depth: 1
           persist-credentials: false
