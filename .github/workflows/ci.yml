@@ -72,6 +72,9 @@ jobs:
       - name: Validate Communications PR53 Twilio staging controller
         run: node scripts/validate-communications-pr53-twilio-staging.mjs
 
+      - name: Validate bounded Twilio staging IAM authority
+        run: node scripts/validate-staging-twilio-proof-iam.mjs
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
