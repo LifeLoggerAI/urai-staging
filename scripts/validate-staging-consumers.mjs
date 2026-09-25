@@ -48,7 +48,7 @@ if (communications.sourceRef !== 'refs/pull/58/head') failures.push('communicati
 if (communications.mode !== 'twilio-trial-protected-staging-e2e') failures.push('communications mode');
 if (JSON.stringify(communications.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('communications allowedDeployScopes');
 if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('communications function allowlist');
-if (JSON.stringify(communications.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN'])) failures.push('communications secret allowlist');
+if (JSON.stringify(communications.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN','TWILIO_ACCOUNT_SID'])) failures.push('communications secret allowlist');
 if (communications.providerMutationAuthorized !== true) failures.push('communications provider mutation');
 if (communications.providerMutationScope !== 'single-verified-trial-recipient-only') failures.push('communications provider mutation scope');
 if (communications.hostingMutationAuthorized !== false) failures.push('communications hosting mutation');
