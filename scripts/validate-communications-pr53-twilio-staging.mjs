@@ -28,9 +28,15 @@ const required = [
   'if: ${{ success() }}',
   'productionMessagingAuthorized:false',
   'secretMaterialRetained:false',
-  'communications-source/functions/.env.urai-staging'
+  'communications-source/functions/.env.urai-staging',
+  'TWILIO_PROOF_WINDOW_DEPLOY_STARTED=true',
+  "if: ${{ always() && env.TWILIO_PROOF_WINDOW_DEPLOY_STARTED == 'true' }}"
 ];
 for (const marker of required) if (!text.includes(marker)) throw new Error(`missing Communications Twilio staging marker: ${marker}`);
+
+const communicationsInputBlock = text.match(/communications_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
+if (!communicationsInputBlock.includes('required: true')) throw new Error('communications_sha must remain a required workflow_dispatch input');
+if (/\bdefault\s*:/.test(communicationsInputBlock)) throw new Error('communications_sha must not carry a stale default; exact authority must be supplied explicitly');
 
 const forbidden = [
   [/urai-4dc1d/, 'production project'],
@@ -41,6 +47,10 @@ const forbidden = [
   [/sk_live_|rk_live_/, 'live billing credential'],
 ];
 for (const [pattern,label] of forbidden) if (pattern.test(text)) throw new Error(`forbidden Communications Twilio staging marker: ${label}`);
+const rollbackStep = text.slice(text.indexOf('- name: Roll back runtime delivery flags to OFF'));
+if (!rollbackStep.startsWith('- name: Roll back runtime delivery flags to OFF')) throw new Error('rollback step missing');
+if (!rollbackStep.includes("if: ${{ always() && env.TWILIO_PROOF_WINDOW_DEPLOY_STARTED == 'true' }}")) throw new Error('rollback must run only after a proof-window deploy attempt began');
+
 const uploadStep = text.slice(text.indexOf('- name: Upload sanitized retained proof'));
 if (!uploadStep.startsWith('- name: Upload sanitized retained proof')) throw new Error('sanitized proof upload step missing');
 if (!uploadStep.includes('if: ${{ success() }}')) throw new Error('sanitized proof upload must be success-gated');
