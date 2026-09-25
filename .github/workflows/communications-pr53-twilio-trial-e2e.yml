@@ -129,6 +129,10 @@ jobs:
         with:
           project_id: urai-staging
 
+      - name: Require billing-enabled staging project
+        shell: bash
+        run: bash scripts/assert-staging-billing-enabled.sh
+
       - name: Checkout exact Communications candidate
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
