@@ -286,6 +286,10 @@ jobs:
           git check-ignore -q "$GOOGLE_APPLICATION_CREDENTIALS"
           test "${GOOGLE_CLOUD_PROJECT:-urai-staging}" = 'urai-staging' || { echo 'WIF credential project mismatch' >&2; exit 1; }
 
+      - name: Require billing-enabled staging project
+        shell: bash
+        run: bash scripts/assert-staging-billing-enabled.sh
+
       - name: Deploy verified artifact to staging only
         id: deploy
         env:
