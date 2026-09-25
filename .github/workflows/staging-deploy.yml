@@ -271,6 +271,11 @@ jobs:
           create_credentials_file: true
           export_environment_variables: true
 
+      - name: Setup gcloud for staging readback
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
       - name: Verify ephemeral WIF credential boundary
         shell: bash
         run: |
