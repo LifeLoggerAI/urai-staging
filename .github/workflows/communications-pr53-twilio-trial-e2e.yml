@@ -46,6 +46,7 @@ jobs:
       CONTROLLER_SHA: ${{ inputs.expected_controller_sha }}
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+      RUNTIME_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT }}
       STAGING_FUNCTIONS_BASE_URL: ${{ vars.STAGING_FUNCTIONS_BASE_URL }}
       STAGING_TENANT_ID: ${{ vars.STAGING_TENANT_ID }}
       STAGING_FIREBASE_API_KEY: ${{ vars.STAGING_FIREBASE_API_KEY }}
@@ -99,7 +100,7 @@ jobs:
           if (c?.rollbackToDeliveryDisabledRequired !== true) failures.push('rollback');
           if (failures.length) throw new Error(failures.join(', '));
           NODE
-          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID CROSS_REPO_READ_TOKEN TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN STAGING_TEST_PHONE; do
+          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID CROSS_REPO_READ_TOKEN TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN STAGING_TEST_PHONE; do
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
           done
           TWILIO_CALLBACK_URL="${STAGING_FUNCTIONS_BASE_URL%/}/twilioDeliveryStatusCallback"
@@ -111,6 +112,8 @@ jobs:
           echo "STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH" >> "$GITHUB_ENV"
           case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 42 ;; esac
           case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 43 ;; esac
+          case "$RUNTIME_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 47 ;; esac
+          test "$RUNTIME_SERVICE_ACCOUNT" != "$DEPLOY_SERVICE_ACCOUNT" || { echo 'runtime and deploy service accounts must be distinct.' >&2; exit 48; }
           case "$STAGING_FUNCTIONS_BASE_URL" in https://*) ;; *) exit 44 ;; esac
           case "$TWILIO_CALLBACK_URL" in https://*) ;; *) exit 45 ;; esac
 
