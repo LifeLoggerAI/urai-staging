@@ -37,10 +37,25 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID"   --member="serviceAccount:
 
 gcloud iam service-accounts add-iam-policy-binding "$RUNTIME_SERVICE_ACCOUNT_EMAIL"   --project="$PROJECT_ID"   --member="serviceAccount:$DEPLOY_SERVICE_ACCOUNT"   --role='roles/iam.serviceAccountUser' >/dev/null
 
+# The deployed Functions runtime, not the GitHub deploy identity, must be able to
+# read exactly the two Twilio secrets referenced through Firebase defineSecret().
+# Keep this binding resource-scoped to those two staging secrets.
+for secret_name in TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID; do
+  gcloud secrets describe "$secret_name" --project="$PROJECT_ID" >/dev/null
+  gcloud secrets add-iam-policy-binding "$secret_name" \
+    --project="$PROJECT_ID" \
+    --member="serviceAccount:$RUNTIME_SERVICE_ACCOUNT_EMAIL" \
+    --role='roles/secretmanager.secretAccessor' >/dev/null
+
+done
+
 PROJECT_POLICY="$(gcloud projects get-iam-policy "$PROJECT_ID" --format=json)"
 RUNTIME_POLICY="$(gcloud iam service-accounts get-iam-policy "$RUNTIME_SERVICE_ACCOUNT_EMAIL" --project="$PROJECT_ID" --format=json)"
 
-PROJECT_POLICY="$PROJECT_POLICY" RUNTIME_POLICY="$RUNTIME_POLICY" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
+TWILIO_AUTH_POLICY="$(gcloud secrets get-iam-policy TWILIO_AUTH_TOKEN --project="$PROJECT_ID" --format=json)"
+TWILIO_SID_POLICY="$(gcloud secrets get-iam-policy TWILIO_ACCOUNT_SID --project="$PROJECT_ID" --format=json)"
+
+PROJECT_POLICY="$PROJECT_POLICY" RUNTIME_POLICY="$RUNTIME_POLICY" TWILIO_AUTH_POLICY="$TWILIO_AUTH_POLICY" TWILIO_SID_POLICY="$TWILIO_SID_POLICY" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" RUNTIME_SERVICE_ACCOUNT_EMAIL="$RUNTIME_SERVICE_ACCOUNT_EMAIL" node <<'NODE'
 const projectPolicy = JSON.parse(process.env.PROJECT_POLICY);
 const runtimePolicy = JSON.parse(process.env.RUNTIME_POLICY);
 const deployMember = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
@@ -52,6 +67,17 @@ const has = (policy, role) =>
 const failures = [];
 if (!has(projectPolicy, 'roles/cloudfunctions.admin')) failures.push('Cloud Functions Admin');
 if (!has(runtimePolicy, 'roles/iam.serviceAccountUser')) failures.push('runtime Service Account User');
+
+const runtimeMember = `serviceAccount:${process.env.RUNTIME_SERVICE_ACCOUNT_EMAIL}`;
+for (const [name,raw] of [
+  ['TWILIO_AUTH_TOKEN', process.env.TWILIO_AUTH_POLICY],
+  ['TWILIO_ACCOUNT_SID', process.env.TWILIO_SID_POLICY]
+]) {
+  const policy = JSON.parse(raw);
+  const accessor = (policy.bindings || []).some((binding) =>
+    binding.role === 'roles/secretmanager.secretAccessor' && (binding.members || []).includes(runtimeMember));
+  if (!accessor) failures.push(`${name} runtime Secret Accessor`);
+}
 
 const forbiddenProjectRoles = new Set([
   'roles/owner',
@@ -75,6 +101,8 @@ project_role=roles/cloudfunctions.admin
 runtime_role=roles/iam.serviceAccountUser
 production_authority=false
 secret_admin_authority=false
+runtime_secret_access_scope=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID
+runtime_secret_accessor_only=true
 human_operator=$ACTIVE_ACCOUNT
 
 This promotion is confined to urai-staging.
