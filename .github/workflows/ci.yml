@@ -69,8 +69,8 @@ jobs:
       - name: Validate Spatial PR1296 Stripe TEST provider probe
         run: node scripts/validate-spatial-pr1296-stripe-provider-probe.mjs
 
-      - name: Validate Communications PR53 Twilio staging controller
-        run: node scripts/validate-communications-pr53-twilio-staging.mjs
+      - name: Validate Communications PR58 Twilio staging controller
+        run: node scripts/validate-communications-pr58-twilio-staging.mjs
 
       - name: Validate bounded Twilio staging IAM authority
         run: node scripts/validate-staging-twilio-proof-iam.mjs
