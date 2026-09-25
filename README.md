@@ -1,6 +1,6 @@
 # urai-staging
 
-Firebase staging backend and validation environment for the URAI Life OS project.
+Firebase staging backend and validation environment for the UrAi product ecosystem.
 
 This repo owns the canonical URAI staging backend and validation shell at:
 
