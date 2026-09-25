@@ -36,6 +36,10 @@ for (const marker of required) {
   if (!text.includes(marker)) throw new Error(`missing Spatial PR1296 provider-probe marker: ${marker}`);
 }
 
+const spatialInputBlock = text.match(/spatial_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
+if (!spatialInputBlock.includes('required: true')) throw new Error('spatial_sha must remain a required workflow_dispatch input');
+if (/\bdefault\s*:/.test(spatialInputBlock)) throw new Error('spatial_sha must not carry a stale default; exact authority must be supplied explicitly');
+
 const forbiddenPatterns = [
   [/apphosting:backends:create/, 'App Hosting backend creation'],
   [/apphosting:rollouts:create/, 'App Hosting rollout mutation'],
