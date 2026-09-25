@@ -37,7 +37,7 @@
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
       "pullRequest": 58,
-      "exactSha": "454d71cc31adbd2df8ae241d522c2ebcaee04556",
+      "exactSha": "7ea5756537a4f6aa46f68dc4aadb8ba94588368b",
       "sourceRef": "refs/pull/58/head",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
