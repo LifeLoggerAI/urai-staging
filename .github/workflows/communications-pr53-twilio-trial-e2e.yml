@@ -6,7 +6,7 @@ on:
       communications_sha:
         description: Exact urai-communications PR #58 SHA authorized by config/staging-consumers.json
         required: true
-        default: d2c88375bf02dbcc247ba08cb8901cd1119d205f
+        default: 1db7bf83a2be18c0615ff84ef3b8f5243fda3d70
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
@@ -94,7 +94,7 @@ jobs:
           if (c?.exactSha !== process.env.COMMUNICATIONS_SHA) failures.push('exact SHA');
           if (c?.providerProject !== 'urai-staging' || c?.allowedEnvironment !== 'staging') failures.push('project/environment');
           if (JSON.stringify(c?.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('function allowlist');
-          if (JSON.stringify(c?.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN'])) failures.push('secret allowlist');
+          if (JSON.stringify(c?.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN','TWILIO_ACCOUNT_SID'])) failures.push('secret allowlist');
           if (c?.productionDeploymentAuthorized !== false || c?.productionDataAuthorized !== false) failures.push('production authority');
           if (c?.twilioTrialModeOnly !== true || c?.twilioProductionMessagingAuthorized !== false) failures.push('Twilio mode');
           if (c?.rollbackToDeliveryDisabledRequired !== true) failures.push('rollback');
@@ -152,12 +152,16 @@ jobs:
           test "$("$cli_root/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
           echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
 
-      - name: Bind only the allowed staging Twilio secret
+      - name: Bind only the allowed staging Twilio secrets
         shell: bash
         run: |
           set -euo pipefail
-          gcloud secrets describe TWILIO_AUTH_TOKEN --project=urai-staging >/dev/null 2>&1 ||             gcloud secrets create TWILIO_AUTH_TOKEN --project=urai-staging --replication-policy=automatic >/dev/null
+          for secret_name in TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID; do
+            gcloud secrets describe "$secret_name" --project=urai-staging >/dev/null 2>&1 || \
+              gcloud secrets create "$secret_name" --project=urai-staging --replication-policy=automatic >/dev/null
+          done
           printf '%s' "$TWILIO_AUTH_TOKEN" | gcloud secrets versions add TWILIO_AUTH_TOKEN --project=urai-staging --data-file=- >/dev/null
+          printf '%s' "$TWILIO_ACCOUNT_SID" | gcloud secrets versions add TWILIO_ACCOUNT_SID --project=urai-staging --data-file=- >/dev/null
 
       - name: Write ephemeral proof-window Functions environment
         working-directory: communications-source
