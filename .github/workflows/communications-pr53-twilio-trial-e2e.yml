@@ -178,11 +178,11 @@ jobs:
           ENABLE_WEBHOOK_TEST_MODE=false
           ENABLE_REAL_DELIVERY=true
           ENABLE_TWILIO_SMS=true
-          TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID
           TWILIO_TRIAL_MODE=true
           TWILIO_MESSAGING_SERVICE_SID=
           TWILIO_FROM_NUMBER=
           DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
+          STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
           DEFAULT_TENANT_TIMEZONE=America/Chicago
           EOF
 
@@ -270,11 +270,11 @@ jobs:
             ENABLE_WEBHOOK_TEST_MODE=false
             ENABLE_REAL_DELIVERY=false
             ENABLE_TWILIO_SMS=false
-            TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID
-            TWILIO_TRIAL_MODE=true
+              TWILIO_TRIAL_MODE=true
             TWILIO_MESSAGING_SERVICE_SID=
             TWILIO_FROM_NUMBER=
             DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
+          STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
             DEFAULT_TENANT_TIMEZONE=America/Chicago
             EOF
             firebase deploy               --project urai-staging               --only functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback               --non-interactive
