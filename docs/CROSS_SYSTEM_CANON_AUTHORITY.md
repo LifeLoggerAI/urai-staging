@@ -8,7 +8,7 @@ Repository role: **non-production staging and TEST-only provider bridge**
 
 Cross-system canon candidate:
 - Repository: `LifeLoggerAI/urai-labs-llc`
-- PR: `#107`
+- PR: `#102`
 - Canon path: `docs/canon/`
 
 Until that PR is merged, Staging's current merged runtime/release contracts and the active #44 machine registry remain authoritative for implementation facts. This adoption file transfers no certification, review, deployment, provider, legal, financial, or exact-head evidence.
@@ -35,4 +35,4 @@ Verified runtime -> merged implementation -> exact-head release evidence -> loca
 
 ## Required adoption action
 
-After upstream PR #107 merges, reconcile Staging's active consumer registry, provider boundaries and release contracts against the merged canon. Classify conflicts as RESOLVED, DEFERRED with an external blocker, or SUPERSEDED with provenance retained.
+After upstream PR #102 merges, reconcile Staging's active consumer registry, provider boundaries and release contracts against the merged canon. Classify conflicts as RESOLVED, DEFERRED with an external blocker, or SUPERSEDED with provenance retained.
