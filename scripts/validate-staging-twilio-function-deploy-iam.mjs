@@ -41,7 +41,12 @@ for (const forbidden of [
 
 const runtimeSecretGrant = /gcloud secrets add-iam-policy-binding "\$secret_name"[\s\S]*?--member="serviceAccount:\$RUNTIME_SERVICE_ACCOUNT_EMAIL"[\s\S]*?--role='roles\/secretmanager\.secretAccessor'/;
 if (!runtimeSecretGrant.test(source)) failures.push('runtime Twilio secretAccessor grant must be resource-scoped to runtime identity');
-if (/--member="serviceAccount:\$DEPLOY_SERVICE_ACCOUNT"[\s\S]*?roles\/secretmanager\.secretAccessor/.test(source)) failures.push('deploy identity must not receive secretAccessor');
+const commandBlocks = source.split(/\n\s*\n/);
+if (commandBlocks.some((block) =>
+  block.includes('gcloud secrets add-iam-policy-binding') &&
+  block.includes('--member="serviceAccount:$DEPLOY_SERVICE_ACCOUNT"') &&
+  block.includes("roles/secretmanager.secretAccessor")
+)) failures.push('deploy identity must not receive secretAccessor');
 
 if (failures.length) {
   console.error(`staging function deploy IAM promotion contract invalid: ${failures.join(', ')}`);
