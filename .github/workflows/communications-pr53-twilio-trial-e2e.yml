@@ -160,15 +160,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for secret_name in TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID; do
-            gcloud secrets describe "$secret_name" --project=urai-staging >/dev/null 2>&1 || {
-              echo "required pre-created staging secret is missing: $secret_name" >&2
-              echo "run scripts/bootstrap-staging-twilio-proof-iam.sh as an approved human cloud administrator" >&2
-              exit 61
-            }
-          done
-          printf '%s' "$TWILIO_AUTH_TOKEN" | gcloud secrets versions add TWILIO_AUTH_TOKEN --project=urai-staging --data-file=- >/dev/null
-          printf '%s' "$TWILIO_ACCOUNT_SID" | gcloud secrets versions add TWILIO_ACCOUNT_SID --project=urai-staging --data-file=- >/dev/null
+          printf '%s' "$TWILIO_AUTH_TOKEN" | gcloud secrets versions add TWILIO_AUTH_TOKEN --project=urai-staging --data-file=- >/dev/null || {
+            echo 'TWILIO_AUTH_TOKEN must already exist and permit secret-version addition by the staging deploy identity.' >&2
+            exit 61
+          }
+          printf '%s' "$TWILIO_ACCOUNT_SID" | gcloud secrets versions add TWILIO_ACCOUNT_SID --project=urai-staging --data-file=- >/dev/null || {
+            echo 'TWILIO_ACCOUNT_SID must already exist and permit secret-version addition by the staging deploy identity.' >&2
+            exit 62
+          }
 
       - name: Write ephemeral proof-window Functions environment
         working-directory: communications-source
