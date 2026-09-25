@@ -17,6 +17,8 @@ const required = [
   'TWILIO_TRIAL_MODE=true',
   "TWILIO_FROM_NUMBER: ''",
   'URAI_CROSS_REPO_READ_TOKEN',
+  'GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT',
+  'RUNTIME_SERVICE_ACCOUNT',
   'token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}',
   "senderMode:'provider-assigned-trial-number'",
   'STAGING_TEST_SMS_BODY: sms_appointment_reminders',
@@ -37,6 +39,8 @@ for (const marker of required) if (!text.includes(marker)) throw new Error(`miss
 const communicationsInputBlock = text.match(/communications_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
 if (!communicationsInputBlock.includes('required: true')) throw new Error('communications_sha must remain a required workflow_dispatch input');
 if (/\bdefault\s*:/.test(communicationsInputBlock)) throw new Error('communications_sha must not carry a stale default; exact authority must be supplied explicitly');
+if (!text.includes('vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT')) throw new Error('Twilio controller must bind the provider-read runtime service account variable');
+if (!text.includes('test "$RUNTIME_SERVICE_ACCOUNT" != "$DEPLOY_SERVICE_ACCOUNT"')) throw new Error('Twilio controller must keep runtime and deploy service accounts distinct');
 
 const forbidden = [
   [/urai-4dc1d/, 'production project'],
