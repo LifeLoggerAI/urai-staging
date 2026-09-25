@@ -30,6 +30,31 @@ CURRENT_PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
 gcloud iam service-accounts describe "$DEPLOY_SERVICE_ACCOUNT" --project="$PROJECT_ID" >/dev/null
 gcloud iam service-accounts describe "$RUNTIME_SERVICE_ACCOUNT_EMAIL" --project="$PROJECT_ID" >/dev/null
 
+# Fail closed before mutation if either identity already carries broad project-level
+# authority. Secret access for the runtime must remain resource-scoped to the two
+# Twilio secrets, never project-wide.
+PRE_PROJECT_POLICY="$(gcloud projects get-iam-policy "$PROJECT_ID" --format=json)"
+PRE_PROJECT_POLICY="$PRE_PROJECT_POLICY" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" RUNTIME_SERVICE_ACCOUNT_EMAIL="$RUNTIME_SERVICE_ACCOUNT_EMAIL" node <<'NODE'
+const projectPolicy = JSON.parse(process.env.PRE_PROJECT_POLICY);
+const deployMember = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
+const runtimeMember = `serviceAccount:${process.env.RUNTIME_SERVICE_ACCOUNT_EMAIL}`;
+const forbidden = new Set([
+  'roles/owner',
+  'roles/editor',
+  'roles/secretmanager.admin',
+  'roles/secretmanager.secretAccessor',
+  'roles/firebase.admin'
+]);
+const failures = [];
+for (const binding of projectPolicy.bindings || []) {
+  if (!forbidden.has(binding.role)) continue;
+  const members = binding.members || [];
+  if (members.includes(deployMember)) failures.push(`deploy identity broad project role ${binding.role}`);
+  if (members.includes(runtimeMember)) failures.push(`runtime identity broad project role ${binding.role}`);
+}
+if (failures.length) throw new Error(`refusing IAM promotion before mutation: ${failures.join(', ')}`);
+NODE
+
 # Firebase documents Cloud Functions Admin + Service Account User as the
 # deployment role pair for delegated Functions deployment. Keep both confined
 # to the isolated urai-staging project/runtime identity.
@@ -83,11 +108,14 @@ const forbiddenProjectRoles = new Set([
   'roles/owner',
   'roles/editor',
   'roles/secretmanager.admin',
+  'roles/secretmanager.secretAccessor',
   'roles/firebase.admin'
 ]);
 for (const binding of projectPolicy.bindings || []) {
-  if (!(binding.members || []).includes(deployMember)) continue;
-  if (forbiddenProjectRoles.has(binding.role)) failures.push(`forbidden broad project role ${binding.role}`);
+  const members = binding.members || [];
+  if (!forbiddenProjectRoles.has(binding.role)) continue;
+  if (members.includes(deployMember)) failures.push(`forbidden broad deploy project role ${binding.role}`);
+  if (members.includes(runtimeMember)) failures.push(`forbidden broad runtime project role ${binding.role}`);
 }
 if (failures.length) throw new Error(failures.join(', '));
 NODE
@@ -103,6 +131,8 @@ production_authority=false
 secret_admin_authority=false
 runtime_secret_access_scope=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID
 runtime_secret_accessor_only=true
+broad_deploy_project_roles=false
+broad_runtime_project_roles=false
 human_operator=$ACTIVE_ACCOUNT
 
 This promotion is confined to urai-staging.
