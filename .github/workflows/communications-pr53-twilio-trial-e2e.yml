@@ -6,7 +6,7 @@ on:
       communications_sha:
         description: Exact urai-communications PR #58 SHA authorized by config/staging-consumers.json
         required: true
-        default: c063de2f62e30b3bfc6ec4419100c42c9a5ff69e
+        default: 8f725c3b4ab3c8cba2a5c039f7495884cf7fefc7
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
