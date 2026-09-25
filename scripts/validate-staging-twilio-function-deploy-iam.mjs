@@ -17,7 +17,11 @@ for (const required of [
   'gcloud secrets add-iam-policy-binding "$secret_name"',
   "roles/secretmanager.secretAccessor",
   'runtime_secret_access_scope=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID',
-  'runtime_secret_accessor_only=true'
+  'runtime_secret_accessor_only=true',
+  'PRE_PROJECT_POLICY',
+  'refusing IAM promotion before mutation',
+  'broad_deploy_project_roles=false',
+  'broad_runtime_project_roles=false'
 ]) {
   if (!source.includes(required)) failures.push(`missing: ${required}`);
 }
@@ -26,6 +30,7 @@ for (const role of [
   'roles/owner',
   'roles/editor',
   'roles/secretmanager.admin',
+  'roles/secretmanager.secretAccessor',
   'roles/firebase.admin'
 ]) {
   if (!source.includes(`'${role}'`)) failures.push(`missing forbidden-role readback guard: ${role}`);
@@ -38,6 +43,18 @@ for (const forbidden of [
 ]) {
   if (source.includes(forbidden)) failures.push(`forbidden promotion authority: ${forbidden}`);
 }
+
+const preflightIndex = source.indexOf('PRE_PROJECT_POLICY=');
+const firstMutationIndex = Math.min(
+  ...[
+    source.indexOf('gcloud projects add-iam-policy-binding "$PROJECT_ID"'),
+    source.indexOf('gcloud iam service-accounts add-iam-policy-binding "$RUNTIME_SERVICE_ACCOUNT_EMAIL"'),
+    source.indexOf('gcloud secrets add-iam-policy-binding "$secret_name"')
+  ].filter((index) => index >= 0)
+);
+if (preflightIndex < 0 || firstMutationIndex < 0 || preflightIndex > firstMutationIndex) failures.push('broad-role preflight must run before IAM mutation');
+if (!source.includes('members.includes(runtimeMember)')) failures.push('runtime project-role readback guard missing');
+if (!source.includes('members.includes(deployMember)')) failures.push('deploy project-role readback guard missing');
 
 const runtimeSecretGrant = /gcloud secrets add-iam-policy-binding "\$secret_name"[\s\S]*?--member="serviceAccount:\$RUNTIME_SERVICE_ACCOUNT_EMAIL"[\s\S]*?--role='roles\/secretmanager\.secretAccessor'/;
 if (!runtimeSecretGrant.test(source)) failures.push('runtime Twilio secretAccessor grant must be resource-scoped to runtime identity');
