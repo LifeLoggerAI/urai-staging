@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const workflowPath = '.github/workflows/communications-pr53-twilio-trial-e2e.yml';
+const workflowPath = '.github/workflows/communications-pr58-twilio-trial-e2e.yml';
 const bootstrapPath = 'scripts/bootstrap-staging-twilio-proof-iam.sh';
 const workflow = fs.readFileSync(workflowPath, 'utf8');
 const bootstrap = fs.readFileSync(bootstrapPath, 'utf8');
