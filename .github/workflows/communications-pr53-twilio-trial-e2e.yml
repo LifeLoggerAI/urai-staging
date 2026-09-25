@@ -156,13 +156,16 @@ jobs:
           test "$("$cli_root/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
           echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
 
-      - name: Bind only the allowed staging Twilio secrets
+      - name: Version only pre-created staging Twilio secrets
         shell: bash
         run: |
           set -euo pipefail
           for secret_name in TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID; do
-            gcloud secrets describe "$secret_name" --project=urai-staging >/dev/null 2>&1 || \
-              gcloud secrets create "$secret_name" --project=urai-staging --replication-policy=automatic >/dev/null
+            gcloud secrets describe "$secret_name" --project=urai-staging >/dev/null 2>&1 || {
+              echo "required pre-created staging secret is missing: $secret_name" >&2
+              echo "run scripts/bootstrap-staging-twilio-proof-iam.sh as an approved human cloud administrator" >&2
+              exit 61
+            }
           done
           printf '%s' "$TWILIO_AUTH_TOKEN" | gcloud secrets versions add TWILIO_AUTH_TOKEN --project=urai-staging --data-file=- >/dev/null
           printf '%s' "$TWILIO_ACCOUNT_SID" | gcloud secrets versions add TWILIO_ACCOUNT_SID --project=urai-staging --data-file=- >/dev/null
@@ -271,11 +274,11 @@ jobs:
             ENABLE_WEBHOOK_TEST_MODE=false
             ENABLE_REAL_DELIVERY=false
             ENABLE_TWILIO_SMS=false
-              TWILIO_TRIAL_MODE=true
+            TWILIO_TRIAL_MODE=true
             TWILIO_MESSAGING_SERVICE_SID=
             TWILIO_FROM_NUMBER=
             DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
-          STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
+            STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
             DEFAULT_TENANT_TIMEZONE=America/Chicago
             EOF
             firebase deploy               --project urai-staging               --only functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback               --non-interactive
