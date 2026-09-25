@@ -6,7 +6,6 @@ on:
       communications_sha:
         description: Exact urai-communications PR #58 SHA authorized by config/staging-consumers.json
         required: true
-        default: 8f725c3b4ab3c8cba2a5c039f7495884cf7fefc7
         type: string
       expected_controller_sha:
         description: Exact current urai-staging main SHA
@@ -199,6 +198,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$COMMUNICATIONS_SHA"
+          echo "TWILIO_PROOF_WINDOW_DEPLOY_STARTED=true" >> "$GITHUB_ENV"
           firebase deploy             --project urai-staging             --only functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback             --non-interactive
           rm -f functions/.env.urai-staging
 
@@ -264,7 +264,7 @@ jobs:
           NODE
 
       - name: Roll back runtime delivery flags to OFF
-        if: always()
+        if: ${{ always() && env.TWILIO_PROOF_WINDOW_DEPLOY_STARTED == 'true' }}
         working-directory: communications-source
         shell: bash
         run: |
