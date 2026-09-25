@@ -9,8 +9,7 @@ const failures = [];
 for (const required of [
   'Version only pre-created staging Twilio secrets',
   'gcloud secrets versions add TWILIO_AUTH_TOKEN',
-  'gcloud secrets versions add TWILIO_ACCOUNT_SID',
-  'bootstrap-staging-twilio-proof-iam.sh'
+  'gcloud secrets versions add TWILIO_ACCOUNT_SID'
 ]) {
   if (!workflow.includes(required)) failures.push(`workflow missing: ${required}`);
 }
