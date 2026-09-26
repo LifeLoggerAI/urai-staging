@@ -17,8 +17,15 @@ const lines = [
   '',
   `- Repository: ${report.repo}`,
   `- Kind: ${report.kind}`,
+  `- Exact source SHA: ${report.sourceSha}`,
+  `- Project: ${report.projectId}`,
+  `- Environment: ${report.environment}`,
+  `- Production allowed: ${report.productionAllowed}`,
+  `- Cloud deployment performed: ${report.cloudDeploymentPerformed}`,
+  `- Live smoke performed: ${report.liveSmokePerformed}`,
+  `- Provider mutation performed: ${report.providerMutationPerformed}`,
   `- Status: ${report.status}`,
-  `- Launch score: ${report.launchScore}/100`,
+  `- Source bootstrap score: ${report.sourceBootstrapScore}/100`,
   `- Started: ${report.startedAt}`,
   `- Finished: ${report.finishedAt ?? 'not finished'}`,
   `- Passed commands: ${report.passedCount}`,
@@ -26,6 +33,14 @@ const lines = [
   `- Total commands: ${report.commandCount}`,
   '',
 ];
+
+if (Array.isArray(report.activeConsumers) && report.activeConsumers.length) {
+  lines.push('## Active consumer authority', '');
+  for (const consumer of report.activeConsumers) {
+    lines.push(`- ${consumer.id}: ${consumer.repository} PR #${consumer.pullRequest} @ ${consumer.exactSha} (${consumer.mode}; ${consumer.dataPolicy})`);
+  }
+  lines.push('');
+}
 
 if (report.error) {
   lines.push('## Failure', '', report.error, '');

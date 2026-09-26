@@ -1,5 +1,9 @@
 # URAI Staging Lock
 
+> **HISTORICAL DEPLOY RECEIPT — NOT CURRENT AUTHORITY (superseded 2026-09-24).**  
+> This file preserves the May 21 deployment/smoke record only. Its present-tense `LIVE / DEPLOYED / LOCKED` classification, Node 20 notes, unknown build identity, `/u/adamclamp` smoke, and then-current runtime state do **not** describe the current Staging environment. Current authority is `STATUS.md`, `ENVIRONMENT_AUTHORITY.md`, `URAI_STAGING_DEFINITION_OF_DONE.md`, the live GitHub PR/main state, and provider/runtime readback. The current public runtime has been re-observed at HTTP 503 for root/health/buildinfo with stale permissive robots behavior, so this historical receipt must never be used as current live certification.
+
+
 Status: Locked after Firebase deploy and live smoke.
 
 - Firebase project: urai-staging

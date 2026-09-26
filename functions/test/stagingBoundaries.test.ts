@@ -1,10 +1,54 @@
 import { describe, expect, it } from 'vitest';
 import {
+  FixedWindowRateLimiter,
+  MAX_STAGING_HTTP_BODY_BYTES,
+  STAGING_COMPANION_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_MAX_RATE_BUCKETS,
+  STAGING_HTTP_RATE_WINDOW_MS,
+  isAllowedStagingOrigin,
   isLikelyEmail,
+  isStagingHttpBodyWithinLimit,
   isSyntheticStagingEmail,
+  stagingEphemeralClientKey,
   stagingRuntimeBuildInfo,
   stagingWaitlistDocumentId,
 } from '../src/lib/stagingBoundaries';
+
+describe('staging HTTP boundaries', () => {
+  it('allows only canonical staging and emulator browser origins while preserving no-Origin server smoke', () => {
+    expect(isAllowedStagingOrigin(undefined)).toBe(true);
+    expect(isAllowedStagingOrigin('https://urai-staging.web.app')).toBe(true);
+    expect(isAllowedStagingOrigin('http://127.0.0.1:5000')).toBe(true);
+    expect(isAllowedStagingOrigin('https://urai.app')).toBe(false);
+    expect(isAllowedStagingOrigin('https://evil.example')).toBe(false);
+  });
+
+  it('applies deterministic in-memory fixed-window caps without persisting client identifiers', () => {
+    const limiter = new FixedWindowRateLimiter(2, STAGING_HTTP_RATE_WINDOW_MS);
+    const key = stagingEphemeralClientKey('203.0.113.42');
+    expect(key).toMatch(/^[a-f0-9]{64}$/);
+    expect(key).not.toContain('203.0.113.42');
+    expect(limiter.consume(key, 1_000)).toBe(true);
+    expect(limiter.consume(key, 1_001)).toBe(true);
+    expect(limiter.consume(key, 1_002)).toBe(false);
+    expect(limiter.consume(key, 1_000 + STAGING_HTTP_RATE_WINDOW_MS)).toBe(true);
+    expect(STAGING_COMPANION_REQUESTS_PER_WINDOW).toBeGreaterThan(0);
+    expect(STAGING_HTTP_MAX_RATE_BUCKETS).toBeGreaterThan(0);
+  });
+
+  it('fails closed when the unique-client bucket cap is exhausted and recovers after expiry', () => {
+    const limiter = new FixedWindowRateLimiter(1, 1_000, 2);
+    expect(limiter.consume('a', 0)).toBe(true);
+    expect(limiter.consume('b', 0)).toBe(true);
+    expect(limiter.consume('c', 1)).toBe(false);
+    expect(limiter.consume('c', 1_000)).toBe(true);
+  });
+
+  it('bounds parsed HTTP payload size', () => {
+    expect(isStagingHttpBodyWithinLimit({ message: 'ok' })).toBe(true);
+    expect(isStagingHttpBodyWithinLimit({ message: 'x'.repeat(MAX_STAGING_HTTP_BODY_BYTES) })).toBe(false);
+  });
+});
 
 describe('staging privacy boundaries', () => {
   it('accepts reserved synthetic email domains only', () => {

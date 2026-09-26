@@ -1,0 +1,306 @@
+{
+  "schemaVersion": "urai-provider-registry-2026-09-25-v1",
+  "auditedAt": "2026-09-25T21:47:00Z",
+  "authority": {
+    "purpose": "system-of-systems external provider readiness inventory",
+    "secretValuesRecorded": false,
+    "rules": [
+      "account or billing evidence is not runtime integration evidence",
+      "source adapter existence is not deployed runtime proof",
+      "protected credential presence must be proven by approved runtime/readback without exposing values",
+      "paid generation remains separately authorized"
+    ]
+  },
+  "providers": [
+    {
+      "id": "openai",
+      "capabilities": [
+        "llm",
+        "image",
+        "speech",
+        "video-governed-film"
+      ],
+      "canonicalSecrets": [
+        "OPENAI_API_KEY"
+      ],
+      "accountEvidence": "connected-platform-target-observed",
+      "sourceIntegration": "implemented-asset-factory",
+      "runtimeVerification": "not-certified-this-pass",
+      "activation": "hard-off-by-default"
+    },
+    {
+      "id": "anthropic",
+      "capabilities": [
+        "llm"
+      ],
+      "canonicalSecrets": [
+        "ANTHROPIC_API_KEY"
+      ],
+      "accountEvidence": "billing-receipt-observed",
+      "sourceIntegration": "not-found-in-canonical-runtime-search",
+      "runtimeVerification": "not-certified",
+      "activation": "not-wired"
+    },
+    {
+      "id": "gemini",
+      "capabilities": [
+        "llm",
+        "multimodal"
+      ],
+      "canonicalSecrets": [
+        "GEMINI_API_KEY"
+      ],
+      "accountEvidence": "paid-tier-1-email-observed",
+      "sourceIntegration": "not-found-in-canonical-runtime-search",
+      "runtimeVerification": "not-certified",
+      "activation": "not-wired"
+    },
+    {
+      "id": "xai",
+      "capabilities": [
+        "llm"
+      ],
+      "canonicalSecrets": [
+        "XAI_API_KEY"
+      ],
+      "accountEvidence": "credit-ready-and-paid-receipt-observed",
+      "sourceIntegration": "not-found-in-canonical-runtime-search",
+      "runtimeVerification": "not-certified",
+      "activation": "not-wired"
+    },
+    {
+      "id": "runway",
+      "capabilities": [
+        "video"
+      ],
+      "canonicalSecrets": [
+        "RUNWAYML_API_SECRET",
+        "RUNWAY_API_KEY"
+      ],
+      "accountEvidence": "authenticated-paid-workspace-with-credit-balance-observed",
+      "sourceIntegration": "implemented-on-asset-factory-convergence",
+      "runtimeVerification": "no-generation-smoke-certified",
+      "activation": "hard-off-pending-spend-and-secret-binding"
+    },
+    {
+      "id": "elevenlabs",
+      "capabilities": [
+        "speech",
+        "sfx",
+        "music",
+        "stt"
+      ],
+      "canonicalSecrets": [
+        "ELEVENLABS_API_KEY"
+      ],
+      "accountEvidence": "billing-receipt-observed",
+      "sourceIntegration": "implemented-asset-factory-and-spatial",
+      "runtimeVerification": "no-live-artifact-smoke-certified",
+      "activation": "hard-off-by-default"
+    },
+    {
+      "id": "heygen",
+      "capabilities": [
+        "avatar",
+        "voice"
+      ],
+      "canonicalSecrets": [
+        "HEYGEN_API_KEY"
+      ],
+      "accountEvidence": "authenticated-account-and-api-key-creation-email-observed",
+      "sourceIntegration": "separate-lane-not-unified-router",
+      "runtimeVerification": "founder-private-voice-not-certified",
+      "activation": "account-readback-reports-free-plan"
+    },
+    {
+      "id": "fal",
+      "capabilities": [
+        "image",
+        "model3d",
+        "audio",
+        "sfx",
+        "music",
+        "video"
+      ],
+      "canonicalSecrets": [
+        "FAL_KEY"
+      ],
+      "accountEvidence": "invoice-observed",
+      "sourceIntegration": "implemented-asset-factory",
+      "runtimeVerification": "not-certified",
+      "activation": "hard-off-by-default"
+    },
+    {
+      "id": "stability",
+      "capabilities": [
+        "image"
+      ],
+      "canonicalSecrets": [
+        "STABILITY_API_KEY"
+      ],
+      "accountEvidence": "not-independently-observed-this-pass",
+      "sourceIntegration": "implemented-asset-factory",
+      "runtimeVerification": "not-certified",
+      "activation": "optional-fallback"
+    },
+    {
+      "id": "meshy",
+      "capabilities": [
+        "model3d"
+      ],
+      "canonicalSecrets": [
+        "MESHY_API_KEY"
+      ],
+      "accountEvidence": "billing-receipt-observed",
+      "sourceIntegration": "implemented-on-asset-factory-convergence",
+      "runtimeVerification": "ordinary-actions-presence-proof-absent",
+      "activation": "hard-off-pending-protected-binding"
+    },
+    {
+      "id": "tripo",
+      "capabilities": [
+        "model3d"
+      ],
+      "canonicalSecrets": [
+        "TRIPO_API_KEY"
+      ],
+      "accountEvidence": "billing-receipt-observed",
+      "sourceIntegration": "implemented-model-forge-only",
+      "runtimeVerification": "ordinary-actions-presence-proof-absent",
+      "activation": "hard-off-pending-protected-binding"
+    },
+    {
+      "id": "move-ai",
+      "capabilities": [
+        "motion-capture"
+      ],
+      "canonicalSecrets": [
+        "MOVE_API_KEY"
+      ],
+      "accountEvidence": "billing-receipt-observed",
+      "sourceIntegration": "not-found-in-canonical-runtime-search",
+      "runtimeVerification": "not-certified",
+      "activation": "not-wired"
+    },
+    {
+      "id": "kiri",
+      "capabilities": [
+        "captured-reality",
+        "3dgs",
+        "mesh"
+      ],
+      "canonicalSecrets": [
+        "KIRI_API_KEY"
+      ],
+      "accountEvidence": "api-account-verification-email-observed",
+      "sourceIntegration": "not-found-in-canonical-runtime-search",
+      "runtimeVerification": "not-certified",
+      "activation": "not-wired"
+    },
+    {
+      "id": "fvdb",
+      "capabilities": [
+        "captured-reality",
+        "3dgs",
+        "mesh"
+      ],
+      "canonicalSecrets": [],
+      "accountEvidence": "self-hosted-open-source-lane",
+      "sourceIntegration": "governance-schema-present-provider-executor-not-found",
+      "runtimeVerification": "not-executed",
+      "activation": "gpu-worker-not-certified"
+    },
+    {
+      "id": "postshot",
+      "capabilities": [
+        "captured-reality-gold-master"
+      ],
+      "canonicalSecrets": [],
+      "accountEvidence": "desktop-cli-license-lane",
+      "sourceIntegration": "governance-only",
+      "runtimeVerification": "not-executed",
+      "activation": "not-certified"
+    },
+    {
+      "id": "cesium-ion",
+      "capabilities": [
+        "3d-tiles",
+        "world-streaming"
+      ],
+      "canonicalSecrets": [
+        "CESIUM_ION_SERVER_TOKEN",
+        "NEXT_PUBLIC_CESIUM_ION_TOKEN"
+      ],
+      "accountEvidence": "user-reported-configured-not-live-read-back",
+      "sourceIntegration": "not-found-in-canonical-runtime-search",
+      "runtimeVerification": "not-certified",
+      "activation": "not-wired"
+    },
+    {
+      "id": "google-maps-platform",
+      "capabilities": [
+        "maps-js",
+        "geocoding",
+        "map-tiles",
+        "places",
+        "routes",
+        "roads",
+        "elevation",
+        "timezone",
+        "weather",
+        "aerial-view",
+        "arcore"
+      ],
+      "canonicalSecrets": [
+        "GOOGLE_MAPS_SERVER_API_KEY",
+        "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
+      ],
+      "accountEvidence": "user-reported-enabled; repository has historical read-only proof only for maps-js-and-geocoding",
+      "sourceIntegration": "geographic-fallback-and-two-api-governance-only",
+      "runtimeVerification": "interactive-map-runtime-not-mounted",
+      "activation": "production-use-not-authorized"
+    },
+    {
+      "id": "twilio",
+      "capabilities": [
+        "sms",
+        "voice-communications"
+      ],
+      "canonicalSecrets": [
+        "TWILIO_ACCOUNT_SID",
+        "TWILIO_AUTH_TOKEN",
+        "TWILIO_MESSAGING_SERVICE_SID"
+      ],
+      "accountEvidence": "funding-email-observed",
+      "sourceIntegration": "implemented-urai-communications",
+      "runtimeVerification": "real-delivery-gated",
+      "activation": "ENABLE_REAL_DELIVERY-false-until-approved"
+    },
+    {
+      "id": "cesium-js",
+      "capabilities": [
+        "3d-tiles-rendering"
+      ],
+      "canonicalSecrets": [],
+      "accountEvidence": "library-lane",
+      "sourceIntegration": "not-found-in-canonical-runtime-search",
+      "runtimeVerification": "not-certified",
+      "activation": "not-wired"
+    }
+  ],
+  "capturedReality": {
+    "governanceSchema": "asset-factory PR #294",
+    "browserRuntime": "urai-spatial PR #1316",
+    "core": "urai-spatial PR #1314",
+    "truth": "governance and private runtime scaffolding exist; no real reconstructed scene is certified"
+  },
+  "globalBlockers": [
+    "protected production secret binding/readback is not proven for the complete provider estate",
+    "unified router is modality-based but not yet a dynamic multi-criteria capability-cost-latency-health router",
+    "many newly funded providers are accounts only and have no canonical runtime adapter",
+    "captured-reality provider executor/GPU worker and real-scene receipt are not certified",
+    "Google Maps repository policy currently governs only Maps JavaScript and Geocoding while the requested world stack is broader",
+    "Cesium and KIRI source integration is not present on canonical default branches",
+    "provider live smokes and consumer proof remain deliberately hard-off or unproven"
+  ]
+}

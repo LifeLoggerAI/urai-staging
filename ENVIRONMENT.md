@@ -65,7 +65,7 @@ The only deploy authority is `.github/workflows/staging-deploy.yml`, dispatched 
 - checks-only mode first;
 - live-deploy mode only after accepted review and evidence.
 
-The protected deploy job uses the GitHub `staging` environment and authenticates only through GitHub OIDC + Google Workload Identity Federation. Configure the protected environment/repository variables `GCP_WIF_PROVIDER` and `GCP_STAGING_DEPLOY_SERVICE_ACCOUNT`. Long-lived Firebase service-account JSON, `FIREBASE_SERVICE_ACCOUNT_URAI_STAGING`, and `credentials_json` fallbacks are prohibited.
+The protected deploy job uses the GitHub `staging` environment and authenticates only through GitHub OIDC + Google Workload Identity Federation. Configure the protected environment/repository variables `GCP_WIF_PROVIDER` and `GCP_STAGING_DEPLOY_SERVICE_ACCOUNT`. The bounded Communications/Twilio staging lane additionally requires a non-secret `GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT` value populated only from provider-native readback of the actual `urai-staging` Functions runtime identity. The deploy identity and runtime identity must remain distinct. Long-lived Firebase service-account JSON, `FIREBASE_SERVICE_ACCOUNT_URAI_STAGING`, and `credentials_json` fallbacks are prohibited.
 
 The Google auth action creates an ephemeral ADC credential file under `GITHUB_WORKSPACE`; `gha-creds-*.json` is gitignored and the auth action removes the generated credential at job completion. The deploy lock accepts only that WIF-generated credential provenance.
 

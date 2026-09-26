@@ -1,5 +1,9 @@
 # URAI Staging Deploy Evidence Log
 
+> **CURRENT RELEASE RECEIPT NOT YET SEALED.**  
+> This template is intentionally pending until an approved exact merged-main SHA is deployed through protected WIF authority. Fresh 2026-09-24 public readback still shows root, `/api/healthz`, and `/api/buildinfo` at HTTP 503, while live `/robots.txt` does not match canonical all-disallow Staging source. Historical May deploy proof lives in `URAI_STAGING_LOCK.md` but is not current certification.
+
+
 Use this file to paste concise evidence after running the credentialed staging deploy.
 
 ## Release Candidate

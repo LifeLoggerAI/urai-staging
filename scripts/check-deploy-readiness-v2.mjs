@@ -76,8 +76,8 @@ const generatedBlock = prebuiltSource.match(/const allowedGeneratedPrefixes = \[
 if (!generatedBlock) failures.push('Staging prebuilt allowed-generated-prefix block is missing');
 else if (generatedBlock[1].includes("'public/'") || generatedBlock[1].includes('"public/"')) failures.push('Tracked public Hosting input must not accept arbitrary untracked files');
 
-requirePhrases('scripts/smoke-staging.sh', ['Exact staging mutation receipt is required', 'URAI_RELEASE_CANDIDATE_SHA is required for exact runtime smoke', "schemaVersion !== 'urai-staging-mutation-2'", '/api/buildinfo', 'releaseCandidateSha must equal exact candidate', 'deployedAt must equal current mutation receipt', 'deploymentWorkflowRunId must equal current mutation workflow', 'runtimeProjectId must equal', 'Default release smoke is intentionally non-mutating', '/api/companion', '/api/waitlist']);
-rejectPhrases('scripts/smoke-staging.sh', ['launch-smoke@example.com', 'Staging smoke check']);
+requirePhrases('scripts/smoke-staging.sh', ['Exact staging mutation receipt is required', 'URAI_RELEASE_CANDIDATE_SHA is required for exact runtime smoke', "schemaVersion !== 'urai-staging-mutation-2'", '/api/buildinfo', 'releaseCandidateSha must equal exact candidate', 'deployedAt must equal current mutation receipt', 'deploymentWorkflowRunId must equal current mutation workflow', 'runtimeProjectId must equal', 'Default release smoke is intentionally non-mutating', 'Staging root must declare noindex,nofollow.', 'robots.txt must disallow the entire Staging site.', 'robots.txt contains forbidden public/production indexing authority.', 'Origin: https://urai.app', 'Expected unauthorized browser origin to return HTTP 403', 'Expected oversize staging request to return HTTP 413', '/api/companion', '/api/waitlist']);
+rejectPhrases('scripts/smoke-staging.sh', ['launch-smoke@example.com', 'Staging smoke check', 'require_status GET "$STAGING_URL/u/adamclamp" 200']);
 
 requirePhrases('scripts/urai-staging-lock.sh', [
   'URAI_STAGING_PROTECTED_DEPLOY', 'GITHUB_ACTIONS', 'refs/heads/main', 'git ls-remote --exit-code origin refs/heads/main', 'git merge-base --is-ancestor',
@@ -116,7 +116,7 @@ const publicSection = deployWorkflow.slice(deployWorkflow.indexOf('public-verify
 if (publicSection.includes('secrets.') || publicSection.includes('environment: staging') || publicSection.includes('firebase deploy')) failures.push('Public verification must not receive secrets, protected environment authority, or mutation commands');
 
 requirePhrases('.github/workflows/urai-production-verify.yml', ['ref: ${{ env.TARGET_SHA }}', 'fetch-depth: 0', 'persist-credentials: false', 'Setup Java 21 for Firebase emulators', 'node scripts/urai-staging-bootstrap.mjs', 'node scripts/validate-launch-evidence.mjs', 'node scripts/urai-production-verify.mjs']);
-requirePhrases('ENVIRONMENT_AUTHORITY.md', ['owns only the URAI staging', 'Production alias: intentionally absent', 'must not deploy to, alias, or imply ownership of the production project', 'SOURCE AUTHORITY REPAIRED — NOT VERIFIED OR DEPLOYED', 'must not create Hosting sites or other infrastructure', 'Billing good standing']);
+requirePhrases('ENVIRONMENT_AUTHORITY.md', ['owns only the URAI staging', 'Production alias: intentionally absent', 'must not deploy to, alias, or imply ownership of the production project', 'SOURCE CONVERGENCE ACTIVE — PROTECTED RUNTIME NO-GO — LIVE CERTIFICATION NOT COMPLETE', 'must not create Hosting sites or other infrastructure', 'Billing good standing']);
 
 if (failures.length) {
   console.error('URAI staging semantic deploy readiness failed:');

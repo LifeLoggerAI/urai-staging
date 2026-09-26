@@ -1,34 +1,90 @@
 {
-  "schemaVersion": "urai-staging-consumers-1",
+  "schemaVersion": "urai-staging-consumers-2",
   "projectId": "urai-staging",
   "environment": "staging",
   "mutationAuthorityRepository": "LifeLoggerAI/urai-staging",
   "productionAllowed": false,
   "consumers": [
     {
-      "id": "urai-admin-pr57-runtime-closure",
-      "repository": "LifeLoggerAI/urai-admin",
-      "repositoryId": 1150887043,
-      "pullRequest": 57,
-      "exactSha": "fb255310d6b183a59e4252da80c685f45e5cf536",
-      "sourceRef": "refs/pull/57/head",
-      "mode": "synthetic-runtime-validation",
+      "id": "urai-spatial-pr1296-stripe-test-readiness",
+      "state": "active",
+      "repository": "LifeLoggerAI/urai-spatial",
+      "repositoryId": 1167675641,
+      "pullRequest": 1296,
+      "exactSha": "1b14dcbd9ce3a811e4d117921cbd8a00c7c42e66",
+      "sourceRef": "refs/pull/1296/head",
+      "mode": "stripe-test-provider-readiness",
+      "dataPolicy": "synthetic-only",
+      "providerProject": "urai-staging",
+      "allowedEnvironment": "staging",
+      "allowedDeployScopes": [],
+      "providerReadOnlyAuthorized": true,
+      "appHostingRolloutAuthorized": false,
+      "hostingPreviewMutationAuthorized": false,
+      "projectWideRuleMutationAuthorized": false,
+      "productionDeploymentAuthorized": false,
+      "productionDataAuthorized": false,
+      "longLivedCredentialsAuthorized": false,
+      "stripeTestModeOnly": true,
+      "stripeLiveModeAuthorized": false,
+      "refVerification": {
+        "mode": "public-git-ls-remote"
+      }
+    },
+    {
+      "id": "urai-communications-pr58-twilio-trial-e2e",
+      "state": "active",
+      "repository": "LifeLoggerAI/urai-communications",
+      "repositoryId": 1169785707,
+      "pullRequest": 58,
+      "exactSha": "a147fe6a67d870b3e49e70dae56e938017a3ccd4",
+      "sourceRef": "refs/pull/58/head",
+      "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
       "allowedEnvironment": "staging",
       "allowedDeployScopes": [
-        "functions-explicit-only",
-        "hosting-preview-only"
+        "functions-explicit-only"
       ],
       "initialFunctionDeploymentAllowlist": [
-        "nextServer"
+        "adminTwilioTestSend",
+        "adminProviderReadiness",
+        "adminDeliveryProof",
+        "twilioDeliveryStatusCallback"
       ],
-      "scheduledAnalyticsDeploymentAuthorized": false,
-      "hostingLiveChannelMutationAuthorized": false,
+      "secretWriteAllowlist": [
+        "TWILIO_AUTH_TOKEN",
+        "TWILIO_ACCOUNT_SID"
+      ],
+      "providerMutationAuthorized": true,
+      "providerMutationScope": "single-verified-trial-recipient-only",
+      "hostingMutationAuthorized": false,
       "projectWideRuleMutationAuthorized": false,
       "productionDeploymentAuthorized": false,
       "productionDataAuthorized": false,
-      "longLivedCredentialsAuthorized": false
+      "longLivedCredentialsAuthorized": false,
+      "twilioTrialModeOnly": true,
+      "twilioProductionMessagingAuthorized": false,
+      "rollbackToDeliveryDisabledRequired": true,
+      "refVerification": {
+        "mode": "protected-github-api",
+        "environment": "staging",
+        "requiredSecret": "URAI_CROSS_REPO_READ_TOKEN"
+      },
+      "trialSenderMode": "provider-assigned"
+    }
+  ],
+  "historicalConsumers": [
+    {
+      "id": "urai-admin-pr57-runtime-closure",
+      "state": "historical",
+      "repository": "LifeLoggerAI/urai-admin",
+      "repositoryId": 1150887043,
+      "pullRequest": 57,
+      "predecessorSha": "fb255310d6b183a59e4252da80c685f45e5cf536",
+      "mergedHeadSha": "8050cf2c7d5c5cec8dc360b9f9c25719cef43a29",
+      "mergeCommitSha": "f0dabca401dff4df22a68a92b5b10e996b99c748",
+      "reason": "PR #57 is merged and its predecessor runtime pin must not remain active authority. A successor Admin runtime consumer requires a separate explicit current-authority decision."
     }
   ]
 }

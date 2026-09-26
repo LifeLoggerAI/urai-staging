@@ -1,0 +1,81 @@
+name: Protected Private Consumer Ref Verification
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: urai-staging-private-consumer-ref-verification
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify private active consumer refs without mutation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: staging
+    env:
+      CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+    steps:
+      - name: Checkout exact current staging authority
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Verify protected/private consumer PR heads
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CROSS_REPO_READ_TOKEN" || { echo 'URAI_CROSS_REPO_READ_TOKEN is required and must be read-only for the listed private repositories.' >&2; exit 41; }
+          mkdir -p artifacts/private-consumer-refs
+          node <<'NODE'
+          const fs = require('node:fs');
+          const doc = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
+          const consumers = (doc.consumers || []).filter((c) => c.state === 'active' && c.refVerification?.mode === 'protected-github-api');
+          const token = process.env.CROSS_REPO_READ_TOKEN;
+          if (!token) throw new Error('protected cross-repo read token missing');
+          const results = [];
+          for (const c of consumers) {
+            if (!Number.isInteger(c.pullRequest)) throw new Error(`${c.id}: pullRequest required for protected verification`);
+            const url = `https://api.github.com/repos/${c.repository}/pulls/${c.pullRequest}`;
+            const response = await fetch(url, {
+              headers: {
+                authorization: `Bearer ${token}`,
+                accept: 'application/vnd.github+json',
+                'x-github-api-version': '2022-11-28',
+              },
+            });
+            if (!response.ok) throw new Error(`${c.id}: GitHub API returned HTTP ${response.status}`);
+            const body = await response.json();
+            const liveSha = body?.head?.sha;
+            if (!/^[0-9a-f]{40}$/.test(liveSha || '')) throw new Error(`${c.id}: invalid live PR head`);
+            results.push({ id:c.id, repository:c.repository, pullRequest:c.pullRequest, expectedSha:c.exactSha, liveSha, matched:liveSha===c.exactSha });
+            if (liveSha !== c.exactSha) throw new Error(`${c.id}: stale expected=${c.exactSha} live=${liveSha}`);
+          }
+          fs.writeFileSync('artifacts/private-consumer-refs/receipt.json', JSON.stringify({
+            schemaVersion:'urai-staging-private-consumer-ref-verification-1',
+            generatedAt:new Date().toISOString(),
+            stagingRepository:process.env.GITHUB_REPOSITORY,
+            stagingSha:process.env.GITHUB_SHA,
+            verificationMode:'protected-github-api',
+            results,
+            productionMutationPerformed: false,
+            providerMutationPerformed: false,
+            secretMaterialRetained: false,
+          },null,2)+'\n');
+          NODE
+
+      - name: Upload sanitized private consumer ref evidence
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-staging-private-consumer-refs-${{ github.sha }}-${{ github.run_id }}
+          path: artifacts/private-consumer-refs/receipt.json
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,310 @@
+name: Communications PR58 Twilio Trial Protected Staging E2E
+
+on:
+  workflow_dispatch:
+    inputs:
+      communications_sha:
+        description: Exact urai-communications PR #58 SHA authorized by config/staging-consumers.json
+        required: true
+        type: string
+      expected_controller_sha:
+        description: Exact current urai-staging main SHA
+        required: true
+        type: string
+      confirm_staging_project:
+        description: Type urai-staging
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: urai-communications-pr58-twilio-trial-e2e
+  cancel-in-progress: false
+
+env:
+  COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
+  COMMUNICATIONS_PR_NUMBER: '58'
+  STAGING_PROJECT_ID: urai-staging
+  EXPECTED_ENVIRONMENT: staging
+  FIREBASE_CLI_VERSION: '15.23.0'
+
+jobs:
+  protected-e2e:
+    name: WIF-only bounded deploy, Twilio trial proof, and rollback
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      COMMUNICATIONS_SHA: ${{ inputs.communications_sha }}
+      CONTROLLER_SHA: ${{ inputs.expected_controller_sha }}
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+      RUNTIME_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT }}
+      STAGING_FUNCTIONS_BASE_URL: ${{ vars.STAGING_FUNCTIONS_BASE_URL }}
+      STAGING_TENANT_ID: ${{ vars.STAGING_TENANT_ID }}
+      STAGING_FIREBASE_API_KEY: ${{ vars.STAGING_FIREBASE_API_KEY }}
+      STAGING_TEST_UID: ${{ vars.STAGING_TEST_UID }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+      TWILIO_FROM_NUMBER: ''
+      STAGING_TEST_PHONE: ${{ secrets.STAGING_TEST_PHONE }}
+      STAGING_FIREBASE_ID_TOKEN: ${{ secrets.STAGING_FIREBASE_ID_TOKEN }}
+      STAGING_TEST_AUTH_EMAIL: ${{ secrets.STAGING_TEST_AUTH_EMAIL }}
+      STAGING_TEST_AUTH_PASSWORD: ${{ secrets.STAGING_TEST_AUTH_PASSWORD }}
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ env.CONTROLLER_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact bounded authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.ref }}" = 'refs/heads/main'
+          test "${{ github.sha }}" = "$CONTROLLER_SHA"
+          test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
+          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
+          test "${{ inputs.confirm_staging_project }}" = 'urai-staging'
+          test -n "$CROSS_REPO_READ_TOKEN" || { echo 'URAI_CROSS_REPO_READ_TOKEN is required for private Communications ref proof.' >&2; exit 46; }
+          live_communications_sha="$(curl --silent --show-error --fail \
+            -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/58 | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.head.sha)})")"
+          test "$live_communications_sha" = "$COMMUNICATIONS_SHA"
+          node scripts/validate-staging-consumers.mjs
+          COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA" node <<'NODE'
+          const fs = require('node:fs');
+          const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
+          const c = authority.consumers.find((entry) => entry.id === 'urai-communications-pr58-twilio-trial-e2e');
+          const failures = [];
+          if (!c) failures.push('consumer missing');
+          if (c?.exactSha !== process.env.COMMUNICATIONS_SHA) failures.push('exact SHA');
+          if (c?.providerProject !== 'urai-staging' || c?.allowedEnvironment !== 'staging') failures.push('project/environment');
+          if (JSON.stringify(c?.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('function allowlist');
+          if (JSON.stringify(c?.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN','TWILIO_ACCOUNT_SID'])) failures.push('secret allowlist');
+          if (c?.productionDeploymentAuthorized !== false || c?.productionDataAuthorized !== false) failures.push('production authority');
+          if (c?.twilioTrialModeOnly !== true || c?.twilioProductionMessagingAuthorized !== false) failures.push('Twilio mode');
+          if (c?.rollbackToDeliveryDisabledRequired !== true) failures.push('rollback');
+          if (failures.length) throw new Error(failures.join(', '));
+          NODE
+          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID CROSS_REPO_READ_TOKEN TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN STAGING_TEST_PHONE; do
+            test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
+          done
+          TWILIO_CALLBACK_URL="${STAGING_FUNCTIONS_BASE_URL%/}/twilioDeliveryStatusCallback"
+          echo "DELIVERY_STATUS_CALLBACK_URL=$TWILIO_CALLBACK_URL" >> "$GITHUB_ENV"
+          echo "STAGING_TWILIO_CALLBACK_FUNCTION=twilioDeliveryStatusCallback" >> "$GITHUB_ENV"
+          echo "STAGING_SMS_SEND_FUNCTION=adminTwilioTestSend" >> "$GITHUB_ENV"
+          STAGING_TEST_PHONE_HASH="$(printf '%s' "$STAGING_TEST_PHONE" | sha256sum | awk '{print $1}')"
+          echo "::add-mask::$STAGING_TEST_PHONE_HASH"
+          echo "STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH" >> "$GITHUB_ENV"
+          case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 42 ;; esac
+          case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 43 ;; esac
+          case "$RUNTIME_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 47 ;; esac
+          test "$RUNTIME_SERVICE_ACCOUNT" != "$DEPLOY_SERVICE_ACCOUNT" || { echo 'runtime and deploy service accounts must be distinct.' >&2; exit 48; }
+          case "$STAGING_FUNCTIONS_BASE_URL" in https://*) ;; *) exit 44 ;; esac
+          case "$TWILIO_CALLBACK_URL" in https://*) ;; *) exit 45 ;; esac
+
+      - name: Authenticate WIF to urai-staging
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
+      - name: Require billing-enabled staging project
+        shell: bash
+        run: bash scripts/assert-staging-billing-enabled.sh
+
+      - name: Checkout exact Communications candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: LifeLoggerAI/urai-communications
+          ref: ${{ env.COMMUNICATIONS_SHA }}
+          token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+          path: communications-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Install exact dependencies and pinned Firebase CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix communications-source ci --legacy-peer-deps --no-audit --no-fund
+          cli_root="$RUNNER_TEMP/firebase-cli"
+          mkdir -p "$cli_root"
+          npm install --prefix "$cli_root" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
+          test "$("$cli_root/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
+          echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Version only pre-created staging Twilio secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$TWILIO_AUTH_TOKEN" | gcloud secrets versions add TWILIO_AUTH_TOKEN --project=urai-staging --data-file=- >/dev/null || {
+            echo 'TWILIO_AUTH_TOKEN must already exist and permit secret-version addition by the staging deploy identity.' >&2
+            exit 61
+          }
+          printf '%s' "$TWILIO_ACCOUNT_SID" | gcloud secrets versions add TWILIO_ACCOUNT_SID --project=urai-staging --data-file=- >/dev/null || {
+            echo 'TWILIO_ACCOUNT_SID must already exist and permit secret-version addition by the staging deploy identity.' >&2
+            exit 62
+          }
+
+      - name: Write ephemeral proof-window Functions environment
+        working-directory: communications-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          cat > functions/.env.urai-staging <<EOF
+          FIREBASE_REGION=us-central1
+          FUNCTIONS_EMULATOR=false
+          ENABLE_WEBHOOK_TEST_MODE=false
+          ENABLE_REAL_DELIVERY=true
+          ENABLE_TWILIO_SMS=true
+          TWILIO_TRIAL_MODE=true
+          TWILIO_MESSAGING_SERVICE_SID=
+          TWILIO_FROM_NUMBER=
+          DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
+          STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
+          DEFAULT_TENANT_TIMEZONE=America/Chicago
+          EOF
+
+      - name: Deploy only allowlisted Communications functions
+        working-directory: communications-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$COMMUNICATIONS_SHA"
+          echo "TWILIO_PROOF_WINDOW_DEPLOY_STARTED=true" >> "$GITHUB_ENV"
+          firebase deploy             --project urai-staging             --only functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback             --non-interactive
+          rm -f functions/.env.urai-staging
+
+      - name: Acquire short-lived staging Firebase ID token if needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${STAGING_FIREBASE_ID_TOKEN:-}" ]; then
+            for name in STAGING_FIREBASE_API_KEY STAGING_TEST_AUTH_EMAIL STAGING_TEST_AUTH_PASSWORD; do
+              test -n "${!name:-}" || { echo "missing protected staging auth input: $name" >&2; exit 50; }
+            done
+            payload="$(node -e 'process.stdout.write(JSON.stringify({email:process.env.STAGING_TEST_AUTH_EMAIL,password:process.env.STAGING_TEST_AUTH_PASSWORD,returnSecureToken:true}))')"
+            code="$(curl --silent --show-error --output "$RUNNER_TEMP/firebase-signin.json" --write-out '%{http_code}'               -H 'content-type: application/json' -d "$payload"               "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$STAGING_FIREBASE_API_KEY")"
+            test "$code" = "200"
+            token="$(node -e "const x=require(process.argv[1]); if(!x.idToken) process.exit(1); process.stdout.write(x.idToken)" "$RUNNER_TEMP/firebase-signin.json")"
+            uid="$(node -e "const x=require(process.argv[1]); if(!x.localId) process.exit(1); process.stdout.write(x.localId)" "$RUNNER_TEMP/firebase-signin.json")"
+            echo "::add-mask::$token"
+            echo "STAGING_FIREBASE_ID_TOKEN=$token" >> "$GITHUB_ENV"
+            if [ -n "${STAGING_TEST_UID:-}" ]; then test "$STAGING_TEST_UID" = "$uid"; else echo "STAGING_TEST_UID=$uid" >> "$GITHUB_ENV"; fi
+            rm -f "$RUNNER_TEMP/firebase-signin.json"
+          fi
+
+      - name: Execute real URAI to Twilio trial round trip
+        working-directory: communications-source
+        shell: bash
+        env:
+          ENABLE_REAL_DELIVERY: 'true'
+          ENABLE_TWILIO_SMS: 'true'
+          TWILIO_TRIAL_MODE: 'true'
+          TWILIO_MESSAGING_SERVICE_SID: ''
+          STAGING_TEST_SMS_BODY: sms_appointment_reminders
+          STAGING_CALLBACK_TIMEOUT_MS: '180000'
+        run: |
+          set -euo pipefail
+          npm run verify:staging:delivery -- --staging --sms --callback | tee "$RUNNER_TEMP/twilio-e2e.log"
+          ! grep -F "$TWILIO_AUTH_TOKEN" "$RUNNER_TEMP/twilio-e2e.log"
+          ! grep -F "$STAGING_TEST_PHONE" "$RUNNER_TEMP/twilio-e2e.log"
+          rm -f "$RUNNER_TEMP/twilio-e2e.log"
+
+      - name: Write sanitized E2E receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/communications-twilio
+          node <<'NODE'
+          const fs=require('node:fs');
+          const crypto=require('node:crypto');
+          const h=(v)=>crypto.createHash('sha256').update(v).digest('hex').slice(0,16);
+          fs.writeFileSync('artifacts/communications-twilio/receipt.json', JSON.stringify({
+            schemaVersion:'urai-communications-pr58-twilio-trial-e2e-1',
+            stagingControllerSha:process.env.CONTROLLER_SHA,
+            communicationsSha:process.env.COMMUNICATIONS_SHA,
+            projectId:'urai-staging',
+            environment:'staging',
+            trialMode:true,
+            accountRef:h(process.env.TWILIO_ACCOUNT_SID),
+            senderMode:'provider-assigned-trial-number',
+            recipientRef:h(process.env.STAGING_TEST_PHONE),
+            protectedE2ECompleted:true,
+            productionMessagingAuthorized:false,
+            secretMaterialRetained:false
+          },null,2)+'\n');
+          NODE
+
+      - name: Roll back runtime delivery flags to OFF
+        if: ${{ always() && env.TWILIO_PROOF_WINDOW_DEPLOY_STARTED == 'true' }}
+        working-directory: communications-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d functions ]; then
+            umask 077
+            cat > functions/.env.urai-staging <<EOF
+            FIREBASE_REGION=us-central1
+            FUNCTIONS_EMULATOR=false
+            ENABLE_WEBHOOK_TEST_MODE=false
+            ENABLE_REAL_DELIVERY=false
+            ENABLE_TWILIO_SMS=false
+            TWILIO_TRIAL_MODE=true
+            TWILIO_MESSAGING_SERVICE_SID=
+            TWILIO_FROM_NUMBER=
+            DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
+            STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
+            DEFAULT_TENANT_TIMEZONE=America/Chicago
+            EOF
+            firebase deploy               --project urai-staging               --only functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback               --non-interactive
+            rm -f functions/.env.urai-staging
+          fi
+
+      - name: Destroy ephemeral credentials
+        if: always()
+        shell: bash
+        run: |
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}" "$RUNNER_TEMP/firebase-signin.json" "$RUNNER_TEMP/twilio-e2e.log" "communications-source/functions/.env.urai-staging"
+          echo 'GOOGLE_APPLICATION_CREDENTIALS=' >> "$GITHUB_ENV"
+          echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
+          echo 'STAGING_FIREBASE_ID_TOKEN=' >> "$GITHUB_ENV"
+
+      - name: Upload sanitized retained proof
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-communications-pr58-twilio-trial-e2e-${{ env.COMMUNICATIONS_SHA }}-${{ github.run_id }}
+          path: artifacts/communications-twilio/receipt.json
+          if-no-files-found: error
+          retention-days: 90

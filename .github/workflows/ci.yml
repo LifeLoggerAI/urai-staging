@@ -12,7 +12,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: urai-staging-ci-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  group: urai-staging-ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -41,7 +41,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: functions/package-lock.json
 
@@ -54,24 +54,32 @@ jobs:
       - name: Validate staging deploy workflow definition
         run: node scripts/validate-staging-deploy-workflow.mjs
 
-      - name: Validate Admin PR57 provider probe definition
-        run: node scripts/validate-admin-pr57-provider-probe.mjs
-
       - name: Validate staging WIF bootstrap contract
         run: node scripts/validate-staging-wif-bootstrap.mjs
 
       - name: Validate staging consumer authority
         run: node scripts/validate-staging-consumers.mjs
 
-      - name: Validate Admin PR57 staging consumer workflow
-        run: node scripts/validate-admin-pr57-staging-consumer.mjs
+      - name: Fail closed on stale publicly-resolvable active consumer refs
+        run: node scripts/validate-active-consumer-refs.mjs
 
-      - name: Validate governed Admin PR57 runtime deployment path
-        shell: bash
-        run: |
-          set -euo pipefail
-          node scripts/validate-admin-pr57-runtime-deploy.mjs
-          bash -n scripts/admin-pr57-staging-lock.sh
+      - name: Validate protected private consumer ref workflow
+        run: node scripts/validate-private-consumer-ref-workflow.mjs
+
+      - name: Validate Spatial PR1296 Stripe TEST provider probe
+        run: node scripts/validate-spatial-pr1296-stripe-provider-probe.mjs
+
+      - name: Validate Communications PR58 Twilio staging controller
+        run: node scripts/validate-communications-pr58-twilio-staging.mjs
+
+      - name: Validate bounded Twilio staging IAM authority
+        run: node scripts/validate-staging-twilio-proof-iam.mjs
+
+      - name: Validate staging Functions deploy IAM promotion
+        run: node scripts/validate-staging-twilio-function-deploy-iam.mjs
+
+      - name: Validate staging billing fail-closed contract
+        run: node scripts/validate-staging-billing-guard.mjs
 
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
