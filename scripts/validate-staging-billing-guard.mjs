@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 const guardPath = 'scripts/assert-staging-billing-enabled.sh';
-const twilioPath = '.github/workflows/communications-pr53-twilio-trial-e2e.yml';
+const twilioPath = '.github/workflows/communications-pr58-twilio-trial-e2e.yml';
 const deployPath = '.github/workflows/staging-deploy.yml';
 
 const guard = fs.readFileSync(guardPath, 'utf8');
