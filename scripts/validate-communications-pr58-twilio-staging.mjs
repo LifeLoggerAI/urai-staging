@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 
-const path = '.github/workflows/communications-pr63-twilio-trial-e2e.yml';
+const path = '.github/workflows/communications-pr58-twilio-trial-e2e.yml';
 const text = fs.readFileSync(path,'utf8');
 const required = [
-  'name: Communications PR63 Twilio Trial Protected Staging E2E',
+  'name: Communications PR63 Twilio API-Key Trial Protected Staging E2E',
   'workflow_dispatch:',
   'environment: staging',
   'https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/63',
