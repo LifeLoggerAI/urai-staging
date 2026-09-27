@@ -32,13 +32,13 @@
       }
     },
     {
-      "id": "urai-communications-pr58-twilio-trial-e2e",
+      "id": "urai-communications-pr63-twilio-trial-e2e",
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "pullRequest": 58,
-      "exactSha": "a147fe6a67d870b3e49e70dae56e938017a3ccd4",
-      "sourceRef": "refs/pull/58/head",
+      "pullRequest": 63,
+      "exactSha": "f07a7215f689913b4fa94f379b46ee9957fbf2ff",
+      "sourceRef": "refs/pull/63/head",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
@@ -54,7 +54,9 @@
       ],
       "secretWriteAllowlist": [
         "TWILIO_AUTH_TOKEN",
-        "TWILIO_ACCOUNT_SID"
+        "TWILIO_ACCOUNT_SID",
+        "TWILIO_API_KEY_SID",
+        "TWILIO_API_KEY_SECRET"
       ],
       "providerMutationAuthorized": true,
       "providerMutationScope": "single-verified-trial-recipient-only",
