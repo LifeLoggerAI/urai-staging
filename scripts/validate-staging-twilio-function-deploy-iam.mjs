@@ -16,7 +16,7 @@ for (const required of [
   'secret_admin_authority=false',
   'gcloud secrets add-iam-policy-binding "$secret_name"',
   "roles/secretmanager.secretAccessor",
-  'runtime_secret_access_scope=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID',
+  'runtime_secret_access_scope=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID,TWILIO_API_KEY_SID,TWILIO_API_KEY_SECRET',
   'runtime_secret_accessor_only=true',
   'PRE_PROJECT_POLICY',
   'refusing IAM promotion before mutation',
