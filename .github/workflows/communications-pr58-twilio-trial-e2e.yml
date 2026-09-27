@@ -197,6 +197,7 @@ jobs:
           ENABLE_WEBHOOK_TEST_MODE=false
           ENABLE_REAL_DELIVERY=true
           ENABLE_TWILIO_SMS=true
+          TWILIO_OUTBOUND_AUTH_MODE=api_key
           TWILIO_TRIAL_MODE=true
           TWILIO_MESSAGING_SERVICE_SID=
           TWILIO_FROM_NUMBER=
@@ -294,6 +295,7 @@ jobs:
             ENABLE_WEBHOOK_TEST_MODE=false
             ENABLE_REAL_DELIVERY=false
             ENABLE_TWILIO_SMS=false
+            TWILIO_OUTBOUND_AUTH_MODE=auth_token
             TWILIO_TRIAL_MODE=true
             TWILIO_MESSAGING_SERVICE_SID=
             TWILIO_FROM_NUMBER=
