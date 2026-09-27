@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "urai-staging-active-consumer-ref-check-2",
+  "checkedPublic": 1,
+  "protectedConsumers": [
+    {
+      "id": "urai-communications-pr58-twilio-trial-e2e",
+      "repository": "LifeLoggerAI/urai-communications",
+      "pullRequest": 58,
+      "expectedSha": "17e14efa97f40e18ad67aaec03ec4c37512a3507",
+      "environment": "staging",
+      "requiredSecret": "URAI_CROSS_REPO_READ_TOKEN"
+    }
+  ],
+  "results": [
+    {
+      "id": "urai-spatial-pr1296-stripe-test-readiness",
+      "expectedSha": "1b14dcbd9ce3a811e4d117921cbd8a00c7c42e66",
+      "liveSha": "1b14dcbd9ce3a811e4d117921cbd8a00c7c42e66",
+      "sourceRef": "refs/pull/1296/head",
+      "verificationMode": "public-git-ls-remote"
+    }
+  ]
+}
+Protected/private consumer refs require the separate protected GitHub API verification workflow before launch authority is accepted.

@@ -1,0 +1,5 @@
+staging consumer authority contract OK
+Communications PR58 Twilio staging workflow contract OK
+Spatial PR1296 Stripe TEST provider-probe workflow contract OK
+OK: Workstream C workspace resolver is fail-closed.
+PASS: Workstream C confinement, launcher routing, override authority, no-publication defaults, local-only Jobs repair, and live exact-candidate manifest
