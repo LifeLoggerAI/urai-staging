@@ -9,7 +9,9 @@ const failures = [];
 for (const required of [
   'Version only pre-created staging Twilio secrets',
   'gcloud secrets versions add TWILIO_AUTH_TOKEN',
-  'gcloud secrets versions add TWILIO_ACCOUNT_SID'
+  'gcloud secrets versions add TWILIO_ACCOUNT_SID',
+  'gcloud secrets versions add TWILIO_API_KEY_SID',
+  'gcloud secrets versions add TWILIO_API_KEY_SECRET'
 ]) {
   if (!workflow.includes(required)) failures.push(`workflow missing: ${required}`);
 }
@@ -25,7 +27,7 @@ for (const forbidden of [
 for (const required of [
   "PROJECT_ID='urai-staging'",
   "SERVICE_ACCOUNT_ID='urai-staging-github-deployer'",
-  'TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID',
+  'TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET',
   "roles/secretmanager.secretVersionAdder",
   'gcloud secrets create "$secret_name"',
   'gcloud secrets add-iam-policy-binding "$secret_name"',
