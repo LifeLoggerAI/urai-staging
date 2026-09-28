@@ -4,7 +4,7 @@ set -Eeuo pipefail
 PROJECT_ID='urai-staging'
 SERVICE_ACCOUNT_ID='urai-staging-github-deployer'
 SERVICE_ACCOUNT_EMAIL="${SERVICE_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com"
-SECRETS=(TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID)
+SECRETS=(TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET)
 
 command -v gcloud >/dev/null 2>&1 || { echo 'gcloud CLI is required.' >&2; exit 2; }
 
@@ -53,7 +53,7 @@ cat <<EOF
 STAGING_TWILIO_PROOF_IAM_OK
 project_id=$PROJECT_ID
 service_account=$SERVICE_ACCOUNT_EMAIL
-secret_resources=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID
+secret_resources=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID,TWILIO_API_KEY_SID,TWILIO_API_KEY_SECRET
 granted_role=roles/secretmanager.secretVersionAdder
 broad_secret_roles_granted=false
 human_operator=$ACTIVE_ACCOUNT

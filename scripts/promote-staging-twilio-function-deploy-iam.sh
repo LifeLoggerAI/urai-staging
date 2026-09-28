@@ -63,9 +63,9 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID"   --member="serviceAccount:
 gcloud iam service-accounts add-iam-policy-binding "$RUNTIME_SERVICE_ACCOUNT_EMAIL"   --project="$PROJECT_ID"   --member="serviceAccount:$DEPLOY_SERVICE_ACCOUNT"   --role='roles/iam.serviceAccountUser' >/dev/null
 
 # The deployed Functions runtime, not the GitHub deploy identity, must be able to
-# read exactly the two Twilio secrets referenced through Firebase defineSecret().
+# read exactly the four Twilio secrets referenced through Firebase defineSecret().
 # Keep this binding resource-scoped to those two staging secrets.
-for secret_name in TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID; do
+for secret_name in TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET; do
   gcloud secrets describe "$secret_name" --project="$PROJECT_ID" >/dev/null
   gcloud secrets add-iam-policy-binding "$secret_name" \
     --project="$PROJECT_ID" \
@@ -79,8 +79,10 @@ RUNTIME_POLICY="$(gcloud iam service-accounts get-iam-policy "$RUNTIME_SERVICE_A
 
 TWILIO_AUTH_POLICY="$(gcloud secrets get-iam-policy TWILIO_AUTH_TOKEN --project="$PROJECT_ID" --format=json)"
 TWILIO_SID_POLICY="$(gcloud secrets get-iam-policy TWILIO_ACCOUNT_SID --project="$PROJECT_ID" --format=json)"
+TWILIO_API_KEY_SID_POLICY="$(gcloud secrets get-iam-policy TWILIO_API_KEY_SID --project="$PROJECT_ID" --format=json)"
+TWILIO_API_KEY_SECRET_POLICY="$(gcloud secrets get-iam-policy TWILIO_API_KEY_SECRET --project="$PROJECT_ID" --format=json)"
 
-PROJECT_POLICY="$PROJECT_POLICY" RUNTIME_POLICY="$RUNTIME_POLICY" TWILIO_AUTH_POLICY="$TWILIO_AUTH_POLICY" TWILIO_SID_POLICY="$TWILIO_SID_POLICY" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" RUNTIME_SERVICE_ACCOUNT_EMAIL="$RUNTIME_SERVICE_ACCOUNT_EMAIL" node <<'NODE'
+PROJECT_POLICY="$PROJECT_POLICY" RUNTIME_POLICY="$RUNTIME_POLICY" TWILIO_AUTH_POLICY="$TWILIO_AUTH_POLICY" TWILIO_SID_POLICY="$TWILIO_SID_POLICY" TWILIO_API_KEY_SID_POLICY="$TWILIO_API_KEY_SID_POLICY" TWILIO_API_KEY_SECRET_POLICY="$TWILIO_API_KEY_SECRET_POLICY" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" RUNTIME_SERVICE_ACCOUNT_EMAIL="$RUNTIME_SERVICE_ACCOUNT_EMAIL" node <<'NODE'
 const projectPolicy = JSON.parse(process.env.PROJECT_POLICY);
 const runtimePolicy = JSON.parse(process.env.RUNTIME_POLICY);
 const deployMember = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
@@ -96,7 +98,9 @@ if (!has(runtimePolicy, 'roles/iam.serviceAccountUser')) failures.push('runtime 
 const runtimeMember = `serviceAccount:${process.env.RUNTIME_SERVICE_ACCOUNT_EMAIL}`;
 for (const [name,raw] of [
   ['TWILIO_AUTH_TOKEN', process.env.TWILIO_AUTH_POLICY],
-  ['TWILIO_ACCOUNT_SID', process.env.TWILIO_SID_POLICY]
+  ['TWILIO_ACCOUNT_SID', process.env.TWILIO_SID_POLICY],
+  ['TWILIO_API_KEY_SID', process.env.TWILIO_API_KEY_SID_POLICY],
+  ['TWILIO_API_KEY_SECRET', process.env.TWILIO_API_KEY_SECRET_POLICY]
 ]) {
   const policy = JSON.parse(raw);
   const accessor = (policy.bindings || []).some((binding) =>
@@ -129,7 +133,7 @@ project_role=roles/cloudfunctions.admin
 runtime_role=roles/iam.serviceAccountUser
 production_authority=false
 secret_admin_authority=false
-runtime_secret_access_scope=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID
+runtime_secret_access_scope=TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID,TWILIO_API_KEY_SID,TWILIO_API_KEY_SECRET
 runtime_secret_accessor_only=true
 broad_deploy_project_roles=false
 broad_runtime_project_roles=false

@@ -1,10 +1,10 @@
-name: Communications PR58 Twilio Trial Protected Staging E2E
+name: Communications PR63 Twilio API-Key Trial Protected Staging E2E
 
 on:
   workflow_dispatch:
     inputs:
       communications_sha:
-        description: Exact urai-communications PR #58 SHA authorized by config/staging-consumers.json
+        description: Exact urai-communications PR #63 SHA authorized by config/staging-consumers.json
         required: true
         type: string
       expected_controller_sha:
@@ -21,12 +21,12 @@ permissions:
   actions: read
 
 concurrency:
-  group: urai-communications-pr58-twilio-trial-e2e
+  group: urai-communications-pr63-twilio-trial-e2e
   cancel-in-progress: false
 
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
-  COMMUNICATIONS_PR_NUMBER: '58'
+  COMMUNICATIONS_PR_NUMBER: '63'
   STAGING_PROJECT_ID: urai-staging
   EXPECTED_ENVIRONMENT: staging
   FIREBASE_CLI_VERSION: '15.23.0'
@@ -53,6 +53,8 @@ jobs:
       STAGING_TEST_UID: ${{ vars.STAGING_TEST_UID }}
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
+      TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
       CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
       TWILIO_FROM_NUMBER: ''
       STAGING_TEST_PHONE: ${{ secrets.STAGING_TEST_PHONE }}
@@ -82,25 +84,25 @@ jobs:
             -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/58 | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.head.sha)})")"
+            https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/63 | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.head.sha)})")"
           test "$live_communications_sha" = "$COMMUNICATIONS_SHA"
           node scripts/validate-staging-consumers.mjs
           COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA" node <<'NODE'
           const fs = require('node:fs');
           const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
-          const c = authority.consumers.find((entry) => entry.id === 'urai-communications-pr58-twilio-trial-e2e');
+          const c = authority.consumers.find((entry) => entry.id === 'urai-communications-pr63-twilio-trial-e2e');
           const failures = [];
           if (!c) failures.push('consumer missing');
           if (c?.exactSha !== process.env.COMMUNICATIONS_SHA) failures.push('exact SHA');
           if (c?.providerProject !== 'urai-staging' || c?.allowedEnvironment !== 'staging') failures.push('project/environment');
           if (JSON.stringify(c?.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('function allowlist');
-          if (JSON.stringify(c?.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN','TWILIO_ACCOUNT_SID'])) failures.push('secret allowlist');
+          if (JSON.stringify(c?.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN','TWILIO_ACCOUNT_SID','TWILIO_API_KEY_SID','TWILIO_API_KEY_SECRET'])) failures.push('secret allowlist');
           if (c?.productionDeploymentAuthorized !== false || c?.productionDataAuthorized !== false) failures.push('production authority');
           if (c?.twilioTrialModeOnly !== true || c?.twilioProductionMessagingAuthorized !== false) failures.push('Twilio mode');
           if (c?.rollbackToDeliveryDisabledRequired !== true) failures.push('rollback');
           if (failures.length) throw new Error(failures.join(', '));
           NODE
-          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID CROSS_REPO_READ_TOKEN TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN STAGING_TEST_PHONE; do
+          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID CROSS_REPO_READ_TOKEN TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET STAGING_TEST_PHONE; do
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
           done
           TWILIO_CALLBACK_URL="${STAGING_FUNCTIONS_BASE_URL%/}/twilioDeliveryStatusCallback"
@@ -174,6 +176,14 @@ jobs:
             echo 'TWILIO_ACCOUNT_SID must already exist and permit secret-version addition by the staging deploy identity.' >&2
             exit 62
           }
+          printf '%s' "$TWILIO_API_KEY_SID" | gcloud secrets versions add TWILIO_API_KEY_SID --project=urai-staging --data-file=- >/dev/null || {
+            echo 'TWILIO_API_KEY_SID must already exist and permit secret-version addition by the staging deploy identity.' >&2
+            exit 63
+          }
+          printf '%s' "$TWILIO_API_KEY_SECRET" | gcloud secrets versions add TWILIO_API_KEY_SECRET --project=urai-staging --data-file=- >/dev/null || {
+            echo 'TWILIO_API_KEY_SECRET must already exist and permit secret-version addition by the staging deploy identity.' >&2
+            exit 64
+          }
 
       - name: Write ephemeral proof-window Functions environment
         working-directory: communications-source
@@ -187,6 +197,7 @@ jobs:
           ENABLE_WEBHOOK_TEST_MODE=false
           ENABLE_REAL_DELIVERY=true
           ENABLE_TWILIO_SMS=true
+          TWILIO_OUTBOUND_AUTH_MODE=api_key
           TWILIO_TRIAL_MODE=true
           TWILIO_MESSAGING_SERVICE_SID=
           TWILIO_FROM_NUMBER=
@@ -238,6 +249,8 @@ jobs:
           set -euo pipefail
           npm run verify:staging:delivery -- --staging --sms --callback | tee "$RUNNER_TEMP/twilio-e2e.log"
           ! grep -F "$TWILIO_AUTH_TOKEN" "$RUNNER_TEMP/twilio-e2e.log"
+          ! grep -F "$TWILIO_API_KEY_SECRET" "$RUNNER_TEMP/twilio-e2e.log"
+          ! grep -F "$TWILIO_API_KEY_SID" "$RUNNER_TEMP/twilio-e2e.log"
           ! grep -F "$STAGING_TEST_PHONE" "$RUNNER_TEMP/twilio-e2e.log"
           rm -f "$RUNNER_TEMP/twilio-e2e.log"
 
@@ -251,13 +264,15 @@ jobs:
           const crypto=require('node:crypto');
           const h=(v)=>crypto.createHash('sha256').update(v).digest('hex').slice(0,16);
           fs.writeFileSync('artifacts/communications-twilio/receipt.json', JSON.stringify({
-            schemaVersion:'urai-communications-pr58-twilio-trial-e2e-1',
+            schemaVersion:'urai-communications-pr63-twilio-trial-e2e-1',
             stagingControllerSha:process.env.CONTROLLER_SHA,
             communicationsSha:process.env.COMMUNICATIONS_SHA,
             projectId:'urai-staging',
             environment:'staging',
             trialMode:true,
             accountRef:h(process.env.TWILIO_ACCOUNT_SID),
+            outboundCredentialMode:'api-key',
+            apiKeyRef:h(process.env.TWILIO_API_KEY_SID),
             senderMode:'provider-assigned-trial-number',
             recipientRef:h(process.env.STAGING_TEST_PHONE),
             protectedE2ECompleted:true,
@@ -280,6 +295,7 @@ jobs:
             ENABLE_WEBHOOK_TEST_MODE=false
             ENABLE_REAL_DELIVERY=false
             ENABLE_TWILIO_SMS=false
+            TWILIO_OUTBOUND_AUTH_MODE=auth_token
             TWILIO_TRIAL_MODE=true
             TWILIO_MESSAGING_SERVICE_SID=
             TWILIO_FROM_NUMBER=
@@ -304,7 +320,7 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: urai-communications-pr58-twilio-trial-e2e-${{ env.COMMUNICATIONS_SHA }}-${{ github.run_id }}
+          name: urai-communications-pr63-twilio-trial-e2e-${{ env.COMMUNICATIONS_SHA }}-${{ github.run_id }}
           path: artifacts/communications-twilio/receipt.json
           if-no-files-found: error
           retention-days: 90
