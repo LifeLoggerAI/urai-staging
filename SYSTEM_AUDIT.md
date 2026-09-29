@@ -1,5 +1,9 @@
 # URAI Staging System Audit
 
+> **HISTORICAL SYSTEM AUDIT — MAY 2026 / SUPERSEDED.**  
+> This file documents an earlier architecture/audit state and is retained for provenance. Its Node 20, permissive-CORS, raw staging-data, deployment, and environment assertions are not current authority. Use `STATUS.md`, `ENVIRONMENT_AUTHORITY.md`, `URAI_STAGING_DEFINITION_OF_DONE.md`, current exact-head GitHub evidence, and provider/runtime readback for present decisions.
+
+
 Date: 2026-05-20
 Branch: release/urai-staging-v1-integration-audit
 Repository: LifeLoggerAI/urai-staging

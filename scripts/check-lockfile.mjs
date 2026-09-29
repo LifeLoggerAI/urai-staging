@@ -6,8 +6,8 @@ const rootPackage = JSON.parse(readFileSync('package.json', 'utf8'));
 const functionsPackage = JSON.parse(readFileSync('functions/package.json', 'utf8'));
 
 if (rootPackage.private !== true) failures.push('Root package.json must remain private.');
-if (rootPackage.engines?.node !== '20') failures.push('Root package.json must lock Node engine to 20.');
-if (functionsPackage.engines?.node !== '20') failures.push('functions/package.json must lock Node engine to 20.');
+if (rootPackage.engines?.node !== '22') failures.push('Root package.json must lock Node engine to 22.');
+if (functionsPackage.engines?.node !== '22') failures.push('functions/package.json must lock Node engine to 22.');
 
 const acceptableLockfiles = [
   'functions/package-lock.json',

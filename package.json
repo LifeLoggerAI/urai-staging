@@ -35,6 +35,6 @@
     "ship:urai:staging": "npm run deploy:staging"
   },
   "engines": {
-    "node": "20"
+    "node": "22"
   }
 }

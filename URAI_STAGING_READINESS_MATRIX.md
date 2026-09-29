@@ -1,5 +1,9 @@
 # URAI Staging System-of-Systems Readiness Matrix
 
+> **HISTORICAL READINESS SNAPSHOT — SUPERSEDED.**  
+> Preserve this matrix as provenance only. Current Staging ownership is defined by the lifecycle-aware consumer registry, `functions/src/lib/featureRegistry.ts`, `STATUS.md`, and `URAI_STAGING_DEFINITION_OF_DONE.md`. Product UI/features remain sibling-repository responsibilities; Staging consumes exact-head receipts rather than duplicating implementation. Current provider/deploy/live state must come from live GitHub/provider/runtime evidence, not this matrix.
+
+
 Status values: Complete, Partial, Missing, Out of Scope, Unknown.
 
 | System | Represented in code/docs? | Connected to staging? | Deployed by this repo? | Status | Missing work | Exact next fix |

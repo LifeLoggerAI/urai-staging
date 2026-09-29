@@ -52,6 +52,7 @@
   },
   "functions": {
     "source": "functions",
+    "runtime": "nodejs22",
     "predeploy": [
       "node scripts/staging-prebuilt-manifest.mjs --verify-materialized"
     ]

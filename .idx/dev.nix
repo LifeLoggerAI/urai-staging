@@ -4,7 +4,7 @@
   # Firebase Studio's package picker exposes adoptopenjdk-bin, so use that package
   # instead of openjdk17 for better compatibility with this workspace image.
   packages = [
-    pkgs.nodejs_20
+    pkgs.nodejs_22
     pkgs.adoptopenjdk-bin
     pkgs.git
   ];

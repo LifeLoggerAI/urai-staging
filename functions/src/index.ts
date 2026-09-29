@@ -3,9 +3,17 @@ import * as functions from 'firebase-functions';
 import { getCompletionSummary, FEATURE_MATRIX, ROADMAP_PHASES } from './lib/featureRegistry';
 import { requireAdmin, requireAuth } from './lib/auth';
 import {
+  FixedWindowRateLimiter,
+  MAX_STAGING_HTTP_BODY_BYTES,
+  STAGING_COMPANION_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_RATE_WINDOW_MS,
+  STAGING_WAITLIST_REQUESTS_PER_WINDOW,
   STAGING_HOSTING_URL,
   STAGING_PROJECT_ID,
+  isAllowedStagingOrigin,
+  isStagingHttpBodyWithinLimit,
   isSyntheticStagingEmail,
+  stagingEphemeralClientKey,
   stagingRuntimeBuildInfo,
   stagingWaitlistDocumentId,
 } from './lib/stagingBoundaries';
@@ -22,26 +30,82 @@ admin.initializeApp();
 
 const db = admin.firestore();
 const serverTimestamp = admin.firestore.FieldValue.serverTimestamp;
+const companionRateLimiter = new FixedWindowRateLimiter(
+  STAGING_COMPANION_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_RATE_WINDOW_MS,
+);
+const waitlistRateLimiter = new FixedWindowRateLimiter(
+  STAGING_WAITLIST_REQUESTS_PER_WINDOW,
+  STAGING_HTTP_RATE_WINDOW_MS,
+);
+const stagingHttpRuntime = functions.runWith({
+  maxInstances: 2,
+  timeoutSeconds: 15,
+  memory: '256MB',
+});
 
-function setJsonHeaders(response: functions.Response): void {
-  response.set('Access-Control-Allow-Origin', '*');
+function setJsonHeaders(request: functions.Request, response: functions.Response): void {
+  const origin = request.get('origin');
+  if (origin && isAllowedStagingOrigin(origin)) {
+    response.set('Access-Control-Allow-Origin', origin);
+    response.set('Vary', 'Origin');
+  }
   response.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   response.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.set('Cache-Control', 'no-store');
 }
 
+function rejectUnapprovedOrigin(request: functions.Request, response: functions.Response): boolean {
+  const origin = request.get('origin');
+  if (isAllowedStagingOrigin(origin)) return false;
+  response.set('Cache-Control', 'no-store');
+  response.status(403).json({ status: 'error', error: 'origin_not_allowed' });
+  return true;
+}
+
+function rejectOversizeBody(request: functions.Request, response: functions.Response): boolean {
+  const header = request.get('content-length');
+  const declaredLength = header ? Number.parseInt(header, 10) : Number.NaN;
+  if (
+    (Number.isFinite(declaredLength) && declaredLength > MAX_STAGING_HTTP_BODY_BYTES) ||
+    !isStagingHttpBodyWithinLimit(request.body)
+  ) {
+    setJsonHeaders(request, response);
+    response.status(413).json({ status: 'error', error: 'request_too_large' });
+    return true;
+  }
+  return false;
+}
+
 function handleOptions(request: functions.Request, response: functions.Response): boolean {
   if (request.method === 'OPTIONS') {
-    setJsonHeaders(response);
+    if (rejectUnapprovedOrigin(request, response)) return true;
+    setJsonHeaders(request, response);
     response.status(204).send('');
     return true;
   }
   return false;
 }
 
-function sendJson(response: functions.Response, statusCode: number, body: Record<string, unknown>): void {
-  setJsonHeaders(response);
+function sendJson(
+  request: functions.Request,
+  response: functions.Response,
+  statusCode: number,
+  body: Record<string, unknown>,
+): void {
+  setJsonHeaders(request, response);
   response.status(statusCode).json(body);
+}
+
+function rejectRateLimited(
+  request: functions.Request,
+  response: functions.Response,
+  limiter: FixedWindowRateLimiter,
+): boolean {
+  const key = stagingEphemeralClientKey(request.ip);
+  if (limiter.consume(key)) return false;
+  sendJson(request, response, 429, { status: 'error', error: 'rate_limited' });
+  return true;
 }
 
 function bodyAsPlainObject(body: unknown): Record<string, unknown> {
@@ -51,14 +115,15 @@ function bodyAsPlainObject(body: unknown): Record<string, unknown> {
   return {};
 }
 
-export const healthz = functions.https.onRequest((request, response) => {
+export const healthz = stagingHttpRuntime.https.onRequest((request, response) => {
   if (handleOptions(request, response)) return;
+  if (rejectUnapprovedOrigin(request, response)) return;
   if (request.method !== 'GET') {
-    sendJson(response, 405, { status: 'error', error: 'method_not_allowed' });
+    sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
 
-  sendJson(response, 200, {
+  sendJson(request, response, 200, {
     status: 'ok',
     service: 'urai-staging',
     projectId: STAGING_PROJECT_ID,
@@ -66,14 +131,15 @@ export const healthz = functions.https.onRequest((request, response) => {
   });
 });
 
-export const buildinfo = functions.https.onRequest((request, response) => {
+export const buildinfo = stagingHttpRuntime.https.onRequest((request, response) => {
   if (handleOptions(request, response)) return;
+  if (rejectUnapprovedOrigin(request, response)) return;
   if (request.method !== 'GET') {
-    sendJson(response, 405, { status: 'error', error: 'method_not_allowed' });
+    sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
 
-  sendJson(response, 200, {
+  sendJson(request, response, 200, {
     status: 'ok',
     service: 'urai-staging',
     projectId: STAGING_PROJECT_ID,
@@ -82,17 +148,20 @@ export const buildinfo = functions.https.onRequest((request, response) => {
   });
 });
 
-export const companion = functions.https.onRequest(async (request, response) => {
+export const companion = stagingHttpRuntime.https.onRequest(async (request, response) => {
   if (handleOptions(request, response)) return;
+  if (rejectUnapprovedOrigin(request, response)) return;
+  if (rejectOversizeBody(request, response)) return;
+  if (rejectRateLimited(request, response, companionRateLimiter)) return;
   if (request.method !== 'POST') {
-    sendJson(response, 405, { status: 'error', error: 'method_not_allowed' });
+    sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
 
   const body = bodyAsPlainObject(request.body);
   const message = typeof body.message === 'string' ? body.message.trim() : '';
   if (message.length === 0) {
-    sendJson(response, 400, {
+    sendJson(request, response, 400, {
       status: 'error',
       error: 'message_required',
       message: 'A non-empty message is required for the staging companion smoke endpoint.',
@@ -100,7 +169,7 @@ export const companion = functions.https.onRequest(async (request, response) => 
     return;
   }
 
-  sendJson(response, 200, {
+  sendJson(request, response, 200, {
     status: 'ok',
     service: 'urai-staging-companion',
     persisted: false,
@@ -108,16 +177,19 @@ export const companion = functions.https.onRequest(async (request, response) => 
   });
 });
 
-export const waitlist = functions.https.onRequest(async (request, response) => {
+export const waitlist = stagingHttpRuntime.https.onRequest(async (request, response) => {
   if (handleOptions(request, response)) return;
+  if (rejectUnapprovedOrigin(request, response)) return;
+  if (rejectOversizeBody(request, response)) return;
+  if (rejectRateLimited(request, response, waitlistRateLimiter)) return;
   if (request.method !== 'POST') {
-    sendJson(response, 405, { status: 'error', error: 'method_not_allowed' });
+    sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
 
   const body = bodyAsPlainObject(request.body);
   if (!isSyntheticStagingEmail(body.email)) {
-    sendJson(response, 400, {
+    sendJson(request, response, 400, {
       status: 'error',
       error: 'synthetic_email_required',
       message: 'The staging waitlist accepts reserved synthetic email domains only.',
@@ -139,7 +211,7 @@ export const waitlist = functions.https.onRequest(async (request, response) => {
 
   await db.collection('staging_waitlist').doc(documentId).set(entry, { merge: true });
 
-  sendJson(response, 200, {
+  sendJson(request, response, 200, {
     status: 'ok',
     service: 'urai-staging-waitlist',
     stored: true,

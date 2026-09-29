@@ -11,6 +11,10 @@
 - [x] `package.json` routes `deploy:staging` through the fail-closed lock script.
 - [x] `.env.example` lists required names without secret values or a production project selector and keeps local protected-deploy authorization at `0`.
 - [x] `.github/workflows/staging-deploy.yml` separates noncredentialed exact-main verification from an environment-gated credentialed deploy job.
+- [x] Active cross-repository staging consumers are centralized in `config/staging-consumers.json` and CI fails closed when an active upstream ref moves.
+- [x] Obsolete Admin PR #57 authority is historical provenance rather than an active consumer.
+- [x] Staging Functions runtime/CI authority is migrated to Node 22 on the current convergence candidate.
+- [x] Source bootstrap evidence is explicitly labeled as source-only rather than launch/runtime certification.
 
 ## Local and confined validation
 
@@ -48,6 +52,9 @@ These checked items are valid only when the current PR head equals the exact SHA
 - [ ] `POST /api/companion` with a valid synthetic message returns HTTP 200.
 - [ ] `POST /api/companion` with an empty message returns HTTP 400.
 - [ ] `POST /api/waitlist` with a valid synthetic email returns HTTP 200.
+- [ ] Browser-origin requests from unapproved origins are denied.
+- [ ] Oversize HTTP request bodies are rejected while canonical same-origin and no-Origin server smoke remain functional.
+- [ ] Live `/robots.txt` matches the canonical staging all-disallow policy.
 - [ ] Protected read-back matches the deployed candidate.
 - [ ] Unauthorized write attempts are denied.
 - [ ] Cross-tenant access attempts are denied.

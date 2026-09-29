@@ -32,7 +32,7 @@ concurrency:
 env:
   TARGET_SHA: ${{ inputs.expected_main_sha }}
   ROLLBACK_SHA: ${{ inputs.rollback_sha }}
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   FIREBASE_CLI_VERSION: '15.23.0'
   EXPECTED_STAGING_PROJECT: urai-staging
   URAI_STAGING_PROJECT_ID: urai-staging
@@ -271,6 +271,11 @@ jobs:
           create_credentials_file: true
           export_environment_variables: true
 
+      - name: Setup gcloud for staging readback
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
       - name: Verify ephemeral WIF credential boundary
         shell: bash
         run: |
@@ -285,6 +290,10 @@ jobs:
           esac
           git check-ignore -q "$GOOGLE_APPLICATION_CREDENTIALS"
           test "${GOOGLE_CLOUD_PROJECT:-urai-staging}" = 'urai-staging' || { echo 'WIF credential project mismatch' >&2; exit 1; }
+
+      - name: Require billing-enabled staging project
+        shell: bash
+        run: bash scripts/assert-staging-billing-enabled.sh
 
       - name: Deploy verified artifact to staging only
         id: deploy

@@ -1,6 +1,6 @@
 # URAI Staging Environment Authority
 
-Date: 2026-07-11
+Date: 2026-09-24
 
 Repository: `LifeLoggerAI/urai-staging`
 
@@ -21,11 +21,11 @@ Source control authority does not by itself prove provider-account access, curre
 
 ## Current status
 
-`SOURCE AUTHORITY REPAIRED — NOT VERIFIED OR DEPLOYED`
+`SOURCE CONVERGENCE ACTIVE — PROTECTED RUNTIME NO-GO — LIVE CERTIFICATION NOT COMPLETE`
 
-Repository source contains staging Hosting, Functions, Firestore and Storage rules, indexes, tests, a staging lock script, smoke scripts and manual deployment workflow. A prior exact-head general CI run passed, but the required production-verification workflow failed because it did not install the functions workspace. The current repair makes verification exact-head and staging-specific.
+Repository source contains staging Hosting, Functions, Firestore and Storage rules, indexes, tests, exact-head consumer authority, staging lock/smoke scripts and protected deployment/provider workflows. PR #44 is the current convergence successor for active Spatial/Stripe TEST and Communications/Twilio-trial staging authority.
 
-No live deployment is authorized until every exact-head required workflow passes and the protected `staging` GitHub environment supplies a credential for exactly `urai-staging`.
+At the 2026-09-24 audit checkpoint, the public staging root, `/api/healthz` and `/api/buildinfo` returned HTTP 503 and the live robots response did not match canonical source. No live deployment is certified until PR #44 exact-head proof, protected WIF/IAM authority, provider diagnosis, merged-main deployment, live smoke, monitoring, recovery and rollback evidence complete.
 
 ## Environment rules
 

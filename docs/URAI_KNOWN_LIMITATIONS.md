@@ -1,5 +1,9 @@
 # URAI Known Limitations
 
+> **HISTORICAL LIMITATIONS SNAPSHOT — SUPERSEDED.**  
+> Do not use this document as current execution authority. Since this snapshot, `.firebaserc` and `functions/package-lock.json` are present, Node 22 is the current runtime target, exact-head CI executes dependencies/tests, public HTTP origin/body/rate bounds exist on the current successor, and Staging has a lifecycle-aware consumer control plane. Current limitations and blockers are tracked in `STATUS.md`, `URAI_STAGING_DEFINITION_OF_DONE.md`, current GitHub issues/PRs, and provider/runtime readback.
+
+
 ## Repository scope
 
 `LifeLoggerAI/urai-staging` is currently a staging backend validation repository. It does not contain the full URAI product UI or all ecosystem modules.
