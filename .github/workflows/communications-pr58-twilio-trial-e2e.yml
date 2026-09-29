@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       communications_sha:
-        description: Exact urai-communications PR #63 SHA authorized by config/staging-consumers.json
+        description: Exact urai-communications PR #58 SHA authorized by config/staging-consumers.json
         required: true
         type: string
       expected_controller_sha:
