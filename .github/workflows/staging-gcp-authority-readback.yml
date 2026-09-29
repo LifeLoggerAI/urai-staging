@@ -1,0 +1,79 @@
+name: Staging GCP Authority Readback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/staging-gcp-authority-readback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  readback:
+    runs-on: ubuntu-24.04
+    environment: staging
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PROJECT_ID: urai-staging
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+      EXPECTED_RUNTIME_SERVICE_ACCOUNT: urai-staging-functions-runtime@urai-staging.iam.gserviceaccount.com
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+          show-progress: false
+      - name: Validate non-secret authority inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$WIF_PROVIDER"
+          test -n "$DEPLOY_SERVICE_ACCOUNT"
+          case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 21 ;; esac
+          case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 22 ;; esac
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+      - name: Read back bounded staging authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gcloud config get-value project 2>/dev/null)" = "$PROJECT_ID"
+          billing="$(gcloud billing projects describe "$PROJECT_ID" --format='value(billingEnabled)' 2>/dev/null || true)"
+          echo "STAGING_BILLING_ENABLED=${billing:-UNKNOWN}"
+          if gcloud iam service-accounts describe "$EXPECTED_RUNTIME_SERVICE_ACCOUNT" --project="$PROJECT_ID" >/dev/null 2>&1; then echo "STAGING_RUNTIME_SA_EXISTS=true"; else echo "STAGING_RUNTIME_SA_EXISTS=false"; fi
+          key_count="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project="$PROJECT_ID" --managed-by=user --format='value(name)' 2>/dev/null | sed '/^$/d' | wc -l | tr -d ' ')"
+          echo "STAGING_DEPLOY_USER_MANAGED_KEYS=$key_count"
+          if gcloud functions describe deliveryStatusCallback --gen2 --region=us-central1 --project="$PROJECT_ID" --format=json > "$RUNNER_TEMP/function.json" 2>/dev/null; then
+            node - "$RUNNER_TEMP/function.json" <<'NODE'
+          const fs=require('node:fs');
+          const x=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          console.log('STAGING_CALLBACK_STATE='+String(x.state||'UNKNOWN'));
+          console.log('STAGING_CALLBACK_RUNTIME_SA='+String(x.serviceConfig?.serviceAccountEmail||'MISSING'));
+          console.log('STAGING_CALLBACK_URI_PRESENT='+String(Boolean(x.serviceConfig?.uri)));
+          console.log('STAGING_CALLBACK_SECRET_KEYS='+(x.serviceConfig?.secretEnvironmentVariables||[]).map(v=>v.key).sort().join(','));
+          NODE
+          else
+            echo "STAGING_CALLBACK_STATE=MISSING"
+          fi
+          for secret in SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY DELIVERY_STATUS_CALLBACK_SECRET TWILIO_AUTH_TOKEN; do
+            if gcloud secrets describe "$secret" --project="$PROJECT_ID" >/dev/null 2>&1; then
+              enabled="$(gcloud secrets versions list "$secret" --project="$PROJECT_ID" --filter='state=ENABLED' --format='value(name)' --limit=1 2>/dev/null || true)"
+              echo "STAGING_SECRET_${secret}_EXISTS=true"
+              test -n "$enabled" && echo "STAGING_SECRET_${secret}_HAS_ENABLED_VERSION=true" || echo "STAGING_SECRET_${secret}_HAS_ENABLED_VERSION=false"
+            else
+              echo "STAGING_SECRET_${secret}_EXISTS=false"
+            fi
+          done
+          rm -f "$RUNNER_TEMP/function.json"
