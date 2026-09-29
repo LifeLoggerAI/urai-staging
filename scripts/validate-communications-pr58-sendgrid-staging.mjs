@@ -58,7 +58,9 @@ const bootstrapRequired = [
   'DELIVERY_STATUS_CALLBACK_SECRET',
   'TWILIO_AUTH_TOKEN',
   'user_managed_deploy_keys=false',
-  'STAGING_SENDGRID_FUNCTION_IAM_OK'
+  'STAGING_SENDGRID_FUNCTION_IAM_OK',
+  'urai-staging-functions-runtime@urai-staging.iam.gserviceaccount.com',
+  'gcloud iam service-accounts create urai-staging-functions-runtime'
 ];
 for (const marker of bootstrapRequired) {
   if (!bootstrap.includes(marker)) throw new Error(`missing SendGrid IAM bootstrap marker: ${marker}`);
