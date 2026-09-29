@@ -173,6 +173,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$COMMUNICATIONS_SHA"
+          grep -F "export const deliveryStatusCallback = onRequest({region, invoker: 'public'" functions/src/index.ts >/dev/null || { echo "deliveryStatusCallback missing explicit public invoker contract" >&2; exit 63; }
           umask 077
           cat > functions/.env.urai-staging <<EOF
           FIREBASE_REGION=us-central1
