@@ -9,7 +9,7 @@ if (doc.projectId !== 'urai-staging') failures.push('projectId');
 if (doc.environment !== 'staging') failures.push('environment');
 if (doc.mutationAuthorityRepository !== 'LifeLoggerAI/urai-staging') failures.push('mutationAuthorityRepository');
 if (doc.productionAllowed !== false) failures.push('productionAllowed');
-if (!Array.isArray(doc.consumers) || doc.consumers.length !== 2) failures.push('active consumers');
+if (!Array.isArray(doc.consumers) || doc.consumers.length !== 3) failures.push('active consumers');
 if (!Array.isArray(doc.historicalConsumers) || doc.historicalConsumers.length !== 1) failures.push('historical consumers');
 
 for (const c of doc.consumers || []) {
@@ -59,6 +59,26 @@ if (communications.refVerification?.mode !== 'protected-github-api') failures.pu
 if (communications.refVerification?.environment !== 'staging') failures.push('communications ref verification environment');
 if (communications.refVerification?.requiredSecret !== 'URAI_CROSS_REPO_READ_TOKEN') failures.push('communications ref verification secret contract');
 if (communications.trialSenderMode !== 'provider-assigned') failures.push('communications trial sender mode');
+
+const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr58-sendgrid-signed-staging-e2e') || {};
+if (sendgrid.repository !== 'LifeLoggerAI/urai-communications') failures.push('sendgrid repository');
+if (sendgrid.repositoryId !== 1169785707) failures.push('sendgrid repositoryId');
+if (sendgrid.pullRequest !== 58) failures.push('sendgrid pullRequest');
+if (sendgrid.exactSha !== 'ad43d9aae6e5f2d3f59fb8459402a179840e1cfc') failures.push('sendgrid exactSha');
+if (sendgrid.sourceRef !== 'refs/pull/58/head') failures.push('sendgrid sourceRef');
+if (sendgrid.mode !== 'sendgrid-signed-protected-staging-e2e') failures.push('sendgrid mode');
+if (JSON.stringify(sendgrid.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('sendgrid allowedDeployScopes');
+if (JSON.stringify(sendgrid.initialFunctionDeploymentAllowlist) !== JSON.stringify(['deliveryStatusCallback'])) failures.push('sendgrid function allowlist');
+if (JSON.stringify(sendgrid.secretWriteAllowlist) !== JSON.stringify(['SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY'])) failures.push('sendgrid secret allowlist');
+if (sendgrid.providerMutationAuthorized !== true) failures.push('sendgrid provider mutation');
+if (sendgrid.providerMutationScope !== 'temporary-second-signed-webhook-test-only') failures.push('sendgrid provider mutation scope');
+if (sendgrid.sendGridProductionSendingAuthorized !== false) failures.push('sendgrid production sending');
+if (sendgrid.sendGridTemporaryWebhookCreateAuthorized !== true) failures.push('sendgrid temporary webhook create');
+if (sendgrid.sendGridTemporaryWebhookDeleteRequired !== true) failures.push('sendgrid temporary webhook delete');
+if (sendgrid.rollbackToDeliveryDisabledRequired !== true) failures.push('sendgrid rollback requirement');
+if (sendgrid.refVerification?.mode !== 'protected-github-api') failures.push('sendgrid ref verification');
+if (sendgrid.refVerification?.environment !== 'staging') failures.push('sendgrid ref verification environment');
+if (sendgrid.refVerification?.requiredSecret !== 'URAI_CROSS_REPO_READ_TOKEN') failures.push('sendgrid ref verification secret contract');
 
 const historicalAdmin = doc.historicalConsumers?.find((entry) => entry.id === 'urai-admin-pr57-runtime-closure') || {};
 if (historicalAdmin.state !== 'historical') failures.push('historical Admin state');
