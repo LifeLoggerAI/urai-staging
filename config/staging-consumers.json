@@ -37,7 +37,7 @@
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
       "pullRequest": 58,
-      "exactSha": "5c7a06b93befa9c5742635b15e0dca66e0e09bdc",
+      "exactSha": "ad43d9aae6e5f2d3f59fb8459402a179840e1cfc",
       "sourceRef": "refs/pull/58/head",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -74,6 +74,44 @@
         "requiredSecret": "URAI_CROSS_REPO_READ_TOKEN"
       },
       "trialSenderMode": "provider-assigned"
+    },
+    {
+      "id": "urai-communications-pr58-sendgrid-signed-staging-e2e",
+      "state": "active",
+      "repository": "LifeLoggerAI/urai-communications",
+      "repositoryId": 1169785707,
+      "pullRequest": 58,
+      "exactSha": "ad43d9aae6e5f2d3f59fb8459402a179840e1cfc",
+      "sourceRef": "refs/pull/58/head",
+      "mode": "sendgrid-signed-protected-staging-e2e",
+      "dataPolicy": "synthetic-only",
+      "providerProject": "urai-staging",
+      "allowedEnvironment": "staging",
+      "allowedDeployScopes": [
+        "functions-explicit-only"
+      ],
+      "initialFunctionDeploymentAllowlist": [
+        "deliveryStatusCallback"
+      ],
+      "secretWriteAllowlist": [
+        "SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY"
+      ],
+      "providerMutationAuthorized": true,
+      "providerMutationScope": "temporary-second-signed-webhook-test-only",
+      "hostingMutationAuthorized": false,
+      "projectWideRuleMutationAuthorized": false,
+      "productionDeploymentAuthorized": false,
+      "productionDataAuthorized": false,
+      "longLivedCredentialsAuthorized": false,
+      "sendGridProductionSendingAuthorized": false,
+      "sendGridTemporaryWebhookCreateAuthorized": true,
+      "sendGridTemporaryWebhookDeleteRequired": true,
+      "rollbackToDeliveryDisabledRequired": true,
+      "refVerification": {
+        "mode": "protected-github-api",
+        "environment": "staging",
+        "requiredSecret": "URAI_CROSS_REPO_READ_TOKEN"
+      }
     }
   ],
   "historicalConsumers": [
