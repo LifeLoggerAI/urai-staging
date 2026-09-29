@@ -174,7 +174,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$COMMUNICATIONS_SHA"
           umask 077
-          cat > functions/.env.urai-staging <<'EOF'
+          cat > functions/.env.urai-staging <<EOF
           FIREBASE_REGION=us-central1
           FUNCTIONS_RUNTIME_SERVICE_ACCOUNT=$RUNTIME_SERVICE_ACCOUNT
           FUNCTIONS_EMULATOR=false
