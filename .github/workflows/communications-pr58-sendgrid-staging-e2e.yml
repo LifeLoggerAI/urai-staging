@@ -14,7 +14,7 @@ concurrency:
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
   COMMUNICATIONS_PR_NUMBER: '58'
-  COMMUNICATIONS_SHA: 'ad43d9aae6e5f2d3f59fb8459402a179840e1cfc'
+  COMMUNICATIONS_SHA: '267d3fec770ea69b8db64175aa4912e5b3482b6e'
   STAGING_PROJECT_ID: urai-staging
   FIREBASE_CLI_VERSION: '15.23.0'
 
@@ -176,6 +176,7 @@ jobs:
           umask 077
           cat > functions/.env.urai-staging <<'EOF'
           FIREBASE_REGION=us-central1
+          FUNCTIONS_RUNTIME_SERVICE_ACCOUNT=$RUNTIME_SERVICE_ACCOUNT
           FUNCTIONS_EMULATOR=false
           ENABLE_WEBHOOK_TEST_MODE=false
           ENABLE_REAL_DELIVERY=false
@@ -193,6 +194,9 @@ jobs:
           const fs=require('node:fs');
           const x=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
           if (x.state !== 'ACTIVE') throw new Error('callback function not ACTIVE');
+          if (x.serviceConfig?.serviceAccountEmail !== process.env.RUNTIME_SERVICE_ACCOUNT) {
+            throw new Error('callback runtime service account mismatch: '+String(x.serviceConfig?.serviceAccountEmail||'missing'));
+          }
           const names=(x.serviceConfig?.secretEnvironmentVariables||[]).map(v=>v.key).sort();
           for (const required of ['DELIVERY_STATUS_CALLBACK_SECRET','SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY','TWILIO_AUTH_TOKEN']) {
             if (!names.includes(required)) throw new Error('missing deployed secret binding: '+required);
