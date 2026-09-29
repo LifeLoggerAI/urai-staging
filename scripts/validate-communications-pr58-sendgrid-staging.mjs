@@ -14,7 +14,6 @@ const required = [
   'SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
   'DELIVERY_STATUS_CALLBACK_SECRET',
   'FUNCTIONS_RUNTIME_SERVICE_ACCOUNT=$RUNTIME_SERVICE_ACCOUNT',
-  "invoker: 'public'",
   'callback runtime service account mismatch',
   'functions:deliveryStatusCallback',
   'https://api.sendgrid.com/v3/user/webhooks/event/settings',
