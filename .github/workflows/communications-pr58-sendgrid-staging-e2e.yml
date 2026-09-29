@@ -1,8 +1,6 @@
 name: Communications PR58 SendGrid Signed Protected Staging E2E
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 permissions:
@@ -22,7 +20,6 @@ env:
 
 jobs:
   signed-sendgrid-staging:
-    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'sendgrid/pre-signature-staging-e2e-20260929'
     name: Signed SendGrid callback deploy and provider round trip
     runs-on: ubuntu-24.04
     timeout-minutes: 35
