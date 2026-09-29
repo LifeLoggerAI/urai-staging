@@ -64,7 +64,7 @@ const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communication
 if (sendgrid.repository !== 'LifeLoggerAI/urai-communications') failures.push('sendgrid repository');
 if (sendgrid.repositoryId !== 1169785707) failures.push('sendgrid repositoryId');
 if (sendgrid.pullRequest !== 58) failures.push('sendgrid pullRequest');
-if (sendgrid.exactSha !== 'b2732b091767673696c0fa45baf2a5b0cd15bbee') failures.push('sendgrid exactSha');
+if (sendgrid.exactSha !== '10e838cf7a838c1d7eaa0cdc4d6a0b226c2332be') failures.push('sendgrid exactSha');
 if (sendgrid.sourceRef !== 'refs/pull/58/head') failures.push('sendgrid sourceRef');
 if (sendgrid.mode !== 'sendgrid-signed-protected-staging-e2e') failures.push('sendgrid mode');
 if (JSON.stringify(sendgrid.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('sendgrid allowedDeployScopes');
