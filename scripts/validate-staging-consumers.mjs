@@ -69,13 +69,14 @@ if (sendgrid.sourceRef !== 'refs/pull/58/head') failures.push('sendgrid sourceRe
 if (sendgrid.mode !== 'sendgrid-signed-protected-staging-e2e') failures.push('sendgrid mode');
 if (JSON.stringify(sendgrid.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('sendgrid allowedDeployScopes');
 if (JSON.stringify(sendgrid.initialFunctionDeploymentAllowlist) !== JSON.stringify(['deliveryStatusCallback'])) failures.push('sendgrid function allowlist');
-if (JSON.stringify(sendgrid.secretWriteAllowlist) !== JSON.stringify(['SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY'])) failures.push('sendgrid secret allowlist');
+if (JSON.stringify(sendgrid.secretWriteAllowlist) !== JSON.stringify(['SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY','DELIVERY_STATUS_CALLBACK_SECRET'])) failures.push('sendgrid secret allowlist');
 if (sendgrid.providerMutationAuthorized !== true) failures.push('sendgrid provider mutation');
 if (sendgrid.providerMutationScope !== 'temporary-second-signed-webhook-test-only') failures.push('sendgrid provider mutation scope');
 if (sendgrid.sendGridProductionSendingAuthorized !== false) failures.push('sendgrid production sending');
 if (sendgrid.sendGridTemporaryWebhookCreateAuthorized !== true) failures.push('sendgrid temporary webhook create');
 if (sendgrid.sendGridTemporaryWebhookDeleteRequired !== true) failures.push('sendgrid temporary webhook delete');
 if (sendgrid.rollbackToDeliveryDisabledRequired !== true) failures.push('sendgrid rollback requirement');
+if (sendgrid.callbackSecretSyntheticOnly !== true) failures.push('sendgrid synthetic callback secret boundary');
 if (sendgrid.refVerification?.mode !== 'protected-github-api') failures.push('sendgrid ref verification');
 if (sendgrid.refVerification?.environment !== 'staging') failures.push('sendgrid ref verification environment');
 if (sendgrid.refVerification?.requiredSecret !== 'URAI_CROSS_REPO_READ_TOKEN') failures.push('sendgrid ref verification secret contract');
