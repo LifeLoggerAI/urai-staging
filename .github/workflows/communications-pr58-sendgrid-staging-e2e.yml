@@ -122,26 +122,22 @@ jobs:
           public_key="$(node -e "const x=require(process.argv[1]); if(!x.public_key) process.exit(1); process.stdout.write(x.public_key)" "$RUNNER_TEMP/sendgrid-signed.json")"
           echo "::add-mask::$public_key"
 
-          if gcloud secrets describe SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY --project=urai-staging >/dev/null 2>&1; then
-            printf '%s' "$public_key" | gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY --project=urai-staging --data-file=- >/dev/null
-          else
-            printf '%s' "$public_key" | gcloud secrets create SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY --project=urai-staging --replication-policy=automatic --data-file=- >/dev/null
-          fi
+          # IAM and secret resources are pre-bootstrapped by the approved human
+          # staging administrator. The GitHub deploy identity can add versions
+          # but cannot create secrets or mutate Secret Manager IAM.
+          for secret in SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY DELIVERY_STATUS_CALLBACK_SECRET TWILIO_AUTH_TOKEN; do
+            gcloud secrets describe "$secret" --project=urai-staging >/dev/null
+          done
+
+          printf '%s' "$public_key" | gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY --project=urai-staging --data-file=- >/dev/null
 
           synthetic_secret="$(openssl rand -hex 32)"
           echo "::add-mask::$synthetic_secret"
-          if gcloud secrets describe DELIVERY_STATUS_CALLBACK_SECRET --project=urai-staging >/dev/null 2>&1; then
-            printf '%s' "$synthetic_secret" | gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET --project=urai-staging --data-file=- >/dev/null
-          else
-            printf '%s' "$synthetic_secret" | gcloud secrets create DELIVERY_STATUS_CALLBACK_SECRET --project=urai-staging --replication-policy=automatic --data-file=- >/dev/null
-          fi
+          printf '%s' "$synthetic_secret" | gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET --project=urai-staging --data-file=- >/dev/null
 
-          for secret in SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY DELIVERY_STATUS_CALLBACK_SECRET; do
-            gcloud secrets add-iam-policy-binding "$secret"               --project=urai-staging               --member="serviceAccount:$RUNTIME_SERVICE_ACCOUNT"               --role=roles/secretmanager.secretAccessor               --quiet >/dev/null
-          done
-
-          gcloud secrets describe TWILIO_AUTH_TOKEN --project=urai-staging >/dev/null 2>&1 || {
-            echo 'TWILIO_AUTH_TOKEN secret resource is required by the exact callback function binding.' >&2
+          twilio_enabled_versions="$(gcloud secrets versions list TWILIO_AUTH_TOKEN --project=urai-staging --filter='state=ENABLED' --format='value(name)' --limit=1)"
+          test -n "$twilio_enabled_versions" || {
+            echo 'TWILIO_AUTH_TOKEN requires an enabled staging secret version because the exact callback binds it.' >&2
             exit 55
           }
 
