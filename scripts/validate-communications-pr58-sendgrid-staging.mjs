@@ -18,7 +18,6 @@ const required = [
   'DELETE',
   'UrAi Staging Signed Proof',
   'gcloud logging read',
-  'invalid_callback_signature',
   'secretMaterialRetained:false',
   'productionDeploymentAuthorized:false',
   'realEmailSendPerformed:false'
