@@ -94,7 +94,8 @@
         "deliveryStatusCallback"
       ],
       "secretWriteAllowlist": [
-        "SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY"
+        "SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY",
+        "DELIVERY_STATUS_CALLBACK_SECRET"
       ],
       "providerMutationAuthorized": true,
       "providerMutationScope": "temporary-second-signed-webhook-test-only",
@@ -111,7 +112,8 @@
         "mode": "protected-github-api",
         "environment": "staging",
         "requiredSecret": "URAI_CROSS_REPO_READ_TOKEN"
-      }
+      },
+      "callbackSecretSyntheticOnly": true
     }
   ],
   "historicalConsumers": [
