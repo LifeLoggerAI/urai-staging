@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 
 const workflowPath = '.github/workflows/communications-pr58-sendgrid-staging-e2e.yml';
+const bootstrapPath = 'scripts/bootstrap-staging-sendgrid-proof-iam.sh';
 const text = fs.readFileSync(workflowPath, 'utf8');
+const bootstrap = fs.readFileSync(bootstrapPath, 'utf8');
 const required = [
   'name: Communications PR58 SendGrid Signed Protected Staging E2E',
   'workflow_dispatch:',
@@ -33,9 +35,33 @@ const forbidden = [
   [/mail\/send/, 'real SendGrid email send'],
   [/ENABLE_REAL_DELIVERY=true/, 'real delivery enablement'],
   [/environment:\s*production/, 'production environment'],
-  [/allUsers/, 'public IAM weakening']
+  [/allUsers/, 'public IAM weakening'],
+  [/gcloud secrets create/, 'workflow secret-resource creation'],
+  [/gcloud secrets add-iam-policy-binding/, 'workflow Secret Manager IAM mutation']
 ];
 for (const [pattern,label] of forbidden) {
   if (pattern.test(text)) throw new Error(`forbidden SendGrid staging marker: ${label}`);
 }
 console.log('Communications PR58 SendGrid signed staging workflow contract OK');
+
+const bootstrapRequired = [
+  "PROJECT_ID='urai-staging'",
+  "DEPLOY_SERVICE_ACCOUNT='urai-staging-github-deployer@urai-staging.iam.gserviceaccount.com'",
+  'CONFIRM_STAGING_SENDGRID_IAM',
+  'roles/cloudfunctions.admin',
+  'roles/iam.serviceAccountUser',
+  'roles/secretmanager.secretVersionAdder',
+  'roles/secretmanager.secretAccessor',
+  'SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
+  'DELIVERY_STATUS_CALLBACK_SECRET',
+  'TWILIO_AUTH_TOKEN',
+  'user_managed_deploy_keys=false',
+  'STAGING_SENDGRID_FUNCTION_IAM_OK'
+];
+for (const marker of bootstrapRequired) {
+  if (!bootstrap.includes(marker)) throw new Error(`missing SendGrid IAM bootstrap marker: ${marker}`);
+}
+for (const marker of ['roles/owner','roles/editor','roles/firebase.admin','roles/secretmanager.admin']) {
+  if (!bootstrap.includes(marker)) throw new Error(`missing broad-role rejection marker: ${marker}`);
+}
+console.log('Communications PR58 SendGrid least-privilege IAM bootstrap contract OK');
