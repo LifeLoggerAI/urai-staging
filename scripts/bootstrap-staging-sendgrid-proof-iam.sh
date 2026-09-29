@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 PROJECT_ID='urai-staging'
 DEPLOY_SERVICE_ACCOUNT='urai-staging-github-deployer@urai-staging.iam.gserviceaccount.com'
-: "${RUNTIME_SERVICE_ACCOUNT_EMAIL:?Set RUNTIME_SERVICE_ACCOUNT_EMAIL from provider-native readback}"
+RUNTIME_SERVICE_ACCOUNT_EMAIL="${RUNTIME_SERVICE_ACCOUNT_EMAIL:-urai-staging-functions-runtime@urai-staging.iam.gserviceaccount.com}"
 : "${CONFIRM_STAGING_SENDGRID_IAM:?Set CONFIRM_STAGING_SENDGRID_IAM=urai-staging-sendgrid-functions-only}"
 
 [ "$CONFIRM_STAGING_SENDGRID_IAM" = 'urai-staging-sendgrid-functions-only' ] || {
@@ -33,6 +33,12 @@ CURRENT_PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
 }
 
 gcloud iam service-accounts describe "$DEPLOY_SERVICE_ACCOUNT" --project="$PROJECT_ID" >/dev/null
+
+if ! gcloud iam service-accounts describe "$RUNTIME_SERVICE_ACCOUNT_EMAIL" --project="$PROJECT_ID" >/dev/null 2>&1; then
+  gcloud iam service-accounts create urai-staging-functions-runtime \
+    --project="$PROJECT_ID" \
+    --display-name='UrAi staging Functions runtime' >/dev/null
+fi
 gcloud iam service-accounts describe "$RUNTIME_SERVICE_ACCOUNT_EMAIL" --project="$PROJECT_ID" >/dev/null
 
 PRE_PROJECT_POLICY="$(gcloud projects get-iam-policy "$PROJECT_ID" --format=json)"
