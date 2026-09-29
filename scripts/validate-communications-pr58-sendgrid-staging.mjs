@@ -9,7 +9,7 @@ const required = [
   'workflow_dispatch:',
   'environment: staging',
   'LifeLoggerAI/urai-communications',
-  '10e838cf7a838c1d7eaa0cdc4d6a0b226c2332be',
+  '6c99e6c66eda829da359041b23c6f23c3ea3e523',
   'SENDGRID_API_KEY',
   'SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
   'DELIVERY_STATUS_CALLBACK_SECRET',
