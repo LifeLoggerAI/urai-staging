@@ -32,13 +32,13 @@
       }
     },
     {
-      "id": "urai-communications-pr63-twilio-trial-e2e",
+      "id": "urai-communications-pr58-twilio-trial-e2e",
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "pullRequest": 63,
-      "exactSha": "ffb2639efd8006aa6c8abd1858ab1d13534f4e63",
-      "sourceRef": "refs/pull/63/head",
+      "pullRequest": 58,
+      "exactSha": "5c7a06b93befa9c5742635b15e0dca66e0e09bdc",
+      "sourceRef": "refs/pull/58/head",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
