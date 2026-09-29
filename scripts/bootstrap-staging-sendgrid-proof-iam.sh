@@ -145,6 +145,10 @@ owner_editor_firebase_admin=false
 user_managed_deploy_keys=false
 twilio_auth_token_enabled_version=$([ -n "$TWILIO_ENABLED_VERSION" ] && echo present || echo absent)
 human_operator=$ACTIVE_ACCOUNT
+
+Set these NON-SECRET GitHub staging environment variables exactly:
+GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT=$RUNTIME_SERVICE_ACCOUNT_EMAIL
+STAGING_FUNCTIONS_BASE_URL=https://us-central1-urai-staging.cloudfunctions.net
 EOF
 
 if [ -z "$TWILIO_ENABLED_VERSION" ]; then
