@@ -4,7 +4,7 @@ const workflowPath = '.github/workflows/communications-pr58-sendgrid-staging-e2e
 const text = fs.readFileSync(workflowPath, 'utf8');
 const required = [
   'name: Communications PR58 SendGrid Signed Protected Staging E2E',
-  'pull_request:',
+  'workflow_dispatch:',
   'environment: staging',
   'LifeLoggerAI/urai-communications',
   'ad43d9aae6e5f2d3f59fb8459402a179840e1cfc',
