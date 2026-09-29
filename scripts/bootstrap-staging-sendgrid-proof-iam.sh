@@ -32,6 +32,16 @@ CURRENT_PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
   exit 7
 }
 
+BILLING_ENABLED="$(gcloud billing projects describe "$PROJECT_ID" --format='value(billingEnabled)' 2>/dev/null || true)"
+case "$BILLING_ENABLED" in
+  true|True|TRUE) ;;
+  *)
+    echo "Refusing staging IAM/Secret Manager mutation while billing is disabled for $PROJECT_ID." >&2
+    echo "Enable billing on the isolated staging project, then rerun this exact bootstrap." >&2
+    exit 10
+    ;;
+esac
+
 gcloud iam service-accounts describe "$DEPLOY_SERVICE_ACCOUNT" --project="$PROJECT_ID" >/dev/null
 
 if ! gcloud iam service-accounts describe "$RUNTIME_SERVICE_ACCOUNT_EMAIL" --project="$PROJECT_ID" >/dev/null 2>&1; then
