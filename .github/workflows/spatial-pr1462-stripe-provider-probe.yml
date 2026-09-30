@@ -1,10 +1,10 @@
-name: Spatial PR1296 Stripe TEST Provider Probe
+name: Spatial PR1462 Stripe TEST Provider Probe
 
 on:
   workflow_dispatch:
     inputs:
       spatial_sha:
-        description: Exact urai-spatial PR #1296 SHA authorized by config/staging-consumers.json
+        description: Exact urai-spatial PR #1462 SHA authorized by config/staging-consumers.json
         required: true
         type: string
       expected_controller_sha:
@@ -21,12 +21,12 @@ permissions:
   actions: read
 
 concurrency:
-  group: urai-spatial-pr1296-stripe-test-provider-probe
+  group: urai-spatial-pr1462-stripe-test-provider-probe
   cancel-in-progress: false
 
 env:
   SPATIAL_REPOSITORY: LifeLoggerAI/urai-spatial
-  SPATIAL_PR_NUMBER: '1296'
+  SPATIAL_PR_NUMBER: '1462'
   STAGING_PROJECT_ID: urai-staging
   EXPECTED_ENVIRONMENT: staging
   NODE_VERSION: '22'
@@ -71,12 +71,12 @@ jobs:
           SPATIAL_SHA="$SPATIAL_SHA" node <<'NODE'
           const fs = require('node:fs');
           const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json', 'utf8'));
-          const c = authority.consumers.find((entry) => entry.id === 'urai-spatial-pr1296-stripe-test-readiness');
+          const c = authority.consumers.find((entry) => entry.id === 'urai-spatial-pr1462-stripe-test-readiness');
           const failures = [];
           if (!c) failures.push('consumer missing');
           if (c) {
-            if (c.repository !== 'LifeLoggerAI/urai-spatial' || c.repositoryId !== 1167675641 || c.pullRequest !== 1296) failures.push('Spatial identity');
-            if (c.exactSha !== process.env.SPATIAL_SHA || c.sourceRef !== 'refs/pull/1296/head') failures.push('Spatial exact SHA/ref');
+            if (c.repository !== 'LifeLoggerAI/urai-spatial' || c.repositoryId !== 1167675641 || c.pullRequest !== 1462) failures.push('Spatial identity');
+            if (c.exactSha !== process.env.SPATIAL_SHA || c.sourceRef !== 'refs/pull/1462/head') failures.push('Spatial exact SHA/ref');
             if (c.providerProject !== 'urai-staging' || c.allowedEnvironment !== 'staging') failures.push('provider scope');
             if (c.mode !== 'stripe-test-provider-readiness' || c.dataPolicy !== 'synthetic-only') failures.push('test/data mode');
             if (c.providerReadOnlyAuthorized !== true) failures.push('provider read-only authority');
@@ -89,12 +89,12 @@ jobs:
           }
           if (failures.length) throw new Error(`Spatial Stripe TEST consumer authority mismatch: ${failures.join(', ')}`);
           NODE
-          live_spatial_sha="$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-spatial.git refs/pull/1296/head | awk '{print $1}')"
+          live_spatial_sha="$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-spatial.git refs/pull/1462/head | awk '{print $1}')"
           test "$live_spatial_sha" = "$SPATIAL_SHA"
           echo "spatial_sha=$SPATIAL_SHA" >> "$GITHUB_OUTPUT"
           echo "controller_sha=$CONTROLLER_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout exact Spatial PR1296 candidate
+      - name: Checkout exact Spatial PR1462 candidate
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: LifeLoggerAI/urai-spatial
@@ -151,11 +151,11 @@ jobs:
           JOB_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
-          mkdir -p artifacts/spatial-pr1296-stripe
+          mkdir -p artifacts/spatial-pr1462-stripe
           node <<'NODE'
           const fs = require('node:fs');
-          fs.writeFileSync('artifacts/spatial-pr1296-stripe/admission.json', `${JSON.stringify({
-            schemaVersion: 'urai-spatial-pr1296-stripe-test-admission-1',
+          fs.writeFileSync('artifacts/spatial-pr1462-stripe/admission.json', `${JSON.stringify({
+            schemaVersion: 'urai-spatial-pr1462-stripe-test-admission-1',
             generatedAt: new Date().toISOString(),
             status: process.env.JOB_STATUS,
             stagingRepository: process.env.GITHUB_REPOSITORY,
@@ -177,8 +177,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: urai-spatial-pr1296-stripe-test-admission-${{ inputs.spatial_sha }}-${{ github.run_id }}
-          path: artifacts/spatial-pr1296-stripe/admission.json
+          name: urai-spatial-pr1462-stripe-test-admission-${{ inputs.spatial_sha }}-${{ github.run_id }}
+          path: artifacts/spatial-pr1462-stripe/admission.json
           if-no-files-found: error
           retention-days: 90
 
@@ -213,7 +213,7 @@ jobs:
           test '${{ github.ref }}' = 'refs/heads/main'
           test '${{ github.sha }}' = "$CONTROLLER_SHA"
           test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
-          test "$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-spatial.git refs/pull/1296/head | awk '{print $1}')" = "$SPATIAL_SHA"
+          test "$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-spatial.git refs/pull/1462/head | awk '{print $1}')" = "$SPATIAL_SHA"
           test -n "$WIF_PROVIDER" || { echo 'GCP_WIF_PROVIDER is required for the read-only staging provider probe.' >&2; exit 41; }
           test -n "$DEPLOY_SERVICE_ACCOUNT" || { echo 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT is required for the read-only staging provider probe.' >&2; exit 42; }
           case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 43 ;; esac
@@ -261,8 +261,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          out='artifacts/spatial-pr1296-stripe/provider-read'
-          raw="$RUNNER_TEMP/urai-spatial-pr1296-provider-read-raw"
+          out='artifacts/spatial-pr1462-stripe/provider-read'
+          raw="$RUNNER_TEMP/urai-spatial-pr1462-provider-read-raw"
           rm -rf -- "$out" "$raw"
           mkdir -p "$out" "$raw"
           firebase apphosting:backends:list --project urai-staging --json > "$raw/apphosting-backends.json"
@@ -301,10 +301,10 @@ jobs:
           set -euo pipefail
           node <<'NODE'
           const fs = require('node:fs');
-          const root = 'artifacts/spatial-pr1296-stripe/provider-read';
+          const root = 'artifacts/spatial-pr1462-stripe/provider-read';
           const read = (name) => JSON.parse(fs.readFileSync(`${root}/${name}`, 'utf8'));
           const receipt = {
-            schemaVersion: 'urai-spatial-pr1296-stripe-provider-read-2',
+            schemaVersion: 'urai-spatial-pr1462-stripe-provider-read-2',
             generatedAt: new Date().toISOString(),
             stagingRepository: process.env.GITHUB_REPOSITORY,
             stagingControllerSha: process.env.CONTROLLER_SHA,
@@ -326,7 +326,7 @@ jobs:
           };
           fs.writeFileSync(`${root}/provider-read-receipt.json`, `${JSON.stringify(receipt, null, 2)}\n`);
           NODE
-          ! grep -RIl -E '(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_(live|test)_[A-Za-z0-9]+|rk_(live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|private_key|client_secret|secretEnvironmentVariables|environmentVariables)' artifacts/spatial-pr1296-stripe/provider-read
+          ! grep -RIl -E '(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_(live|test)_[A-Za-z0-9]+|rk_(live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|private_key|client_secret|secretEnvironmentVariables|environmentVariables)' artifacts/spatial-pr1462-stripe/provider-read
 
       - name: Destroy ephemeral WIF credential
         if: always()
@@ -340,7 +340,7 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: urai-spatial-pr1296-stripe-provider-read-${{ env.SPATIAL_SHA }}-${{ github.run_id }}
-          path: artifacts/spatial-pr1296-stripe/provider-read
+          name: urai-spatial-pr1462-stripe-provider-read-${{ env.SPATIAL_SHA }}-${{ github.run_id }}
+          path: artifacts/spatial-pr1462-stripe/provider-read
           if-no-files-found: warn
           retention-days: 90

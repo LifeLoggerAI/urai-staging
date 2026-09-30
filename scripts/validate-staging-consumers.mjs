@@ -26,11 +26,12 @@ for (const c of doc.consumers || []) {
   if (!c.refVerification || !['public-git-ls-remote','protected-github-api'].includes(c.refVerification.mode)) failures.push(`${c.id || 'consumer'} refVerification`);
 }
 
-const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1296-stripe-test-readiness') || {};
+const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1462-stripe-test-readiness') || {};
 if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial repository');
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
-if (spatial.pullRequest !== 1296) failures.push('spatial pullRequest');
-if (spatial.sourceRef !== 'refs/pull/1296/head') failures.push('spatial sourceRef');
+if (spatial.pullRequest !== 1462) failures.push('spatial pullRequest');
+if (spatial.sourceRef !== 'refs/pull/1462/head') failures.push('spatial sourceRef');
+if (spatial.exactSha !== 'e30b28dd023835c5b97cefe96332e4daa4b6088f') failures.push('spatial exactSha');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (!Array.isArray(spatial.allowedDeployScopes) || spatial.allowedDeployScopes.length !== 0) failures.push('spatial allowedDeployScopes');
 if (spatial.providerReadOnlyAuthorized !== true) failures.push('spatial providerReadOnlyAuthorized');
@@ -45,6 +46,7 @@ if (communications.repository !== 'LifeLoggerAI/urai-communications') failures.p
 if (communications.repositoryId !== 1169785707) failures.push('communications repositoryId');
 if (communications.pullRequest !== 58) failures.push('communications pullRequest');
 if (communications.sourceRef !== 'refs/pull/58/head') failures.push('communications sourceRef');
+if (communications.exactSha !== '6c99e6c66eda829da359041b23c6f23c3ea3e523') failures.push('communications exactSha');
 if (communications.mode !== 'twilio-trial-protected-staging-e2e') failures.push('communications mode');
 if (JSON.stringify(communications.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('communications allowedDeployScopes');
 if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('communications function allowlist');
