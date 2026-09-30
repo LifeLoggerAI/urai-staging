@@ -65,3 +65,14 @@ Therefore the current deployed revision is **not certified** and source-green ev
 `CODE COMPLETE != SYSTEM COMPLETE != DEPLOYED != LIVE VERIFIED`
 
 No predecessor workflow, review, screenshot, provider receipt or deployment receipt transfers across a changed authority without explicit revalidation.
+
+
+## SendGrid staging independent-review gate
+
+- Current staging controller baseline: `49ec3cf94a5fb6279be7876fcabd9f5ee6fb4591`.
+- Current Communications candidate: `6c99e6c66eda829da359041b23c6f23c3ea3e523`.
+- The signed SendGrid staging lane remains source-complete and machine-green only; live provider execution is not authorized by source state alone.
+- Before any live SendGrid staging provider execution, this successor must have exact-head CI and Production Verify success, zero unresolved required threads, and a legitimate independent GitHub approval from `LimberNutz0` on the unchanged exact head.
+- A verbal/in-person sign-off, issue comment, reaction, or connector-authored comment does not count as GitHub APPROVED review state.
+- No predecessor review, provider receipt, callback result, or deployment receipt transfers across a changed exact head without explicit revalidation.
+- This section records the review gate only; it does not authorize production deployment or production data use.
