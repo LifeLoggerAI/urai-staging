@@ -2,6 +2,8 @@
 name: Staging GCP Authority Readback
 
 on:
+  issue_comment:
+    types: [created]
   push:
     branches: [main]
     paths:
@@ -13,6 +15,7 @@ permissions:
 
 jobs:
   readback:
+    if: github.event_name != 'issue_comment' || (github.event.issue.number == 51 && github.event.comment.body == '/urai-gcp-readback')
     runs-on: ubuntu-24.04
     environment: staging
     permissions:
