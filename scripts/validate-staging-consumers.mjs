@@ -23,7 +23,7 @@ for (const c of doc.consumers || []) {
   if (c.productionDataAuthorized !== false) failures.push(`${c.id || 'consumer'} productionDataAuthorized`);
   if (c.longLivedCredentialsAuthorized !== false) failures.push(`${c.id || 'consumer'} longLivedCredentialsAuthorized`);
   if (c.projectWideRuleMutationAuthorized !== false) failures.push(`${c.id || 'consumer'} projectWideRuleMutationAuthorized`);
-  if (!c.refVerification || !['public-git-ls-remote','protected-github-api'].includes(c.refVerification.mode)) failures.push(`${c.id || 'consumer'} refVerification`);
+  if (!c.refVerification || !['public-git-ls-remote','protected-github-api','protected-github-api-or-readonly-deploy-key'].includes(c.refVerification.mode)) failures.push(`${c.id || 'consumer'} refVerification`);
 }
 
 const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1462-stripe-test-readiness') || {};
@@ -79,9 +79,9 @@ if (sendgrid.sendGridTemporaryWebhookCreateAuthorized !== true) failures.push('s
 if (sendgrid.sendGridTemporaryWebhookDeleteRequired !== true) failures.push('sendgrid temporary webhook delete');
 if (sendgrid.rollbackToDeliveryDisabledRequired !== true) failures.push('sendgrid rollback requirement');
 if (sendgrid.callbackSecretSyntheticOnly !== true) failures.push('sendgrid synthetic callback secret boundary');
-if (sendgrid.refVerification?.mode !== 'protected-github-api') failures.push('sendgrid ref verification');
+if (sendgrid.refVerification?.mode !== 'protected-github-api-or-readonly-deploy-key') failures.push('sendgrid ref verification');
 if (sendgrid.refVerification?.environment !== 'staging') failures.push('sendgrid ref verification environment');
-if (sendgrid.refVerification?.requiredSecret !== 'URAI_CROSS_REPO_READ_TOKEN') failures.push('sendgrid ref verification secret contract');
+if (JSON.stringify(sendgrid.refVerification?.allowedSecrets) !== JSON.stringify(['URAI_CROSS_REPO_READ_TOKEN','URAI_CROSS_REPO_READ_SSH_KEY'])) failures.push('sendgrid ref verification secret contract');
 
 const historicalAdmin = doc.historicalConsumers?.find((entry) => entry.id === 'urai-admin-pr57-runtime-closure') || {};
 if (historicalAdmin.state !== 'historical') failures.push('historical Admin state');
