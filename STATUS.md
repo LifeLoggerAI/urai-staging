@@ -65,3 +65,12 @@ Therefore the current deployed revision is **not certified** and source-green ev
 `CODE COMPLETE != SYSTEM COMPLETE != DEPLOYED != LIVE VERIFIED`
 
 No predecessor workflow, review, screenshot, provider receipt or deployment receipt transfers across a changed authority without explicit revalidation.
+
+
+## SendGrid independent-review gate — current-base successor
+
+- Current staging baseline: `c1e912a19f5c130ed6c48da396670229eefbfe9d`.
+- Bound Communications candidate: `6c99e6c66eda829da359041b23c6f23c3ea3e523`.
+- Before live SendGrid staging provider execution, this exact successor requires exact-head CI SUCCESS, exact-head URAI Production Verify SUCCESS, zero unresolved required review threads, and a legitimate native GitHub APPROVED review from `LimberNutz0` on the unchanged exact head.
+- In-person/verbal approval, issue comments, reactions, ChatGPT attestations, and connector-authored comments are evidence only and do not substitute for the native independent GitHub review.
+- If the exact head changes after review, re-audit before relying on the approval.
