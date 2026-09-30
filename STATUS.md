@@ -65,3 +65,14 @@ Therefore the current deployed revision is **not certified** and source-green ev
 `CODE COMPLETE != SYSTEM COMPLETE != DEPLOYED != LIVE VERIFIED`
 
 No predecessor workflow, review, screenshot, provider receipt or deployment receipt transfers across a changed authority without explicit revalidation.
+
+
+## SendGrid staging review gate
+
+- Current merged SendGrid controller baseline: `f4c917885ea06847c518b68fb39d2ba57936829e`.
+- Current Communications candidate: `6c99e6c66eda829da359041b23c6f23c3ea3e523`.
+- PR #52 merged the repin without a recorded independent GitHub approval object.
+- No live SendGrid staging provider proof is authorized from that merge alone.
+- A successor exact-head staging review is required before live staging provider execution.
+- That successor must have exact-head CI and Production Verify success, zero unresolved required threads, and an independent GitHub approval from `LimberNutz`.
+- This section records current governance truth only; it does not retroactively approve PR #52 and does not authorize production.
