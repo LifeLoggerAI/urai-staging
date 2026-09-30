@@ -14,6 +14,7 @@ concurrency:
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
   COMMUNICATIONS_PR_NUMBER: '58'
+  STAGING_REVIEW_PR_NUMBER: '59'
   COMMUNICATIONS_SHA: '6c99e6c66eda829da359041b23c6f23c3ea3e523'
   STAGING_PROJECT_ID: urai-staging
   FIREBASE_CLI_VERSION: '15.23.0'
@@ -27,6 +28,7 @@ jobs:
     permissions:
       contents: read
       actions: read
+      pull-requests: read
       id-token: write
     env:
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
@@ -43,6 +45,19 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
           show-progress: false
+
+      - name: Setup Node for read-only approval preflight
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Require native exact-head staging approval before protected mutation
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          node scripts/verify-sendgrid-staging-approval.mjs
 
       - name: Prove exact bounded authority
         shell: bash

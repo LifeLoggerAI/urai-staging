@@ -51,6 +51,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Test native SendGrid staging approval preflight
+        run: node --test scripts/test-sendgrid-staging-approval.mjs
+
       - name: Validate staging deploy workflow definition
         run: node scripts/validate-staging-deploy-workflow.mjs
 
