@@ -11,7 +11,7 @@
       "repository": "LifeLoggerAI/urai-spatial",
       "repositoryId": 1167675641,
       "pullRequest": 1462,
-      "exactSha": "b9fca9fe2870b081b2295e92492ae16fc2920e0a",
+      "exactSha": "bd7794aa60a60d929bf3de6e932fa8148714bbc0",
       "sourceRef": "refs/pull/1462/head",
       "mode": "stripe-test-provider-readiness",
       "dataPolicy": "synthetic-only",
@@ -37,7 +37,7 @@
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
       "pullRequest": 58,
-      "exactSha": "6c99e6c66eda829da359041b23c6f23c3ea3e523",
+      "exactSha": "15b1a75302b65fb6f3cd90b747e4108a10108c8c",
       "sourceRef": "refs/pull/58/head",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -81,7 +81,7 @@
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
       "pullRequest": 58,
-      "exactSha": "6c99e6c66eda829da359041b23c6f23c3ea3e523",
+      "exactSha": "15b1a75302b65fb6f3cd90b747e4108a10108c8c",
       "sourceRef": "refs/pull/58/head",
       "mode": "sendgrid-signed-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -128,5 +128,11 @@
       "mergeCommitSha": "f0dabca401dff4df22a68a92b5b10e996b99c748",
       "reason": "PR #57 is merged and its predecessor runtime pin must not remain active authority. A successor Admin runtime consumer requires a separate explicit current-authority decision."
     }
-  ]
+  ],
+  "authorityRefresh": {
+    "refreshedAt": "2026-10-01",
+    "rule": "Purpose-specific consumer PR identities are preserved; only their live exact heads are repinned after delta review. No staging mutation is authorized by this refresh.",
+    "spatialPr1462": "bd7794aa60a60d929bf3de6e932fa8148714bbc0",
+    "communicationsPr58": "15b1a75302b65fb6f3cd90b747e4108a10108c8c"
+  }
 }
