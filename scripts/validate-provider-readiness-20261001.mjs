@@ -46,16 +46,23 @@ function validateProviders(providers, requiredIds, lane) {
 validateProviders(registry.councilProviders, requiredCouncil, 'Council')
 validateProviders(registry.voiceProviders, requiredVoice, 'Voice')
 
-for (const id of ['anthropic', 'gemini', 'xai', 'mistral']) {
+const communicationsExactSha = '8c3696b107a194dd4ee286f7be8f7837e1469063'
+assert.equal(registry.sourceSnapshot?.repository, 'LifeLoggerAI/urai-communications')
+assert.equal(registry.sourceSnapshot?.pullRequest, 71)
+assert.equal(registry.sourceSnapshot?.exactSha, communicationsExactSha)
+assert.equal(registry.sourceSnapshot?.status, 'open-draft-source-authority-not-production')
+
+for (const id of requiredCouncil) {
   const provider = registry.councilProviders.find((entry) => entry.id === id)
-  assert.equal(provider.sourceWired, false, `${id} must remain fail-closed until an adapter actually lands`)
-  assert.equal(provider.runtimeCertified, false, `${id} must remain uncertified until live evidence exists`)
+  assert.equal(provider.sourceWired, true, `${id} must reflect the governed adapter now present on Communications PR #71`)
+  assert.equal(provider.runtimeCertified, false, `${id} must remain uncertified until protected-runtime live evidence exists`)
+  assert.equal(provider.liveSmokeThisPass, false, `${id} must not claim a live smoke that did not occur`)
+  assert.match(provider.activation, /consent/i, `${id} external processing must remain consent-gated`)
+  assert.match(provider.sourceAuthority, new RegExp(communicationsExactSha), `${id} source authority must bind the exact Communications head`)
 }
 
 const openai = registry.councilProviders.find((entry) => entry.id === 'openai')
-assert.equal(openai.sourceWired, true)
 assert.equal(openai.runtimeCertified, false)
-assert.match(openai.activation, /consent/i)
 
 const elevenlabs = registry.voiceProviders.find((entry) => entry.id === 'elevenlabs')
 assert.equal(elevenlabs.sourceWired, true)
