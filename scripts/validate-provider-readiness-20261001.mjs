@@ -1,0 +1,70 @@
+import assert from 'node:assert/strict'
+import fs from 'node:fs'
+
+const path = new URL('../config/provider-readiness-20261001.json', import.meta.url)
+const registry = JSON.parse(fs.readFileSync(path, 'utf8'))
+
+assert.equal(registry.schemaVersion, 'urai-provider-readiness-delta-2026-10-01-v1')
+assert.equal(registry.secretValuesRecorded, false)
+assert.equal(registry.supersedesHistoricalRegistry, false)
+assert.equal(registry.historicalAuthority, 'config/provider-registry-20260925.json')
+
+const requiredCouncil = ['openai', 'anthropic', 'gemini', 'xai', 'mistral']
+const requiredVoice = ['elevenlabs']
+
+function validateProviders(providers, requiredIds, lane) {
+  assert.ok(Array.isArray(providers), `${lane} providers must be an array`)
+  const ids = providers.map((provider) => provider.id)
+  assert.equal(new Set(ids).size, ids.length, `${lane} provider ids must be unique`)
+  for (const id of requiredIds) assert.ok(ids.includes(id), `${lane} registry must include ${id}`)
+
+  for (const provider of providers) {
+    assert.match(provider.id, /^[a-z0-9-]+$/)
+    assert.ok(Array.isArray(provider.capability) && provider.capability.length > 0, `${provider.id} capability is required`)
+    assert.ok(Array.isArray(provider.canonicalSecretNames), `${provider.id} canonicalSecretNames must be an array`)
+    for (const secretName of provider.canonicalSecretNames) {
+      assert.match(secretName, /^[A-Z][A-Z0-9_]*$/, `${provider.id} secret names must contain names only`)
+    }
+    assert.equal(typeof provider.sourceWired, 'boolean', `${provider.id} sourceWired must be boolean`)
+    assert.equal(typeof provider.runtimeCertified, 'boolean', `${provider.id} runtimeCertified must be boolean`)
+    assert.equal(typeof provider.liveSmokeThisPass, 'boolean', `${provider.id} liveSmokeThisPass must be boolean`)
+    assert.ok(typeof provider.sourceAuthority === 'string' && provider.sourceAuthority.length > 0)
+    assert.ok(typeof provider.activation === 'string' && provider.activation.length > 0)
+    assert.ok(typeof provider.gap === 'string' && provider.gap.length > 0)
+
+    if (provider.runtimeCertified) {
+      assert.equal(provider.sourceWired, true, `${provider.id} cannot be runtime certified without source wiring`)
+      assert.equal(provider.liveSmokeThisPass, true, `${provider.id} cannot be runtime certified without a live smoke this pass`)
+    }
+    if (provider.activation === 'not-wired') {
+      assert.equal(provider.sourceWired, false, `${provider.id} not-wired activation must match sourceWired=false`)
+      assert.equal(provider.runtimeCertified, false, `${provider.id} not-wired provider cannot be runtime certified`)
+    }
+  }
+}
+
+validateProviders(registry.councilProviders, requiredCouncil, 'Council')
+validateProviders(registry.voiceProviders, requiredVoice, 'Voice')
+
+for (const id of ['anthropic', 'gemini', 'xai', 'mistral']) {
+  const provider = registry.councilProviders.find((entry) => entry.id === id)
+  assert.equal(provider.sourceWired, false, `${id} must remain fail-closed until an adapter actually lands`)
+  assert.equal(provider.runtimeCertified, false, `${id} must remain uncertified until live evidence exists`)
+}
+
+const openai = registry.councilProviders.find((entry) => entry.id === 'openai')
+assert.equal(openai.sourceWired, true)
+assert.equal(openai.runtimeCertified, false)
+assert.match(openai.activation, /consent/i)
+
+const elevenlabs = registry.voiceProviders.find((entry) => entry.id === 'elevenlabs')
+assert.equal(elevenlabs.sourceWired, true)
+assert.equal(elevenlabs.runtimeCertified, false)
+assert.match(elevenlabs.activation, /consent/i)
+
+const serialized = JSON.stringify(registry)
+for (const forbiddenKey of ['secretValue', 'tokenValue', 'apiKeyValue', 'credentialValue']) {
+  assert.ok(!serialized.includes(forbiddenKey), `registry must not contain ${forbiddenKey}`)
+}
+
+console.log('provider readiness delta valid')
