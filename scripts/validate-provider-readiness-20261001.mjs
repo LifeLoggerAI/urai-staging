@@ -62,9 +62,18 @@ assert.equal(elevenlabs.sourceWired, true)
 assert.equal(elevenlabs.runtimeCertified, false)
 assert.match(elevenlabs.activation, /consent/i)
 
-const serialized = JSON.stringify(registry)
-for (const forbiddenKey of ['secretValue', 'tokenValue', 'apiKeyValue', 'credentialValue']) {
-  assert.ok(!serialized.includes(forbiddenKey), `registry must not contain ${forbiddenKey}`)
+const forbiddenPropertyNames = new Set(['secretValue', 'tokenValue', 'apiKeyValue', 'credentialValue'])
+function rejectForbiddenProperties(value, at = 'registry') {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => rejectForbiddenProperties(entry, `${at}[${index}]`))
+    return
+  }
+  if (!value || typeof value !== 'object') return
+  for (const [key, child] of Object.entries(value)) {
+    assert.ok(!forbiddenPropertyNames.has(key), `registry must not contain forbidden property ${at}.${key}`)
+    rejectForbiddenProperties(child, `${at}.${key}`)
+  }
 }
+rejectForbiddenProperties(registry)
 
 console.log('provider readiness delta valid')
