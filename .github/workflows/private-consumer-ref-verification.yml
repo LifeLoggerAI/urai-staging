@@ -28,14 +28,19 @@ jobs:
           persist-credentials: false
           show-progress: false
 
+      - name: Setup Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+
       - name: Verify protected/private consumer PR heads
         shell: bash
         run: |
           set -euo pipefail
           test -n "$CROSS_REPO_READ_TOKEN" || { echo 'URAI_CROSS_REPO_READ_TOKEN is required and must be read-only for the listed private repositories.' >&2; exit 41; }
           mkdir -p artifacts/private-consumer-refs
-          node <<'NODE'
-          const fs = require('node:fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
           const doc = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
           const consumers = (doc.consumers || []).filter((c) => c.state === 'active' && c.refVerification?.mode === 'protected-github-api');
           const token = process.env.CROSS_REPO_READ_TOKEN;
