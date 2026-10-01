@@ -87,6 +87,9 @@ jobs:
       - name: Validate staging billing fail-closed contract
         run: node scripts/validate-staging-billing-guard.mjs
 
+      - name: Validate multi-model provider readiness truth boundaries
+        run: npm run validate:providers
+
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
