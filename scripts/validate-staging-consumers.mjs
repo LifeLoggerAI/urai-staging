@@ -31,7 +31,7 @@ if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial r
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
 if (spatial.pullRequest !== 1462) failures.push('spatial pullRequest');
 if (spatial.sourceRef !== 'refs/pull/1462/head') failures.push('spatial sourceRef');
-if (spatial.exactSha !== 'b9fca9fe2870b081b2295e92492ae16fc2920e0a') failures.push('spatial exactSha');
+if (spatial.exactSha !== 'bd7794aa60a60d929bf3de6e932fa8148714bbc0') failures.push('spatial exactSha');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (!Array.isArray(spatial.allowedDeployScopes) || spatial.allowedDeployScopes.length !== 0) failures.push('spatial allowedDeployScopes');
 if (spatial.providerReadOnlyAuthorized !== true) failures.push('spatial providerReadOnlyAuthorized');
@@ -46,7 +46,7 @@ if (communications.repository !== 'LifeLoggerAI/urai-communications') failures.p
 if (communications.repositoryId !== 1169785707) failures.push('communications repositoryId');
 if (communications.pullRequest !== 58) failures.push('communications pullRequest');
 if (communications.sourceRef !== 'refs/pull/58/head') failures.push('communications sourceRef');
-if (communications.exactSha !== '6c99e6c66eda829da359041b23c6f23c3ea3e523') failures.push('communications exactSha');
+if (communications.exactSha !== '15b1a75302b65fb6f3cd90b747e4108a10108c8c') failures.push('communications exactSha');
 if (communications.mode !== 'twilio-trial-protected-staging-e2e') failures.push('communications mode');
 if (JSON.stringify(communications.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('communications allowedDeployScopes');
 if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('communications function allowlist');
@@ -66,7 +66,7 @@ const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communication
 if (sendgrid.repository !== 'LifeLoggerAI/urai-communications') failures.push('sendgrid repository');
 if (sendgrid.repositoryId !== 1169785707) failures.push('sendgrid repositoryId');
 if (sendgrid.pullRequest !== 58) failures.push('sendgrid pullRequest');
-if (sendgrid.exactSha !== '6c99e6c66eda829da359041b23c6f23c3ea3e523') failures.push('sendgrid exactSha');
+if (sendgrid.exactSha !== '15b1a75302b65fb6f3cd90b747e4108a10108c8c') failures.push('sendgrid exactSha');
 if (sendgrid.sourceRef !== 'refs/pull/58/head') failures.push('sendgrid sourceRef');
 if (sendgrid.mode !== 'sendgrid-signed-protected-staging-e2e') failures.push('sendgrid mode');
 if (JSON.stringify(sendgrid.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('sendgrid allowedDeployScopes');
