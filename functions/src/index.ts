@@ -62,7 +62,7 @@ function setJsonHeaders(request: functions.Request, response: functions.Response
     response.set('Access-Control-Allow-Origin', origin);
     response.set('Vary', 'Origin');
   }
-  response.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-URAI-Staging-Write-Key');
   response.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.set('Cache-Control', 'no-store');
 }
