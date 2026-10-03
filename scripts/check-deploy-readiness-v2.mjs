@@ -78,6 +78,10 @@ else if (generatedBlock[1].includes("'public/'") || generatedBlock[1].includes('
 
 requirePhrases('scripts/smoke-staging.sh', ['Exact staging mutation receipt is required', 'URAI_RELEASE_CANDIDATE_SHA is required for exact runtime smoke', "schemaVersion !== 'urai-staging-mutation-2'", '/api/buildinfo', 'releaseCandidateSha must equal exact candidate', 'deployedAt must equal current mutation receipt', 'deploymentWorkflowRunId must equal current mutation workflow', 'runtimeProjectId must equal', 'Default release smoke is intentionally non-mutating', 'Staging root must declare noindex,nofollow.', 'robots.txt must disallow the entire Staging site.', 'robots.txt contains forbidden public/production indexing authority.', 'Origin: https://urai.app', 'Expected unauthorized browser origin to return HTTP 403', 'Expected oversize staging request to return HTTP 413', '/api/companion', '/api/waitlist']);
 rejectPhrases('scripts/smoke-staging.sh', ['launch-smoke@example.com', 'Staging smoke check', 'require_status GET "$STAGING_URL/u/adamclamp" 200']);
+const smokeScript = text('scripts/smoke-staging.sh');
+const smokeTerminalMarker = 'echo "URAI staging non-mutating live smoke passed for $STAGING_URL at exact SHA $RELEASE_SHA and current mutation receipt"';
+if ((smokeScript.match(/URAI staging non-mutating live smoke passed/g) ?? []).length !== 1) failures.push('scripts/smoke-staging.sh must contain exactly one terminal success marker');
+if (!smokeScript.trimEnd().endsWith(smokeTerminalMarker)) failures.push('scripts/smoke-staging.sh contains trailing or duplicated content after its terminal success marker');
 
 requirePhrases('scripts/urai-staging-lock.sh', [
   'URAI_STAGING_PROTECTED_DEPLOY', 'GITHUB_ACTIONS', 'refs/heads/main', 'git ls-remote --exit-code origin refs/heads/main', 'git merge-base --is-ancestor',
