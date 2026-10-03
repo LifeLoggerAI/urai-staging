@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, timingSafeEqual } from 'node:crypto';
 
 export const STAGING_PROJECT_ID = 'urai-staging';
 export const STAGING_HOSTING_URL = 'https://urai-staging.web.app';
@@ -7,6 +7,10 @@ export const STAGING_HTTP_RATE_WINDOW_MS = 60_000;
 export const STAGING_COMPANION_REQUESTS_PER_WINDOW = 30;
 export const STAGING_WAITLIST_REQUESTS_PER_WINDOW = 10;
 export const STAGING_HTTP_MAX_RATE_BUCKETS = 2048;
+export const STAGING_COMPANION_DAILY_BUDGET = 500;
+export const STAGING_WAITLIST_DAILY_BUDGET = 100;
+export const STAGING_HTTP_BUDGET_RETENTION_MS = 8 * 24 * 60 * 60 * 1000;
+export const STAGING_WAITLIST_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 
 export class FixedWindowRateLimiter {
   private readonly buckets = new Map<string, { windowStart: number; count: number }>();
@@ -43,6 +47,19 @@ export class FixedWindowRateLimiter {
 export function stagingEphemeralClientKey(value: unknown): string {
   const raw = typeof value === 'string' && value.trim() ? value.trim() : 'unknown-client';
   return createHash('sha256').update(raw).digest('hex');
+}
+
+export function isApprovedStagingWriteKey(presented: unknown, configured: unknown): boolean {
+  if (typeof presented !== 'string' || typeof configured !== 'string') return false;
+  if (!presented || !configured) return false;
+  const left = Buffer.from(presented, 'utf8');
+  const right = Buffer.from(configured, 'utf8');
+  if (left.length !== right.length) return false;
+  return timingSafeEqual(left, right);
+}
+
+export function stagingUtcDayId(now = new Date()): string {
+  return now.toISOString().slice(0, 10);
 }
 
 const ALLOWED_STAGING_ORIGINS = new Set([
