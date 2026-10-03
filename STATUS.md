@@ -13,8 +13,8 @@ URAI Staging is the internal, non-production verification and provider-sandbox c
 
 - Default branch: `main`
 - Base main at this reconciliation: `650f9ec9755727605681a109947209b668e8539e`
-- Current convergence successor: PR #44
-- PR #44 is the intended successor to the split Spatial/Stripe PR #40 and Communications/Twilio PR #43 after exact-head CI succeeds.
+- Current convergence authority: provider-readiness successor branch `governance/provider-readiness-20261001`, pending refreshed exact-head CI after active consumer ref updates.
+- Historical PR #44 remains provenance for the Staging control-plane convergence; it is not current release authority.
 - Active consumer authority is machine-readable in `config/staging-consumers.json`.
 - Active consumer refs are re-resolved in CI and must fail closed when an upstream ref moves.
 - Historical Admin PR #57 authority is retained as provenance only and is not an active consumer.
@@ -40,14 +40,14 @@ Therefore the current deployed revision is **not certified** and source-green ev
 - Service-account JSON and long-lived provider credentials are not authorized by the staging control plane.
 - Spatial/Stripe lane is TEST-only and provider-read-only.
 - Communications/Twilio lane is trial-only, one verified recipient, explicit function allowlist, and mandatory rollback to delivery disabled.
-- Node 22 is the current intended Staging runtime on PR #44.
-- Public HTTP endpoints enforce a staging-origin allowlist and bounded request bodies on PR #44.
+- Node 22 is the current intended Staging runtime in the converged control plane.
+- Public HTTP endpoints enforce a staging-origin allowlist and bounded request bodies in the converged control plane.
 - Source bootstrap evidence is named `sourceBootstrapScore`; it is not a launch/runtime score.
 - Product UI, visual canon, accessibility implementation, localization implementation, privacy implementation, and other product systems remain owned by their sibling repositories. Staging consumes their exact-head receipts; it does not duplicate them.
 
 ## Required before READY
 
-1. PR #44 exact-head CI and Production Verify terminal-success.
+1. Current provider-readiness successor exact-head CI and Production Verify terminal-success after all active consumer refs are refreshed.
 2. Final active upstream heads frozen and matching the consumer registry.
 3. Independent exact-head review on the unchanged accepted head.
 4. Main branch/repository release protections verified by repository administration.
