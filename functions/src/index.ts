@@ -211,10 +211,8 @@ export const companion = stagingWriteHttpRuntime.https.onRequest(async (request,
     sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
-  if (rejectUnapprovedStagingWriter(request, response)) return;
   if (rejectOversizeBody(request, response)) return;
   if (rejectRateLimited(request, response, companionRateLimiter)) return;
-  if (await rejectDurableBudgetExceeded(request, response, 'companion', STAGING_COMPANION_DAILY_BUDGET)) return;
 
   const body = bodyAsPlainObject(request.body);
   const message = typeof body.message === 'string' ? body.message.trim() : '';
@@ -226,6 +224,8 @@ export const companion = stagingWriteHttpRuntime.https.onRequest(async (request,
     });
     return;
   }
+  if (rejectUnapprovedStagingWriter(request, response)) return;
+  if (await rejectDurableBudgetExceeded(request, response, 'companion', STAGING_COMPANION_DAILY_BUDGET)) return;
 
   sendJson(request, response, 200, {
     status: 'ok',
@@ -242,10 +242,8 @@ export const waitlist = stagingWriteHttpRuntime.https.onRequest(async (request, 
     sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
-  if (rejectUnapprovedStagingWriter(request, response)) return;
   if (rejectOversizeBody(request, response)) return;
   if (rejectRateLimited(request, response, waitlistRateLimiter)) return;
-  if (await rejectDurableBudgetExceeded(request, response, 'waitlist', STAGING_WAITLIST_DAILY_BUDGET)) return;
 
   const body = bodyAsPlainObject(request.body);
   if (!isSyntheticStagingEmail(body.email)) {
@@ -256,6 +254,8 @@ export const waitlist = stagingWriteHttpRuntime.https.onRequest(async (request, 
     });
     return;
   }
+  if (rejectUnapprovedStagingWriter(request, response)) return;
+  if (await rejectDurableBudgetExceeded(request, response, 'waitlist', STAGING_WAITLIST_DAILY_BUDGET)) return;
 
   const email = body.email.trim().toLowerCase();
   const documentId = stagingWaitlistDocumentId(email);
