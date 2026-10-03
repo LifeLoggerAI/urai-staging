@@ -8,13 +8,19 @@ import {
   STAGING_COMPANION_REQUESTS_PER_WINDOW,
   STAGING_HTTP_RATE_WINDOW_MS,
   STAGING_WAITLIST_REQUESTS_PER_WINDOW,
+  STAGING_COMPANION_DAILY_BUDGET,
+  STAGING_WAITLIST_DAILY_BUDGET,
+  STAGING_HTTP_BUDGET_RETENTION_MS,
+  STAGING_WAITLIST_RETENTION_MS,
   STAGING_HOSTING_URL,
   STAGING_PROJECT_ID,
   isAllowedStagingOrigin,
+  isApprovedStagingWriteKey,
   isStagingHttpBodyWithinLimit,
   isSyntheticStagingEmail,
   stagingEphemeralClientKey,
   stagingRuntimeBuildInfo,
+  stagingUtcDayId,
   stagingWaitlistDocumentId,
 } from './lib/stagingBoundaries';
 import {
@@ -38,10 +44,16 @@ const waitlistRateLimiter = new FixedWindowRateLimiter(
   STAGING_WAITLIST_REQUESTS_PER_WINDOW,
   STAGING_HTTP_RATE_WINDOW_MS,
 );
-const stagingHttpRuntime = functions.runWith({
+const stagingPublicHttpRuntime = functions.runWith({
   maxInstances: 2,
   timeoutSeconds: 15,
   memory: '256MB',
+});
+const stagingWriteHttpRuntime = functions.runWith({
+  maxInstances: 2,
+  timeoutSeconds: 15,
+  memory: '256MB',
+  secrets: ['URAI_STAGING_WRITE_KEY'],
 });
 
 function setJsonHeaders(request: functions.Request, response: functions.Response): void {
@@ -115,7 +127,51 @@ function bodyAsPlainObject(body: unknown): Record<string, unknown> {
   return {};
 }
 
-export const healthz = stagingHttpRuntime.https.onRequest((request, response) => {
+function rejectUnapprovedStagingWriter(request: functions.Request, response: functions.Response): boolean {
+  const presented = request.get('x-urai-staging-write-key');
+  if (isApprovedStagingWriteKey(presented, process.env.URAI_STAGING_WRITE_KEY)) return false;
+  sendJson(request, response, 403, { status: 'error', error: 'staging_write_not_authorized' });
+  return true;
+}
+
+async function consumeDurableDailyBudget(
+  endpoint: 'companion' | 'waitlist',
+  limit: number,
+): Promise<boolean> {
+  const dayId = stagingUtcDayId();
+  const ref = db.collection('staging_http_budgets').doc(`${endpoint}_${dayId}`);
+  return db.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(ref);
+    const current = snapshot.exists && typeof snapshot.data()?.count === 'number'
+      ? Number(snapshot.data()?.count)
+      : 0;
+    if (current >= limit) return false;
+    transaction.set(ref, {
+      endpoint,
+      dayId,
+      count: current + 1,
+      limit,
+      environment: 'staging',
+      syntheticOnly: true,
+      updatedAt: serverTimestamp(),
+      expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + STAGING_HTTP_BUDGET_RETENTION_MS),
+    }, { merge: true });
+    return true;
+  });
+}
+
+async function rejectDurableBudgetExceeded(
+  request: functions.Request,
+  response: functions.Response,
+  endpoint: 'companion' | 'waitlist',
+  limit: number,
+): Promise<boolean> {
+  if (await consumeDurableDailyBudget(endpoint, limit)) return false;
+  sendJson(request, response, 429, { status: 'error', error: 'daily_staging_budget_exhausted' });
+  return true;
+}
+
+export const healthz = stagingPublicHttpRuntime.https.onRequest((request, response) => {
   if (handleOptions(request, response)) return;
   if (rejectUnapprovedOrigin(request, response)) return;
   if (request.method !== 'GET') {
@@ -131,7 +187,7 @@ export const healthz = stagingHttpRuntime.https.onRequest((request, response) =>
   });
 });
 
-export const buildinfo = stagingHttpRuntime.https.onRequest((request, response) => {
+export const buildinfo = stagingPublicHttpRuntime.https.onRequest((request, response) => {
   if (handleOptions(request, response)) return;
   if (rejectUnapprovedOrigin(request, response)) return;
   if (request.method !== 'GET') {
@@ -148,15 +204,17 @@ export const buildinfo = stagingHttpRuntime.https.onRequest((request, response) 
   });
 });
 
-export const companion = stagingHttpRuntime.https.onRequest(async (request, response) => {
+export const companion = stagingWriteHttpRuntime.https.onRequest(async (request, response) => {
   if (handleOptions(request, response)) return;
   if (rejectUnapprovedOrigin(request, response)) return;
-  if (rejectOversizeBody(request, response)) return;
-  if (rejectRateLimited(request, response, companionRateLimiter)) return;
   if (request.method !== 'POST') {
     sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
+  if (rejectUnapprovedStagingWriter(request, response)) return;
+  if (rejectOversizeBody(request, response)) return;
+  if (rejectRateLimited(request, response, companionRateLimiter)) return;
+  if (await rejectDurableBudgetExceeded(request, response, 'companion', STAGING_COMPANION_DAILY_BUDGET)) return;
 
   const body = bodyAsPlainObject(request.body);
   const message = typeof body.message === 'string' ? body.message.trim() : '';
@@ -177,15 +235,17 @@ export const companion = stagingHttpRuntime.https.onRequest(async (request, resp
   });
 });
 
-export const waitlist = stagingHttpRuntime.https.onRequest(async (request, response) => {
+export const waitlist = stagingWriteHttpRuntime.https.onRequest(async (request, response) => {
   if (handleOptions(request, response)) return;
   if (rejectUnapprovedOrigin(request, response)) return;
-  if (rejectOversizeBody(request, response)) return;
-  if (rejectRateLimited(request, response, waitlistRateLimiter)) return;
   if (request.method !== 'POST') {
     sendJson(request, response, 405, { status: 'error', error: 'method_not_allowed' });
     return;
   }
+  if (rejectUnapprovedStagingWriter(request, response)) return;
+  if (rejectOversizeBody(request, response)) return;
+  if (rejectRateLimited(request, response, waitlistRateLimiter)) return;
+  if (await rejectDurableBudgetExceeded(request, response, 'waitlist', STAGING_WAITLIST_DAILY_BUDGET)) return;
 
   const body = bodyAsPlainObject(request.body);
   if (!isSyntheticStagingEmail(body.email)) {
@@ -205,6 +265,7 @@ export const waitlist = stagingHttpRuntime.https.onRequest(async (request, respo
     handle: typeof body.handle === 'string' ? body.handle.slice(0, 80) : null,
     intent: typeof body.intent === 'string' ? body.intent.slice(0, 160) : null,
     createdAt: serverTimestamp(),
+    expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + STAGING_WAITLIST_RETENTION_MS),
     environment: 'staging',
     synthetic: true,
   };
@@ -217,6 +278,24 @@ export const waitlist = stagingHttpRuntime.https.onRequest(async (request, respo
     stored: true,
     synthetic: true,
   });
+});
+
+export const cleanupExpiredStagingHttpData = functions.pubsub.schedule('every 24 hours').onRun(async () => {
+  const now = admin.firestore.Timestamp.now();
+  const collections = ['staging_waitlist', 'staging_http_budgets'] as const;
+  let deleted = 0;
+  for (const collectionName of collections) {
+    const snapshot = await db.collection(collectionName).where('expiresAt', '<=', now).limit(200).get();
+    if (snapshot.empty) continue;
+    const batch = db.batch();
+    for (const document of snapshot.docs) {
+      batch.delete(document.ref);
+      deleted += 1;
+    }
+    await batch.commit();
+  }
+  console.info('[URAI staging] retention cleanup complete', { deleted });
+  return null;
 });
 
 export const healthCheck = functions.https.onCall(async () => {
