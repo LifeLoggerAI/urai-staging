@@ -5,6 +5,10 @@ import {
   STAGING_COMPANION_REQUESTS_PER_WINDOW,
   STAGING_HTTP_MAX_RATE_BUCKETS,
   STAGING_HTTP_RATE_WINDOW_MS,
+  STAGING_COMPANION_DAILY_BUDGET,
+  STAGING_WAITLIST_DAILY_BUDGET,
+  isApprovedStagingWriteKey,
+  stagingUtcDayId,
   isAllowedStagingOrigin,
   isLikelyEmail,
   isStagingHttpBodyWithinLimit,
@@ -42,6 +46,21 @@ describe('staging HTTP boundaries', () => {
     expect(limiter.consume('b', 0)).toBe(true);
     expect(limiter.consume('c', 1)).toBe(false);
     expect(limiter.consume('c', 1_000)).toBe(true);
+  });
+
+
+  it('requires an exact constant-time protected write key', () => {
+    expect(isApprovedStagingWriteKey('secret-value', 'secret-value')).toBe(true);
+    expect(isApprovedStagingWriteKey('secret-value', 'different-value')).toBe(false);
+    expect(isApprovedStagingWriteKey('', 'secret-value')).toBe(false);
+    expect(isApprovedStagingWriteKey(undefined, 'secret-value')).toBe(false);
+  });
+
+  it('defines bounded durable daily budgets and UTC bucket identity', () => {
+    expect(STAGING_COMPANION_DAILY_BUDGET).toBeGreaterThan(0);
+    expect(STAGING_WAITLIST_DAILY_BUDGET).toBeGreaterThan(0);
+    expect(STAGING_WAITLIST_DAILY_BUDGET).toBeLessThan(STAGING_COMPANION_DAILY_BUDGET);
+    expect(stagingUtcDayId(new Date('2026-10-03T23:59:59Z'))).toBe('2026-10-03');
   });
 
   it('bounds parsed HTTP payload size', () => {
