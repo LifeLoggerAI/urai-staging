@@ -36,6 +36,7 @@ jobs:
           mkdir -p artifacts/private-consumer-refs
           node <<'NODE'
           const fs = require('node:fs');
+          void (async () => {
           const doc = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
           const consumers = (doc.consumers || []).filter((c) => c.state === 'active' && c.refVerification?.mode === 'protected-github-api');
           const token = process.env.CROSS_REPO_READ_TOKEN;
@@ -69,6 +70,10 @@ jobs:
             providerMutationPerformed: false,
             secretMaterialRetained: false,
           },null,2)+'\n');
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
           NODE
 
       - name: Upload sanitized private consumer ref evidence
