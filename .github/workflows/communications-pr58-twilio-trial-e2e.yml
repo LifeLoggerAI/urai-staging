@@ -66,6 +66,8 @@ jobs:
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
       TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
       TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
+      CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+      CROSS_REPO_READ_SSH_KEY: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
       TWILIO_FROM_NUMBER: ''
       STAGING_TEST_PHONE: ${{ secrets.STAGING_TEST_PHONE }}
       STAGING_FIREBASE_ID_TOKEN: ${{ secrets.STAGING_FIREBASE_ID_TOKEN }}
@@ -97,8 +99,33 @@ jobs:
             test "${{ github.event.comment.author_association }}" = 'OWNER'
             test "${{ github.actor }}" = "${{ github.repository_owner }}"
           fi
-          live_communications_sha="$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-communications.git refs/heads/main | awk 'NR==1 {print $1}')"
-          test -n "$live_communications_sha" || { echo 'Could not resolve public Communications main.' >&2; exit 46; }
+          live_communications_sha=""
+          if [ -n "${CROSS_REPO_READ_TOKEN:-}" ]; then
+            set +e
+            response="$(curl --silent --show-error --fail \
+              -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/LifeLoggerAI/urai-communications/git/ref/heads/main)"
+            status=$?
+            set -e
+            if [ "$status" -eq 0 ] && [ -n "$response" ]; then
+              live_communications_sha="$(printf '%s' "$response" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.object.sha)})")"
+              echo "CROSS_REPO_AUTH_MODE=token" >> "$GITHUB_ENV"
+            fi
+          fi
+          if [ -z "$live_communications_sha" ] && [ -n "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
+            umask 077
+            key_file="$RUNNER_TEMP/urai-cross-repo-read"
+            known_hosts="$RUNNER_TEMP/urai-github-known-hosts"
+            printf '%s\n' "$CROSS_REPO_READ_SSH_KEY" > "$key_file"
+            ssh-keyscan -t ed25519 github.com > "$known_hosts" 2>/dev/null
+            live_communications_sha="$(GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o UserKnownHostsFile=$known_hosts -o StrictHostKeyChecking=yes" \
+              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main | awk 'NR==1 {print $1}')"
+            test -n "$live_communications_sha" || { echo 'read-only deploy key could not resolve Communications main head' >&2; exit 46; }
+            echo "CROSS_REPO_AUTH_MODE=ssh" >> "$GITHUB_ENV"
+          fi
+          test -n "$live_communications_sha" || { echo 'No valid protected cross-repository read authority is configured for Communications main.' >&2; exit 46; }
           test "$live_communications_sha" = "$COMMUNICATIONS_SHA"
           node scripts/validate-staging-consumers.mjs
           COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA" node <<'NODE'
@@ -151,11 +178,25 @@ jobs:
         shell: bash
         run: bash scripts/assert-staging-billing-enabled.sh
 
-      - name: Checkout exact Communications main candidate
+      - name: Checkout exact Communications candidate with read token
+        if: env.CROSS_REPO_AUTH_MODE == 'token'
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: LifeLoggerAI/urai-communications
           ref: ${{ env.COMMUNICATIONS_SHA }}
+          token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+          path: communications-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Checkout exact Communications candidate with read-only deploy key
+        if: env.CROSS_REPO_AUTH_MODE == 'ssh'
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: LifeLoggerAI/urai-communications
+          ref: ${{ env.COMMUNICATIONS_SHA }}
+          ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
           path: communications-source
           fetch-depth: 1
           persist-credentials: false
