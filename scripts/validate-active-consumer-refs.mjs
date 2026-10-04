@@ -9,7 +9,7 @@ const protectedConsumers = [];
 for (const c of doc.consumers || []) {
   if (c.state !== 'active') continue;
   const mode = c.refVerification?.mode;
-  if (mode === 'protected-github-api') {
+  if (mode === 'protected-github-api' || mode === 'protected-github-api-or-readonly-deploy-key') {
     protectedConsumers.push({
       id: c.id,
       repository: c.repository,
@@ -17,6 +17,7 @@ for (const c of doc.consumers || []) {
       expectedSha: c.exactSha,
       environment: c.refVerification.environment,
       requiredSecret: c.refVerification.requiredSecret,
+      allowedSecrets: c.refVerification.allowedSecrets,
     });
     continue;
   }

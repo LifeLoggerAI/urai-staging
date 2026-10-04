@@ -1,4 +1,4 @@
-name: Communications PR58 SendGrid Signed Protected Staging E2E
+name: Communications PR75 SendGrid Signed Protected Staging E2E
 
 on:
   workflow_dispatch:
@@ -8,13 +8,14 @@ permissions:
   actions: read
 
 concurrency:
-  group: urai-communications-pr58-sendgrid-staging-${{ github.event.pull_request.number || github.ref }}
+  group: urai-communications-pr75-sendgrid-staging-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
-  COMMUNICATIONS_PR_NUMBER: '58'
-  COMMUNICATIONS_SHA: '6c99e6c66eda829da359041b23c6f23c3ea3e523'
+  COMMUNICATIONS_PR_NUMBER: '75'
+  STAGING_REVIEW_PR_NUMBER: '71'
+  COMMUNICATIONS_SHA: 'd52b7648561d728466eb701a440f49bd161b4296'
   STAGING_PROJECT_ID: urai-staging
   FIREBASE_CLI_VERSION: '15.23.0'
 
@@ -27,6 +28,7 @@ jobs:
     permissions:
       contents: read
       actions: read
+      pull-requests: read
       id-token: write
     env:
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
@@ -34,6 +36,7 @@ jobs:
       RUNTIME_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT }}
       STAGING_FUNCTIONS_BASE_URL: ${{ vars.STAGING_FUNCTIONS_BASE_URL }}
       CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+      CROSS_REPO_READ_SSH_KEY: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
       SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
     steps:
       - name: Checkout exact staging candidate
@@ -43,13 +46,47 @@ jobs:
           persist-credentials: false
           show-progress: false
 
+      - name: Setup Node for read-only approval preflight
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Require native exact-head staging approval before protected mutation
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          node scripts/verify-sendgrid-staging-approval.mjs
+
       - name: Prove exact bounded authority
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$CROSS_REPO_READ_TOKEN" || { echo 'missing URAI_CROSS_REPO_READ_TOKEN' >&2; exit 41; }
-          live_sha="$(curl --silent --show-error --fail             -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN"             -H "Accept: application/vnd.github+json"             -H "X-GitHub-Api-Version: 2022-11-28"             https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/58             | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(JSON.parse(s).head.sha))")"
-          test "$live_sha" = "$COMMUNICATIONS_SHA" || { echo "Communications PR58 moved: $live_sha" >&2; exit 42; }
+          if [ -n "${CROSS_REPO_READ_TOKEN:-}" ]; then
+            live_sha="$(curl --silent --show-error --fail \
+              -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/75 \
+              | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(JSON.parse(s).head.sha))")"
+            echo "CROSS_REPO_AUTH_MODE=token" >> "$GITHUB_ENV"
+          elif [ -n "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
+            umask 077
+            key_file="$RUNNER_TEMP/urai-cross-repo-read"
+            known_hosts="$RUNNER_TEMP/urai-github-known-hosts"
+            printf '%s\n' "$CROSS_REPO_READ_SSH_KEY" > "$key_file"
+            ssh-keyscan -t ed25519 github.com > "$known_hosts" 2>/dev/null
+            live_sha="$(GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o UserKnownHostsFile=$known_hosts -o StrictHostKeyChecking=yes" \
+              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/pull/75/head \
+              | awk 'NR==1 {print $1}')"
+            test -n "$live_sha" || { echo 'read-only deploy key could not resolve Communications PR75 head' >&2; exit 41; }
+            echo "CROSS_REPO_AUTH_MODE=ssh" >> "$GITHUB_ENV"
+          else
+            echo 'missing URAI_CROSS_REPO_READ_TOKEN and URAI_CROSS_REPO_READ_SSH_KEY' >&2
+            exit 41
+          fi
+          test "$live_sha" = "$COMMUNICATIONS_SHA" || { echo "Communications PR75 moved: $live_sha" >&2; exit 42; }
           node scripts/validate-staging-consumers.mjs
           node scripts/validate-communications-pr58-sendgrid-staging.mjs
           for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL; do
@@ -141,12 +178,25 @@ jobs:
             exit 55
           }
 
-      - name: Checkout exact Communications candidate
+      - name: Checkout exact Communications candidate with read token
+        if: env.CROSS_REPO_AUTH_MODE == 'token'
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: LifeLoggerAI/urai-communications
           ref: ${{ env.COMMUNICATIONS_SHA }}
           token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+          path: communications-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Checkout exact Communications candidate with read-only deploy key
+        if: env.CROSS_REPO_AUTH_MODE == 'ssh'
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: LifeLoggerAI/urai-communications
+          ref: ${{ env.COMMUNICATIONS_SHA }}
+          ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
           path: communications-source
           fetch-depth: 1
           persist-credentials: false
@@ -258,7 +308,7 @@ jobs:
           if [ -n "${SENDGRID_STAGING_WEBHOOK_ID:-}" ] && [ -n "${SENDGRID_API_KEY:-}" ]; then
             curl -sS -o /dev/null               -X DELETE "https://api.sendgrid.com/v3/user/webhooks/event/settings/$SENDGRID_STAGING_WEBHOOK_ID"               -H "Authorization: Bearer $SENDGRID_API_KEY"
           fi
-          rm -f "$RUNNER_TEMP"/sendgrid-*.json "$RUNNER_TEMP"/sendgrid-*.txt "$RUNNER_TEMP"/function.json "$RUNNER_TEMP"/sendgrid-callback-logs.json
+          rm -f "$RUNNER_TEMP"/sendgrid-*.json "$RUNNER_TEMP"/sendgrid-*.txt "$RUNNER_TEMP"/function.json "$RUNNER_TEMP"/sendgrid-callback-logs.json "$RUNNER_TEMP"/urai-cross-repo-read "$RUNNER_TEMP"/urai-github-known-hosts
           rm -f communications-source/functions/.env.urai-staging
 
       - name: Upload sanitized SendGrid staging evidence
