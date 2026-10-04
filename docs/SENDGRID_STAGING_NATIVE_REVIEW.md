@@ -1,6 +1,6 @@
 # SendGrid staging independent review prerequisite
 
-PR #71 is the converged controller candidate. It preserves the provider/security lineage from #68, the generic WIF/runtime-identity repair from #70, and the Spatial #1577 exact-head consumer binding. Predecessor approvals do not transfer: review the unchanged current #71 head.
+A current successor is replacing stale PR #71 as the converged SendGrid review controller. It preserves the provider/security lineage from #68, the generic WIF/runtime-identity repair from #70, and the Spatial #1577 exact-head consumer binding. Predecessor approvals do not transfer: review only the unchanged successor head identified by STAGING_REVIEW_PR_NUMBER.
 
 Before protected SendGrid execution, the exact executing Staging source must be the unchanged open, non-draft #71 head with:
 
