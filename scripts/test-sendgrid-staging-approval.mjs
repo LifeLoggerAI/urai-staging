@@ -46,7 +46,7 @@ test('requires full Actions pagination',async()=>{
 
 
 test('workflow enforces approval before WIF and every provider mutation',()=>{
-  const source=fs.readFileSync('.github/workflows/communications-pr74-sendgrid-staging-e2e.yml','utf8');
+  const source=fs.readFileSync('.github/workflows/communications-pr58-sendgrid-staging-e2e.yml','utf8');
   const gate=source.indexOf('run: |\n          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"');
   assert.ok(gate>0);
   assert.ok(source.indexOf('node scripts/verify-sendgrid-staging-approval.mjs',gate)<source.indexOf('- name: Authenticate WIF'));
