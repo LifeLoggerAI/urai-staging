@@ -69,9 +69,12 @@
       "twilioProductionMessagingAuthorized": false,
       "rollbackToDeliveryDisabledRequired": true,
       "refVerification": {
-        "mode": "protected-github-api",
+        "mode": "protected-github-api-or-readonly-deploy-key",
         "environment": "staging",
-        "requiredSecret": "URAI_CROSS_REPO_READ_TOKEN"
+        "allowedSecrets": [
+          "URAI_CROSS_REPO_READ_TOKEN",
+          "URAI_CROSS_REPO_READ_SSH_KEY"
+        ]
       },
       "trialSenderMode": "provider-assigned"
     },
