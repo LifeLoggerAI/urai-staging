@@ -68,7 +68,12 @@
       "twilioProductionMessagingAuthorized": false,
       "rollbackToDeliveryDisabledRequired": true,
       "refVerification": {
-        "mode": "public-git-ls-remote"
+        "mode": "protected-github-api-or-readonly-deploy-key",
+        "environment": "staging",
+        "allowedSecrets": [
+          "URAI_CROSS_REPO_READ_TOKEN",
+          "URAI_CROSS_REPO_READ_SSH_KEY"
+        ]
       },
       "trialSenderMode": "provider-assigned",
       "sourceBranch": "main"
@@ -106,7 +111,12 @@
       "sendGridTemporaryWebhookDeleteRequired": true,
       "rollbackToDeliveryDisabledRequired": true,
       "refVerification": {
-        "mode": "public-git-ls-remote"
+        "mode": "protected-github-api-or-readonly-deploy-key",
+        "environment": "staging",
+        "allowedSecrets": [
+          "URAI_CROSS_REPO_READ_TOKEN",
+          "URAI_CROSS_REPO_READ_SSH_KEY"
+        ]
       },
       "callbackSecretSyntheticOnly": true,
       "sourceBranch": "main"
