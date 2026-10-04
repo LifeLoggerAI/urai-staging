@@ -65,3 +65,13 @@ Therefore the current deployed revision is **not certified** and source-green ev
 `CODE COMPLETE != SYSTEM COMPLETE != DEPLOYED != LIVE VERIFIED`
 
 No predecessor workflow, review, screenshot, provider receipt or deployment receipt transfers across a changed authority without explicit revalidation.
+
+
+## SendGrid independent-review gate — PR #63 successor
+
+- Active staging successor: PR #63 `converge/current-provider-consumers-20261003`; the exact head to be reviewed is the final unchanged PR #63 head after all source/governance repairs complete.
+- Bound Communications candidate: PR #74 at `3de173d32afe791a1d82e4f054e42aa3ff40a3c1`.
+- Before any live SendGrid staging provider execution, the final exact PR #63 head requires exact-head CI SUCCESS, exact-head URAI Production Verify SUCCESS, zero unresolved required review threads, and a legitimate native GitHub APPROVED review from `LimberNutz0` on that unchanged exact head.
+- In-person/verbal approval, issue comments, reactions, ChatGPT attestations, and connector-authored comments are evidence only and do not substitute for the native independent GitHub review.
+- Any PR #63 head change after approval invalidates that approval for provider execution and requires re-review.
+- This gate does not authorize production sending, production deployment, production data, long-lived credentials, or any mutation outside the already bounded temporary signed-webhook staging proof.
