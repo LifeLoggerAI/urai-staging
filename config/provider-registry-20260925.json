@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "urai-provider-registry-2026-09-25-v1",
-  "auditedAt": "2026-09-25T21:47:00Z",
+  "schemaVersion": "urai-provider-registry-2026-10-04-v2",
+  "auditedAt": "2026-10-04T02:55:00Z",
   "authority": {
     "purpose": "system-of-systems external provider readiness inventory",
     "secretValuesRecorded": false,
@@ -24,9 +24,9 @@
         "OPENAI_API_KEY"
       ],
       "accountEvidence": "connected-platform-target-observed",
-      "sourceIntegration": "implemented-asset-factory",
-      "runtimeVerification": "not-certified-this-pass",
-      "activation": "hard-off-by-default"
+      "sourceIntegration": "implemented-urai-communications-council-and-asset-factory",
+      "runtimeVerification": "source-and-ci-verified; protected runtime receipt not-certified",
+      "activation": "key-gated-consent-gated; production authorization separate"
     },
     {
       "id": "anthropic",
@@ -37,9 +37,9 @@
         "ANTHROPIC_API_KEY"
       ],
       "accountEvidence": "billing-receipt-observed",
-      "sourceIntegration": "not-found-in-canonical-runtime-search",
-      "runtimeVerification": "not-certified",
-      "activation": "not-wired"
+      "sourceIntegration": "implemented-urai-communications-council-router",
+      "runtimeVerification": "source-and-ci-verified; protected runtime receipt not-certified",
+      "activation": "key-gated-consent-gated"
     },
     {
       "id": "gemini",
@@ -51,9 +51,9 @@
         "GEMINI_API_KEY"
       ],
       "accountEvidence": "paid-tier-1-email-observed",
-      "sourceIntegration": "not-found-in-canonical-runtime-search",
-      "runtimeVerification": "not-certified",
-      "activation": "not-wired"
+      "sourceIntegration": "implemented-urai-communications-council-router",
+      "runtimeVerification": "source-and-ci-verified; protected runtime receipt not-certified",
+      "activation": "key-gated-consent-gated"
     },
     {
       "id": "xai",
@@ -64,9 +64,22 @@
         "XAI_API_KEY"
       ],
       "accountEvidence": "credit-ready-and-paid-receipt-observed",
-      "sourceIntegration": "not-found-in-canonical-runtime-search",
-      "runtimeVerification": "not-certified",
-      "activation": "not-wired"
+      "sourceIntegration": "implemented-urai-communications-council-router",
+      "runtimeVerification": "source-and-ci-verified; protected runtime receipt not-certified",
+      "activation": "key-gated-consent-gated"
+    },
+    {
+      "id": "mistral",
+      "capabilities": [
+        "llm"
+      ],
+      "canonicalSecrets": [
+        "MISTRAL_API_KEY"
+      ],
+      "accountEvidence": "source-configured-provider-lane; account/runtime receipt not independently certified here",
+      "sourceIntegration": "implemented-urai-communications-council-router",
+      "runtimeVerification": "source-and-ci-verified; protected runtime receipt not-certified",
+      "activation": "key-gated-consent-gated"
     },
     {
       "id": "runway",
@@ -297,7 +310,7 @@
   "globalBlockers": [
     "protected production secret binding/readback is not proven for the complete provider estate",
     "unified router is modality-based but not yet a dynamic multi-criteria capability-cost-latency-health router",
-    "many newly funded providers are accounts only and have no canonical runtime adapter",
+    "five-model Council source routing (OpenAI, Anthropic, Gemini, xAI, Mistral) is implemented, but several non-Council media/world providers remain account-only, separately wired, or without canonical runtime adapters",
     "captured-reality provider executor/GPU worker and real-scene receipt are not certified",
     "Google Maps repository policy currently governs only Maps JavaScript and Geocoding while the requested world stack is broader",
     "Cesium and KIRI source integration is not present on canonical default branches",
