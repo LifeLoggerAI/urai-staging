@@ -15,6 +15,9 @@ This document applies to the Firebase staging backend and validation shell in `L
 - Admin-only callable flows rely on a `role=admin` custom claim.
 - The deploy script targets staging explicitly and refuses production approval mode.
 - The smoke script uses synthetic staging data.
+- Public write-capable HTTP functions require an exact protected `URAI_STAGING_WRITE_KEY`; CORS is defense-in-depth, not caller authentication.
+- Valid authorized write requests are bounded by Firestore-backed per-endpoint daily budgets in addition to per-instance fixed-window caps.
+- Synthetic waitlist records carry a seven-day expiry and a scheduled cleanup function removes expired waitlist/budget records.
 
 ## Data Handling Rules
 
@@ -25,10 +28,10 @@ This document applies to the Firebase staging backend and validation shell in `L
 
 ## Remaining Security Hardening Before Production
 
-- Restrict HTTP Function CORS before using these endpoints for private production flows.
+- Provision the protected `URAI_STAGING_WRITE_KEY` in Firebase Secret Manager before enabling the write endpoints in a deployed staging revision; do not copy it into source, artifacts, or public verification jobs.
 - Add stricter Hosting security headers where product UI requirements allow it.
 - Add App Check where client Firebase access becomes part of staging product testing.
-- Add monitoring/alerting for staging function errors and unexpected write volume.
+- Add provider-native monitoring/alerting for staging function errors, daily budget exhaustion, and unexpected write volume; source now exposes bounded counters but provider-side alert policy evidence is still required.
 - Confirm Firebase IAM access is least-privilege for all deploy operators.
 
 ## Release Gate

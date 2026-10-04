@@ -1,0 +1,193 @@
+name: Staging WIF Runtime Identity Probe
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: urai-staging-wif-runtime-identity-probe
+  cancel-in-progress: false
+
+env:
+  STAGING_PROJECT_ID: urai-staging
+  FIREBASE_CLI_VERSION: '15.23.0'
+  URAI_PRODUCTION_DEPLOY_APPROVED: '0'
+
+jobs:
+  provider-probe:
+    name: Read-only WIF IAM and runtime identity probe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+    steps:
+      - name: Checkout exact staging controller
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Prove exact staging authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ github.ref }}' = 'refs/heads/main'
+          test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          test -z "$(git status --porcelain --untracked-files=all)"
+          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = '${{ github.sha }}'
+          test "$STAGING_PROJECT_ID" = 'urai-staging'
+          test "$URAI_PRODUCTION_DEPLOY_APPROVED" = '0'
+
+      - name: Require protected staging WIF variables
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$WIF_PROVIDER"
+          test -n "$DEPLOY_SERVICE_ACCOUNT"
+          case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 43 ;; esac
+          case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 44 ;; esac
+          test -z "${FIREBASE_TOKEN:-}"
+          test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}"
+
+      - name: Authenticate with protected WIF
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: urai-staging
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Verify ephemeral ADC provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test "$GOOGLE_APPLICATION_CREDENTIALS" = "$GOOGLE_GHA_CREDS_PATH"
+          test -f "$GOOGLE_APPLICATION_CREDENTIALS"
+          case "$GOOGLE_APPLICATION_CREDENTIALS" in "$GITHUB_WORKSPACE"/gha-creds-*.json) ;; *) exit 45 ;; esac
+          git check-ignore -q "$GOOGLE_APPLICATION_CREDENTIALS"
+          test -z "${FIREBASE_TOKEN:-}"
+          test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}"
+
+      - name: Setup pinned gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: urai-staging
+
+      - name: Install pinned Firebase CLI outside repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          cli_root="$RUNNER_TEMP/firebase-cli"
+          mkdir -p "$cli_root"
+          npm install --prefix "$cli_root" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
+          test "$("$cli_root/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
+          echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Collect provider-native read-only identity evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/provider
+          project_json="$(gcloud projects describe "$STAGING_PROJECT_ID" --format=json)"
+          project_number="$(PROJECT_JSON="$project_json" node -e "const p=JSON.parse(process.env.PROJECT_JSON); if(!p.projectNumber) process.exit(1); process.stdout.write(String(p.projectNumber))")"
+          active_json="$(gcloud auth list --filter=status:ACTIVE --format=json)"
+          provider_tail="${WIF_PROVIDER#*/workloadIdentityPools/}"
+          pool_id="${provider_tail%%/*}"
+          provider_id="${WIF_PROVIDER##*/}"
+          provider_json="$(gcloud iam workload-identity-pools providers describe "$provider_id" --workload-identity-pool="$pool_id" --location=global --project="$STAGING_PROJECT_ID" --format=json)"
+          effective_iam="$(gcloud asset get-effective-iam-policy --scope="projects/$STAGING_PROJECT_ID" --names="//cloudresourcemanager.googleapis.com/projects/$project_number" --format=json)"
+          keys_json="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project="$STAGING_PROJECT_ID" --format=json)"
+          functions_json="$(gcloud functions list --project="$STAGING_PROJECT_ID" --format=json)"
+          run_json="$(gcloud run services list --platform=managed --project="$STAGING_PROJECT_ID" --format=json)"
+          hosting_sites="$(firebase hosting:sites:list --project "$STAGING_PROJECT_ID" --json)"
+          PROJECT_JSON="$project_json" ACTIVE_JSON="$active_json" PROVIDER_JSON="$provider_json" EFFECTIVE_IAM="$effective_iam" KEYS_JSON="$keys_json" FUNCTIONS_JSON="$functions_json" RUN_JSON="$run_json" HOSTING_SITES="$hosting_sites" WIF_PROVIDER="$WIF_PROVIDER" DEPLOY_SERVICE_ACCOUNT="$DEPLOY_SERVICE_ACCOUNT" node <<'NODE'
+          const fs = require('node:fs');
+          const parse = (name) => JSON.parse(process.env[name]);
+          const project = parse('PROJECT_JSON');
+          const active = parse('ACTIVE_JSON');
+          const provider = parse('PROVIDER_JSON');
+          const effective = parse('EFFECTIVE_IAM');
+          const keys = parse('KEYS_JSON');
+          const functions = parse('FUNCTIONS_JSON');
+          const runServices = parse('RUN_JSON');
+          const hostingSites = parse('HOSTING_SITES');
+          const failures = [];
+          const activePrincipal = active.find((entry) => entry.status === 'ACTIVE')?.account || active[0]?.account || null;
+          if (project.projectId !== 'urai-staging' || !project.projectNumber) failures.push('project identity');
+          if (activePrincipal !== process.env.DEPLOY_SERVICE_ACCOUNT) failures.push('authenticated principal');
+          if (provider.name !== process.env.WIF_PROVIDER) failures.push('provider resource');
+          if (provider.oidc?.issuerUri !== 'https://token.actions.githubusercontent.com') failures.push('issuer');
+          const expectedCondition = "assertion.repository_owner_id=='215797546' && assertion.repository_id=='1150947098' && assertion.ref=='refs/heads/main' && assertion.environment=='staging'";
+          if (provider.attributeCondition !== expectedCondition) failures.push('attribute condition');
+          const mapping = provider.attributeMapping || {};
+          for (const key of ['google.subject','attribute.repository_id','attribute.repository_owner_id','attribute.ref','attribute.environment']) if (!mapping[key]) failures.push(`mapping ${key}`);
+          if ((Array.isArray(keys) ? keys : []).some((key) => key.keyType === 'USER_MANAGED')) failures.push('user-managed service-account key');
+          const broad = [];
+          const visit = (value) => { if (!value || typeof value !== 'object') return; if (Array.isArray(value.bindings)) for (const binding of value.bindings) if (binding?.role === 'roles/owner' || binding?.role === 'roles/editor') broad.push(binding); for (const child of Object.values(value)) visit(child); };
+          visit(effective);
+          const target = `serviceAccount:${process.env.DEPLOY_SERVICE_ACCOUNT}`;
+          if (broad.some((b) => (b.members || []).includes(target))) failures.push('effective Owner/Editor reliance');
+          if (broad.some((b) => (b.members || []).some((m) => m.startsWith('group:') || m.startsWith('domain:') || m === 'allAuthenticatedUsers' || m === 'allUsers'))) failures.push('broad Owner/Editor uncertainty');
+          if (failures.length) throw new Error(`Provider read-only proof failed closed: ${failures.join(', ')}`);
+          const runtimeIdentities = [];
+          for (const fn of Array.isArray(functions) ? functions : []) {
+            const email = fn?.serviceConfig?.serviceAccountEmail || fn?.serviceAccountEmail || null;
+            if (email) runtimeIdentities.push({kind:'cloud-function',name:fn.name||null,serviceAccountEmail:email});
+          }
+          for (const service of Array.isArray(runServices) ? runServices : []) {
+            const email = service?.spec?.template?.spec?.serviceAccountName || service?.spec?.template?.spec?.serviceAccount || null;
+            if (email) runtimeIdentities.push({kind:'cloud-run',name:service.metadata?.name||service.name||null,serviceAccountEmail:email});
+          }
+          fs.writeFileSync('artifacts/provider/provider-probe.json', JSON.stringify({
+            schemaVersion:'urai-staging-wif-runtime-identity-probe-1',
+            generatedAt:new Date().toISOString(),
+            stagingControllerSha:process.env.GITHUB_SHA,
+            projectId:project.projectId,
+            projectNumber:String(project.projectNumber),
+            authenticatedGooglePrincipal:activePrincipal,
+            wifProvider:provider.name,
+            deployServiceAccountEmail:process.env.DEPLOY_SERVICE_ACCOUNT,
+            effectiveIamReadback:true,
+            ownerEditorNegativeProof:true,
+            userManagedServiceAccountKeys:[],
+            runtimeIdentities,
+            hostingSites,
+            mutationAuthorized:false,
+            productionDeploymentPerformed:false,
+            secretValuesIncluded:false
+          },null,2)+'\n');
+          NODE
+
+      - name: Destroy ephemeral WIF credential
+        if: always()
+        shell: bash
+        run: |
+          rm -f -- "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          echo 'GOOGLE_APPLICATION_CREDENTIALS=' >> "$GITHUB_ENV"
+          echo 'GOOGLE_GHA_CREDS_PATH=' >> "$GITHUB_ENV"
+
+      - name: Upload exact provider probe evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: urai-staging-wif-runtime-identity-${{ github.sha }}-${{ github.run_id }}
+          path: artifacts/provider/
+          if-no-files-found: error
+          retention-days: 90

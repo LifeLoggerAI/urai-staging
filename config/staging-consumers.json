@@ -6,13 +6,13 @@
   "productionAllowed": false,
   "consumers": [
     {
-      "id": "urai-spatial-pr1576-stripe-test-readiness",
+      "id": "urai-spatial-pr1581-stripe-test-readiness",
       "state": "active",
       "repository": "LifeLoggerAI/urai-spatial",
       "repositoryId": 1167675641,
-      "pullRequest": 1576,
-      "exactSha": "98f7a9813394cf0d83a20bc096627078077d3dff",
-      "sourceRef": "refs/pull/1576/head",
+      "pullRequest": 1581,
+      "exactSha": "36b113b8378b6d9ad67e1f0ad844bd6807e8037a",
+      "sourceRef": "refs/pull/1581/head",
       "mode": "stripe-test-provider-readiness",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
@@ -32,13 +32,13 @@
       }
     },
     {
-      "id": "urai-communications-pr58-twilio-trial-e2e",
+      "id": "urai-communications-pr75-twilio-trial-e2e",
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "pullRequest": 58,
-      "exactSha": "6c99e6c66eda829da359041b23c6f23c3ea3e523",
-      "sourceRef": "refs/pull/58/head",
+      "pullRequest": 75,
+      "exactSha": "d52b7648561d728466eb701a440f49bd161b4296",
+      "sourceRef": "refs/pull/75/head",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
@@ -76,13 +76,13 @@
       "trialSenderMode": "provider-assigned"
     },
     {
-      "id": "urai-communications-pr58-sendgrid-signed-staging-e2e",
+      "id": "urai-communications-pr75-sendgrid-signed-staging-e2e",
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "pullRequest": 58,
-      "exactSha": "6c99e6c66eda829da359041b23c6f23c3ea3e523",
-      "sourceRef": "refs/pull/58/head",
+      "pullRequest": 75,
+      "exactSha": "d52b7648561d728466eb701a440f49bd161b4296",
+      "sourceRef": "refs/pull/75/head",
       "mode": "sendgrid-signed-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
@@ -109,9 +109,12 @@
       "sendGridTemporaryWebhookDeleteRequired": true,
       "rollbackToDeliveryDisabledRequired": true,
       "refVerification": {
-        "mode": "protected-github-api",
+        "mode": "protected-github-api-or-readonly-deploy-key",
         "environment": "staging",
-        "requiredSecret": "URAI_CROSS_REPO_READ_TOKEN"
+        "allowedSecrets": [
+          "URAI_CROSS_REPO_READ_TOKEN",
+          "URAI_CROSS_REPO_READ_SSH_KEY"
+        ]
       },
       "callbackSecretSyntheticOnly": true
     }

@@ -51,11 +51,17 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Test native SendGrid staging approval preflight
+        run: node --test scripts/test-sendgrid-staging-approval.mjs
+
       - name: Validate staging deploy workflow definition
         run: node scripts/validate-staging-deploy-workflow.mjs
 
       - name: Validate staging WIF bootstrap contract
         run: node scripts/validate-staging-wif-bootstrap.mjs
+
+      - name: Validate staging WIF runtime identity probe
+        run: node scripts/validate-staging-wif-runtime-identity-probe.mjs
 
       - name: Validate staging consumer authority
         run: node scripts/validate-staging-consumers.mjs
@@ -66,13 +72,13 @@ jobs:
       - name: Validate protected private consumer ref workflow
         run: node scripts/validate-private-consumer-ref-workflow.mjs
 
-      - name: Validate Spatial PR1576 Stripe TEST provider probe
-        run: node scripts/validate-spatial-pr1576-stripe-provider-probe.mjs
+      - name: Validate Spatial PR1577 Stripe TEST provider probe
+        run: node scripts/validate-spatial-pr1581-stripe-provider-probe.mjs
 
-      - name: Validate Communications PR58 Twilio staging controller
+      - name: Validate Communications PR75 Twilio staging controller
         run: node scripts/validate-communications-pr58-twilio-staging.mjs
 
-      - name: Validate Communications PR58 SendGrid signed staging controller
+      - name: Validate Communications PR75 SendGrid signed staging controller
         run: node scripts/validate-communications-pr58-sendgrid-staging.mjs
 
       - name: Validate bounded Twilio staging IAM authority
@@ -83,6 +89,9 @@ jobs:
 
       - name: Validate staging billing fail-closed contract
         run: node scripts/validate-staging-billing-guard.mjs
+
+      - name: Validate multi-model provider readiness truth boundaries
+        run: npm run validate:providers
 
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs

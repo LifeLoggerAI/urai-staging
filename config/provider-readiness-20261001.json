@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "urai-provider-readiness-delta-2026-10-01-v1",
+  "observedAt": "2026-10-04",
+  "supersedesHistoricalRegistry": false,
+  "historicalAuthority": "config/provider-registry-20260925.json",
+  "secretValuesRecorded": false,
+  "purpose": "Current Council and voice provider readiness delta. This file does not overwrite historical evidence and does not authorize provider spend or production activation.",
+  "rules": [
+    "account evidence is not runtime integration evidence",
+    "source wiring is not live provider proof",
+    "runtime certification requires protected server-side credential binding plus a retained live smoke receipt",
+    "every external provider response must be attributed and consent-gated where personal context may leave the device",
+    "paid generation remains separately authorized"
+  ],
+  "councilProviders": [
+    {
+      "id": "openai",
+      "capability": [
+        "llm"
+      ],
+      "canonicalSecretNames": [
+        "OPENAI_API_KEY"
+      ],
+      "accountEvidence": "historical-connected-platform-evidence",
+      "sourceWired": true,
+      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "runtimeCertified": false,
+      "liveSmokeThisPass": false,
+      "activation": "user-consent-gated",
+      "gap": "Bind the governed adapter into the protected release runtime and retain an exact-head live provider smoke plus Council receipt before runtime certification."
+    },
+    {
+      "id": "anthropic",
+      "capability": [
+        "llm"
+      ],
+      "canonicalSecretNames": [
+        "ANTHROPIC_API_KEY"
+      ],
+      "accountEvidence": "historical-billing-receipt-observed",
+      "sourceWired": true,
+      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "runtimeCertified": false,
+      "liveSmokeThisPass": false,
+      "activation": "user-consent-gated",
+      "gap": "Bind the governed adapter into the protected release runtime and retain an exact-head live provider smoke plus Council receipt before runtime certification."
+    },
+    {
+      "id": "gemini",
+      "capability": [
+        "llm",
+        "multimodal"
+      ],
+      "canonicalSecretNames": [
+        "GEMINI_API_KEY"
+      ],
+      "accountEvidence": "historical-paid-tier-email-observed",
+      "sourceWired": true,
+      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "runtimeCertified": false,
+      "liveSmokeThisPass": false,
+      "activation": "user-consent-gated",
+      "gap": "Bind the governed adapter into the protected release runtime and retain an exact-head live provider smoke plus Council receipt before runtime certification."
+    },
+    {
+      "id": "xai",
+      "capability": [
+        "llm"
+      ],
+      "canonicalSecretNames": [
+        "XAI_API_KEY"
+      ],
+      "accountEvidence": "historical-credit-ready-and-paid-receipt-observed",
+      "sourceWired": true,
+      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "runtimeCertified": false,
+      "liveSmokeThisPass": false,
+      "activation": "user-consent-gated",
+      "gap": "Bind the governed adapter into the protected release runtime and retain an exact-head live provider smoke plus Council receipt before runtime certification."
+    },
+    {
+      "id": "mistral",
+      "capability": [
+        "llm"
+      ],
+      "canonicalSecretNames": [
+        "MISTRAL_API_KEY"
+      ],
+      "accountEvidence": "not-independently-observed-in-current-audit",
+      "sourceWired": true,
+      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "runtimeCertified": false,
+      "liveSmokeThisPass": false,
+      "activation": "user-consent-gated",
+      "gap": "Confirm account and protected credential authority, then retain an exact-head protected-runtime live smoke and Council receipt before runtime certification."
+    }
+  ],
+  "voiceProviders": [
+    {
+      "id": "elevenlabs",
+      "capability": [
+        "speech"
+      ],
+      "canonicalSecretNames": [
+        "ELEVENLABS_API_KEY"
+      ],
+      "accountEvidence": "historical-billing-receipt-observed",
+      "sourceWired": true,
+      "sourceAuthority": "urai-spatial narrator/Orb and urai-jobs narrator contracts",
+      "runtimeCertified": false,
+      "liveSmokeThisPass": false,
+      "activation": "session-consent-gated",
+      "gap": "Retain authorized protected-runtime audio smoke, locale coverage, caption equivalence and rights/provenance receipt before global voice certification."
+    }
+  ],
+  "councilCompletionRequirements": [
+    "land the governed multi-provider Council adapter authority from Communications PR #75 into the governed release lineage",
+    "no provider secrets in client bundles",
+    "per-request external-processing consent for personal context",
+    "provider attribution on every accepted answer",
+    "bounded context and cancellation",
+    "health-aware fallback and failure isolation",
+    "cost ceilings and rate limits",
+    "retained exact-head runtime smoke for each provider",
+    "multi-provider Council trace showing which provider produced which view"
+  ],
+  "sourceSnapshot": {
+    "repository": "LifeLoggerAI/urai-communications",
+    "pullRequest": 75,
+    "exactSha": "d52b7648561d728466eb701a440f49bd161b4296",
+    "status": "open-draft-source-authority-not-production"
+  }
+}

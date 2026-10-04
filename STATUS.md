@@ -12,9 +12,9 @@ URAI Staging is the internal, non-production verification and provider-sandbox c
 ## Current source authority
 
 - Default branch: `main`
-- Base main at this reconciliation: `650f9ec9755727605681a109947209b668e8539e`
-- Current convergence successor: PR #44
-- PR #44 is the intended successor to the split Spatial/Stripe PR #40 and Communications/Twilio PR #43 after exact-head CI succeeds.
+- Base main at this reconciliation: `4ffea6929d1dd0823a52c7cab6756efae2a710a7`
+- Current convergence authority: PR #71 on `fix/spatial-1577-consumer-binding-20261004-0586`, pending refreshed exact-head CI after source convergence.
+- Historical PR #44 remains provenance for the Staging control-plane convergence; it is not current release authority.
 - Active consumer authority is machine-readable in `config/staging-consumers.json`.
 - Active consumer refs are re-resolved in CI and must fail closed when an upstream ref moves.
 - Historical Admin PR #57 authority is retained as provenance only and is not an active consumer.
@@ -40,14 +40,14 @@ Therefore the current deployed revision is **not certified** and source-green ev
 - Service-account JSON and long-lived provider credentials are not authorized by the staging control plane.
 - Spatial/Stripe lane is TEST-only and provider-read-only.
 - Communications/Twilio lane is trial-only, one verified recipient, explicit function allowlist, and mandatory rollback to delivery disabled.
-- Node 22 is the current intended Staging runtime on PR #44.
-- Public HTTP endpoints enforce a staging-origin allowlist and bounded request bodies on PR #44.
+- Node 22 is the current intended Staging runtime in the converged control plane.
+- Public HTTP endpoints enforce a staging-origin allowlist and bounded request bodies in the converged control plane.
 - Source bootstrap evidence is named `sourceBootstrapScore`; it is not a launch/runtime score.
 - Product UI, visual canon, accessibility implementation, localization implementation, privacy implementation, and other product systems remain owned by their sibling repositories. Staging consumes their exact-head receipts; it does not duplicate them.
 
 ## Required before READY
 
-1. PR #44 exact-head CI and Production Verify terminal-success.
+1. Current PR #71 exact-head CI and Production Verify terminal-success after all active consumer refs are refreshed.
 2. Final active upstream heads frozen and matching the consumer registry.
 3. Independent exact-head review on the unchanged accepted head.
 4. Main branch/repository release protections verified by repository administration.
@@ -65,3 +65,17 @@ Therefore the current deployed revision is **not certified** and source-green ev
 `CODE COMPLETE != SYSTEM COMPLETE != DEPLOYED != LIVE VERIFIED`
 
 No predecessor workflow, review, screenshot, provider receipt or deployment receipt transfers across a changed authority without explicit revalidation.
+
+
+## SendGrid independent-review gate — PR #71 successor
+
+- Active staging successor: PR #71 `converge/provider-consumers-node22-ref-verifier-20261004`; the exact head to be reviewed is the final unchanged PR #71 head after all source/governance repairs complete.
+- Bound Communications candidate: PR #75 at `d52b7648561d728466eb701a440f49bd161b4296`.
+- Before any live SendGrid staging provider execution, the final exact PR #71 head requires exact-head CI SUCCESS, exact-head URAI Production Verify SUCCESS, zero unresolved required review threads, and a legitimate native GitHub APPROVED review from `LimberNutz0` on that unchanged exact head.
+- In-person/verbal approval, issue comments, reactions, ChatGPT attestations, and connector-authored comments are evidence only and do not substitute for the native independent GitHub review.
+- Any PR #71 head change after approval invalidates that approval for provider execution and requires re-review.
+- This gate does not authorize production sending, production deployment, production data, long-lived credentials, or any mutation outside the already bounded temporary signed-webhook staging proof.
+
+## 2026-10-04 convergence
+
+PR #71 reconciles #68 provider/security source with #70 generic WIF probe and Spatial #1577 authority. Communications consumers and Council source snapshot bind #75 at d52b7648561d728466eb701a440f49bd161b4296. This is source convergence, not provider runtime, deployment or independent approval. Fresh exact-head CI is required.
