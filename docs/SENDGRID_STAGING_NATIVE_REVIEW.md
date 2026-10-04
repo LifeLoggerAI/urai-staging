@@ -1,6 +1,6 @@
 # SendGrid staging independent review prerequisite
 
-PR #71 is the converged controller candidate. It preserves the provider/security lineage from #68, the generic WIF/runtime-identity repair from #70, and the Spatial #1577 exact-head consumer binding. Predecessor approvals do not transfer: review the unchanged current #71 head.
+PR #85 is the converged controller candidate. It preserves the provider/security lineage from #68, the generic WIF/runtime-identity repair from #70, and the Spatial #1577 exact-head consumer binding. Predecessor approvals do not transfer: review the unchanged current #71 head.
 
 Before protected SendGrid execution, the exact executing Staging source must be the unchanged open, non-draft #71 head with:
 
@@ -14,4 +14,4 @@ The read-only preflight uses the workflow's own repository GITHUB_TOKEN, with co
 
 This source control implements the same prerequisite documented in #58 for the #71 successor. No approval is recorded by this document. No provider operation, spend, production deployment or external message is authorized by a preflight receipt. Human independence remains a real disclosure and judgment requirement.
 
-STAGING_REVIEW_PR_NUMBER is explicitly 71. A new PR or merge commit must be reviewed at its own exact identity and the bound review target deliberately updated; a closed/predecessor review cannot silently authorize it.
+STAGING_REVIEW_PR_NUMBER is explicitly 85. A new PR or merge commit must be reviewed at its own exact identity and the bound review target deliberately updated; a closed/predecessor review cannot silently authorize it.
