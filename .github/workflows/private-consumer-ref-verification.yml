@@ -38,7 +38,8 @@ jobs:
           const fs = require('node:fs');
           void (async () => {
           const doc = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
-          const consumers = (doc.consumers || []).filter((c) => c.state === 'active' && c.refVerification?.mode === 'protected-github-api');
+          const protectedModes = new Set(['protected-github-api', 'protected-github-api-or-readonly-deploy-key']);
+          const consumers = (doc.consumers || []).filter((c) => c.state === 'active' && protectedModes.has(c.refVerification?.mode));
           const token = process.env.CROSS_REPO_READ_TOKEN;
           if (!token) throw new Error('protected cross-repo read token missing');
           const results = [];
@@ -65,6 +66,7 @@ jobs:
             stagingRepository:process.env.GITHUB_REPOSITORY,
             stagingSha:process.env.GITHUB_SHA,
             verificationMode:'protected-github-api',
+            admittedRefVerificationModes:[...protectedModes],
             results,
             productionMutationPerformed: false,
             providerMutationPerformed: false,
