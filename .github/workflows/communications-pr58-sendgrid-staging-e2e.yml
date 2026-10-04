@@ -88,7 +88,7 @@ jobs:
           fi
           test "$live_sha" = "$COMMUNICATIONS_SHA" || { echo "Communications PR74 moved: $live_sha" >&2; exit 42; }
           node scripts/validate-staging-consumers.mjs
-          node scripts/validate-communications-pr74-sendgrid-staging.mjs
+          node scripts/validate-communications-pr58-sendgrid-staging.mjs
           for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL; do
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 43; }
           done
