@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const path = '.github/workflows/communications-pr58-twilio-trial-e2e.yml';
 const text = fs.readFileSync(path,'utf8');
 const required = [
-  'name: Communications PR75 Twilio API-Key Trial Protected Staging E2E',
+  'name: Communications main Twilio API-Key Trial Protected Staging E2E',
   'workflow_dispatch:',
   'issue_comment:',
   "github.event.issue.number == 76",
@@ -11,8 +11,7 @@ const required = [
   "github.event.comment.author_association == 'OWNER'",
   'github.actor == github.repository_owner',
   'environment: staging',
-  'https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/75',
-  'LifeLoggerAI/urai-communications',
+    'LifeLoggerAI/urai-communications',
   'functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback',
   'ENABLE_WEBHOOK_TEST_MODE=false',
   'STAGING_SMS_SEND_FUNCTION=adminTwilioTestSend',
@@ -21,16 +20,11 @@ const required = [
   'ENABLE_TWILIO_SMS=true',
   'TWILIO_TRIAL_MODE=true',
   "TWILIO_FROM_NUMBER: ''",
-  'URAI_CROSS_REPO_READ_TOKEN',
-  'URAI_CROSS_REPO_READ_SSH_KEY',
-  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/pull/75/head',
-  'ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}',
-  'GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT',
+      'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main',
+    'GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT',
   'RUNTIME_SERVICE_ACCOUNT',
   'token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}',
-  "if: env.CROSS_REPO_AUTH_MODE == 'token'",
-  "if: env.CROSS_REPO_AUTH_MODE == 'ssh'",
-  "senderMode:'provider-assigned-trial-number'",
+      "senderMode:'provider-assigned-trial-number'",
   'STAGING_TEST_SMS_BODY: sms_appointment_reminders',
   'gcloud secrets versions add TWILIO_AUTH_TOKEN',
   'gcloud secrets versions add TWILIO_ACCOUNT_SID',
@@ -52,7 +46,7 @@ for (const marker of required) if (!text.includes(marker)) throw new Error(`miss
 const communicationsInputBlock = text.match(/communications_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
 if (!communicationsInputBlock.includes('required: true')) throw new Error('communications_sha must remain a required workflow_dispatch input');
 if (/\bdefault\s*:/.test(communicationsInputBlock)) throw new Error('communications_sha must not carry a stale workflow_dispatch default; exact authority must be supplied explicitly');
-if (!text.includes("COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || 'd52b7648561d728466eb701a440f49bd161b4296' }}")) throw new Error('owner-trigger path must remain pinned to current Communications PR75 authority');
+if (!text.includes("COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7' }}")) throw new Error('owner-trigger path must remain pinned to current Communications main authority');
 if (!text.includes("CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}")) throw new Error('owner-trigger path must bind controller SHA to the triggering main commit');
 if (!text.includes('vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT')) throw new Error('Twilio controller must bind the provider-read runtime service account variable');
 if (!text.includes('test "$RUNTIME_SERVICE_ACCOUNT" != "$DEPLOY_SERVICE_ACCOUNT"')) throw new Error('Twilio controller must keep runtime and deploy service accounts distinct');
@@ -74,4 +68,4 @@ const uploadStep = text.slice(text.indexOf('- name: Upload sanitized retained pr
 if (!uploadStep.startsWith('- name: Upload sanitized retained proof')) throw new Error('sanitized proof upload step missing');
 if (!uploadStep.includes('if: ${{ success() }}')) throw new Error('sanitized proof upload must be success-gated');
 if (/if:\s*always\(\)/.test(uploadStep.split(/\n\s*- name:/, 1)[0])) throw new Error('sanitized proof upload cannot run on failure');
-console.log('Communications PR75 Twilio staging workflow contract OK');
+console.log('Communications main Twilio staging workflow contract OK');
