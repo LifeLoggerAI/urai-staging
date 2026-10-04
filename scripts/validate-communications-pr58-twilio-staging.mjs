@@ -5,6 +5,11 @@ const text = fs.readFileSync(path,'utf8');
 const required = [
   'name: Communications PR75 Twilio API-Key Trial Protected Staging E2E',
   'workflow_dispatch:',
+  'issue_comment:',
+  "github.event.issue.number == 76",
+  "github.event.comment.body == 'RUN_TWILIO_PR75_TRIAL_STAGING_E2E'",
+  "github.event.comment.author_association == 'OWNER'",
+  'github.actor == github.repository_owner',
   'environment: staging',
   'https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/75',
   'LifeLoggerAI/urai-communications',
@@ -41,7 +46,9 @@ for (const marker of required) if (!text.includes(marker)) throw new Error(`miss
 
 const communicationsInputBlock = text.match(/communications_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
 if (!communicationsInputBlock.includes('required: true')) throw new Error('communications_sha must remain a required workflow_dispatch input');
-if (/\bdefault\s*:/.test(communicationsInputBlock)) throw new Error('communications_sha must not carry a stale default; exact authority must be supplied explicitly');
+if (/\bdefault\s*:/.test(communicationsInputBlock)) throw new Error('communications_sha must not carry a stale workflow_dispatch default; exact authority must be supplied explicitly');
+if (!text.includes("COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || 'd52b7648561d728466eb701a440f49bd161b4296' }}")) throw new Error('owner-trigger path must remain pinned to current Communications PR75 authority');
+if (!text.includes("CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}")) throw new Error('owner-trigger path must bind controller SHA to the triggering main commit');
 if (!text.includes('vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT')) throw new Error('Twilio controller must bind the provider-read runtime service account variable');
 if (!text.includes('test "$RUNTIME_SERVICE_ACCOUNT" != "$DEPLOY_SERVICE_ACCOUNT"')) throw new Error('Twilio controller must keep runtime and deploy service accounts distinct');
 

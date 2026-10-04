@@ -15,6 +15,8 @@ on:
         description: Type urai-staging
         required: true
         type: string
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
@@ -34,6 +36,15 @@ env:
 jobs:
   protected-e2e:
     name: WIF-only bounded deploy, Twilio trial proof, and rollback
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.number == 76 &&
+        github.event.comment.body == 'RUN_TWILIO_PR75_TRIAL_STAGING_E2E' &&
+        github.event.comment.author_association == 'OWNER' &&
+        github.actor == github.repository_owner
+      )
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment: staging
@@ -42,8 +53,8 @@ jobs:
       actions: read
       id-token: write
     env:
-      COMMUNICATIONS_SHA: ${{ inputs.communications_sha }}
-      CONTROLLER_SHA: ${{ inputs.expected_controller_sha }}
+      COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || 'd52b7648561d728466eb701a440f49bd161b4296' }}
+      CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
       RUNTIME_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT }}
@@ -78,7 +89,15 @@ jobs:
           test "${{ github.sha }}" = "$CONTROLLER_SHA"
           test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
           test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
-          test "${{ inputs.confirm_staging_project }}" = 'urai-staging'
+          if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then
+            test "${{ inputs.confirm_staging_project }}" = 'urai-staging'
+          else
+            test "${{ github.event_name }}" = 'issue_comment'
+            test "${{ github.event.issue.number }}" = '76'
+            test "${{ github.event.comment.body }}" = 'RUN_TWILIO_PR75_TRIAL_STAGING_E2E'
+            test "${{ github.event.comment.author_association }}" = 'OWNER'
+            test "${{ github.actor }}" = "${{ github.repository_owner }}"
+          fi
           test -n "$CROSS_REPO_READ_TOKEN" || { echo 'URAI_CROSS_REPO_READ_TOKEN is required for private Communications ref proof.' >&2; exit 46; }
           live_communications_sha="$(curl --silent --show-error --fail \
             -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
