@@ -10,7 +10,7 @@ function fixture({reviews=[review],runs=workflows,threads=[{isResolved:true}],mu
   let prCalls=0;
   return async(path,body)=>{
     if(path.endsWith('/collaborators/LimberNutz0/permission'))return {permission};
-    if(path.endsWith('/pulls/71')){prCalls++;return {...pr,...(mutatePR&&prCalls>1?{head:{...pr.head,sha:'b'.repeat(40)}}:{})};}
+    if(path.endsWith('/pulls/81')){prCalls++;return {...pr,...(mutatePR&&prCalls>1?{head:{...pr.head,sha:'b'.repeat(40)}}:{})};}
     if(path.includes('/reviews?')){
       if(pagedReviews && path.endsWith('page=1'))return Array.from({length:100},(_,i)=>({id:i,state:'COMMENTED',user:{login:'other'}}));
       return reviews;
@@ -20,7 +20,7 @@ function fixture({reviews=[review],runs=workflows,threads=[{isResolved:true}],mu
     throw Error('Unexpected path '+path);
   };
 }
-const verify=options=>verifyStagingApproval({sha,prNumber:71,api:fixture(options)});
+const verify=options=>verifyStagingApproval({sha,prNumber:81,api:fixture(options)});
 test('accepts current human native decision with complete checks and threads',async()=>assert.equal((await verify()).reviewId,101));
 test('reads review and thread successor pages',async()=>assert.equal((await verify({pagedReviews:true,pagedThreads:true})).reviewId,101));
 test('rejects unresolved thread on a later page',async()=>assert.rejects(verify({pagedThreads:true,threads:[{isResolved:false}]}),/Unresolved/));
@@ -31,7 +31,7 @@ test('rejects bot review and missing review',async()=>{await assert.rejects(veri
 test('latest queued, cancelled, skipped or failed run supersedes old success',async()=>{for(const conclusion of [null,'cancelled','skipped','failure'])await assert.rejects(verify({runs:[...workflows,{...workflows[0],id:999,status:conclusion?'completed':'queued',conclusion}]}),/CI is not SUCCESS/);});
 test('rejects missing required workflow or wrong path',async()=>{await assert.rejects(verify({runs:workflows.slice(0,1)}),/Verify/);await assert.rejects(verify({runs:workflows.map(x=>({...x,path:'.github/workflows/spoof.yml'}))}),/CI/);});
 test('rejects head movement during preflight',async()=>assert.rejects(verify({mutatePR:true}),/executing source/));
-test('fails closed if GitHub metadata is inaccessible',async()=>assert.rejects(verifyStagingApproval({sha,prNumber:71,api:async()=>{throw Error('403');}}),/403/));
+test('fails closed if GitHub metadata is inaccessible',async()=>assert.rejects(verifyStagingApproval({sha,prNumber:81,api:async()=>{throw Error('403');}}),/403/));
 test('requires full Actions pagination',async()=>{
   let pages=0;
   const base=fixture();
@@ -40,7 +40,7 @@ test('requires full Actions pagination',async()=>{
     pages++;
     return pages===1?{total_count:102,workflow_runs:Array.from({length:100},(_,id)=>({id,name:'Other',head_sha:sha}))}:{total_count:102,workflow_runs:workflows};
   };
-  assert.equal((await verifyStagingApproval({sha,prNumber:71,api})).sha,sha);
+  assert.equal((await verifyStagingApproval({sha,prNumber:81,api})).sha,sha);
   assert.equal(pages,2);
 });
 
@@ -64,7 +64,7 @@ test('accepts governed write maintain or admin reviewer eligibility',async()=>{
 
 test('review target binds the current converged controller rather than a predecessor PR',()=>{
   const workflow=fs.readFileSync('.github/workflows/communications-pr58-sendgrid-staging-e2e.yml','utf8');
-  assert.match(workflow,/STAGING_REVIEW_PR_NUMBER: '71'/);
+  assert.match(workflow,/STAGING_REVIEW_PR_NUMBER: '81'/);
   const documentation=fs.readFileSync('docs/SENDGRID_STAGING_NATIVE_REVIEW.md','utf8');
-  assert.match(documentation,/STAGING_REVIEW_PR_NUMBER is explicitly 71/);
+  assert.match(documentation,/STAGING_REVIEW_PR_NUMBER is explicitly 81/);
 });
