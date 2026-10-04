@@ -46,11 +46,12 @@ function validateProviders(providers, requiredIds, lane) {
 validateProviders(registry.councilProviders, requiredCouncil, 'Council')
 validateProviders(registry.voiceProviders, requiredVoice, 'Voice')
 
-const communicationsExactSha = 'd52b7648561d728466eb701a440f49bd161b4296'
+const communicationsExactSha = 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7'
 assert.equal(registry.sourceSnapshot?.repository, 'LifeLoggerAI/urai-communications')
-assert.equal(registry.sourceSnapshot?.pullRequest, 75)
+assert.equal(registry.sourceSnapshot?.sourceBranch, 'main')
+assert.equal(registry.sourceSnapshot?.sourceRef, 'refs/heads/main')
 assert.equal(registry.sourceSnapshot?.exactSha, communicationsExactSha)
-assert.equal(registry.sourceSnapshot?.status, 'open-draft-source-authority-not-production')
+assert.equal(registry.sourceSnapshot?.status, 'merged-main-source-authority-not-runtime-certified')
 
 for (const id of requiredCouncil) {
   const provider = registry.councilProviders.find((entry) => entry.id === id)
@@ -89,7 +90,8 @@ const activeCommunications = consumers.filter(entry => entry.state === 'active' 
 assert.ok(activeCommunications.length > 0, 'provider snapshot requires an active Communications consumer')
 for (const consumer of activeCommunications) {
   assert.equal(consumer.exactSha, registry.sourceSnapshot.exactSha, 'provider snapshot must match active Communications consumer authority')
-  assert.equal(consumer.pullRequest, registry.sourceSnapshot.pullRequest, 'provider snapshot PR must match active Communications consumer authority')
+  assert.equal(consumer.sourceBranch, registry.sourceSnapshot.sourceBranch, 'provider snapshot branch must match active Communications consumer authority')
+  assert.equal(consumer.sourceRef, registry.sourceSnapshot.sourceRef, 'provider snapshot ref must match active Communications consumer authority')
 }
 
 console.log('provider readiness delta valid')
