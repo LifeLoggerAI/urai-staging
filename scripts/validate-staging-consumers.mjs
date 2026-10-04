@@ -26,11 +26,11 @@ for (const c of doc.consumers || []) {
   if (!c.refVerification || !['public-git-ls-remote','protected-github-api','protected-github-api-or-readonly-deploy-key'].includes(c.refVerification.mode)) failures.push(`${c.id || 'consumer'} refVerification`);
 }
 
-const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1582-stripe-test-readiness') || {};
+const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1591-stripe-test-readiness') || {};
 if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial repository');
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
-if (spatial.pullRequest !== 1582) failures.push('spatial pullRequest');
-if (spatial.sourceRef !== 'refs/pull/1582/head') failures.push('spatial sourceRef');
+if (spatial.pullRequest !== 1591) failures.push('spatial pullRequest');
+if (spatial.sourceRef !== 'refs/pull/1591/head') failures.push('spatial sourceRef');
 if (spatial.exactSha !== '11baef6e22394fc4c0f9f6e9afd39f8466937577') failures.push('spatial exactSha');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (!Array.isArray(spatial.allowedDeployScopes) || spatial.allowedDeployScopes.length !== 0) failures.push('spatial allowedDeployScopes');
