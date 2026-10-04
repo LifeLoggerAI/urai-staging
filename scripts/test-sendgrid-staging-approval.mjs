@@ -64,7 +64,7 @@ test('accepts governed write maintain or admin reviewer eligibility',async()=>{
 
 test('review target binds the current converged controller rather than a predecessor PR',()=>{
   const workflow=fs.readFileSync('.github/workflows/communications-pr58-sendgrid-staging-e2e.yml','utf8');
-  assert.match(workflow,/STAGING_REVIEW_PR_NUMBER: '71'/);
+  assert.match(workflow,/STAGING_REVIEW_PR_NUMBER: '85'/);
   const documentation=fs.readFileSync('docs/SENDGRID_STAGING_NATIVE_REVIEW.md','utf8');
-  assert.match(documentation,/STAGING_REVIEW_PR_NUMBER is explicitly 71/);
+  assert.match(documentation,/STAGING_REVIEW_PR_NUMBER is explicitly 85/);
 });
