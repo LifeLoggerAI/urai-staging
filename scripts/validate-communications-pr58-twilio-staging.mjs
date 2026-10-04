@@ -6,7 +6,7 @@ const required = [
   'name: Communications PR74 Twilio API-Key Trial Protected Staging E2E',
   'workflow_dispatch:',
   'environment: staging',
-  'https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/58',
+  'https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/74',
   'LifeLoggerAI/urai-communications',
   'functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback',
   'ENABLE_WEBHOOK_TEST_MODE=false',
