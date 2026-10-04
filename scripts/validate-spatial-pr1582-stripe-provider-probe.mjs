@@ -1,17 +1,17 @@
 import fs from 'node:fs';
 
-const workflowPath = '.github/workflows/spatial-pr1581-stripe-provider-probe.yml';
+const workflowPath = '.github/workflows/spatial-pr1582-stripe-provider-probe.yml';
 const text = fs.readFileSync(workflowPath, 'utf8');
 
 const required = [
-  'name: Spatial PR1581 Stripe TEST Provider Probe',
+  'name: Spatial PR1582 Stripe TEST Provider Probe',
   'environment: staging',
   'SPATIAL_REPOSITORY: LifeLoggerAI/urai-spatial',
-  "SPATIAL_PR_NUMBER: '1581'",
+  "SPATIAL_PR_NUMBER: '1582'",
   'STAGING_PROJECT_ID: urai-staging',
   "URAI_STRIPE_TEST_ONLY: '1'",
-  'refs/pull/1581/head',
-  'urai-spatial-pr1581-stripe-test-admission-',
+  'refs/pull/1582/head',
+  'urai-spatial-pr1582-stripe-test-admission-',
   'providerReadOnlyAuthorized',
   'appHostingRolloutAuthorized',
   'stripeTestModeOnly',
@@ -27,13 +27,13 @@ const required = [
   'test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"',
   'providerMutationPerformed: false',
   'productionDeploymentPerformed: false',
-  '$RUNNER_TEMP/urai-spatial-pr1581-provider-read-raw',
+  '$RUNNER_TEMP/urai-spatial-pr1582-provider-read-raw',
   'evidenceSanitizedBeforeRetention: true',
   'Upload sanitized read-only provider evidence',
   'if: ${{ success() }}',
 ];
 for (const marker of required) {
-  if (!text.includes(marker)) throw new Error(`missing Spatial PR1581 provider-probe marker: ${marker}`);
+  if (!text.includes(marker)) throw new Error(`missing Spatial PR1582 provider-probe marker: ${marker}`);
 }
 
 const spatialInputBlock = text.match(/spatial_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
@@ -59,7 +59,7 @@ const forbiddenPatterns = [
   [/^\s*environment:\s*production\s*$/m, 'production environment'],
 ];
 for (const [pattern, label] of forbiddenPatterns) {
-  if (pattern.test(text)) throw new Error(`forbidden Spatial PR1581 provider-probe marker: ${label}`);
+  if (pattern.test(text)) throw new Error(`forbidden Spatial PR1582 provider-probe marker: ${label}`);
 }
 
-console.log('Spatial PR1581 Stripe TEST provider-probe workflow contract OK');
+console.log('Spatial PR1582 Stripe TEST provider-probe workflow contract OK');
