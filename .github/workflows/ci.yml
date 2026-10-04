@@ -57,6 +57,9 @@ jobs:
       - name: Validate staging WIF bootstrap contract
         run: node scripts/validate-staging-wif-bootstrap.mjs
 
+      - name: Validate staging WIF runtime identity probe
+        run: node scripts/validate-staging-wif-runtime-identity-probe.mjs
+
       - name: Validate staging consumer authority
         run: node scripts/validate-staging-consumers.mjs
 
