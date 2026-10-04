@@ -70,7 +70,7 @@ No predecessor workflow, review, screenshot, provider receipt or deployment rece
 ## SendGrid independent-review gate — PR #65 successor
 
 - Active staging successor: PR #65 `converge/provider-consumers-node22-ref-verifier-20261004`; the exact head to be reviewed is the final unchanged PR #65 head after all source/governance repairs complete.
-- Bound Communications candidate: PR #74 at `3de173d32afe791a1d82e4f054e42aa3ff40a3c1`.
+- Bound Communications candidate: PR #75 at `d52b7648561d728466eb701a440f49bd161b4296`.
 - Before any live SendGrid staging provider execution, the final exact PR #65 head requires exact-head CI SUCCESS, exact-head URAI Production Verify SUCCESS, zero unresolved required review threads, and a legitimate native GitHub APPROVED review from `LimberNutz0` on that unchanged exact head.
 - In-person/verbal approval, issue comments, reactions, ChatGPT attestations, and connector-authored comments are evidence only and do not substitute for the native independent GitHub review.
 - Any PR #65 head change after approval invalidates that approval for provider execution and requires re-review.
