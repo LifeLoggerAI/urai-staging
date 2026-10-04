@@ -112,7 +112,7 @@ jobs:
           pool_id="${provider_tail%%/*}"
           provider_id="${WIF_PROVIDER##*/}"
           provider_json="$(gcloud iam workload-identity-pools providers describe "$provider_id" --workload-identity-pool="$pool_id" --location=global --project="$STAGING_PROJECT_ID" --format=json)"
-          effective_iam="$(gcloud asset get-effective-iam-policy --scope="projects/$STAGING_PROJECT_ID" --names="//cloudresourcemanager.googleapis.com/projects/$project_number" --format=json)"
+          effective_iam="$(gcloud asset get-effective-iam-policy --scope="projects/$STAGING_PROJECT_ID" --names="//cloudresourcemanager.googleapis.com/projects/$STAGING_PROJECT_ID" --format=json)"
           keys_json="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project="$STAGING_PROJECT_ID" --format=json)"
           functions_json="$(gcloud functions list --project="$STAGING_PROJECT_ID" --format=json)"
           run_json="$(gcloud run services list --platform=managed --project="$STAGING_PROJECT_ID" --format=json)"

@@ -14,6 +14,7 @@ for (const [label, pattern] of [
   ['ephemeral ADC', /create_credentials_file: true/],
   ['read-only provider evidence', /Provider read-only proof failed closed/],
   ['effective IAM command', /gcloud asset get-effective-iam-policy/],
+  ['effective IAM project-id resource name', /--names=\"\/\/cloudresourcemanager\.googleapis\.com\/projects\/\$STAGING_PROJECT_ID\"/],
   ['user-managed key rejection', /USER_MANAGED/],
   ['runtime identities', /runtimeIdentities/],
   ['mutation disabled', /mutationAuthorized:false/],
