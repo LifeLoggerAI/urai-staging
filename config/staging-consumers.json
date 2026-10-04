@@ -32,13 +32,12 @@
       }
     },
     {
-      "id": "urai-communications-pr75-twilio-trial-e2e",
+      "id": "urai-communications-main-twilio-trial-e2e",
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "pullRequest": 75,
-      "exactSha": "d52b7648561d728466eb701a440f49bd161b4296",
-      "sourceRef": "refs/pull/75/head",
+      "exactSha": "dfb8df01fa2c6c2c67db80b78f7b42f7577930b7",
+      "sourceRef": "refs/heads/main",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
@@ -69,23 +68,18 @@
       "twilioProductionMessagingAuthorized": false,
       "rollbackToDeliveryDisabledRequired": true,
       "refVerification": {
-        "mode": "protected-github-api-or-readonly-deploy-key",
-        "environment": "staging",
-        "allowedSecrets": [
-          "URAI_CROSS_REPO_READ_TOKEN",
-          "URAI_CROSS_REPO_READ_SSH_KEY"
-        ]
+        "mode": "public-git-ls-remote"
       },
-      "trialSenderMode": "provider-assigned"
+      "trialSenderMode": "provider-assigned",
+      "sourceBranch": "main"
     },
     {
-      "id": "urai-communications-pr75-sendgrid-signed-staging-e2e",
+      "id": "urai-communications-main-sendgrid-signed-staging-e2e",
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "pullRequest": 75,
-      "exactSha": "d52b7648561d728466eb701a440f49bd161b4296",
-      "sourceRef": "refs/pull/75/head",
+      "exactSha": "dfb8df01fa2c6c2c67db80b78f7b42f7577930b7",
+      "sourceRef": "refs/heads/main",
       "mode": "sendgrid-signed-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
@@ -112,14 +106,10 @@
       "sendGridTemporaryWebhookDeleteRequired": true,
       "rollbackToDeliveryDisabledRequired": true,
       "refVerification": {
-        "mode": "protected-github-api-or-readonly-deploy-key",
-        "environment": "staging",
-        "allowedSecrets": [
-          "URAI_CROSS_REPO_READ_TOKEN",
-          "URAI_CROSS_REPO_READ_SSH_KEY"
-        ]
+        "mode": "public-git-ls-remote"
       },
-      "callbackSecretSyntheticOnly": true
+      "callbackSecretSyntheticOnly": true,
+      "sourceBranch": "main"
     }
   ],
   "historicalConsumers": [
@@ -133,6 +123,16 @@
       "mergedHeadSha": "8050cf2c7d5c5cec8dc360b9f9c25719cef43a29",
       "mergeCommitSha": "f0dabca401dff4df22a68a92b5b10e996b99c748",
       "reason": "PR #57 is merged and its predecessor runtime pin must not remain active authority. A successor Admin runtime consumer requires a separate explicit current-authority decision."
+    },
+    {
+      "id": "urai-communications-pr75-source-authority",
+      "state": "historical",
+      "repository": "LifeLoggerAI/urai-communications",
+      "repositoryId": 1169785707,
+      "pullRequest": 75,
+      "mergedHeadSha": "d52b7648561d728466eb701a440f49bd161b4296",
+      "mergeCommitSha": "dfb8df01fa2c6c2c67db80b78f7b42f7577930b7",
+      "reason": "PR #75 is merged. Protected staging provider consumers now bind credential-free to Communications main; the PR head remains historical source evidence only."
     }
   ]
 }
