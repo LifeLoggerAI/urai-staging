@@ -7,12 +7,22 @@ on:
     paths:
       - '.github/workflows/staging-gcp-authority-readback.yml'
   workflow_dispatch:
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
 
 jobs:
   readback:
+    if: >-
+      github.event_name != 'issue_comment' ||
+      (
+        github.event.issue.number == 76 &&
+        github.event.comment.body == 'READBACK_TWILIO_STAGING_SECRET_METADATA' &&
+        github.event.comment.author_association == 'OWNER' &&
+        github.actor == github.repository_owner
+      )
     runs-on: ubuntu-24.04
     environment: staging
     permissions:
@@ -23,6 +33,10 @@ jobs:
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
       EXPECTED_RUNTIME_SERVICE_ACCOUNT: urai-staging-functions-runtime@urai-staging.iam.gserviceaccount.com
+      STAGING_TENANT_ID: ${{ vars.STAGING_TENANT_ID }}
+      STAGING_FIREBASE_API_KEY: ${{ vars.STAGING_FIREBASE_API_KEY }}
+      STAGING_FUNCTIONS_BASE_URL: ${{ vars.STAGING_FUNCTIONS_BASE_URL }}
+      STAGING_TEST_UID: ${{ vars.STAGING_TEST_UID }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
@@ -34,6 +48,12 @@ jobs:
           set -euo pipefail
           test -n "$WIF_PROVIDER"
           test -n "$DEPLOY_SERVICE_ACCOUNT"
+          if [ "${{ github.event_name }}" = 'issue_comment' ]; then
+            test "${{ github.event.issue.number }}" = '76'
+            test "${{ github.event.comment.body }}" = 'READBACK_TWILIO_STAGING_SECRET_METADATA'
+            test "${{ github.event.comment.author_association }}" = 'OWNER'
+            test "${{ github.actor }}" = "${{ github.repository_owner }}"
+          fi
           case "$WIF_PROVIDER" in projects/*/locations/global/workloadIdentityPools/*/providers/*) ;; *) exit 21 ;; esac
           case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 22 ;; esac
       - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
@@ -68,7 +88,10 @@ jobs:
           else
             echo "STAGING_CALLBACK_STATE=MISSING"
           fi
-          for secret in SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY DELIVERY_STATUS_CALLBACK_SECRET TWILIO_AUTH_TOKEN; do
+          for name in STAGING_TENANT_ID STAGING_FIREBASE_API_KEY STAGING_FUNCTIONS_BASE_URL STAGING_TEST_UID; do
+            test -n "${!name:-}" && echo "${name}_PRESENT=true" || echo "${name}_PRESENT=false"
+          done
+          for secret in SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY DELIVERY_STATUS_CALLBACK_SECRET TWILIO_AUTH_TOKEN TWILIO_ACCOUNT_SID TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET; do
             if gcloud secrets describe "$secret" --project="$PROJECT_ID" >/dev/null 2>&1; then
               enabled="$(gcloud secrets versions list "$secret" --project="$PROJECT_ID" --filter='state=ENABLED' --format='value(name)' --limit=1 2>/dev/null || true)"
               echo "STAGING_SECRET_${secret}_EXISTS=true"
