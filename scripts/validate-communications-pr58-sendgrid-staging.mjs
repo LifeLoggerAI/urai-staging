@@ -5,15 +5,15 @@ const bootstrapPath = 'scripts/bootstrap-staging-sendgrid-proof-iam.sh';
 const text = fs.readFileSync(workflowPath, 'utf8');
 const bootstrap = fs.readFileSync(bootstrapPath, 'utf8');
 const required = [
-  'name: Communications PR58 SendGrid Signed Protected Staging E2E',
+  'name: Communications PR75 SendGrid Signed Protected Staging E2E',
   'workflow_dispatch:',
   'environment: staging',
   'LifeLoggerAI/urai-communications',
-  '6c99e6c66eda829da359041b23c6f23c3ea3e523',
+  'd52b7648561d728466eb701a440f49bd161b4296',
   'SENDGRID_API_KEY',
   'URAI_CROSS_REPO_READ_TOKEN',
   'URAI_CROSS_REPO_READ_SSH_KEY',
-  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/pull/58/head',
+  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/pull/75/head',
   'ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}',
   'SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
   'DELIVERY_STATUS_CALLBACK_SECRET',
@@ -48,7 +48,7 @@ const forbidden = [
 for (const [pattern,label] of forbidden) {
   if (pattern.test(text)) throw new Error(`forbidden SendGrid staging marker: ${label}`);
 }
-console.log('Communications PR58 SendGrid signed staging workflow contract OK');
+console.log('Communications PR75 SendGrid signed staging workflow contract OK');
 
 const bootstrapRequired = [
   "PROJECT_ID='urai-staging'",
@@ -72,4 +72,4 @@ for (const marker of bootstrapRequired) {
 for (const marker of ['roles/owner','roles/editor','roles/firebase.admin','roles/secretmanager.admin']) {
   if (!bootstrap.includes(marker)) throw new Error(`missing broad-role rejection marker: ${marker}`);
 }
-console.log('Communications PR58 SendGrid least-privilege IAM bootstrap contract OK');
+console.log('Communications PR75 SendGrid least-privilege IAM bootstrap contract OK');

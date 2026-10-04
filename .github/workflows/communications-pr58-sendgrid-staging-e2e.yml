@@ -1,4 +1,4 @@
-name: Communications PR58 SendGrid Signed Protected Staging E2E
+name: Communications PR75 SendGrid Signed Protected Staging E2E
 
 on:
   workflow_dispatch:
@@ -8,14 +8,14 @@ permissions:
   actions: read
 
 concurrency:
-  group: urai-communications-pr58-sendgrid-staging-${{ github.event.pull_request.number || github.ref }}
+  group: urai-communications-pr75-sendgrid-staging-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
-  COMMUNICATIONS_PR_NUMBER: '58'
-  STAGING_REVIEW_PR_NUMBER: '59'
-  COMMUNICATIONS_SHA: '6c99e6c66eda829da359041b23c6f23c3ea3e523'
+  COMMUNICATIONS_PR_NUMBER: '75'
+  STAGING_REVIEW_PR_NUMBER: '65'
+  COMMUNICATIONS_SHA: 'd52b7648561d728466eb701a440f49bd161b4296'
   STAGING_PROJECT_ID: urai-staging
   FIREBASE_CLI_VERSION: '15.23.0'
 
@@ -68,7 +68,7 @@ jobs:
               -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
-              https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/58 \
+              https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/75 \
               | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(JSON.parse(s).head.sha))")"
             echo "CROSS_REPO_AUTH_MODE=token" >> "$GITHUB_ENV"
           elif [ -n "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
@@ -78,15 +78,15 @@ jobs:
             printf '%s\n' "$CROSS_REPO_READ_SSH_KEY" > "$key_file"
             ssh-keyscan -t ed25519 github.com > "$known_hosts" 2>/dev/null
             live_sha="$(GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o UserKnownHostsFile=$known_hosts -o StrictHostKeyChecking=yes" \
-              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/pull/58/head \
+              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/pull/75/head \
               | awk 'NR==1 {print $1}')"
-            test -n "$live_sha" || { echo 'read-only deploy key could not resolve Communications PR58 head' >&2; exit 41; }
+            test -n "$live_sha" || { echo 'read-only deploy key could not resolve Communications PR75 head' >&2; exit 41; }
             echo "CROSS_REPO_AUTH_MODE=ssh" >> "$GITHUB_ENV"
           else
             echo 'missing URAI_CROSS_REPO_READ_TOKEN and URAI_CROSS_REPO_READ_SSH_KEY' >&2
             exit 41
           fi
-          test "$live_sha" = "$COMMUNICATIONS_SHA" || { echo "Communications PR58 moved: $live_sha" >&2; exit 42; }
+          test "$live_sha" = "$COMMUNICATIONS_SHA" || { echo "Communications PR75 moved: $live_sha" >&2; exit 42; }
           node scripts/validate-staging-consumers.mjs
           node scripts/validate-communications-pr58-sendgrid-staging.mjs
           for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL; do

@@ -26,11 +26,11 @@ for (const c of doc.consumers || []) {
   if (!c.refVerification || !['public-git-ls-remote','protected-github-api','protected-github-api-or-readonly-deploy-key'].includes(c.refVerification.mode)) failures.push(`${c.id || 'consumer'} refVerification`);
 }
 
-const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1462-stripe-test-readiness') || {};
+const spatial = doc.consumers?.find((entry) => entry.id === 'urai-spatial-pr1561-stripe-test-readiness') || {};
 if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial repository');
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
-if (spatial.pullRequest !== 1462) failures.push('spatial pullRequest');
-if (spatial.sourceRef !== 'refs/pull/1462/head') failures.push('spatial sourceRef');
+if (spatial.pullRequest !== 1561) failures.push('spatial pullRequest');
+if (spatial.sourceRef !== 'refs/pull/1561/head') failures.push('spatial sourceRef');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (!Array.isArray(spatial.allowedDeployScopes) || spatial.allowedDeployScopes.length !== 0) failures.push('spatial allowedDeployScopes');
 if (spatial.providerReadOnlyAuthorized !== true) failures.push('spatial providerReadOnlyAuthorized');
@@ -40,12 +40,12 @@ if (spatial.stripeTestModeOnly !== true) failures.push('spatial stripeTestModeOn
 if (spatial.stripeLiveModeAuthorized !== false) failures.push('spatial stripeLiveModeAuthorized');
 if (spatial.refVerification?.mode !== 'public-git-ls-remote') failures.push('spatial ref verification');
 
-const communications = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr58-twilio-trial-e2e') || {};
+const communications = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr75-twilio-trial-e2e') || {};
 if (communications.repository !== 'LifeLoggerAI/urai-communications') failures.push('communications repository');
 if (communications.repositoryId !== 1169785707) failures.push('communications repositoryId');
-if (communications.pullRequest !== 58) failures.push('communications pullRequest');
-if (communications.sourceRef !== 'refs/pull/58/head') failures.push('communications sourceRef');
-if (communications.exactSha !== '15b1a75302b65fb6f3cd90b747e4108a10108c8c') failures.push('communications exactSha');
+if (communications.pullRequest !== 75) failures.push('communications pullRequest');
+if (communications.sourceRef !== 'refs/pull/75/head') failures.push('communications sourceRef');
+if (communications.exactSha !== 'd52b7648561d728466eb701a440f49bd161b4296') failures.push('communications exactSha');
 if (communications.mode !== 'twilio-trial-protected-staging-e2e') failures.push('communications mode');
 if (JSON.stringify(communications.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('communications allowedDeployScopes');
 if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('communications function allowlist');
@@ -61,12 +61,12 @@ if (communications.refVerification?.environment !== 'staging') failures.push('co
 if (communications.refVerification?.requiredSecret !== 'URAI_CROSS_REPO_READ_TOKEN') failures.push('communications ref verification secret contract');
 if (communications.trialSenderMode !== 'provider-assigned') failures.push('communications trial sender mode');
 
-const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr58-sendgrid-signed-staging-e2e') || {};
+const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr75-sendgrid-signed-staging-e2e') || {};
 if (sendgrid.repository !== 'LifeLoggerAI/urai-communications') failures.push('sendgrid repository');
 if (sendgrid.repositoryId !== 1169785707) failures.push('sendgrid repositoryId');
-if (sendgrid.pullRequest !== 58) failures.push('sendgrid pullRequest');
-if (sendgrid.exactSha !== '15b1a75302b65fb6f3cd90b747e4108a10108c8c') failures.push('sendgrid exactSha');
-if (sendgrid.sourceRef !== 'refs/pull/58/head') failures.push('sendgrid sourceRef');
+if (sendgrid.pullRequest !== 75) failures.push('sendgrid pullRequest');
+if (sendgrid.exactSha !== 'd52b7648561d728466eb701a440f49bd161b4296') failures.push('sendgrid exactSha');
+if (sendgrid.sourceRef !== 'refs/pull/75/head') failures.push('sendgrid sourceRef');
 if (sendgrid.mode !== 'sendgrid-signed-protected-staging-e2e') failures.push('sendgrid mode');
 if (JSON.stringify(sendgrid.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('sendgrid allowedDeployScopes');
 if (JSON.stringify(sendgrid.initialFunctionDeploymentAllowlist) !== JSON.stringify(['deliveryStatusCallback'])) failures.push('sendgrid function allowlist');
