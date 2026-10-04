@@ -73,7 +73,7 @@ jobs:
         run: node scripts/validate-private-consumer-ref-workflow.mjs
 
       - name: Validate Spatial PR1577 Stripe TEST provider probe
-        run: node scripts/validate-spatial-pr1577-stripe-provider-probe.mjs
+        run: node scripts/validate-spatial-pr1581-stripe-provider-probe.mjs
 
       - name: Validate Communications PR75 Twilio staging controller
         run: node scripts/validate-communications-pr58-twilio-staging.mjs
