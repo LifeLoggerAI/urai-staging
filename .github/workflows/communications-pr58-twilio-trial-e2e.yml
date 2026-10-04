@@ -1,4 +1,4 @@
-name: Communications PR75 Twilio API-Key Trial Protected Staging E2E
+name: Communications main Twilio API-Key Trial Protected Staging E2E
 
 on:
   workflow_dispatch:
@@ -53,7 +53,7 @@ jobs:
       actions: read
       id-token: write
     env:
-      COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || 'd52b7648561d728466eb701a440f49bd161b4296' }}
+      COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7' }}
       CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
@@ -106,11 +106,11 @@ jobs:
               -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
-              https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/75)"
+              https://api.github.com/repos/LifeLoggerAI/urai-communications/git/ref/heads/main)"
             status=$?
             set -e
             if [ "$status" -eq 0 ] && [ -n "$response" ]; then
-              live_communications_sha="$(printf '%s' "$response" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.head.sha)})")"
+              live_communications_sha="$(printf '%s' "$response" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.object.sha)})")"
               echo "CROSS_REPO_AUTH_MODE=token" >> "$GITHUB_ENV"
             fi
           fi
@@ -121,11 +121,11 @@ jobs:
             printf '%s\n' "$CROSS_REPO_READ_SSH_KEY" > "$key_file"
             ssh-keyscan -t ed25519 github.com > "$known_hosts" 2>/dev/null
             live_communications_sha="$(GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o UserKnownHostsFile=$known_hosts -o StrictHostKeyChecking=yes" \
-              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/pull/75/head | awk 'NR==1 {print $1}')"
-            test -n "$live_communications_sha" || { echo 'read-only deploy key could not resolve Communications PR75 head' >&2; exit 46; }
+              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main | awk 'NR==1 {print $1}')"
+            test -n "$live_communications_sha" || { echo 'read-only deploy key could not resolve Communications main head' >&2; exit 46; }
             echo "CROSS_REPO_AUTH_MODE=ssh" >> "$GITHUB_ENV"
           fi
-          test -n "$live_communications_sha" || { echo 'No valid protected cross-repository read authority is configured for Communications PR75.' >&2; exit 46; }
+          test -n "$live_communications_sha" || { echo 'No valid protected cross-repository read authority is configured for Communications main.' >&2; exit 46; }
           test "$live_communications_sha" = "$COMMUNICATIONS_SHA"
           node scripts/validate-staging-consumers.mjs
           COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA" node <<'NODE'

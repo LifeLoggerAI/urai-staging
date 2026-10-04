@@ -10,7 +10,7 @@ if (doc.environment !== 'staging') failures.push('environment');
 if (doc.mutationAuthorityRepository !== 'LifeLoggerAI/urai-staging') failures.push('mutationAuthorityRepository');
 if (doc.productionAllowed !== false) failures.push('productionAllowed');
 if (!Array.isArray(doc.consumers) || doc.consumers.length !== 3) failures.push('active consumers');
-if (!Array.isArray(doc.historicalConsumers) || doc.historicalConsumers.length !== 1) failures.push('historical consumers');
+if (!Array.isArray(doc.historicalConsumers) || doc.historicalConsumers.length !== 2) failures.push('historical consumers');
 
 for (const c of doc.consumers || []) {
   if (c.state !== 'active') failures.push(`${c.id || 'consumer'} state`);
@@ -31,7 +31,7 @@ if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial r
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
 if (spatial.pullRequest !== 1584) failures.push('spatial pullRequest');
 if (spatial.sourceRef !== 'refs/pull/1584/head') failures.push('spatial sourceRef');
-if (spatial.exactSha !== '970838a65b9aea1a1a4b929e92dc90ce1865a224') failures.push('spatial exactSha');
+if (spatial.exactSha !== 'e30a437e933f5469964b2272454fd2cf4583b7ad') failures.push('spatial exactSha');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (!Array.isArray(spatial.allowedDeployScopes) || spatial.allowedDeployScopes.length !== 0) failures.push('spatial allowedDeployScopes');
 if (spatial.providerReadOnlyAuthorized !== true) failures.push('spatial providerReadOnlyAuthorized');
@@ -41,12 +41,12 @@ if (spatial.stripeTestModeOnly !== true) failures.push('spatial stripeTestModeOn
 if (spatial.stripeLiveModeAuthorized !== false) failures.push('spatial stripeLiveModeAuthorized');
 if (spatial.refVerification?.mode !== 'public-git-ls-remote') failures.push('spatial ref verification');
 
-const communications = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr75-twilio-trial-e2e') || {};
+const communications = doc.consumers?.find((entry) => entry.id === 'urai-communications-main-twilio-trial-e2e') || {};
 if (communications.repository !== 'LifeLoggerAI/urai-communications') failures.push('communications repository');
 if (communications.repositoryId !== 1169785707) failures.push('communications repositoryId');
-if (communications.pullRequest !== 75) failures.push('communications pullRequest');
-if (communications.sourceRef !== 'refs/pull/75/head') failures.push('communications sourceRef');
-if (communications.exactSha !== 'd52b7648561d728466eb701a440f49bd161b4296') failures.push('communications exactSha');
+if (communications.sourceBranch !== 'main') failures.push('communications sourceBranch');
+if (communications.sourceRef !== 'refs/heads/main') failures.push('communications sourceRef');
+if (communications.exactSha !== 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7') failures.push('communications exactSha');
 if (communications.mode !== 'twilio-trial-protected-staging-e2e') failures.push('communications mode');
 if (JSON.stringify(communications.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('communications allowedDeployScopes');
 if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('communications function allowlist');
@@ -62,12 +62,12 @@ if (communications.refVerification?.environment !== 'staging') failures.push('co
 if (JSON.stringify(communications.refVerification?.allowedSecrets) !== JSON.stringify(['URAI_CROSS_REPO_READ_TOKEN','URAI_CROSS_REPO_READ_SSH_KEY'])) failures.push('communications ref verification secret contract');
 if (communications.trialSenderMode !== 'provider-assigned') failures.push('communications trial sender mode');
 
-const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr75-sendgrid-signed-staging-e2e') || {};
+const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communications-main-sendgrid-signed-staging-e2e') || {};
 if (sendgrid.repository !== 'LifeLoggerAI/urai-communications') failures.push('sendgrid repository');
 if (sendgrid.repositoryId !== 1169785707) failures.push('sendgrid repositoryId');
-if (sendgrid.pullRequest !== 75) failures.push('sendgrid pullRequest');
-if (sendgrid.exactSha !== 'd52b7648561d728466eb701a440f49bd161b4296') failures.push('sendgrid exactSha');
-if (sendgrid.sourceRef !== 'refs/pull/75/head') failures.push('sendgrid sourceRef');
+if (sendgrid.sourceBranch !== 'main') failures.push('sendgrid sourceBranch');
+if (sendgrid.exactSha !== 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7') failures.push('sendgrid exactSha');
+if (sendgrid.sourceRef !== 'refs/heads/main') failures.push('sendgrid sourceRef');
 if (sendgrid.mode !== 'sendgrid-signed-protected-staging-e2e') failures.push('sendgrid mode');
 if (JSON.stringify(sendgrid.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('sendgrid allowedDeployScopes');
 if (JSON.stringify(sendgrid.initialFunctionDeploymentAllowlist) !== JSON.stringify(['deliveryStatusCallback'])) failures.push('sendgrid function allowlist');
@@ -91,6 +91,12 @@ if (historicalAdmin.predecessorSha !== 'fb255310d6b183a59e4252da80c685f45e5cf536
 if (historicalAdmin.mergedHeadSha !== '8050cf2c7d5c5cec8dc360b9f9c25719cef43a29') failures.push('historical Admin merged head');
 if (historicalAdmin.mergeCommitSha !== 'f0dabca401dff4df22a68a92b5b10e996b99c748') failures.push('historical Admin merge commit');
 if ((doc.consumers || []).some((entry) => entry.id === 'urai-admin-pr57-runtime-closure')) failures.push('historical Admin cannot remain active');
+const historicalCommunications = doc.historicalConsumers?.find((entry) => entry.id === 'urai-communications-pr75-source-authority') || {};
+if (historicalCommunications.state !== 'historical') failures.push('historical Communications state');
+if (historicalCommunications.repository !== 'LifeLoggerAI/urai-communications') failures.push('historical Communications repository');
+if (historicalCommunications.pullRequest !== 75) failures.push('historical Communications PR');
+if (historicalCommunications.mergedHeadSha !== 'd52b7648561d728466eb701a440f49bd161b4296') failures.push('historical Communications head');
+if (historicalCommunications.mergeCommitSha !== 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7') failures.push('historical Communications merge commit');
 
 if (failures.length) {
   console.error(`staging consumer authority invalid: ${failures.join(', ')}`);

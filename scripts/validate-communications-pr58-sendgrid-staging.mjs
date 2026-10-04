@@ -5,15 +5,15 @@ const bootstrapPath = 'scripts/bootstrap-staging-sendgrid-proof-iam.sh';
 const text = fs.readFileSync(workflowPath, 'utf8');
 const bootstrap = fs.readFileSync(bootstrapPath, 'utf8');
 const required = [
-  'name: Communications PR75 SendGrid Signed Protected Staging E2E',
+  'name: Communications main SendGrid Signed Protected Staging E2E',
   'workflow_dispatch:',
   'environment: staging',
   'LifeLoggerAI/urai-communications',
-  'd52b7648561d728466eb701a440f49bd161b4296',
+  'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7',
   'SENDGRID_API_KEY',
   'URAI_CROSS_REPO_READ_TOKEN',
   'URAI_CROSS_REPO_READ_SSH_KEY',
-  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/pull/75/head',
+  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main',
   'ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}',
   'SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
   'DELIVERY_STATUS_CALLBACK_SECRET',
@@ -36,7 +36,7 @@ for (const marker of required) {
 
 const forbidden = [
   [/urai-communications-prod\.cloudfunctions\.net/, 'production callback target'],
-  [/--project\s+urai-communications-prod\b/, 'production deployment project'],
+  [/urai-communications-prod/, 'production project access'],
   [/firebase deploy[\s\S]*--only hosting/, 'hosting deployment'],
   [/mail\/send/, 'real SendGrid email send'],
   [/ENABLE_REAL_DELIVERY=true/, 'real delivery enablement'],
@@ -48,7 +48,7 @@ const forbidden = [
 for (const [pattern,label] of forbidden) {
   if (pattern.test(text)) throw new Error(`forbidden SendGrid staging marker: ${label}`);
 }
-console.log('Communications PR75 SendGrid signed staging workflow contract OK');
+console.log('Communications main SendGrid signed staging workflow contract OK');
 
 const bootstrapRequired = [
   "PROJECT_ID='urai-staging'",
@@ -72,4 +72,4 @@ for (const marker of bootstrapRequired) {
 for (const marker of ['roles/owner','roles/editor','roles/firebase.admin','roles/secretmanager.admin']) {
   if (!bootstrap.includes(marker)) throw new Error(`missing broad-role rejection marker: ${marker}`);
 }
-console.log('Communications PR75 SendGrid least-privilege IAM bootstrap contract OK');
+console.log('Communications main SendGrid least-privilege IAM bootstrap contract OK');
