@@ -10,7 +10,7 @@ function fixture({reviews=[review],runs=workflows,threads=[{isResolved:true}],mu
   let prCalls=0;
   return async(path,body)=>{
     if(path.endsWith('/collaborators/LimberNutz0/permission'))return {permission};
-    if(path.endsWith('/pulls/59')){prCalls++;return {...pr,...(mutatePR&&prCalls>1?{head:{...pr.head,sha:'b'.repeat(40)}}:{})};}
+    if(path.endsWith('/pulls/63')){prCalls++;return {...pr,...(mutatePR&&prCalls>1?{head:{...pr.head,sha:'b'.repeat(40)}}:{})};}
     if(path.includes('/reviews?')){
       if(pagedReviews && path.endsWith('page=1'))return Array.from({length:100},(_,i)=>({id:i,state:'COMMENTED',user:{login:'other'}}));
       return reviews;
