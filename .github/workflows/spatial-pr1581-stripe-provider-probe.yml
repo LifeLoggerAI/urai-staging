@@ -75,7 +75,7 @@ jobs:
           const failures = [];
           if (!c) failures.push('consumer missing');
           if (c) {
-            if (c.repository !== 'LifeLoggerAI/urai-spatial' || c.repositoryId !== 1167675641 || c.pullRequest !== 1577) failures.push('Spatial identity');
+            if (c.repository !== 'LifeLoggerAI/urai-spatial' || c.repositoryId !== 1167675641 || c.pullRequest !== 1581) failures.push('Spatial identity');
             if (c.exactSha !== process.env.SPATIAL_SHA || c.sourceRef !== 'refs/pull/1581/head') failures.push('Spatial exact SHA/ref');
             if (c.providerProject !== 'urai-staging' || c.allowedEnvironment !== 'staging') failures.push('provider scope');
             if (c.mode !== 'stripe-test-provider-readiness' || c.dataPolicy !== 'synthetic-only') failures.push('test/data mode');
