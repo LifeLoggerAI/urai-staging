@@ -14,7 +14,7 @@ concurrency:
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
   COMMUNICATIONS_PR_NUMBER: '74'
-  STAGING_REVIEW_PR_NUMBER: '59'
+  STAGING_REVIEW_PR_NUMBER: '63'
   COMMUNICATIONS_SHA: '3de173d32afe791a1d82e4f054e42aa3ff40a3c1'
   STAGING_PROJECT_ID: urai-staging
   FIREBASE_CLI_VERSION: '15.23.0'
@@ -68,7 +68,7 @@ jobs:
               -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
-              https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/58 \
+              https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/74 \
               | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(JSON.parse(s).head.sha))")"
             echo "CROSS_REPO_AUTH_MODE=token" >> "$GITHUB_ENV"
           elif [ -n "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
