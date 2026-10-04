@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const path = '.github/workflows/communications-pr74-twilio-trial-e2e.yml';
+const path = '.github/workflows/communications-pr58-twilio-trial-e2e.yml';
 const text = fs.readFileSync(path,'utf8');
 const required = [
   'name: Communications PR74 Twilio API-Key Trial Protected Staging E2E',
