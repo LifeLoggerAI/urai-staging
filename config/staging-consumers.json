@@ -6,13 +6,13 @@
   "productionAllowed": false,
   "consumers": [
     {
-      "id": "urai-spatial-pr1462-stripe-test-readiness",
+      "id": "urai-spatial-pr1576-stripe-test-readiness",
       "state": "active",
       "repository": "LifeLoggerAI/urai-spatial",
       "repositoryId": 1167675641,
-      "pullRequest": 1462,
-      "exactSha": "b9fca9fe2870b081b2295e92492ae16fc2920e0a",
-      "sourceRef": "refs/pull/1462/head",
+      "pullRequest": 1576,
+      "exactSha": "98f7a9813394cf0d83a20bc096627078077d3dff",
+      "sourceRef": "refs/pull/1576/head",
       "mode": "stripe-test-provider-readiness",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
