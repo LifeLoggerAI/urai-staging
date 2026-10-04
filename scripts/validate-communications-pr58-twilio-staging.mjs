@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 
-const path = '.github/workflows/communications-pr58-twilio-trial-e2e.yml';
+const path = '.github/workflows/communications-pr74-twilio-trial-e2e.yml';
 const text = fs.readFileSync(path,'utf8');
 const required = [
-  'name: Communications PR58 Twilio API-Key Trial Protected Staging E2E',
+  'name: Communications PR74 Twilio API-Key Trial Protected Staging E2E',
   'workflow_dispatch:',
   'environment: staging',
   'https://api.github.com/repos/LifeLoggerAI/urai-communications/pulls/58',
@@ -62,4 +62,4 @@ const uploadStep = text.slice(text.indexOf('- name: Upload sanitized retained pr
 if (!uploadStep.startsWith('- name: Upload sanitized retained proof')) throw new Error('sanitized proof upload step missing');
 if (!uploadStep.includes('if: ${{ success() }}')) throw new Error('sanitized proof upload must be success-gated');
 if (/if:\s*always\(\)/.test(uploadStep.split(/\n\s*- name:/, 1)[0])) throw new Error('sanitized proof upload cannot run on failure');
-console.log('Communications PR58 Twilio staging workflow contract OK');
+console.log('Communications PR74 Twilio staging workflow contract OK');
