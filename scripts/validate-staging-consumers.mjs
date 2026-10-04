@@ -57,7 +57,9 @@ if (communications.hostingMutationAuthorized !== false) failures.push('communica
 if (communications.twilioTrialModeOnly !== true) failures.push('communications Twilio trial mode');
 if (communications.twilioProductionMessagingAuthorized !== false) failures.push('communications production Twilio');
 if (communications.rollbackToDeliveryDisabledRequired !== true) failures.push('communications rollback requirement');
-if (communications.refVerification?.mode !== 'public-git-ls-remote') failures.push('communications ref verification');
+if (communications.refVerification?.mode !== 'protected-github-api-or-readonly-deploy-key') failures.push('communications ref verification');
+if (communications.refVerification?.environment !== 'staging') failures.push('communications ref verification environment');
+if (JSON.stringify(communications.refVerification?.allowedSecrets) !== JSON.stringify(['URAI_CROSS_REPO_READ_TOKEN','URAI_CROSS_REPO_READ_SSH_KEY'])) failures.push('communications ref verification secret contract');
 if (communications.trialSenderMode !== 'provider-assigned') failures.push('communications trial sender mode');
 
 const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communications-main-sendgrid-signed-staging-e2e') || {};
@@ -77,7 +79,9 @@ if (sendgrid.sendGridTemporaryWebhookCreateAuthorized !== true) failures.push('s
 if (sendgrid.sendGridTemporaryWebhookDeleteRequired !== true) failures.push('sendgrid temporary webhook delete');
 if (sendgrid.rollbackToDeliveryDisabledRequired !== true) failures.push('sendgrid rollback requirement');
 if (sendgrid.callbackSecretSyntheticOnly !== true) failures.push('sendgrid synthetic callback secret boundary');
-if (sendgrid.refVerification?.mode !== 'public-git-ls-remote') failures.push('sendgrid ref verification');
+if (sendgrid.refVerification?.mode !== 'protected-github-api-or-readonly-deploy-key') failures.push('sendgrid ref verification');
+if (sendgrid.refVerification?.environment !== 'staging') failures.push('sendgrid ref verification environment');
+if (JSON.stringify(sendgrid.refVerification?.allowedSecrets) !== JSON.stringify(['URAI_CROSS_REPO_READ_TOKEN','URAI_CROSS_REPO_READ_SSH_KEY'])) failures.push('sendgrid ref verification secret contract');
 
 const historicalAdmin = doc.historicalConsumers?.find((entry) => entry.id === 'urai-admin-pr57-runtime-closure') || {};
 if (historicalAdmin.state !== 'historical') failures.push('historical Admin state');
