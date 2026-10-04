@@ -35,6 +35,8 @@ jobs:
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
       RUNTIME_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT }}
       STAGING_FUNCTIONS_BASE_URL: ${{ vars.STAGING_FUNCTIONS_BASE_URL }}
+      CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+      CROSS_REPO_READ_SSH_KEY: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
       SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
     steps:
       - name: Checkout exact staging candidate
@@ -61,8 +63,29 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          live_sha="$(git ls-remote --exit-code https://github.com/LifeLoggerAI/urai-communications.git refs/heads/main | awk 'NR==1 {print $1}')"
-          test -n "$live_sha" || { echo 'Could not resolve public Communications main.' >&2; exit 41; }
+          if [ -n "${CROSS_REPO_READ_TOKEN:-}" ]; then
+            live_sha="$(curl --silent --show-error --fail \
+              -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/LifeLoggerAI/urai-communications/git/ref/heads/main \
+              | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(JSON.parse(s).object.sha))")"
+            echo "CROSS_REPO_AUTH_MODE=token" >> "$GITHUB_ENV"
+          elif [ -n "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
+            umask 077
+            key_file="$RUNNER_TEMP/urai-cross-repo-read"
+            known_hosts="$RUNNER_TEMP/urai-github-known-hosts"
+            printf '%s\n' "$CROSS_REPO_READ_SSH_KEY" > "$key_file"
+            ssh-keyscan -t ed25519 github.com > "$known_hosts" 2>/dev/null
+            live_sha="$(GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o UserKnownHostsFile=$known_hosts -o StrictHostKeyChecking=yes" \
+              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main \
+              | awk 'NR==1 {print $1}')"
+            test -n "$live_sha" || { echo 'read-only deploy key could not resolve Communications main head' >&2; exit 41; }
+            echo "CROSS_REPO_AUTH_MODE=ssh" >> "$GITHUB_ENV"
+          else
+            echo 'missing URAI_CROSS_REPO_READ_TOKEN and URAI_CROSS_REPO_READ_SSH_KEY' >&2
+            exit 41
+          fi
           test "$live_sha" = "$COMMUNICATIONS_SHA" || { echo "Communications main moved: $live_sha" >&2; exit 42; }
           node scripts/validate-staging-consumers.mjs
           node scripts/validate-communications-pr58-sendgrid-staging.mjs
