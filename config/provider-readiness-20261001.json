@@ -23,7 +23,7 @@
       ],
       "accountEvidence": "historical-connected-platform-evidence",
       "sourceWired": true,
-      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "sourceAuthority": "LifeLoggerAI/urai-communications main exact dfb8df01fa2c6c2c67db80b78f7b42f7577930b7 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
       "runtimeCertified": false,
       "liveSmokeThisPass": false,
       "activation": "user-consent-gated",
@@ -39,7 +39,7 @@
       ],
       "accountEvidence": "historical-billing-receipt-observed",
       "sourceWired": true,
-      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "sourceAuthority": "LifeLoggerAI/urai-communications main exact dfb8df01fa2c6c2c67db80b78f7b42f7577930b7 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
       "runtimeCertified": false,
       "liveSmokeThisPass": false,
       "activation": "user-consent-gated",
@@ -56,7 +56,7 @@
       ],
       "accountEvidence": "historical-paid-tier-email-observed",
       "sourceWired": true,
-      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "sourceAuthority": "LifeLoggerAI/urai-communications main exact dfb8df01fa2c6c2c67db80b78f7b42f7577930b7 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
       "runtimeCertified": false,
       "liveSmokeThisPass": false,
       "activation": "user-consent-gated",
@@ -72,7 +72,7 @@
       ],
       "accountEvidence": "historical-credit-ready-and-paid-receipt-observed",
       "sourceWired": true,
-      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "sourceAuthority": "LifeLoggerAI/urai-communications main exact dfb8df01fa2c6c2c67db80b78f7b42f7577930b7 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
       "runtimeCertified": false,
       "liveSmokeThisPass": false,
       "activation": "user-consent-gated",
@@ -88,7 +88,7 @@
       ],
       "accountEvidence": "not-independently-observed-in-current-audit",
       "sourceWired": true,
-      "sourceAuthority": "LifeLoggerAI/urai-communications PR #75 exact d52b7648561d728466eb701a440f49bd161b4296 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
+      "sourceAuthority": "LifeLoggerAI/urai-communications main exact dfb8df01fa2c6c2c67db80b78f7b42f7577930b7 functions/src/v2/processing/modelRouter.ts + functions/src/ai/councilHttp.ts",
       "runtimeCertified": false,
       "liveSmokeThisPass": false,
       "activation": "user-consent-gated",
@@ -114,7 +114,7 @@
     }
   ],
   "councilCompletionRequirements": [
-    "land the governed multi-provider Council adapter authority from Communications PR #75 into the governed release lineage",
+    "retain protected exact-head runtime smoke evidence for the governed multi-provider Council adapters now landed on Communications main",
     "no provider secrets in client bundles",
     "per-request external-processing consent for personal context",
     "provider attribution on every accepted answer",
@@ -126,8 +126,9 @@
   ],
   "sourceSnapshot": {
     "repository": "LifeLoggerAI/urai-communications",
-    "pullRequest": 75,
-    "exactSha": "d52b7648561d728466eb701a440f49bd161b4296",
-    "status": "open-draft-source-authority-not-production"
+    "sourceBranch": "main",
+    "sourceRef": "refs/heads/main",
+    "exactSha": "dfb8df01fa2c6c2c67db80b78f7b42f7577930b7",
+    "status": "merged-main-source-authority-not-runtime-certified"
   }
 }
