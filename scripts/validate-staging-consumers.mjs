@@ -57,9 +57,9 @@ if (communications.hostingMutationAuthorized !== false) failures.push('communica
 if (communications.twilioTrialModeOnly !== true) failures.push('communications Twilio trial mode');
 if (communications.twilioProductionMessagingAuthorized !== false) failures.push('communications production Twilio');
 if (communications.rollbackToDeliveryDisabledRequired !== true) failures.push('communications rollback requirement');
-if (communications.refVerification?.mode !== 'protected-github-api') failures.push('communications ref verification');
+if (communications.refVerification?.mode !== 'protected-github-api-or-readonly-deploy-key') failures.push('communications ref verification');
 if (communications.refVerification?.environment !== 'staging') failures.push('communications ref verification environment');
-if (communications.refVerification?.requiredSecret !== 'URAI_CROSS_REPO_READ_TOKEN') failures.push('communications ref verification secret contract');
+if (JSON.stringify(communications.refVerification?.allowedSecrets) !== JSON.stringify(['URAI_CROSS_REPO_READ_TOKEN','URAI_CROSS_REPO_READ_SSH_KEY'])) failures.push('communications ref verification secret contract');
 if (communications.trialSenderMode !== 'provider-assigned') failures.push('communications trial sender mode');
 
 const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communications-pr75-sendgrid-signed-staging-e2e') || {};
