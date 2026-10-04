@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const workflowPath = '.github/workflows/communications-pr74-sendgrid-staging-e2e.yml';
+const workflowPath = '.github/workflows/communications-pr58-sendgrid-staging-e2e.yml';
 const bootstrapPath = 'scripts/bootstrap-staging-sendgrid-proof-iam.sh';
 const text = fs.readFileSync(workflowPath, 'utf8');
 const bootstrap = fs.readFileSync(bootstrapPath, 'utf8');
