@@ -66,7 +66,7 @@ jobs:
         id: authority
         shell: bash
         env:
-          SPATIAL_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.spatial_sha || 'eb4afba34642dcfb1c481a6f23fe022732cbe7f2' }}
+          SPATIAL_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.spatial_sha || '0d6126653c23693a4c4ba383b88bceddaa78302b' }}
           CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}
           CONFIRM_STAGING_PROJECT: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_staging_project || 'urai-staging' }}
         run: |
@@ -188,7 +188,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: urai-spatial-pr1591-stripe-test-admission-${{ github.event_name == 'workflow_dispatch' && inputs.spatial_sha || 'eb4afba34642dcfb1c481a6f23fe022732cbe7f2' }}-${{ github.run_id }}
+          name: urai-spatial-pr1591-stripe-test-admission-${{ github.event_name == 'workflow_dispatch' && inputs.spatial_sha || '0d6126653c23693a4c4ba383b88bceddaa78302b' }}-${{ github.run_id }}
           path: artifacts/spatial-pr1591-stripe/admission.json
           if-no-files-found: error
           retention-days: 90
