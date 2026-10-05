@@ -5,6 +5,11 @@ const text = fs.readFileSync(workflowPath, 'utf8');
 
 const required = [
   'name: Spatial PR1591 Stripe TEST Provider Probe',
+  'issue_comment:',
+  "github.event.issue.number == 76",
+  "github.event.comment.body == 'RUN_STRIPE_PR1591_TEST_PROVIDER_READ'",
+  "github.event.comment.author_association == 'OWNER'",
+  'github.actor == github.repository_owner',
   'environment: staging',
   'SPATIAL_REPOSITORY: LifeLoggerAI/urai-spatial',
   "SPATIAL_PR_NUMBER: '1591'",
