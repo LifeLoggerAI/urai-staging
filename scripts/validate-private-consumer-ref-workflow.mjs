@@ -37,7 +37,9 @@ const requiredHelper = [
   'api.github.com/repos/',
   'git',
   'ls-remote',
-  'ssh-keyscan',
+  'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl',
+  'SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU',
+  'if (!ownedSshResolver && sshKey)',
   'StrictHostKeyChecking=yes',
   'ssh-readonly-deploy-key',
   'productionMutationPerformed: false',
@@ -53,6 +55,7 @@ for (const forbidden of [
   'gcloud run deploy',
   'TWILIO_AUTH_TOKEN',
   'STRIPE_SECRET_KEY',
+  'ssh-keyscan',
 ]) {
   if (helper.includes(forbidden)) throw new Error(`forbidden private consumer ref helper marker: ${forbidden}`)
 }
