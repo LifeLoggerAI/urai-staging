@@ -126,9 +126,11 @@ jobs:
           grep -q 'URAI_STRIPE_MODE' spatial-source/urai-tier1/src/lib/server/stripe-runtime-config.ts
           grep -q 'stripe.webhooks.constructEvent' spatial-source/urai-tier1/src/app/api/stripe/webhook/route.ts
           grep -q 'create-checkout-session' spatial-source/urai-tier1/scripts/tier-lock/tier-config.mjs
-          grep -q 'create-portal-session' spatial-source/urai-tier1/scripts/tier-lock/tier-config.mjs
+          grep -q 'create-portal-session' spatial-source/firebase.static.json
+          grep -q 'createStripeCustomerPortal' spatial-source/firebase.static.json
           test -f spatial-source/urai-tier1/tests/stripe-checkout-config.test.mjs
-          test -f spatial-source/urai-tier1/tests/stripe-event-order.test.mjs
+          test -f spatial-source/urai-tier1/src/lib/server/stripe-event-order.ts
+          grep -q 'durable provider ordering' spatial-source/urai-tier1/tests/stripe-checkout-config.test.mjs
           ! grep -RIl --exclude-dir=node_modules -E 'sk_live_|rk_live_|whsec_[A-Za-z0-9]+' spatial-source/urai-tier1
 
       - name: Setup Node
@@ -151,7 +153,7 @@ jobs:
           corepack pnpm install --frozen-lockfile
           corepack pnpm --filter urai-tier1 typecheck
           cd urai-tier1
-          node --import tsx --test tests/stripe-checkout-config.test.mjs tests/stripe-event-order.test.mjs
+          node --import tsx --test tests/stripe-checkout-config.test.mjs
 
       - name: Write credential-free admission receipt
         if: always()
