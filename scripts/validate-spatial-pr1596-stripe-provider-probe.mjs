@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const workflowPath = '.github/workflows/spatial-pr1598-stripe-provider-probe.yml';
+const workflowPath = '.github/workflows/spatial-pr1596-stripe-provider-probe.yml';
 const text = fs.readFileSync(workflowPath, 'utf8');
 
 const required = [
