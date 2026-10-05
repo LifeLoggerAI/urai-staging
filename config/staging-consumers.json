@@ -6,13 +6,13 @@
   "productionAllowed": false,
   "consumers": [
     {
-      "id": "urai-spatial-pr1596-stripe-test-readiness",
+      "id": "urai-spatial-pr1598-stripe-test-readiness",
       "state": "active",
       "repository": "LifeLoggerAI/urai-spatial",
       "repositoryId": 1167675641,
-      "pullRequest": 1596,
-      "exactSha": "0d9ec240ffa71619947d508866af627cdd5286f9",
-      "sourceRef": "refs/pull/1596/head",
+      "pullRequest": 1598,
+      "exactSha": "20b8c2da9f602bcf2d4d977623cad48d8c7e91ce",
+      "sourceRef": "refs/pull/1598/head",
       "mode": "stripe-test-provider-readiness",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
@@ -151,7 +151,7 @@
       "repositoryId": 1167675641,
       "pullRequest": 1591,
       "predecessorSha": "0d6126653c23693a4c4ba383b88bceddaa78302b",
-      "reason": "Superseded by current Spatial release candidate PR #1596. Retained only as historical staging-provider readiness evidence."
+      "reason": "Superseded by current Spatial release candidate PR #1598. Retained only as historical staging-provider readiness evidence."
     }
   ]
 }
