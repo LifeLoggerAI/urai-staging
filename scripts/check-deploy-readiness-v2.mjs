@@ -79,6 +79,12 @@ else if (generatedBlock[1].includes("'public/'") || generatedBlock[1].includes('
 requirePhrases('scripts/smoke-staging.sh', ['Exact staging mutation receipt is required', 'URAI_RELEASE_CANDIDATE_SHA is required for exact runtime smoke', "schemaVersion !== 'urai-staging-mutation-2'", '/api/buildinfo', 'releaseCandidateSha must equal exact candidate', 'deployedAt must equal current mutation receipt', 'deploymentWorkflowRunId must equal current mutation workflow', 'runtimeProjectId must equal', 'Default release smoke is intentionally non-mutating', 'Staging root must declare noindex,nofollow.', 'robots.txt must disallow the entire Staging site.', 'robots.txt contains forbidden public/production indexing authority.', 'Origin: https://urai.app', 'Expected unauthorized browser origin to return HTTP 403', 'Expected oversize staging request to return HTTP 413', '/api/companion', '/api/waitlist']);
 requirePhrases('functions/src/index.ts', ['URAI_STAGING_WRITE_KEY', 'X-URAI-Staging-Write-Key', 'staging_write_not_authorized', 'staging_http_budgets', 'daily_staging_budget_exhausted', 'cleanupExpiredStagingHttpData', 'STAGING_WAITLIST_RETENTION_MS']);
 requirePhrases('functions/src/lib/stagingBoundaries.ts', ['isApprovedStagingWriteKey', 'timingSafeEqual', 'STAGING_COMPANION_DAILY_BUDGET', 'STAGING_WAITLIST_DAILY_BUDGET', 'stagingUtcDayId']);
+requirePhrases('functions/src/lib/featureRegistry.ts', [
+  "system: 'Public staging write abuse controls'",
+  "status: 'IMPLEMENTED BUT NOT WIRED'",
+  'Protected live staging receipt proving origin denial, write-key denial, request-size/rate/daily-budget enforcement',
+  'Server-side writes use Admin SDK, so live provider/runtime proof remains required',
+]);
 rejectPhrases('scripts/smoke-staging.sh', ['launch-smoke@example.com', 'Staging smoke check', 'require_status GET "$STAGING_URL/u/adamclamp" 200']);
 const smokeScript = text('scripts/smoke-staging.sh');
 const smokeTerminalMarker = 'echo "URAI staging non-mutating live smoke passed for $STAGING_URL at exact SHA $RELEASE_SHA and current mutation receipt"';
