@@ -55,7 +55,7 @@ jobs:
       controller_sha: ${{ steps.authority.outputs.controller_sha }}
     steps:
       - name: Checkout exact staging controller
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ inputs.expected_controller_sha }}
           fetch-depth: 1
@@ -106,7 +106,7 @@ jobs:
           echo "controller_sha=$CONTROLLER_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact Spatial PR1596 candidate
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: LifeLoggerAI/urai-spatial
           ref: ${{ steps.authority.outputs.spatial_sha }}
@@ -189,7 +189,7 @@ jobs:
 
       - name: Upload exact admission evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-spatial-pr1596-stripe-test-admission-${{ github.event_name == 'workflow_dispatch' && inputs.spatial_sha || '0d9ec240ffa71619947d508866af627cdd5286f9' }}-${{ github.run_id }}
           path: artifacts/spatial-pr1596-stripe/admission.json
@@ -213,7 +213,7 @@ jobs:
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
     steps:
       - name: Checkout exact staging controller
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ env.CONTROLLER_SHA }}
           fetch-depth: 1
@@ -352,7 +352,7 @@ jobs:
 
       - name: Upload sanitized read-only provider evidence
         if: ${{ success() }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-spatial-pr1596-stripe-provider-read-${{ env.SPATIAL_SHA }}-${{ github.run_id }}
           path: artifacts/spatial-pr1596-stripe/provider-read

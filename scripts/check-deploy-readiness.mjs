@@ -228,10 +228,10 @@ requireMarkers('.github/workflows/staging-deploy.yml', deployWorkflowText, [
 ]);
 if (/retention-days:\s*365/.test(deployWorkflowText)) failures.push('.github/workflows/staging-deploy.yml must not request unsupported 365-day public-repo retention');
 const allowedActionRefs = new Set([
-  'actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5',
+  'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1',
   'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020',
   'actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9',
-  'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02',
+  'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a',
   'google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093'
 ]);
 const workflowActionRefs = [...deployWorkflowText.matchAll(/^\s*uses:\s*([^\s#]+)(?:\s+#.*)?$/gm)].map((match) => match[1]);

@@ -63,7 +63,7 @@ jobs:
           echo "rollback_sha=$ROLLBACK_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact current main
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ env.TARGET_SHA }}
           fetch-depth: 0
@@ -150,7 +150,7 @@ jobs:
 
       - name: Upload credential-free preflight evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-staging-preflight-${{ env.TARGET_SHA }}-${{ github.run_id }}
           path: |
@@ -161,7 +161,7 @@ jobs:
           retention-days: 90
 
       - name: Upload exact staging prebuilt artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-staging-prebuilt-${{ env.TARGET_SHA }}-${{ github.run_id }}
           path: |
@@ -195,7 +195,7 @@ jobs:
       PREBUILT_ROOT: /tmp/urai-staging-prebuilt
     steps:
       - name: Checkout exact verified main
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ env.TARGET_SHA }}
           fetch-depth: 0
@@ -322,7 +322,7 @@ jobs:
 
       - name: Upload protected staging mutation evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-staging-mutation-${{ env.TARGET_SHA }}-${{ github.run_id }}
           path: |
@@ -350,7 +350,7 @@ jobs:
       ROLLBACK_SHA: ${{ needs.preflight.outputs.rollback_sha }}
     steps:
       - name: Checkout exact public verifier source
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ env.TARGET_SHA }}
           fetch-depth: 0
@@ -449,7 +449,7 @@ jobs:
 
       - name: Upload final public verification evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-staging-public-verification-${{ env.TARGET_SHA }}-${{ github.run_id }}
           path: |
