@@ -31,7 +31,7 @@ if (spatial.repository !== 'LifeLoggerAI/urai-spatial') failures.push('spatial r
 if (spatial.repositoryId !== 1167675641) failures.push('spatial repositoryId');
 if (spatial.pullRequest !== 1591) failures.push('spatial pullRequest');
 if (spatial.sourceRef !== 'refs/pull/1591/head') failures.push('spatial sourceRef');
-if (spatial.exactSha !== 'fcaf56f3430fc62cacf57454631025ac3708fcaf') failures.push('spatial exactSha');
+if (spatial.exactSha !== 'eb4afba34642dcfb1c481a6f23fe022732cbe7f2') failures.push('spatial exactSha');
 if (spatial.mode !== 'stripe-test-provider-readiness') failures.push('spatial mode');
 if (!Array.isArray(spatial.allowedDeployScopes) || spatial.allowedDeployScopes.length !== 0) failures.push('spatial allowedDeployScopes');
 if (spatial.providerReadOnlyAuthorized !== true) failures.push('spatial providerReadOnlyAuthorized');
