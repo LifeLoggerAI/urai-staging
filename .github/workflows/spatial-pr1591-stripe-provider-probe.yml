@@ -123,7 +123,8 @@ jobs:
           set -euo pipefail
           test "$(git -C spatial-source rev-parse HEAD)" = "$SPATIAL_SHA"
           test -z "$(git -C spatial-source status --porcelain --untracked-files=all)"
-          grep -q 'URAI_STRIPE_MODE' spatial-source/urai-tier1/src/lib/server/stripe-runtime-config.ts
+          grep -q 'URAI_STRIPE_MODE' spatial-source/urai-tier1/src/app/api/stripe/create-checkout-session/route.ts
+          grep -q 'URAI_STRIPE_MODE' spatial-source/urai-tier1/src/app/api/stripe/webhook/route.ts
           grep -q 'stripe.webhooks.constructEvent' spatial-source/urai-tier1/src/app/api/stripe/webhook/route.ts
           grep -q 'create-checkout-session' spatial-source/urai-tier1/scripts/tier-lock/tier-config.mjs
           grep -q 'create-portal-session' spatial-source/firebase.static.json
