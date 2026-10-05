@@ -6,13 +6,13 @@
   "productionAllowed": false,
   "consumers": [
     {
-      "id": "urai-spatial-pr1591-stripe-test-readiness",
+      "id": "urai-spatial-pr1596-stripe-test-readiness",
       "state": "active",
       "repository": "LifeLoggerAI/urai-spatial",
       "repositoryId": 1167675641,
-      "pullRequest": 1591,
-      "exactSha": "0d6126653c23693a4c4ba383b88bceddaa78302b",
-      "sourceRef": "refs/pull/1591/head",
+      "pullRequest": 1596,
+      "exactSha": "9c5bd7fb57ded0e73826d31d0b566fbc653631af",
+      "sourceRef": "refs/pull/1596/head",
       "mode": "stripe-test-provider-readiness",
       "dataPolicy": "synthetic-only",
       "providerProject": "urai-staging",
@@ -143,6 +143,15 @@
       "mergedHeadSha": "d52b7648561d728466eb701a440f49bd161b4296",
       "mergeCommitSha": "dfb8df01fa2c6c2c67db80b78f7b42f7577930b7",
       "reason": "PR #75 is merged. Protected staging provider consumers now bind credential-free to Communications main; the PR head remains historical source evidence only."
+    },
+    {
+      "id": "urai-spatial-pr1591-stripe-test-readiness",
+      "state": "historical",
+      "repository": "LifeLoggerAI/urai-spatial",
+      "repositoryId": 1167675641,
+      "pullRequest": 1591,
+      "predecessorSha": "0d6126653c23693a4c4ba383b88bceddaa78302b",
+      "reason": "Superseded by current Spatial release candidate PR #1596. Retained only as historical staging-provider readiness evidence."
     }
   ]
 }
