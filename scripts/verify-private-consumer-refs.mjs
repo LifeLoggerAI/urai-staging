@@ -68,11 +68,11 @@ function makeSshResolver(sshKey) {
   const keyFile = path.join(tempDir, 'read-key')
   const knownHosts = path.join(tempDir, 'known-hosts')
   fs.writeFileSync(keyFile, sshKey.endsWith('\n') ? sshKey : `${sshKey}\n`, { mode: 0o600 })
-  const hostKeys = execFileSync('ssh-keyscan', ['-t', 'ed25519', 'github.com'], {
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'ignore'],
-  })
-  fs.writeFileSync(knownHosts, hostKeys, { mode: 0o600 })
+  // GitHub-published Ed25519 host key. Fingerprint:
+  // SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU
+  const githubEd25519KnownHost =
+    'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl\n'
+  fs.writeFileSync(knownHosts, githubEd25519KnownHost, { mode: 0o600 })
 
   return {
     resolve(c) {
@@ -108,7 +108,7 @@ export async function verifyConsumers({
   const consumers = (doc.consumers || []).filter(
     (c) => c.state === 'active' && protectedModes.has(c.refVerification?.mode),
   )
-  const ownedSshResolver = sshResolver || makeSshResolver(sshKey)
+  let ownedSshResolver = sshResolver || null
   const results = []
   try {
     for (const c of consumers) {
@@ -125,8 +125,13 @@ export async function verifyConsumers({
       const allowsSshFallback =
         c.refVerification?.mode === 'protected-github-api-or-readonly-deploy-key'
 
-      if (!resolved && allowsSshFallback && ownedSshResolver) {
-        resolved = ownedSshResolver.resolve(c)
+      if (!resolved && allowsSshFallback) {
+        if (!ownedSshResolver && sshKey) {
+          ownedSshResolver = makeSshResolver(sshKey)
+        }
+        if (ownedSshResolver) {
+          resolved = ownedSshResolver.resolve(c)
+        }
       }
 
       if (!resolved) {
