@@ -55,7 +55,7 @@ jobs:
       expected_existing_admin_sha: ${{ steps.authority.outputs.expected_existing_admin_sha }}
     steps:
       - name: Checkout exact staging controller
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ inputs.expected_controller_sha }}
           fetch-depth: 1
@@ -106,7 +106,7 @@ jobs:
           echo "expected_existing_admin_sha=$EXPECTED_EXISTING_ADMIN_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact Admin candidate
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: LifeLoggerAI/urai-admin
           ref: ${{ steps.authority.outputs.admin_sha }}
@@ -173,7 +173,7 @@ jobs:
           NODE
 
       - name: Upload source-bound Admin runtime prebuilt
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-admin-pr57-runtime-prebuilt-${{ steps.authority.outputs.admin_sha }}-${{ github.run_id }}
           path: artifacts/admin-pr57/prebuilt
@@ -198,7 +198,7 @@ jobs:
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
     steps:
       - name: Checkout exact staging controller
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ env.CONTROLLER_SHA }}
           fetch-depth: 1
@@ -301,7 +301,7 @@ jobs:
       DEPLOY_ROOT: /tmp/urai-admin-pr57-deploy
     steps:
       - name: Checkout exact staging controller
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ env.CONTROLLER_SHA }}
           fetch-depth: 1
@@ -309,7 +309,7 @@ jobs:
           show-progress: false
 
       - name: Checkout exact Admin candidate
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: LifeLoggerAI/urai-admin
           ref: ${{ env.ADMIN_SHA }}
@@ -382,7 +382,7 @@ jobs:
 
       - name: Upload exact runtime evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-admin-pr57-runtime-${{ env.ADMIN_SHA }}-${{ github.run_id }}
           path: artifacts/admin-pr57-runtime
