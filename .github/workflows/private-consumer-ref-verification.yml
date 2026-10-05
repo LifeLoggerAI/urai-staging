@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
           show-progress: false
 
-      - name: Verify protected/private consumer PR heads
+      - name: Verify protected/private consumer exact refs
         shell: bash
         run: |
           set -euo pipefail
@@ -44,8 +44,20 @@ jobs:
           if (!token) throw new Error('protected cross-repo read token missing');
           const results = [];
           for (const c of consumers) {
-            if (!Number.isInteger(c.pullRequest)) throw new Error(`${c.id}: pullRequest required for protected verification`);
-            const url = `https://api.github.com/repos/${c.repository}/pulls/${c.pullRequest}`;
+            if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(c.repository || '')) throw new Error(`${c.id}: invalid repository`);
+            let endpoint;
+            let refKind;
+            const branch = /^refs\/heads\/(.+)$/.exec(c.sourceRef || '');
+            if (branch && !Number.isInteger(c.pullRequest)) {
+              endpoint = `branches/${encodeURIComponent(branch[1])}`;
+              refKind = 'branch';
+            } else if (Number.isInteger(c.pullRequest) && c.pullRequest > 0 && c.sourceRef === `refs/pull/${c.pullRequest}/head`) {
+              endpoint = `pulls/${c.pullRequest}`;
+              refKind = 'pull-request';
+            } else {
+              throw new Error(`${c.id}: unsupported or inconsistent sourceRef/pullRequest`);
+            }
+            const url = `https://api.github.com/repos/${c.repository}/${endpoint}`;
             const response = await fetch(url, {
               headers: {
                 authorization: `Bearer ${token}`,
@@ -55,9 +67,9 @@ jobs:
             });
             if (!response.ok) throw new Error(`${c.id}: GitHub API returned HTTP ${response.status}`);
             const body = await response.json();
-            const liveSha = body?.head?.sha;
-            if (!/^[0-9a-f]{40}$/.test(liveSha || '')) throw new Error(`${c.id}: invalid live PR head`);
-            results.push({ id:c.id, repository:c.repository, pullRequest:c.pullRequest, expectedSha:c.exactSha, liveSha, matched:liveSha===c.exactSha });
+            const liveSha = refKind === 'branch' ? body?.commit?.sha : body?.head?.sha;
+            if (!/^[0-9a-f]{40}$/.test(liveSha || '')) throw new Error(`${c.id}: invalid live ref SHA`);
+            results.push({ id:c.id, repository:c.repository, pullRequest:c.pullRequest, sourceRef:c.sourceRef, refKind, expectedSha:c.exactSha, liveSha, matched:liveSha===c.exactSha });
             if (liveSha !== c.exactSha) throw new Error(`${c.id}: stale expected=${c.exactSha} live=${liveSha}`);
           }
           fs.writeFileSync('artifacts/private-consumer-refs/receipt.json', JSON.stringify({
