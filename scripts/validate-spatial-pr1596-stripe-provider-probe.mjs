@@ -1,26 +1,26 @@
 import fs from 'node:fs';
 
-const workflowPath = '.github/workflows/spatial-pr1596-stripe-provider-probe.yml';
+const workflowPath = '.github/workflows/spatial-pr1598-stripe-provider-probe.yml';
 const text = fs.readFileSync(workflowPath, 'utf8');
 
 const required = [
-  'name: Spatial PR1596 Stripe TEST Provider Probe',
+  'name: Spatial PR1598 Stripe TEST Provider Probe',
   'issue_comment:',
   "github.event.issue.number == 76",
-  "github.event.comment.body == 'RUN_STRIPE_PR1596_TEST_PROVIDER_READ'",
+  "github.event.comment.body == 'RUN_STRIPE_PR1598_TEST_PROVIDER_READ'",
   "github.event.comment.author_association == 'OWNER'",
   'github.actor == github.repository_owner',
   'environment: staging',
   'SPATIAL_REPOSITORY: LifeLoggerAI/urai-spatial',
-  "SPATIAL_PR_NUMBER: '1596'",
+  "SPATIAL_PR_NUMBER: '1598'",
   'STAGING_PROJECT_ID: urai-staging',
   "URAI_STRIPE_TEST_ONLY: '1'",
-  'refs/pull/1596/head',
+  'refs/pull/1598/head',
   'firebase.static.json',
   'createStripeCustomerPortal',
   'stripe-event-order.ts',
   'durable provider ordering',
-  'urai-spatial-pr1596-stripe-test-admission-',
+  'urai-spatial-pr1598-stripe-test-admission-',
   'providerReadOnlyAuthorized',
   'appHostingRolloutAuthorized',
   'stripeTestModeOnly',
@@ -36,13 +36,13 @@ const required = [
   'test -z "${FIREBASE_SERVICE_ACCOUNT_KEY:-}"',
   'providerMutationPerformed: false',
   'productionDeploymentPerformed: false',
-  '$RUNNER_TEMP/urai-spatial-pr1596-provider-read-raw',
+  '$RUNNER_TEMP/urai-spatial-pr1598-provider-read-raw',
   'evidenceSanitizedBeforeRetention: true',
   'Upload sanitized read-only provider evidence',
   'if: ${{ success() }}',
 ];
 for (const marker of required) {
-  if (!text.includes(marker)) throw new Error(`missing Spatial PR1596 provider-probe marker: ${marker}`);
+  if (!text.includes(marker)) throw new Error(`missing Spatial PR1598 provider-probe marker: ${marker}`);
 }
 
 const spatialInputBlock = text.match(/spatial_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
@@ -68,7 +68,7 @@ const forbiddenPatterns = [
   [/^\s*environment:\s*production\s*$/m, 'production environment'],
 ];
 for (const [pattern, label] of forbiddenPatterns) {
-  if (pattern.test(text)) throw new Error(`forbidden Spatial PR1596 provider-probe marker: ${label}`);
+  if (pattern.test(text)) throw new Error(`forbidden Spatial PR1598 provider-probe marker: ${label}`);
 }
 
-console.log('Spatial PR1596 Stripe TEST provider-probe workflow contract OK');
+console.log('Spatial PR1598 Stripe TEST provider-probe workflow contract OK');
