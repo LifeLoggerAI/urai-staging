@@ -15,6 +15,8 @@ on:
         description: Type urai-staging
         required: true
         type: string
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
@@ -37,6 +39,15 @@ env:
 jobs:
   preflight:
     name: Exact-head credential-free Spatial Stripe TEST admission
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.number == 76 &&
+        github.event.comment.body == 'RUN_STRIPE_PR1591_TEST_PROVIDER_READ' &&
+        github.event.comment.author_association == 'OWNER' &&
+        github.actor == github.repository_owner
+      )
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     outputs:
@@ -55,9 +66,9 @@ jobs:
         id: authority
         shell: bash
         env:
-          SPATIAL_SHA: ${{ inputs.spatial_sha }}
-          CONTROLLER_SHA: ${{ inputs.expected_controller_sha }}
-          CONFIRM_STAGING_PROJECT: ${{ inputs.confirm_staging_project }}
+          SPATIAL_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.spatial_sha || 'fcaf56f3430fc62cacf57454631025ac3708fcaf' }}
+          CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}
+          CONFIRM_STAGING_PROJECT: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_staging_project || 'urai-staging' }}
         run: |
           set -euo pipefail
           test "$CONFIRM_STAGING_PROJECT" = 'urai-staging'
@@ -177,7 +188,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: urai-spatial-pr1591-stripe-test-admission-${{ inputs.spatial_sha }}-${{ github.run_id }}
+          name: urai-spatial-pr1591-stripe-test-admission-${{ github.event_name == 'workflow_dispatch' && inputs.spatial_sha || 'fcaf56f3430fc62cacf57454631025ac3708fcaf' }}-${{ github.run_id }}
           path: artifacts/spatial-pr1591-stripe/admission.json
           if-no-files-found: error
           retention-days: 90
