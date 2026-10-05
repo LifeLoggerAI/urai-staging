@@ -1,66 +1,181 @@
-import fs from 'node:fs';
-import vm from 'node:vm';
-import assert from 'node:assert/strict';
+import fs from 'node:fs'
+import assert from 'node:assert/strict'
+import {
+  refContract,
+  resolveViaApi,
+  verifyConsumers,
+} from './verify-private-consumer-refs.mjs'
 
-const workflow = fs.readFileSync('.github/workflows/private-consumer-ref-verification.yml','utf8');
-const required = [
+const workflow = fs.readFileSync('.github/workflows/private-consumer-ref-verification.yml', 'utf8')
+const helper = fs.readFileSync('scripts/verify-private-consumer-refs.mjs', 'utf8')
+
+const requiredWorkflow = [
   'name: Protected Private Consumer Ref Verification',
   'environment: staging',
   'URAI_CROSS_REPO_READ_TOKEN',
-  'config/staging-consumers.json',
-  'api.github.com/repos/',
-  'pulls/${c.pullRequest}',
-  'branches/${encodeURIComponent(branch[1])}',
+  'URAI_CROSS_REPO_READ_SSH_KEY',
+  'node scripts/verify-private-consumer-refs.mjs',
+  'Upload sanitized private consumer ref evidence',
+]
+for (const marker of requiredWorkflow) {
+  if (!workflow.includes(marker)) throw new Error(`missing private consumer ref workflow marker: ${marker}`)
+}
+for (const forbidden of [
+  'firebase deploy',
+  'gcloud functions deploy',
+  'gcloud run deploy',
+  'TWILIO_AUTH_TOKEN',
+  'STRIPE_SECRET_KEY',
+  'urai-4dc1d',
+]) {
+  if (workflow.includes(forbidden)) throw new Error(`forbidden private consumer ref workflow marker: ${forbidden}`)
+}
+
+const requiredHelper = [
   'protected-github-api',
+  'protected-github-api-or-readonly-deploy-key',
+  'api.github.com/repos/',
+  'git',
+  'ls-remote',
+  'ssh-keyscan',
+  'StrictHostKeyChecking=yes',
+  'ssh-readonly-deploy-key',
   'productionMutationPerformed: false',
   'providerMutationPerformed: false',
-  'Upload sanitized private consumer ref evidence',
-];
-for (const marker of required) {
-  if (!workflow.includes(marker)) throw new Error(`missing private consumer ref verification marker: ${marker}`);
+  'secretMaterialRetained: false',
+]
+for (const marker of requiredHelper) {
+  if (!helper.includes(marker)) throw new Error(`missing private consumer ref helper marker: ${marker}`)
 }
-for (const forbidden of ['firebase deploy','gcloud functions deploy','gcloud run deploy','TWILIO_AUTH_TOKEN','STRIPE_SECRET_KEY','urai-4dc1d']) {
-  if (workflow.includes(forbidden)) throw new Error(`forbidden private consumer ref verification marker: ${forbidden}`);
-}
-console.log('protected private consumer ref verification workflow contract OK');
-
-// Exercise the exact embedded workflow code without credentials or network.
-const embedded = workflow.match(/node <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm, '');
-const sha = 'a'.repeat(40);
-const base = { id:'fixture', state:'active', repository:'LifeLoggerAI/fixture', exactSha:sha, refVerification:{mode:'protected-github-api'} };
-async function execute(consumer, body, status = 200) {
-  const requests = [];
-  const writes = [];
-  const errors = [];
-  const sandbox = {
-    require: () => ({ readFileSync: () => JSON.stringify({consumers:[consumer]}), writeFileSync: (path, value) => writes.push(JSON.parse(value)) }),
-    process: { env: { CROSS_REPO_READ_TOKEN:'synthetic-test-token' }, exit: (code) => errors.push(code) },
-    console: { error: (error) => errors.push(String(error)) },
-    fetch: async (url) => { requests.push(url); return {ok:status===200, status, json:async()=>body}; },
-  };
-  vm.runInNewContext(embedded, sandbox);
-  for (let i = 0; i < 10; i++) await Promise.resolve();
-  return {requests,writes,errors};
-}
-let result = await execute({...base,sourceRef:'refs/heads/main'}, {commit:{sha}});
-assert.equal(result.errors.length, 0);
-assert.equal(result.requests[0], 'https://api.github.com/repos/LifeLoggerAI/fixture/branches/main');
-assert.equal(result.writes[0].results[0].liveSha, sha);
-assert.equal(result.writes[0].results[0].refKind, 'branch');
-result = await execute({...base,sourceRef:'refs/heads/release/candidate'}, {commit:{sha}});
-assert.ok(result.requests[0].endsWith('/branches/release%2Fcandidate'));
-result = await execute({...base,sourceRef:'refs/pull/42/head',pullRequest:42}, {head:{sha}});
-assert.equal(result.errors.length, 0);
-assert.ok(result.requests[0].endsWith('/pulls/42'));
-for (const fixture of [
-  {consumer:{...base,sourceRef:'refs/heads/main'},body:{commit:{sha:'b'.repeat(40)}}},
-  {consumer:{...base,sourceRef:'refs/heads/main'},body:{head:{sha}}},
-  {consumer:{...base,sourceRef:'refs/pull/42/head',pullRequest:43},body:{head:{sha}}},
-  {consumer:{...base,sourceRef:'refs/tags/release'},body:{commit:{sha}}},
-  {consumer:{...base,sourceRef:'refs/heads/main'},body:{},status:403},
+for (const forbidden of [
+  'firebase deploy',
+  'gcloud functions deploy',
+  'gcloud run deploy',
+  'TWILIO_AUTH_TOKEN',
+  'STRIPE_SECRET_KEY',
 ]) {
-  result = await execute(fixture.consumer, fixture.body, fixture.status);
-  assert.ok(result.errors.length > 0);
-  assert.equal(result.writes.length, 0, 'failed verification must not produce a success receipt');
+  if (helper.includes(forbidden)) throw new Error(`forbidden private consumer ref helper marker: ${forbidden}`)
 }
-console.log('protected consumer branch/PR behavior and failure boundaries OK (8 cases)');
+
+const sha = 'a'.repeat(40)
+const otherSha = 'b'.repeat(40)
+const branchConsumer = {
+  id: 'branch-fixture',
+  state: 'active',
+  repository: 'LifeLoggerAI/fixture',
+  sourceRef: 'refs/heads/main',
+  exactSha: sha,
+  refVerification: { mode: 'protected-github-api-or-readonly-deploy-key' },
+}
+const strictConsumer = {
+  ...branchConsumer,
+  id: 'strict-fixture',
+  refVerification: { mode: 'protected-github-api' },
+}
+const prConsumer = {
+  ...branchConsumer,
+  id: 'pr-fixture',
+  sourceRef: 'refs/pull/42/head',
+  pullRequest: 42,
+}
+
+assert.deepEqual(refContract(branchConsumer), {
+  refKind: 'branch',
+  apiEndpoint: 'branches/main',
+  gitRef: 'refs/heads/main',
+})
+assert.deepEqual(refContract({ ...branchConsumer, sourceRef: 'refs/heads/release/candidate' }), {
+  refKind: 'branch',
+  apiEndpoint: 'branches/release%2Fcandidate',
+  gitRef: 'refs/heads/release/candidate',
+})
+assert.deepEqual(refContract(prConsumer), {
+  refKind: 'pull-request',
+  apiEndpoint: 'pulls/42',
+  gitRef: 'refs/pull/42/head',
+})
+assert.throws(
+  () => refContract({ ...prConsumer, pullRequest: 43 }),
+  /unsupported or inconsistent/,
+)
+assert.throws(
+  () => refContract({ ...branchConsumer, repository: 'bad repo' }),
+  /invalid repository/,
+)
+
+const requests = []
+const api = await resolveViaApi(branchConsumer, 'synthetic-token', async (url, options) => {
+  requests.push({ url, options })
+  return { ok: true, status: 200, json: async () => ({ commit: { sha } }) }
+})
+assert.equal(api.liveSha, sha)
+assert.equal(api.authMode, 'token')
+assert.equal(requests[0].url, 'https://api.github.com/repos/LifeLoggerAI/fixture/branches/main')
+assert.match(requests[0].options.headers.authorization, /^Bearer /)
+
+await assert.rejects(
+  () => resolveViaApi(branchConsumer, 'bad-token', async () => ({
+    ok: false,
+    status: 401,
+    json: async () => ({}),
+  })),
+  /HTTP 401/,
+)
+
+let sshCalls = 0
+const sshResolver = {
+  resolve(c) {
+    sshCalls += 1
+    const contract = refContract(c)
+    return { liveSha: sha, refKind: contract.refKind, authMode: 'ssh-readonly-deploy-key' }
+  },
+}
+
+const fallback = await verifyConsumers({
+  doc: { consumers: [branchConsumer] },
+  token: 'bad-token',
+  sshKey: '',
+  fetchImpl: async () => ({ ok: false, status: 401, json: async () => ({}) }),
+  sshResolver,
+})
+assert.equal(sshCalls, 1)
+assert.equal(fallback[0].matched, true)
+assert.equal(fallback[0].authMode, 'ssh-readonly-deploy-key')
+
+sshCalls = 0
+await assert.rejects(
+  () => verifyConsumers({
+    doc: { consumers: [strictConsumer] },
+    token: 'bad-token',
+    sshKey: '',
+    fetchImpl: async () => ({ ok: false, status: 401, json: async () => ({}) }),
+    sshResolver,
+  }),
+  /HTTP 401/,
+)
+assert.equal(sshCalls, 0, 'strict protected-github-api mode must not silently fall back to SSH')
+
+await assert.rejects(
+  () => verifyConsumers({
+    doc: { consumers: [{ ...branchConsumer, exactSha: otherSha }] },
+    token: '',
+    sshKey: '',
+    fetchImpl: async () => { throw new Error('fetch should not run') },
+    sshResolver,
+  }),
+  /stale expected=/,
+)
+
+await assert.rejects(
+  () => verifyConsumers({
+    doc: { consumers: [branchConsumer] },
+    token: '',
+    sshKey: '',
+    fetchImpl: async () => { throw new Error('fetch should not run') },
+    sshResolver: null,
+  }),
+  /no admitted read-only ref credential/,
+)
+
+console.log('protected private consumer ref verification contract OK')
+console.log('API, SSH fallback, strict-mode, branch/PR, and stale-SHA boundaries OK')
