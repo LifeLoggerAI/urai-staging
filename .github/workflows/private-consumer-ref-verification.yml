@@ -20,6 +20,7 @@ jobs:
     environment: staging
     env:
       CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+      CROSS_REPO_READ_SSH_KEY: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
     steps:
       - name: Checkout exact current staging authority
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -32,63 +33,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$CROSS_REPO_READ_TOKEN" || { echo 'URAI_CROSS_REPO_READ_TOKEN is required and must be read-only for the listed private repositories.' >&2; exit 41; }
-          mkdir -p artifacts/private-consumer-refs
-          node <<'NODE'
-          const fs = require('node:fs');
-          void (async () => {
-          const doc = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
-          const protectedModes = new Set(['protected-github-api', 'protected-github-api-or-readonly-deploy-key']);
-          const consumers = (doc.consumers || []).filter((c) => c.state === 'active' && protectedModes.has(c.refVerification?.mode));
-          const token = process.env.CROSS_REPO_READ_TOKEN;
-          if (!token) throw new Error('protected cross-repo read token missing');
-          const results = [];
-          for (const c of consumers) {
-            if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(c.repository || '')) throw new Error(`${c.id}: invalid repository`);
-            let endpoint;
-            let refKind;
-            const branch = /^refs\/heads\/(.+)$/.exec(c.sourceRef || '');
-            if (branch && !Number.isInteger(c.pullRequest)) {
-              endpoint = `branches/${encodeURIComponent(branch[1])}`;
-              refKind = 'branch';
-            } else if (Number.isInteger(c.pullRequest) && c.pullRequest > 0 && c.sourceRef === `refs/pull/${c.pullRequest}/head`) {
-              endpoint = `pulls/${c.pullRequest}`;
-              refKind = 'pull-request';
-            } else {
-              throw new Error(`${c.id}: unsupported or inconsistent sourceRef/pullRequest`);
-            }
-            const url = `https://api.github.com/repos/${c.repository}/${endpoint}`;
-            const response = await fetch(url, {
-              headers: {
-                authorization: `Bearer ${token}`,
-                accept: 'application/vnd.github+json',
-                'x-github-api-version': '2022-11-28',
-              },
-            });
-            if (!response.ok) throw new Error(`${c.id}: GitHub API returned HTTP ${response.status}`);
-            const body = await response.json();
-            const liveSha = refKind === 'branch' ? body?.commit?.sha : body?.head?.sha;
-            if (!/^[0-9a-f]{40}$/.test(liveSha || '')) throw new Error(`${c.id}: invalid live ref SHA`);
-            results.push({ id:c.id, repository:c.repository, pullRequest:c.pullRequest, sourceRef:c.sourceRef, refKind, expectedSha:c.exactSha, liveSha, matched:liveSha===c.exactSha });
-            if (liveSha !== c.exactSha) throw new Error(`${c.id}: stale expected=${c.exactSha} live=${liveSha}`);
-          }
-          fs.writeFileSync('artifacts/private-consumer-refs/receipt.json', JSON.stringify({
-            schemaVersion:'urai-staging-private-consumer-ref-verification-1',
-            generatedAt:new Date().toISOString(),
-            stagingRepository:process.env.GITHUB_REPOSITORY,
-            stagingSha:process.env.GITHUB_SHA,
-            verificationMode:'protected-github-api',
-            admittedRefVerificationModes:[...protectedModes],
-            results,
-            productionMutationPerformed: false,
-            providerMutationPerformed: false,
-            secretMaterialRetained: false,
-          },null,2)+'\n');
-          })().catch((error) => {
-            console.error(error);
-            process.exit(1);
-          });
-          NODE
+          if [ -z "${CROSS_REPO_READ_TOKEN:-}" ] && [ -z "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
+            echo 'URAI_CROSS_REPO_READ_TOKEN or URAI_CROSS_REPO_READ_SSH_KEY is required; both are read-only ref credentials.' >&2
+            exit 41
+          fi
+          node scripts/verify-private-consumer-refs.mjs
 
       - name: Upload sanitized private consumer ref evidence
         if: ${{ success() }}
