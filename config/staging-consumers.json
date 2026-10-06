@@ -6,37 +6,11 @@
   "productionAllowed": false,
   "consumers": [
     {
-      "id": "urai-spatial-pr1600-stripe-test-readiness",
-      "state": "active",
-      "repository": "LifeLoggerAI/urai-spatial",
-      "repositoryId": 1167675641,
-      "pullRequest": 1600,
-      "exactSha": "59ba5476b832ddc3c3724b26f37d4e3e77313bd2",
-      "sourceRef": "refs/pull/1600/head",
-      "mode": "stripe-test-provider-readiness",
-      "dataPolicy": "synthetic-only",
-      "providerProject": "urai-staging",
-      "allowedEnvironment": "staging",
-      "allowedDeployScopes": [],
-      "providerReadOnlyAuthorized": true,
-      "appHostingRolloutAuthorized": false,
-      "hostingPreviewMutationAuthorized": false,
-      "projectWideRuleMutationAuthorized": false,
-      "productionDeploymentAuthorized": false,
-      "productionDataAuthorized": false,
-      "longLivedCredentialsAuthorized": false,
-      "stripeTestModeOnly": true,
-      "stripeLiveModeAuthorized": false,
-      "refVerification": {
-        "mode": "public-git-ls-remote"
-      }
-    },
-    {
       "id": "urai-communications-main-twilio-trial-e2e",
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "exactSha": "dfb8df01fa2c6c2c67db80b78f7b42f7577930b7",
+      "exactSha": "759f664cdf00a48272f5401b7cfc45bbd8afb537",
       "sourceRef": "refs/heads/main",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -83,7 +57,7 @@
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "exactSha": "dfb8df01fa2c6c2c67db80b78f7b42f7577930b7",
+      "exactSha": "759f664cdf00a48272f5401b7cfc45bbd8afb537",
       "sourceRef": "refs/heads/main",
       "mode": "sendgrid-signed-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -152,6 +126,15 @@
       "pullRequest": 1591,
       "predecessorSha": "0d6126653c23693a4c4ba383b88bceddaa78302b",
       "reason": "Superseded by current Spatial release candidate PR #1598. Retained only as historical staging-provider readiness evidence."
+    },
+    {
+      "id": "urai-spatial-pr1600-stripe-test-readiness",
+      "state": "historical",
+      "repository": "LifeLoggerAI/urai-spatial",
+      "repositoryId": 1167675641,
+      "pullRequest": 1600,
+      "predecessorSha": "59ba5476b832ddc3c3724b26f37d4e3e77313bd2",
+      "reason": "Spatial #1600 reached machine-green but literal visual Gold Master acceptance was withheld and active successor #1601 changed the exact SHA. Retained only as predecessor Stripe TEST readiness evidence; no active Spatial provider consumer is admitted until the final unchanged visual successor is terminal."
     }
   ]
 }
