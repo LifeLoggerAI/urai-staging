@@ -33,14 +33,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -z "${CROSS_REPO_READ_TOKEN:-}" ] && [ -z "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
-            echo 'URAI_CROSS_REPO_READ_TOKEN or URAI_CROSS_REPO_READ_SSH_KEY is required; both are read-only ref credentials.' >&2
-            exit 41
-          fi
           node scripts/verify-private-consumer-refs.mjs
 
       - name: Upload sanitized private consumer ref evidence
-        if: ${{ success() }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: urai-staging-private-consumer-refs-${{ github.sha }}-${{ github.run_id }}

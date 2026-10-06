@@ -163,20 +163,42 @@ export async function verifyConsumers({
   }
 }
 
+export async function collectConsumerEvidence(options) {
+  const results = []
+  for (const consumer of options.doc.consumers || []) {
+    if (consumer.state !== 'active' || !protectedModes.has(consumer.refVerification?.mode)) continue
+    try {
+      results.push(...await verifyConsumers({ ...options, doc: { consumers: [consumer] } }))
+    } catch (error) {
+      // Never retain raw provider/SSH errors: they can contain credentials or private output.
+      results.push({
+        id: consumer.id,
+        repository: consumer.repository,
+        sourceRef: consumer.sourceRef,
+        expectedSha: consumer.exactSha,
+        matched: false,
+        errorCode: 'consumer_ref_verification_failed',
+        httpStatus: Number.isInteger(error?.status) && error.status >= 100 && error.status <= 599 ? error.status : null,
+      })
+    }
+  }
+  return results
+}
+
 async function main() {
   const doc = JSON.parse(fs.readFileSync('config/staging-consumers.json', 'utf8'))
   const token = process.env.CROSS_REPO_READ_TOKEN || ''
   const sshKey = process.env.CROSS_REPO_READ_SSH_KEY || ''
-  if (!token && !sshKey) {
-    throw new Error('URAI_CROSS_REPO_READ_TOKEN or URAI_CROSS_REPO_READ_SSH_KEY is required')
-  }
-  const results = await verifyConsumers({ doc, token, sshKey })
+  const results = await collectConsumerEvidence({ doc, token, sshKey })
+  const passed = Boolean(token || sshKey) && results.every((result) => result.matched)
   fs.mkdirSync('artifacts/private-consumer-refs', { recursive: true })
   fs.writeFileSync(
     'artifacts/private-consumer-refs/receipt.json',
     `${JSON.stringify({
       schemaVersion: 'urai-staging-private-consumer-ref-verification-2',
       generatedAt: new Date().toISOString(),
+      passed,
+      credentialAvailable: Boolean(token || sshKey),
       stagingRepository: process.env.GITHUB_REPOSITORY,
       stagingSha: process.env.GITHUB_SHA,
       verificationMode: 'protected-github-api-with-readonly-deploy-key-fallback',
@@ -187,6 +209,7 @@ async function main() {
       secretMaterialRetained: false,
     }, null, 2)}\n`,
   )
+  if (!passed) throw new Error('Private consumer verification failed; see sanitized receipt. No readiness is granted.')
 }
 
 if (process.argv[1] && import.meta.url === new URL(`file://${path.resolve(process.argv[1])}`).href) {
