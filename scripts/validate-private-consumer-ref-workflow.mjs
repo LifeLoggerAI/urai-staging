@@ -4,6 +4,7 @@ import {
   refContract,
   resolveViaApi,
   verifyConsumers,
+  collectConsumerEvidence,
 } from './verify-private-consumer-refs.mjs'
 
 const workflow = fs.readFileSync('.github/workflows/private-consumer-ref-verification.yml', 'utf8')
@@ -182,3 +183,27 @@ await assert.rejects(
 
 console.log('protected private consumer ref verification contract OK')
 console.log('API, SSH fallback, strict-mode, branch/PR, and stale-SHA boundaries OK')
+
+const mixed = await collectConsumerEvidence({
+  doc: { consumers: [strictConsumer, prConsumer] },
+  token: 'synthetic-secret-do-not-retain',
+  fetchImpl: async (url) => url.includes('/branches/')
+    ? { ok: false, status: 401 }
+    : { ok: true, json: async () => ({ head: { sha } }) },
+})
+assert.equal(mixed.length, 2, 'one failed consumer must not conceal later consumers')
+assert.equal(mixed[0].matched, false)
+assert.equal(mixed[0].httpStatus, 401)
+assert.equal(mixed[1].matched, true)
+assert.ok(!JSON.stringify(mixed).includes('synthetic-secret'))
+const sanitized = await collectConsumerEvidence({
+  doc: { consumers: [strictConsumer] }, token: 'synthetic-secret',
+  fetchImpl: async () => { throw new Error('sensitive-raw-provider-output synthetic-secret') },
+})
+assert.equal(sanitized[0].matched, false)
+assert.equal(sanitized[0].httpStatus, null)
+assert.ok(!JSON.stringify(sanitized).includes('sensitive-raw-provider-output'))
+const missing = await collectConsumerEvidence({ doc: { consumers: [strictConsumer] }, token: '', sshKey: '' })
+assert.equal(missing[0].matched, false)
+assert.match(workflow, /if: \$\{\{ always\(\) \}\}/)
+console.log('failure continuation, credential omission, and sanitized evidence retention OK')
