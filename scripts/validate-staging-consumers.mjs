@@ -97,7 +97,7 @@ if (historicalCommunications.state !== 'historical') failures.push('historical C
 if (historicalCommunications.repository !== 'LifeLoggerAI/urai-communications') failures.push('historical Communications repository');
 if (historicalCommunications.pullRequest !== 75) failures.push('historical Communications PR');
 if (historicalCommunications.mergedHeadSha !== 'd52b7648561d728466eb701a440f49bd161b4296') failures.push('historical Communications head');
-if (historicalCommunications.mergeCommitSha !== '759f664cdf00a48272f5401b7cfc45bbd8afb537') failures.push('historical Communications merge commit');
+if (historicalCommunications.mergeCommitSha !== 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7') failures.push('historical Communications merge commit');
 
 if (failures.length) {
   console.error(`staging consumer authority invalid: ${failures.join(', ')}`);
