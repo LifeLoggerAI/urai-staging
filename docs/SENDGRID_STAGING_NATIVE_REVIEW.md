@@ -8,7 +8,7 @@ branch `governance/sendgrid-current-review-20261006`. Main, #106, and canonical
 
 This draft offers two source-controlled verification profiles: `canonical-main`
 checks that retained main759 pin; `working-pr84` checks unmerged Communications
-#84 at `3acd5382007a54705682a6f268d2fd3128fc4d4b`, on
+#84 at `911ba3d2739ad64100148cfc827c55ad8915ff7a`, on
 `codex/communications-component-integration-20261007`. Neither profile changes
 canonical consumers or admits arbitrary repository/branch/SHA inputs. This is
 scoped proposed staging verification, not main adoption or runtime acceptance.
