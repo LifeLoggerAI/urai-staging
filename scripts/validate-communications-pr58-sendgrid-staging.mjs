@@ -35,6 +35,7 @@ const required = [
   'mandatory cleanup will reconcile by run-unique identity',
   'Delete and reconcile temporary SendGrid webhook',
   'sendgrid-after-cleanup.json',
+  '--connect-timeout 10 --max-time 30',
   'Temporary SendGrid webhook reconciliation left',
   'gcloud logging read',
   'secretMaterialRetained:false',
