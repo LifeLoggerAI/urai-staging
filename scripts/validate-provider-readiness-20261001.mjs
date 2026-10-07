@@ -46,7 +46,7 @@ function validateProviders(providers, requiredIds, lane) {
 validateProviders(registry.councilProviders, requiredCouncil, 'Council')
 validateProviders(registry.voiceProviders, requiredVoice, 'Voice')
 
-const communicationsExactSha = '759f664cdf00a48272f5401b7cfc45bbd8afb537'
+const communicationsExactSha = '89e37603ef28a1309e2311ed7cf36bd64592b8c8'
 assert.equal(registry.sourceSnapshot?.repository, 'LifeLoggerAI/urai-communications')
 assert.equal(registry.sourceSnapshot?.sourceBranch, 'main')
 assert.equal(registry.sourceSnapshot?.sourceRef, 'refs/heads/main')
@@ -55,7 +55,7 @@ assert.equal(registry.sourceSnapshot?.status, 'merged-main-source-authority-not-
 
 for (const id of requiredCouncil) {
   const provider = registry.councilProviders.find((entry) => entry.id === id)
-  assert.equal(provider.sourceWired, true, `${id} must reflect the governed adapter now present on Communications PR #75`)
+  assert.equal(provider.sourceWired, true, `${id} must reflect the governed adapter admitted on canonical Communications main`)
   assert.equal(provider.runtimeCertified, false, `${id} must remain uncertified until protected-runtime live evidence exists`)
   assert.equal(provider.liveSmokeThisPass, false, `${id} must not claim a live smoke that did not occur`)
   assert.match(provider.activation, /consent/i, `${id} external processing must remain consent-gated`)
