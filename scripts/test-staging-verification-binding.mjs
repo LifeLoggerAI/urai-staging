@@ -21,6 +21,7 @@ function fixture({update=()=>{},reviewer='LimberNutz0',permission='write'}={}) {
 const options=()=>({sha,ref:`refs/heads/${controller.branch}`,profileName:'working-pr84',runId:'123',provider:'sendgrid',policy,api:fixture()});
 
 test('canonical759 and exact unmerged working84 are distinct governed source profiles',async()=>{
+  assert.equal(sourceProfile('working-pr84').sha,'274f53573f4d3bf843047e285f080083a55fe1ab');
   for(const profileName of ['canonical-main','working-pr84']){
     const binding=await verifyStagingVerificationBinding({...options(),profileName});
     assert.equal(binding.communications.sha,sourceProfile(profileName).sha);
@@ -30,6 +31,14 @@ test('canonical759 and exact unmerged working84 are distinct governed source pro
     assert.equal(binding.approval.reviewer,'LimberNutz0');
     assert.equal(checkRetainedBinding(binding,{stagingSha:sha,communicationsSha:binding.communications.sha,runId:'123',provider:'sendgrid'}).stagingReviewPr,109);
   }
+});
+test('predecessor working84 source cannot authorize current verification or retained proof',async()=>{
+  const predecessor='911ba3d2739ad64100148cfc827c55ad8915ff7a';
+  await assert.rejects(verifyStagingVerificationBinding({...options(),expectedCommunicationsSha:predecessor,
+    api:()=>{throw Error('API SHOULD NOT RUN');}}),/outside selected/);
+  const binding=structuredClone(await verifyStagingVerificationBinding(options()));
+  binding.communications.sha=predecessor;
+  assert.throws(()=>checkRetainedBinding(binding,{stagingSha:sha,communicationsSha:predecessor,runId:'123',provider:'sendgrid'}),/governed profile/);
 });
 test('arbitrary profile, producer SHA or controller branch fails before any approval request',async()=>{
   for(const bad of [{profileName:'attacker'},{expectedCommunicationsSha:'b'.repeat(40)},{ref:'refs/heads/main'},{ref:'refs/heads/arbitrary'}]){
@@ -61,3 +70,4 @@ test('retained proof rejects stale controller/run, wrong provider/reviewer/PR an
     assert.throws(()=>checkRetainedBinding(value,{stagingSha:sha,communicationsSha:original.communications.sha,runId:'123',provider:'sendgrid'}));
   }
 });
+

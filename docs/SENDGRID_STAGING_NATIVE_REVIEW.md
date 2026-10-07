@@ -8,7 +8,7 @@ branch `governance/sendgrid-current-review-20261006`. Main, #106, and canonical
 
 This draft offers two source-controlled verification profiles: `canonical-main`
 checks that retained main759 pin; `working-pr84` checks unmerged Communications
-#84 at `911ba3d2739ad64100148cfc827c55ad8915ff7a`, on
+#84 at `274f53573f4d3bf843047e285f080083a55fe1ab`, on
 `codex/communications-component-integration-20261007`. Neither profile changes
 canonical consumers or admits arbitrary repository/branch/SHA inputs. This is
 scoped proposed staging verification, not main adoption or runtime acceptance.
@@ -35,3 +35,4 @@ embedding a circular self-referential commit SHA in source.
 No approval is recorded by this document. No provider operation, spend, production deployment or external message is authorized by a preflight receipt. Human independence remains a real disclosure and judgment requirement.
 
 STAGING_REVIEW_PR_NUMBER is explicitly 109. A new PR or merge commit must be reviewed at its own exact identity and the bound review target deliberately updated; a closed/predecessor review cannot silently authorize it. The current draft has no actual native independent approval or protected provider execution receipt.
+

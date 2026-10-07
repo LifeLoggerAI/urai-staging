@@ -9,7 +9,7 @@ export const controller = Object.freeze({ repository:'LifeLoggerAI/urai-staging'
 export const canonicalCommunicationsSha = '759f664cdf00a48272f5401b7cfc45bbd8afb537';
 const profiles = Object.freeze({
   'canonical-main': Object.freeze({ repository:'LifeLoggerAI/urai-communications', sha:canonicalCommunicationsSha, branch:'main', pr:null }),
-  'working-pr84': Object.freeze({ repository:'LifeLoggerAI/urai-communications', sha:'911ba3d2739ad64100148cfc827c55ad8915ff7a',
+  'working-pr84': Object.freeze({ repository:'LifeLoggerAI/urai-communications', sha:'274f53573f4d3bf843047e285f080083a55fe1ab',
     branch:'codex/communications-component-integration-20261007', pr:84 }),
 });
 export function sourceProfile(name) {
@@ -127,3 +127,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(JSON.stringify(binding));
   } catch(error) { console.error('[FAIL] '+error.message); process.exitCode=1; }
 }
+
