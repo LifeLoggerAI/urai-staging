@@ -134,6 +134,7 @@ jobs:
           set -euo pipefail
           proof_ref="${COMMUNICATIONS_SHA:0:12}"
           callback_url="${STAGING_FUNCTIONS_BASE_URL%/}/deliveryStatusCallback?uraiProof=$proof_ref"
+          export STAGING_CALLBACK_URL="$callback_url"
           echo "STAGING_CALLBACK_URL=$callback_url" >> "$GITHUB_ENV"
           all="$(curl -fsS             -H "Authorization: Bearer $SENDGRID_API_KEY"             https://api.sendgrid.com/v3/user/webhooks/event/settings/all)"
           max="$(printf '%s' "$all" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(String(JSON.parse(s).max_allowed||0)))")"
