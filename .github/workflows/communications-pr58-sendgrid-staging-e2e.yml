@@ -96,7 +96,10 @@ jobs:
           case "$DEPLOY_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 45 ;; esac
           case "$RUNTIME_SERVICE_ACCOUNT" in *@urai-staging.iam.gserviceaccount.com) ;; *) exit 46 ;; esac
           test "$RUNTIME_SERVICE_ACCOUNT" != "$DEPLOY_SERVICE_ACCOUNT"
-          case "$STAGING_FUNCTIONS_BASE_URL" in https://*) ;; *) exit 47 ;; esac
+          test "$STAGING_FUNCTIONS_BASE_URL" = "https://us-central1-urai-staging.cloudfunctions.net" || {
+            echo "STAGING_FUNCTIONS_BASE_URL is not the canonical urai-staging Functions host." >&2
+            exit 47
+          }
 
       - name: Authenticate WIF to urai-staging
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
@@ -132,18 +135,41 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          proof_ref="${COMMUNICATIONS_SHA:0:12}"
+          proof_ref="${COMMUNICATIONS_SHA:0:12}-${GITHUB_RUN_ID}"
           callback_url="${STAGING_FUNCTIONS_BASE_URL%/}/deliveryStatusCallback?uraiProof=$proof_ref"
+          friendly_name="UrAi Staging Signed Proof $proof_ref"
           export STAGING_CALLBACK_URL="$callback_url"
+          export SENDGRID_PROOF_FRIENDLY_NAME="$friendly_name"
           echo "STAGING_CALLBACK_URL=$callback_url" >> "$GITHUB_ENV"
-          all="$(curl -fsS             -H "Authorization: Bearer $SENDGRID_API_KEY"             https://api.sendgrid.com/v3/user/webhooks/event/settings/all)"
+          echo "SENDGRID_PROOF_FRIENDLY_NAME=$friendly_name" >> "$GITHUB_ENV"
+
+          all="$(curl -fsS \
+            -H "Authorization: Bearer $SENDGRID_API_KEY" \
+            https://api.sendgrid.com/v3/user/webhooks/event/settings/all)"
+          printf '%s' "$all" > "$RUNNER_TEMP/sendgrid-before.json"
           max="$(printf '%s' "$all" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(String(JSON.parse(s).max_allowed||0)))")"
           count="$(printf '%s' "$all" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(String((JSON.parse(s).webhooks||[]).length)))")"
           test "$max" -gt "$count" || { echo "SendGrid Event Webhook capacity exhausted ($count/$max)." >&2; exit 52; }
-          create_body="$(node -e "process.stdout.write(JSON.stringify({enabled:false,url:process.env.STAGING_CALLBACK_URL,processed:true,delivered:true,deferred:true,bounce:true,dropped:true,spam_report:true,unsubscribe:true,open:false,click:false,group_unsubscribe:false,group_resubscribe:false,friendly_name:'UrAi Staging Signed Proof '+process.env.COMMUNICATIONS_SHA.slice(0,12)}))")"
-          code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-create.json" -w '%{http_code}'             -X POST https://api.sendgrid.com/v3/user/webhooks/event/settings             -H "Authorization: Bearer $SENDGRID_API_KEY"             -H 'Content-Type: application/json'             --data "$create_body")"
-          test "$code" = "201" || { cat "$RUNNER_TEMP/sendgrid-create.json"; exit 53; }
-          webhook_id="$(node -e "const x=require(process.argv[1]); if(!x.id) process.exit(1); process.stdout.write(x.id)" "$RUNNER_TEMP/sendgrid-create.json")"
+
+          create_body="$(node -e "process.stdout.write(JSON.stringify({enabled:false,url:process.env.STAGING_CALLBACK_URL,processed:true,delivered:true,deferred:true,bounce:true,dropped:true,spam_report:true,unsubscribe:true,open:false,click:false,group_unsubscribe:false,group_resubscribe:false,friendly_name:process.env.SENDGRID_PROOF_FRIENDLY_NAME}))")"
+          set +e
+          code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-create.json" -w '%{http_code}' \
+            -X POST https://api.sendgrid.com/v3/user/webhooks/event/settings \
+            -H "Authorization: Bearer $SENDGRID_API_KEY" \
+            -H 'Content-Type: application/json' \
+            --data "$create_body")"
+          curl_status=$?
+          set -e
+          if [ "$curl_status" -ne 0 ] || [ "$code" != "201" ]; then
+            echo "SendGrid webhook create did not return a clean 201; mandatory cleanup will reconcile by run-unique identity." >&2
+            exit 53
+          fi
+
+          webhook_id="$(node -e "try{const x=require(process.argv[1]);process.stdout.write(x.id||'')}catch{}" "$RUNNER_TEMP/sendgrid-create.json")"
+          if [ -z "$webhook_id" ]; then
+            echo "SendGrid create returned 201 without a usable id; mandatory cleanup will reconcile by run-unique identity." >&2
+            exit 53
+          fi
           echo "::add-mask::$webhook_id"
           echo "SENDGRID_STAGING_WEBHOOK_ID=$webhook_id" >> "$GITHUB_ENV"
           echo "id=$webhook_id" >> "$GITHUB_OUTPUT"
@@ -298,27 +324,85 @@ jobs:
           },null,2)+'\n');
           NODE
 
-      - name: Delete temporary SendGrid webhook
+      - name: Delete and reconcile temporary SendGrid webhook
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           cleanup_failed=0
-          if [ -n "${SENDGRID_STAGING_WEBHOOK_ID:-}" ]; then
+
+          delete_webhook() {
+            local webhook_id="$1"
+            local delete_code
+            delete_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-delete-$webhook_id.txt" -w '%{http_code}' \
+              -X DELETE "https://api.sendgrid.com/v3/user/webhooks/event/settings/$webhook_id" \
+              -H "Authorization: Bearer $SENDGRID_API_KEY" || true)"
+            case "$delete_code" in
+              200|202|204|404) ;;
+              *)
+                echo "Temporary SendGrid webhook cleanup failed with HTTP ${delete_code:-transport_error}." >&2
+                cleanup_failed=1
+                ;;
+            esac
+          }
+
+          if [ -n "${SENDGRID_STAGING_WEBHOOK_ID:-}" ] && [ -n "${SENDGRID_API_KEY:-}" ]; then
+            delete_webhook "$SENDGRID_STAGING_WEBHOOK_ID"
+          elif [ -n "${SENDGRID_STAGING_WEBHOOK_ID:-}" ]; then
+            echo 'Temporary SendGrid webhook id exists but API key is unavailable for mandatory cleanup.' >&2
+            cleanup_failed=1
+          fi
+
+          if [ -n "${STAGING_CALLBACK_URL:-}" ] && [ -n "${SENDGRID_PROOF_FRIENDLY_NAME:-}" ]; then
             if [ -z "${SENDGRID_API_KEY:-}" ]; then
-              echo 'Temporary SendGrid webhook id exists but API key is unavailable for mandatory cleanup.' >&2
+              echo 'Run-unique SendGrid webhook identity exists but API key is unavailable for reconciliation.' >&2
               cleanup_failed=1
             else
-              delete_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-delete.txt" -w '%{http_code}'                 -X DELETE "https://api.sendgrid.com/v3/user/webhooks/event/settings/$SENDGRID_STAGING_WEBHOOK_ID"                 -H "Authorization: Bearer $SENDGRID_API_KEY" || true)"
-              case "$delete_code" in
-                200|202|204|404) ;;
-                *)
-                  echo "Temporary SendGrid webhook cleanup failed with HTTP ${delete_code:-transport_error}." >&2
+              current_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-current.json" -w '%{http_code}' \
+                -H "Authorization: Bearer $SENDGRID_API_KEY" \
+                https://api.sendgrid.com/v3/user/webhooks/event/settings/all || true)"
+              if [ "$current_code" != "200" ]; then
+                echo "Cannot reconcile temporary SendGrid webhook inventory; HTTP ${current_code:-transport_error}." >&2
+                cleanup_failed=1
+              else
+                mapfile -t orphan_ids < <(node - "$RUNNER_TEMP/sendgrid-current.json" "$STAGING_CALLBACK_URL" "$SENDGRID_PROOF_FRIENDLY_NAME" <<'NODE'
+const fs=require('node:fs');
+const [file,url,name]=process.argv.slice(2);
+const x=JSON.parse(fs.readFileSync(file,'utf8'));
+for (const webhook of x.webhooks||[]) {
+  if ((webhook.url===url || webhook.friendly_name===name) && webhook.id) console.log(webhook.id);
+}
+NODE
+                )
+                for orphan_id in "${orphan_ids[@]}"; do
+                  echo "::add-mask::$orphan_id"
+                  delete_webhook "$orphan_id"
+                done
+
+                verify_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-after-cleanup.json" -w '%{http_code}' \
+                  -H "Authorization: Bearer $SENDGRID_API_KEY" \
+                  https://api.sendgrid.com/v3/user/webhooks/event/settings/all || true)"
+                if [ "$verify_code" != "200" ]; then
+                  echo "Cannot verify temporary SendGrid webhook removal; HTTP ${verify_code:-transport_error}." >&2
                   cleanup_failed=1
-                  ;;
-              esac
+                else
+                  remaining="$(node - "$RUNNER_TEMP/sendgrid-after-cleanup.json" "$STAGING_CALLBACK_URL" "$SENDGRID_PROOF_FRIENDLY_NAME" <<'NODE'
+const fs=require('node:fs');
+const [file,url,name]=process.argv.slice(2);
+const x=JSON.parse(fs.readFileSync(file,'utf8'));
+const matches=(x.webhooks||[]).filter(webhook=>webhook.url===url || webhook.friendly_name===name);
+process.stdout.write(String(matches.length));
+NODE
+                  )"
+                  if [ "$remaining" != "0" ]; then
+                    echo "Temporary SendGrid webhook reconciliation left $remaining matching endpoint(s)." >&2
+                    cleanup_failed=1
+                  fi
+                fi
+              fi
             fi
           fi
+
           rm -f "$RUNNER_TEMP"/sendgrid-*.json "$RUNNER_TEMP"/sendgrid-*.txt "$RUNNER_TEMP"/function.json "$RUNNER_TEMP"/sendgrid-callback-logs.json "$RUNNER_TEMP"/urai-cross-repo-read "$RUNNER_TEMP"/urai-github-known-hosts
           rm -f communications-source/functions/.env.urai-staging
           test "$cleanup_failed" -eq 0
