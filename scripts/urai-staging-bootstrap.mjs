@@ -89,7 +89,7 @@ if (process.env.URAI_SKIP_RULES === '1') {
 }
 
 const commands = [
-  ['node', ['--test', 'scripts/test-twilio-trial-sender.mjs']],
+  ['node', ['--test', 'scripts/test-twilio-trial-sender.mjs','scripts/test-sendgrid-staging-budget.mjs']],
   ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts']],
   ['npm', ['run', 'doctor']],
   ['npm', ['run', 'test:workstream-c-root']],

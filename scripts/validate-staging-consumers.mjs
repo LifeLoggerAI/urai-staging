@@ -40,7 +40,7 @@ if (communications.repository !== 'LifeLoggerAI/urai-communications') failures.p
 if (communications.repositoryId !== 1169785707) failures.push('communications repositoryId');
 if (communications.sourceBranch !== 'main') failures.push('communications sourceBranch');
 if (communications.sourceRef !== 'refs/heads/main') failures.push('communications sourceRef');
-if (communications.exactSha !== '759f664cdf00a48272f5401b7cfc45bbd8afb537') failures.push('communications exactSha');
+if (communications.exactSha !== '89e37603ef28a1309e2311ed7cf36bd64592b8c8') failures.push('communications exactSha');
 if (communications.mode !== 'twilio-trial-protected-staging-e2e') failures.push('communications mode');
 if (JSON.stringify(communications.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('communications allowedDeployScopes');
 if (JSON.stringify(communications.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('communications function allowlist');
@@ -60,7 +60,7 @@ const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communication
 if (sendgrid.repository !== 'LifeLoggerAI/urai-communications') failures.push('sendgrid repository');
 if (sendgrid.repositoryId !== 1169785707) failures.push('sendgrid repositoryId');
 if (sendgrid.sourceBranch !== 'main') failures.push('sendgrid sourceBranch');
-if (sendgrid.exactSha !== '759f664cdf00a48272f5401b7cfc45bbd8afb537') failures.push('sendgrid exactSha');
+if (sendgrid.exactSha !== '89e37603ef28a1309e2311ed7cf36bd64592b8c8') failures.push('sendgrid exactSha');
 if (sendgrid.sourceRef !== 'refs/heads/main') failures.push('sendgrid sourceRef');
 if (sendgrid.mode !== 'sendgrid-signed-protected-staging-e2e') failures.push('sendgrid mode');
 if (JSON.stringify(sendgrid.allowedDeployScopes) !== JSON.stringify(['functions-explicit-only'])) failures.push('sendgrid allowedDeployScopes');
@@ -104,4 +104,5 @@ if (failures.length) {
   process.exit(1);
 }
 console.log('staging consumer authority contract OK');
+
 

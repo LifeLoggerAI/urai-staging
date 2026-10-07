@@ -14,7 +14,7 @@ const required = [
   'workflow_dispatch:',
   'environment: staging',
   'LifeLoggerAI/urai-communications',
-  '759f664cdf00a48272f5401b7cfc45bbd8afb537',
+  '89e37603ef28a1309e2311ed7cf36bd64592b8c8',
   '274f53573f4d3bf843047e285f080083a55fe1ab',
   "STAGING_REVIEW_PR_NUMBER: '109'",
   'verify-staging-verification-binding.mjs',
@@ -90,6 +90,13 @@ const cleanupIndex = text.indexOf('- name: Delete and reconcile temporary SendGr
 if (!(installIndex >= 0 && installIndex < budgetIndex && budgetIndex < createIndex && createIndex < deployIndex && deployIndex < cleanupIndex)) {
   throw new Error('SendGrid staging mutation/cleanup ordering regressed');
 }
+const budgetStep = text.slice(budgetIndex, createIndex);
+const bindingRefresh = budgetStep.indexOf('node scripts/verify-staging-verification-binding.mjs');
+const sourceRefresh = budgetStep.indexOf('bash scripts/assert-current-communications-source.sh');
+const clockRead = budgetStep.indexOf('now_epoch="$(date +%s)"');
+if (!(bindingRefresh >= 0 && sourceRefresh > bindingRefresh && clockRead > sourceRefresh)) {
+  throw new Error('SendGrid cleanup budget must be recomputed after both current remote gates');
+}
 
 console.log('Communications main SendGrid signed staging workflow contract OK');
 
@@ -116,6 +123,8 @@ for (const marker of ['roles/owner','roles/editor','roles/firebase.admin','roles
   if (!bootstrap.includes(marker)) throw new Error(`missing broad-role rejection marker: ${marker}`);
 }
 console.log('Communications main SendGrid least-privilege IAM bootstrap contract OK');
-const callbackTests = spawnSync(process.execPath, ['--test', 'scripts/test-sendgrid-staging-callback.mjs','scripts/test-staging-verification-binding.mjs'], { stdio: 'inherit' });
+const callbackTests = spawnSync(process.execPath, ['--test', 'scripts/test-sendgrid-staging-callback.mjs','scripts/test-staging-verification-binding.mjs','scripts/test-sendgrid-staging-budget.mjs'], { stdio: 'inherit' });
 if (callbackTests.status !== 0) throw new Error('Run-bound SendGrid callback proof tests failed');
+
+
 

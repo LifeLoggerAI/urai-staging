@@ -21,8 +21,6 @@ on:
         description: Type urai-staging
         required: true
         type: string
-  issue_comment:
-    types: [created]
 
 permissions:
   contents: read
@@ -43,15 +41,7 @@ env:
 jobs:
   protected-e2e:
     name: WIF-only bounded deploy, Twilio trial proof, and rollback
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event_name == 'issue_comment' &&
-        github.event.issue.number == 76 &&
-        github.event.comment.body == 'RUN_TWILIO_PR75_TRIAL_STAGING_E2E' &&
-        github.event.comment.author_association == 'OWNER' &&
-        github.actor == github.repository_owner
-      )
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment: staging
@@ -61,10 +51,10 @@ jobs:
       pull-requests: read
       id-token: write
     env:
-      EXPECTED_COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || '759f664cdf00a48272f5401b7cfc45bbd8afb537' }}
-      COMMUNICATIONS_SOURCE_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_source_profile || 'canonical-main' }}
+      EXPECTED_COMMUNICATIONS_SHA: ${{ inputs.communications_sha }}
+      COMMUNICATIONS_SOURCE_PROFILE: ${{ inputs.communications_source_profile }}
       CONFIRM_STAGING_PROJECT: ${{ inputs.confirm_staging_project }}
-      CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}
+      CONTROLLER_SHA: ${{ inputs.expected_controller_sha }}
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
       RUNTIME_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT }}
@@ -111,15 +101,8 @@ jobs:
           set -euo pipefail
           test "${{ github.sha }}" = "$CONTROLLER_SHA"
           test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
-          if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then
-            test "$CONFIRM_STAGING_PROJECT" = 'urai-staging'
-          else
-            test "${{ github.event_name }}" = 'issue_comment'
-            test "${{ github.event.issue.number }}" = '76'
-            test "${{ github.event.comment.body }}" = 'RUN_TWILIO_PR75_TRIAL_STAGING_E2E'
-            test "${{ github.event.comment.author_association }}" = 'OWNER'
-            test "${{ github.actor }}" = "${{ github.repository_owner }}"
-          fi
+          test "${{ github.event_name }}" = 'workflow_dispatch'
+          test "$CONFIRM_STAGING_PROJECT" = 'urai-staging'
           bash scripts/assert-current-communications-source.sh
           node scripts/validate-staging-consumers.mjs
           for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET TWILIO_FROM_NUMBER STAGING_TEST_PHONE; do
@@ -368,4 +351,5 @@ jobs:
           path: artifacts/communications-twilio/receipt.json
           if-no-files-found: error
           retention-days: 90
+
 

@@ -170,6 +170,8 @@ jobs:
         run: |
           set -euo pipefail
           test -n "${SENDGRID_JOB_START_EPOCH:-}" || { echo 'SendGrid job start marker missing.' >&2; exit 56; }
+          node scripts/verify-staging-verification-binding.mjs
+          bash scripts/assert-current-communications-source.sh
           now_epoch="$(date +%s)"
           elapsed_seconds="$((now_epoch - SENDGRID_JOB_START_EPOCH))"
           test "$elapsed_seconds" -ge 0 || { echo 'Invalid SendGrid job elapsed time.' >&2; exit 56; }
@@ -177,8 +179,6 @@ jobs:
             echo "Provider mutation refused: setup consumed ${elapsed_seconds}s; at least 25 minutes of the 35-minute job budget must remain before webhook creation." >&2
             exit 56
           fi
-          node scripts/verify-staging-verification-binding.mjs
-          bash scripts/assert-current-communications-source.sh
           echo "SENDGRID_MUTATION_ADMISSION_ELAPSED_SECONDS=$elapsed_seconds" >> "$GITHUB_ENV"
 
       - name: Prove SendGrid webhook capacity and create temporary disabled endpoint
@@ -421,3 +421,4 @@ jobs:
           path: artifacts-sendgrid.json
           if-no-files-found: error
           retention-days: 90
+

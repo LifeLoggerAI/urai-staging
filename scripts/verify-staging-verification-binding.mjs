@@ -5,8 +5,8 @@ import { pathToFileURL } from 'node:url';
 import { verifyStagingApproval } from './verify-sendgrid-staging-approval.mjs';
 
 export const controller = Object.freeze({ repository:'LifeLoggerAI/urai-staging', pr:109,
-  branch:'repair/staging-provider-harness-converged-20261007', base:'governance/sendgrid-current-review-20261006', reviewer:'LimberNutz0' });
-export const canonicalCommunicationsSha = '759f664cdf00a48272f5401b7cfc45bbd8afb537';
+  branch:'repair/staging-provider-harness-converged-20261007', base:'main', reviewer:'LimberNutz0' });
+export const canonicalCommunicationsSha = '89e37603ef28a1309e2311ed7cf36bd64592b8c8';
 const profiles = Object.freeze({
   'canonical-main': Object.freeze({ repository:'LifeLoggerAI/urai-communications', sha:canonicalCommunicationsSha, branch:'main', pr:null }),
   'working-pr84': Object.freeze({ repository:'LifeLoggerAI/urai-communications', sha:'274f53573f4d3bf843047e285f080083a55fe1ab',
@@ -128,5 +128,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(JSON.stringify(binding));
   } catch(error) { console.error('[FAIL] '+error.message); process.exitCode=1; }
 }
+
 
 
