@@ -98,6 +98,7 @@ export function checkRetainedBinding(binding,{ stagingSha,communicationsSha,runI
   assert.equal(binding.providerMutationAuthorizedByThisReceipt,false);
   assert.equal(binding.productionDeploymentAuthorized,false);
   return { stagingReviewPr:controller.pr, nativeReviewer:controller.reviewer, nativeReviewId:approval.reviewId,
+    nativeReviewerPermission:approval.reviewerPermission,nativePreflightCheckedAt:binding.checkedAt,
     communicationsProfile:binding.profileName, communicationsPr:source.pr, canonicalConsumerAdopted:false };
 }
 
