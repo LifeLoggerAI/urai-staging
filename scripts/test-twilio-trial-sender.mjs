@@ -51,3 +51,9 @@ test('provider denial and network failure never retry or authorize a delivery', 
     assert.equal(calls, 1);
   }
 });
+
+test('valid uppercase hexadecimal provider SIDs remain supported', async () => {
+  const upper = { ...identity, accountSid: 'AC' + 'A'.repeat(32), apiKeySid: 'SK' + 'B'.repeat(32) };
+  const receipt = await verifyTrialSender({ ...upper, fetchImpl: async () => response([{ ...owned, account_sid: upper.accountSid }]) });
+  assert.equal(receipt.smsCapable, true);
+});

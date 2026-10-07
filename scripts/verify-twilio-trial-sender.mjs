@@ -3,8 +3,8 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 
 export async function verifyTrialSender({ accountSid, apiKeySid, apiKeySecret, fromNumber, fetchImpl = fetch }) {
-  assert.match(accountSid || '', /^AC[0-9a-f]{32}$/, 'Invalid protected Twilio account identity');
-  assert.match(apiKeySid || '', /^SK[0-9a-f]{32}$/, 'Invalid protected Twilio API-key identity');
+  assert.match(accountSid || '', /^AC[0-9a-fA-F]{32}$/, 'Invalid protected Twilio account identity');
+  assert.match(apiKeySid || '', /^SK[0-9a-fA-F]{32}$/, 'Invalid protected Twilio API-key identity');
   assert.ok(apiKeySecret, 'Missing protected Twilio API-key secret');
   assert.match(fromNumber || '', /^\+[1-9][0-9]{6,14}$/, 'Explicit owned trial sender must be E.164');
   const url = new URL(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/IncomingPhoneNumbers.json`);
