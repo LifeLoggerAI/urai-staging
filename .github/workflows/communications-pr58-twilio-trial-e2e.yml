@@ -356,7 +356,7 @@ jobs:
             DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
             STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
             DEFAULT_TENANT_TIMEZONE=America/Chicago
-            EOF
+          EOF
             firebase deploy               --project urai-staging               --only functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback               --non-interactive
             rm -f functions/.env.urai-staging
           fi
