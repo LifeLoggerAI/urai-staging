@@ -302,12 +302,26 @@ jobs:
         if: always()
         shell: bash
         run: |
-          set +e
-          if [ -n "${SENDGRID_STAGING_WEBHOOK_ID:-}" ] && [ -n "${SENDGRID_API_KEY:-}" ]; then
-            curl -sS -o /dev/null               -X DELETE "https://api.sendgrid.com/v3/user/webhooks/event/settings/$SENDGRID_STAGING_WEBHOOK_ID"               -H "Authorization: Bearer $SENDGRID_API_KEY"
+          set -euo pipefail
+          cleanup_failed=0
+          if [ -n "${SENDGRID_STAGING_WEBHOOK_ID:-}" ]; then
+            if [ -z "${SENDGRID_API_KEY:-}" ]; then
+              echo 'Temporary SendGrid webhook id exists but API key is unavailable for mandatory cleanup.' >&2
+              cleanup_failed=1
+            else
+              delete_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-delete.txt" -w '%{http_code}'                 -X DELETE "https://api.sendgrid.com/v3/user/webhooks/event/settings/$SENDGRID_STAGING_WEBHOOK_ID"                 -H "Authorization: Bearer $SENDGRID_API_KEY" || true)"
+              case "$delete_code" in
+                200|202|204|404) ;;
+                *)
+                  echo "Temporary SendGrid webhook cleanup failed with HTTP ${delete_code:-transport_error}." >&2
+                  cleanup_failed=1
+                  ;;
+              esac
+            fi
           fi
           rm -f "$RUNNER_TEMP"/sendgrid-*.json "$RUNNER_TEMP"/sendgrid-*.txt "$RUNNER_TEMP"/function.json "$RUNNER_TEMP"/sendgrid-callback-logs.json "$RUNNER_TEMP"/urai-cross-repo-read "$RUNNER_TEMP"/urai-github-known-hosts
           rm -f communications-source/functions/.env.urai-staging
+          test "$cleanup_failed" -eq 0
 
       - name: Upload sanitized SendGrid staging evidence
         if: success()
