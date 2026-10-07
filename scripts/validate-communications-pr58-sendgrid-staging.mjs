@@ -15,7 +15,7 @@ const required = [
   'environment: staging',
   'LifeLoggerAI/urai-communications',
   '759f664cdf00a48272f5401b7cfc45bbd8afb537',
-  '3acd5382007a54705682a6f268d2fd3128fc4d4b',
+  '911ba3d2739ad64100148cfc827c55ad8915ff7a',
   "STAGING_REVIEW_PR_NUMBER: '109'",
   'verify-staging-verification-binding.mjs',
   'working-pr84',
