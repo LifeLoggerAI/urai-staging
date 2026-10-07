@@ -54,7 +54,7 @@ if (communications.rollbackToDeliveryDisabledRequired !== true) failures.push('c
 if (communications.refVerification?.mode !== 'protected-github-api-or-readonly-deploy-key') failures.push('communications ref verification');
 if (communications.refVerification?.environment !== 'staging') failures.push('communications ref verification environment');
 if (JSON.stringify(communications.refVerification?.allowedSecrets) !== JSON.stringify(['URAI_CROSS_REPO_READ_TOKEN','URAI_CROSS_REPO_READ_SSH_KEY'])) failures.push('communications ref verification secret contract');
-if (communications.trialSenderMode !== 'provider-assigned') failures.push('communications trial sender mode');
+if (communications.trialSenderMode !== 'explicit-owned-trial-number') failures.push('communications trial sender mode');
 
 const sendgrid = doc.consumers?.find((entry) => entry.id === 'urai-communications-main-sendgrid-signed-staging-e2e') || {};
 if (sendgrid.repository !== 'LifeLoggerAI/urai-communications') failures.push('sendgrid repository');
@@ -104,3 +104,4 @@ if (failures.length) {
   process.exit(1);
 }
 console.log('staging consumer authority contract OK');
+

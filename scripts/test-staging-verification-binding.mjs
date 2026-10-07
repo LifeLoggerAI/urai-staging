@@ -56,7 +56,7 @@ test('scoped source never substitutes arbitrary reviewer or unknown native permi
 test('correct current canonical Twilio consumer ID and provider boundaries remain required',()=>{
   assert.equal(verifyCanonicalPolicy(policy,'twilio').id,'urai-communications-main-twilio-trial-e2e');
   assert.equal(verifyCanonicalPolicy(policy,'sendgrid').id,'urai-communications-main-sendgrid-signed-staging-e2e');
-  for(const mutate of [p=>{p.productionAllowed=true;},p=>{p.consumers[0].twilioTrialModeOnly=false;},p=>{p.consumers[0].exactSha='b'.repeat(40);},p=>{p.consumers[0].initialFunctionDeploymentAllowlist.push('other');}]){
+  for(const mutate of [p=>{p.productionAllowed=true;},p=>{p.consumers[0].twilioTrialModeOnly=false;},p=>{p.consumers[0].trialSenderMode='provider-assigned';},p=>{p.consumers[0].exactSha='b'.repeat(40);},p=>{p.consumers[0].initialFunctionDeploymentAllowlist.push('other');}]){
     const value=structuredClone(policy);mutate(value);assert.throws(()=>verifyCanonicalPolicy(value,'twilio'));
   }
 });
@@ -70,4 +70,5 @@ test('retained proof rejects stale controller/run, wrong provider/reviewer/PR an
     assert.throws(()=>checkRetainedBinding(value,{stagingSha:sha,communicationsSha:original.communications.sha,runId:'123',provider:'sendgrid'}));
   }
 });
+
 

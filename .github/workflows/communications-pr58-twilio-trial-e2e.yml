@@ -78,7 +78,7 @@ jobs:
       TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
       CROSS_REPO_READ_TOKEN: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
       CROSS_REPO_READ_SSH_KEY: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
-      TWILIO_FROM_NUMBER: ''
+      TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
       STAGING_TEST_PHONE: ${{ secrets.STAGING_TEST_PHONE }}
       STAGING_FIREBASE_ID_TOKEN: ${{ secrets.STAGING_FIREBASE_ID_TOKEN }}
       STAGING_TEST_AUTH_EMAIL: ${{ secrets.STAGING_TEST_AUTH_EMAIL }}
@@ -122,9 +122,10 @@ jobs:
           fi
           bash scripts/assert-current-communications-source.sh
           node scripts/validate-staging-consumers.mjs
-          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET STAGING_TEST_PHONE; do
+          for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET TWILIO_FROM_NUMBER STAGING_TEST_PHONE; do
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
           done
+          node scripts/verify-twilio-trial-sender.mjs
           TWILIO_CALLBACK_URL="${STAGING_FUNCTIONS_BASE_URL%/}/twilioDeliveryStatusCallback"
           echo "DELIVERY_STATUS_CALLBACK_URL=$TWILIO_CALLBACK_URL" >> "$GITHUB_ENV"
           echo "STAGING_TWILIO_CALLBACK_FUNCTION=twilioDeliveryStatusCallback" >> "$GITHUB_ENV"
@@ -233,7 +234,7 @@ jobs:
           TWILIO_OUTBOUND_AUTH_MODE=api_key
           TWILIO_TRIAL_MODE=true
           TWILIO_MESSAGING_SERVICE_SID=
-          TWILIO_FROM_NUMBER=
+          TWILIO_FROM_NUMBER=$TWILIO_FROM_NUMBER
           DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
           STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
           DEFAULT_TENANT_TIMEZONE=America/Chicago
@@ -315,7 +316,8 @@ jobs:
             accountRef:h(process.env.TWILIO_ACCOUNT_SID),
             outboundCredentialMode:'api-key',
             apiKeyRef:h(process.env.TWILIO_API_KEY_SID),
-            senderMode:'provider-assigned-trial-number',
+            senderMode:'explicit-owned-trial-number',
+            senderRef:h(process.env.TWILIO_FROM_NUMBER),
             recipientRef:h(process.env.STAGING_TEST_PHONE),
             protectedE2ECompleted:true,
             productionMessagingAuthorized:false,
@@ -340,7 +342,7 @@ jobs:
             TWILIO_OUTBOUND_AUTH_MODE=auth_token
             TWILIO_TRIAL_MODE=true
             TWILIO_MESSAGING_SERVICE_SID=
-            TWILIO_FROM_NUMBER=
+            TWILIO_FROM_NUMBER=$TWILIO_FROM_NUMBER
             DELIVERY_STATUS_CALLBACK_URL=$DELIVERY_STATUS_CALLBACK_URL
             STAGING_TEST_PHONE_HASH=$STAGING_TEST_PHONE_HASH
             DEFAULT_TENANT_TIMEZONE=America/Chicago
@@ -366,3 +368,4 @@ jobs:
           path: artifacts/communications-twilio/receipt.json
           if-no-files-found: error
           retention-days: 90
+

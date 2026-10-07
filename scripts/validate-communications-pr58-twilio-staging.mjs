@@ -24,7 +24,9 @@ const required = [
   'ENABLE_REAL_DELIVERY=true',
   'ENABLE_TWILIO_SMS=true',
   'TWILIO_TRIAL_MODE=true',
-  "TWILIO_FROM_NUMBER: ''",
+  'TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}',
+  'node scripts/verify-twilio-trial-sender.mjs',
+  'TWILIO_FROM_NUMBER=$TWILIO_FROM_NUMBER',
   'URAI_CROSS_REPO_READ_TOKEN',
   'URAI_CROSS_REPO_READ_SSH_KEY',
   'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git "refs/heads/$COMMUNICATIONS_BRANCH"',
@@ -34,7 +36,8 @@ const required = [
   'token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}',
   "if: env.CROSS_REPO_AUTH_MODE == 'token'",
   "if: env.CROSS_REPO_AUTH_MODE == 'ssh'",
-  "senderMode:'provider-assigned-trial-number'",
+  "senderMode:'explicit-owned-trial-number'",
+  "senderRef:h(process.env.TWILIO_FROM_NUMBER)",
   'STAGING_TEST_SMS_BODY: sms_appointment_reminders',
   'gcloud secrets versions add TWILIO_AUTH_TOKEN',
   'gcloud secrets versions add TWILIO_ACCOUNT_SID',
@@ -63,7 +66,12 @@ if (!(gateIndex > 0 && gateIndex < text.indexOf('- name: Authenticate WIF'))) th
 if (!text.includes('vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT')) throw new Error('Twilio controller must bind the provider-read runtime service account variable');
 if (!text.includes('test "$RUNTIME_SERVICE_ACCOUNT" != "$DEPLOY_SERVICE_ACCOUNT"')) throw new Error('Twilio controller must keep runtime and deploy service accounts distinct');
 
+const senderReadIndex = text.indexOf('node scripts/verify-twilio-trial-sender.mjs');
+if (!(senderReadIndex > gateIndex && senderReadIndex < text.indexOf('- name: Authenticate WIF'))) throw new Error('owned trial sender must be read-verified after native review and before deployment mutation');
+if ((text.match(/TWILIO_FROM_NUMBER=\$TWILIO_FROM_NUMBER/g) || []).length !== 2) throw new Error('owned trial sender must bind both proof-window and disabled rollback environment');
+
 const forbidden = [
+  [/TWILIO_FROM_NUMBER: ''|senderMode:'provider-assigned-trial-number'/, 'implicit trial sender'],
   [/urai-4dc1d/, 'production project'],
   [/environment:\s*production/, 'production environment'],
   [/hosting:deploy|hosting:channel:deploy|apphosting:rollouts:create/, 'hosting mutation'],
@@ -81,3 +89,4 @@ if (!uploadStep.startsWith('- name: Upload sanitized retained proof')) throw new
 if (!uploadStep.includes('if: ${{ success() }}')) throw new Error('sanitized proof upload must be success-gated');
 if (/if:\s*always\(\)/.test(uploadStep.split(/\n\s*- name:/, 1)[0])) throw new Error('sanitized proof upload cannot run on failure');
 console.log('Communications main Twilio staging workflow contract OK');
+

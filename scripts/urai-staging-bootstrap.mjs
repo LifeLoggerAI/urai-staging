@@ -89,6 +89,7 @@ if (process.env.URAI_SKIP_RULES === '1') {
 }
 
 const commands = [
+  ['node', ['--test', 'scripts/test-twilio-trial-sender.mjs']],
   ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts']],
   ['npm', ['run', 'doctor']],
   ['npm', ['run', 'test:workstream-c-root']],
@@ -225,3 +226,4 @@ function writeSummary() {
   lines.push('');
   fs.writeFileSync(summaryPath, `${lines.join('\n')}\n`);
 }
+

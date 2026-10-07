@@ -46,6 +46,7 @@ export function verifyCanonicalPolicy(policy, provider) {
     assert.equal(consumer.sendGridTemporaryWebhookDeleteRequired,true);
   } else {
     assert.equal(consumer.twilioTrialModeOnly,true);
+    assert.equal(consumer.trialSenderMode,'explicit-owned-trial-number');
     assert.equal(consumer.twilioProductionMessagingAuthorized,false);
   }
   return consumer;
@@ -127,4 +128,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(JSON.stringify(binding));
   } catch(error) { console.error('[FAIL] '+error.message); process.exitCode=1; }
 }
+
 

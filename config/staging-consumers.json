@@ -49,7 +49,7 @@
           "URAI_CROSS_REPO_READ_SSH_KEY"
         ]
       },
-      "trialSenderMode": "provider-assigned",
+      "trialSenderMode": "explicit-owned-trial-number",
       "sourceBranch": "main"
     },
     {
@@ -138,3 +138,4 @@
     }
   ]
 }
+
