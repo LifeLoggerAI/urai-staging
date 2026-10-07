@@ -130,6 +130,48 @@ jobs:
           echo "::add-mask::$SENDGRID_API_KEY"
           echo "SENDGRID_API_KEY=$SENDGRID_API_KEY" >> "$GITHUB_ENV"
 
+      - name: Checkout exact Communications candidate with read token
+        if: env.CROSS_REPO_AUTH_MODE == 'token'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: LifeLoggerAI/urai-communications
+          ref: ${{ env.COMMUNICATIONS_SHA }}
+          token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
+          path: communications-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Checkout exact Communications candidate with read-only deploy key
+        if: env.CROSS_REPO_AUTH_MODE == 'ssh'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: LifeLoggerAI/urai-communications
+          ref: ${{ env.COMMUNICATIONS_SHA }}
+          ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
+          path: communications-source
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Install exact dependencies and Firebase CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix communications-source ci --legacy-peer-deps --no-audit --no-fund
+          cli_root="$RUNNER_TEMP/firebase-cli"
+          mkdir -p "$cli_root"
+          npm install --prefix "$cli_root" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
+          echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
+
+      # All checkout/install/setup work above is credentialed but provider-nonmutating.
+      # From this point forward every external process is deadline-bounded so the
+      # job-level timeout retains a cleanup window for the temporary webhook.
       - name: Prove SendGrid webhook capacity and create temporary disabled endpoint
         id: webhook
         shell: bash
@@ -187,59 +229,20 @@ jobs:
           # staging administrator. The GitHub deploy identity can add versions
           # but cannot create secrets or mutate Secret Manager IAM.
           for secret in SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY DELIVERY_STATUS_CALLBACK_SECRET TWILIO_AUTH_TOKEN; do
-            gcloud secrets describe "$secret" --project=urai-staging >/dev/null
+            timeout 45s gcloud secrets describe "$secret" --project=urai-staging >/dev/null
           done
 
-          printf '%s' "$public_key" | gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY --project=urai-staging --data-file=- >/dev/null
+          printf '%s' "$public_key" | timeout 60s gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY --project=urai-staging --data-file=- >/dev/null
 
           synthetic_secret="$(openssl rand -hex 32)"
           echo "::add-mask::$synthetic_secret"
-          printf '%s' "$synthetic_secret" | gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET --project=urai-staging --data-file=- >/dev/null
+          printf '%s' "$synthetic_secret" | timeout 60s gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET --project=urai-staging --data-file=- >/dev/null
 
-          twilio_enabled_versions="$(gcloud secrets versions list TWILIO_AUTH_TOKEN --project=urai-staging --filter='state=ENABLED' --format='value(name)' --limit=1)"
+          twilio_enabled_versions="$(timeout 45s gcloud secrets versions list TWILIO_AUTH_TOKEN --project=urai-staging --filter='state=ENABLED' --format='value(name)' --limit=1)"
           test -n "$twilio_enabled_versions" || {
             echo 'TWILIO_AUTH_TOKEN requires an enabled staging secret version because the exact callback binds it.' >&2
             exit 55
           }
-
-      - name: Checkout exact Communications candidate with read token
-        if: env.CROSS_REPO_AUTH_MODE == 'token'
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          repository: LifeLoggerAI/urai-communications
-          ref: ${{ env.COMMUNICATIONS_SHA }}
-          token: ${{ secrets.URAI_CROSS_REPO_READ_TOKEN }}
-          path: communications-source
-          fetch-depth: 1
-          persist-credentials: false
-          show-progress: false
-
-      - name: Checkout exact Communications candidate with read-only deploy key
-        if: env.CROSS_REPO_AUTH_MODE == 'ssh'
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          repository: LifeLoggerAI/urai-communications
-          ref: ${{ env.COMMUNICATIONS_SHA }}
-          ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
-          path: communications-source
-          fetch-depth: 1
-          persist-credentials: false
-          show-progress: false
-
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '22'
-
-      - name: Install exact dependencies and Firebase CLI
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm --prefix communications-source ci --legacy-peer-deps --no-audit --no-fund
-          cli_root="$RUNNER_TEMP/firebase-cli"
-          mkdir -p "$cli_root"
-          npm install --prefix "$cli_root" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
-          echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Deploy exact signed callback to staging only
         working-directory: communications-source
@@ -257,14 +260,14 @@ jobs:
           ENABLE_REAL_DELIVERY=false
           DEFAULT_TENANT_TIMEZONE=America/Chicago
           EOF
-          firebase deploy             --project urai-staging             --only functions:deliveryStatusCallback             --non-interactive
+          timeout 8m firebase deploy             --project urai-staging             --only functions:deliveryStatusCallback             --non-interactive
           rm -f functions/.env.urai-staging
 
       - name: Verify deployed secret bindings without values
         shell: bash
         run: |
           set -euo pipefail
-          gcloud functions describe deliveryStatusCallback             --gen2 --region=us-central1 --project=urai-staging --format=json > "$RUNNER_TEMP/function.json"
+          timeout 60s gcloud functions describe deliveryStatusCallback             --gen2 --region=us-central1 --project=urai-staging --format=json > "$RUNNER_TEMP/function.json"
           node - "$RUNNER_TEMP/function.json" <<'NODE'
           const fs=require('node:fs');
           const x=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
@@ -298,7 +301,7 @@ jobs:
         run: |
           set -euo pipefail
           filter="resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"deliverystatuscallback\" AND timestamp>=\"$SENDGRID_PROOF_START\" AND httpRequest.requestMethod=\"POST\""
-          gcloud logging read "$filter"             --project=urai-staging             --limit=50             --order=asc             --format=json > "$RUNNER_TEMP/sendgrid-callback-logs.json"
+          timeout 60s gcloud logging read "$filter"             --project=urai-staging             --limit=50             --order=asc             --format=json > "$RUNNER_TEMP/sendgrid-callback-logs.json"
           node - "$RUNNER_TEMP/sendgrid-callback-logs.json" <<'NODE'
           const fs=require('node:fs');
           const logs=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
