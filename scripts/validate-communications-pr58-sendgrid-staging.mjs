@@ -43,7 +43,7 @@ const required = [
   'timeout --kill-after=30s 8m firebase deploy',
   'timeout --kill-after=5s 60s gcloud functions describe',
   'timeout --kill-after=5s 60s gcloud logging read',
-  'job-level timeout retains a cleanup window',
+  'deadline-bounded so mandatory webhook reconciliation retains a cleanup window',
   'Start bounded SendGrid proof budget',
   'SENDGRID_JOB_START_EPOCH=$(date +%s)',
   'Require reserved provider-mutation and cleanup budget',
