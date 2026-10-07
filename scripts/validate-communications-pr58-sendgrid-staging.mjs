@@ -36,6 +36,14 @@ const required = [
   'Delete and reconcile temporary SendGrid webhook',
   'sendgrid-after-cleanup.json',
   '--connect-timeout 10 --max-time 30',
+  'timeout 45s gcloud secrets describe',
+  'timeout 60s gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
+  'timeout 60s gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET',
+  'timeout 45s gcloud secrets versions list TWILIO_AUTH_TOKEN',
+  'timeout 8m firebase deploy',
+  'timeout 60s gcloud functions describe',
+  'timeout 60s gcloud logging read',
+  'job-level timeout retains a cleanup window',
   'Temporary SendGrid webhook reconciliation left',
   'gcloud logging read',
   'secretMaterialRetained:false',
@@ -60,6 +68,14 @@ const forbidden = [
 for (const [pattern,label] of forbidden) {
   if (pattern.test(text)) throw new Error(`forbidden SendGrid staging marker: ${label}`);
 }
+const installIndex = text.indexOf('- name: Install exact dependencies and Firebase CLI');
+const createIndex = text.indexOf('- name: Prove SendGrid webhook capacity and create temporary disabled endpoint');
+const deployIndex = text.indexOf('- name: Deploy exact signed callback to staging only');
+const cleanupIndex = text.indexOf('- name: Delete and reconcile temporary SendGrid webhook');
+if (!(installIndex >= 0 && installIndex < createIndex && createIndex < deployIndex && deployIndex < cleanupIndex)) {
+  throw new Error('SendGrid staging mutation/cleanup ordering regressed');
+}
+
 console.log('Communications main SendGrid signed staging workflow contract OK');
 
 const bootstrapRequired = [
