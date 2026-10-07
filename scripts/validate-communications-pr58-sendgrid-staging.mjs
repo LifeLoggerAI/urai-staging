@@ -36,14 +36,18 @@ const required = [
   'Delete and reconcile temporary SendGrid webhook',
   'sendgrid-after-cleanup.json',
   '--connect-timeout 10 --max-time 30',
-  'timeout 45s gcloud secrets describe',
-  'timeout 60s gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
-  'timeout 60s gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET',
-  'timeout 45s gcloud secrets versions list TWILIO_AUTH_TOKEN',
-  'timeout 8m firebase deploy',
-  'timeout 60s gcloud functions describe',
-  'timeout 60s gcloud logging read',
+  'timeout --kill-after=5s 45s gcloud secrets describe',
+  'timeout --kill-after=5s 60s gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
+  'timeout --kill-after=5s 60s gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET',
+  'timeout --kill-after=5s 45s gcloud secrets versions list TWILIO_AUTH_TOKEN',
+  'timeout --kill-after=30s 8m firebase deploy',
+  'timeout --kill-after=5s 60s gcloud functions describe',
+  'timeout --kill-after=5s 60s gcloud logging read',
   'job-level timeout retains a cleanup window',
+  'Start bounded SendGrid proof budget',
+  'SENDGRID_JOB_START_EPOCH=$(date +%s)',
+  'Require reserved provider-mutation and cleanup budget',
+  'at least 25 minutes of the 35-minute job budget must remain',
   'Temporary SendGrid webhook reconciliation left',
   'gcloud logging read',
   'secretMaterialRetained:false',
@@ -69,10 +73,11 @@ for (const [pattern,label] of forbidden) {
   if (pattern.test(text)) throw new Error(`forbidden SendGrid staging marker: ${label}`);
 }
 const installIndex = text.indexOf('- name: Install exact dependencies and Firebase CLI');
+const budgetIndex = text.indexOf('- name: Require reserved provider-mutation and cleanup budget');
 const createIndex = text.indexOf('- name: Prove SendGrid webhook capacity and create temporary disabled endpoint');
 const deployIndex = text.indexOf('- name: Deploy exact signed callback to staging only');
 const cleanupIndex = text.indexOf('- name: Delete and reconcile temporary SendGrid webhook');
-if (!(installIndex >= 0 && installIndex < createIndex && createIndex < deployIndex && deployIndex < cleanupIndex)) {
+if (!(installIndex >= 0 && installIndex < budgetIndex && budgetIndex < createIndex && createIndex < deployIndex && deployIndex < cleanupIndex)) {
   throw new Error('SendGrid staging mutation/cleanup ordering regressed');
 }
 
