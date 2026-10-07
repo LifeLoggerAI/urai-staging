@@ -33,7 +33,7 @@ test('seals a successful provider test only against its exact run and deployed c
 });
 
 test('unrelated or predecessor callback POSTs cannot certify the current provider test', () => {
-  for (const requestUrl of [callbackUrl.replace('-123', '-122'), callbackUrl.replace('uraiProof=', 'unrelated='), 'https://us-central1-urai-staging.cloudfunctions.net/deliveryStatusCallback']) {
+  for (const requestUrl of [callbackUrl.replace('-123', '-122'), callbackUrl.replace('deliveryStatusCallback', 'otherCallback'), callbackUrl.replace('uraiProof=', 'unrelated='), 'https://us-central1-urai-staging.cloudfunctions.net/deliveryStatusCallback']) {
     const input = fixture(); input.logs[0].httpRequest.requestUrl = requestUrl;
     assert.throws(() => verifySendGridStagingCallback(input), /No callback POST matched/);
   }
