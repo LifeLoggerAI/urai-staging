@@ -39,6 +39,12 @@ jobs:
       CROSS_REPO_READ_SSH_KEY: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}
       SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
     steps:
+      - name: Start bounded SendGrid proof budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "SENDGRID_JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Checkout exact staging candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -170,8 +176,23 @@ jobs:
           echo "$cli_root/node_modules/.bin" >> "$GITHUB_PATH"
 
       # All checkout/install/setup work above is credentialed but provider-nonmutating.
-      # From this point forward every external process is deadline-bounded so the
-      # job-level timeout retains a cleanup window for the temporary webhook.
+      # Provider mutation is admitted only while at least 25 minutes of the
+      # 35-minute job budget remains. Every external process after admission is
+      # deadline-bounded so mandatory webhook reconciliation retains a cleanup window.
+      - name: Require reserved provider-mutation and cleanup budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${SENDGRID_JOB_START_EPOCH:-}" || { echo 'SendGrid job start marker missing.' >&2; exit 56; }
+          now_epoch="$(date +%s)"
+          elapsed_seconds="$((now_epoch - SENDGRID_JOB_START_EPOCH))"
+          test "$elapsed_seconds" -ge 0 || { echo 'Invalid SendGrid job elapsed time.' >&2; exit 56; }
+          if [ "$elapsed_seconds" -gt 600 ]; then
+            echo "Provider mutation refused: setup consumed ${elapsed_seconds}s; at least 25 minutes of the 35-minute job budget must remain before webhook creation." >&2
+            exit 56
+          fi
+          echo "SENDGRID_MUTATION_ADMISSION_ELAPSED_SECONDS=$elapsed_seconds" >> "$GITHUB_ENV"
+
       - name: Prove SendGrid webhook capacity and create temporary disabled endpoint
         id: webhook
         shell: bash
@@ -229,16 +250,16 @@ jobs:
           # staging administrator. The GitHub deploy identity can add versions
           # but cannot create secrets or mutate Secret Manager IAM.
           for secret in SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY DELIVERY_STATUS_CALLBACK_SECRET TWILIO_AUTH_TOKEN; do
-            timeout 45s gcloud secrets describe "$secret" --project=urai-staging >/dev/null
+            timeout --kill-after=5s 45s gcloud secrets describe "$secret" --project=urai-staging >/dev/null
           done
 
-          printf '%s' "$public_key" | timeout 60s gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY --project=urai-staging --data-file=- >/dev/null
+          printf '%s' "$public_key" | timeout --kill-after=5s 60s gcloud secrets versions add SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY --project=urai-staging --data-file=- >/dev/null
 
           synthetic_secret="$(openssl rand -hex 32)"
           echo "::add-mask::$synthetic_secret"
-          printf '%s' "$synthetic_secret" | timeout 60s gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET --project=urai-staging --data-file=- >/dev/null
+          printf '%s' "$synthetic_secret" | timeout --kill-after=5s 60s gcloud secrets versions add DELIVERY_STATUS_CALLBACK_SECRET --project=urai-staging --data-file=- >/dev/null
 
-          twilio_enabled_versions="$(timeout 45s gcloud secrets versions list TWILIO_AUTH_TOKEN --project=urai-staging --filter='state=ENABLED' --format='value(name)' --limit=1)"
+          twilio_enabled_versions="$(timeout --kill-after=5s 45s gcloud secrets versions list TWILIO_AUTH_TOKEN --project=urai-staging --filter='state=ENABLED' --format='value(name)' --limit=1)"
           test -n "$twilio_enabled_versions" || {
             echo 'TWILIO_AUTH_TOKEN requires an enabled staging secret version because the exact callback binds it.' >&2
             exit 55
@@ -260,14 +281,14 @@ jobs:
           ENABLE_REAL_DELIVERY=false
           DEFAULT_TENANT_TIMEZONE=America/Chicago
           EOF
-          timeout 8m firebase deploy             --project urai-staging             --only functions:deliveryStatusCallback             --non-interactive
+          timeout --kill-after=30s 8m firebase deploy             --project urai-staging             --only functions:deliveryStatusCallback             --non-interactive
           rm -f functions/.env.urai-staging
 
       - name: Verify deployed secret bindings without values
         shell: bash
         run: |
           set -euo pipefail
-          timeout 60s gcloud functions describe deliveryStatusCallback             --gen2 --region=us-central1 --project=urai-staging --format=json > "$RUNNER_TEMP/function.json"
+          timeout --kill-after=5s 60s gcloud functions describe deliveryStatusCallback             --gen2 --region=us-central1 --project=urai-staging --format=json > "$RUNNER_TEMP/function.json"
           node - "$RUNNER_TEMP/function.json" <<'NODE'
           const fs=require('node:fs');
           const x=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
@@ -301,7 +322,7 @@ jobs:
         run: |
           set -euo pipefail
           filter="resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"deliverystatuscallback\" AND timestamp>=\"$SENDGRID_PROOF_START\" AND httpRequest.requestMethod=\"POST\""
-          timeout 60s gcloud logging read "$filter"             --project=urai-staging             --limit=50             --order=asc             --format=json > "$RUNNER_TEMP/sendgrid-callback-logs.json"
+          timeout --kill-after=5s 60s gcloud logging read "$filter"             --project=urai-staging             --limit=50             --order=asc             --format=json > "$RUNNER_TEMP/sendgrid-callback-logs.json"
           node - "$RUNNER_TEMP/sendgrid-callback-logs.json" <<'NODE'
           const fs=require('node:fs');
           const logs=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
