@@ -1,8 +1,11 @@
 import fs from 'node:fs';
+import { spawnSync } from 'node:child_process';
 
 const workflowPath = '.github/workflows/communications-pr58-sendgrid-staging-e2e.yml';
 const bootstrapPath = 'scripts/bootstrap-staging-sendgrid-proof-iam.sh';
 const text = fs.readFileSync(workflowPath, 'utf8');
+const callbackHelper = fs.readFileSync('scripts/verify-sendgrid-staging-callback.mjs', 'utf8');
+const authorityText = `${text}\n${callbackHelper}`;
 const bootstrap = fs.readFileSync(bootstrapPath, 'utf8');
 const required = [
   'name: Communications main SendGrid Signed Protected Staging E2E',
@@ -50,12 +53,13 @@ const required = [
   'at least 25 minutes of the 35-minute job budget must remain',
   'Temporary SendGrid webhook reconciliation left',
   'gcloud logging read',
+  'verifySendGridStagingCallback',
   'secretMaterialRetained:false',
   'productionDeploymentAuthorized:false',
   'realEmailSendPerformed:false'
 ];
 for (const marker of required) {
-  if (!text.includes(marker)) throw new Error(`missing SendGrid staging marker: ${marker}`);
+  if (!authorityText.includes(marker)) throw new Error(`missing SendGrid staging marker: ${marker}`);
 }
 
 const forbidden = [
@@ -106,3 +110,5 @@ for (const marker of ['roles/owner','roles/editor','roles/firebase.admin','roles
   if (!bootstrap.includes(marker)) throw new Error(`missing broad-role rejection marker: ${marker}`);
 }
 console.log('Communications main SendGrid least-privilege IAM bootstrap contract OK');
+const callbackTests = spawnSync(process.execPath, ['--test', 'scripts/test-sendgrid-staging-callback.mjs'], { stdio: 'inherit' });
+if (callbackTests.status !== 0) throw new Error('Run-bound SendGrid callback proof tests failed');

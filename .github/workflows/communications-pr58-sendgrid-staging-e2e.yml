@@ -323,29 +323,21 @@ jobs:
           set -euo pipefail
           filter="resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"deliverystatuscallback\" AND timestamp>=\"$SENDGRID_PROOF_START\" AND httpRequest.requestMethod=\"POST\""
           timeout --kill-after=5s 60s gcloud logging read "$filter"             --project=urai-staging             --limit=50             --order=asc             --format=json > "$RUNNER_TEMP/sendgrid-callback-logs.json"
-          node - "$RUNNER_TEMP/sendgrid-callback-logs.json" <<'NODE'
-          const fs=require('node:fs');
-          const logs=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const posts=logs.filter(x=>x.httpRequest?.requestMethod==='POST');
-          if (!posts.length) throw new Error('no SendGrid callback POST observed');
-          const ok=posts.find(x=>Number(x.httpRequest?.status)>=200 && Number(x.httpRequest?.status)<300);
-          if (!ok) {
-            const statuses=posts.map(x=>x.httpRequest?.status);
-            throw new Error('no 2xx callback observed; statuses='+JSON.stringify(statuses));
-          }
-          const badOld=posts.find(x=>String(x.textPayload||'').includes('invalid_callback_secret'));
-          if (badOld) throw new Error('stale invalid_callback_secret behavior observed');
-          fs.writeFileSync('artifacts-sendgrid.json', JSON.stringify({
-            schemaVersion:'urai-sendgrid-signed-staging-e2e-1',
-            communicationsSha:process.env.COMMUNICATIONS_SHA,
-            stagingProject:'urai-staging',
-            sendGridTestHttp:Number(process.env.SENDGRID_TEST_HTTP),
-            callbackHttp:Number(ok.httpRequest.status),
-            signedWebhook:true,
-            realEmailSendPerformed:false,
-            productionDeploymentAuthorized:false,
-            secretMaterialRetained:false
-          },null,2)+'\n');
+          node --input-type=module - "$RUNNER_TEMP/sendgrid-callback-logs.json" "$RUNNER_TEMP/function.json" <<'NODE'
+          import fs from 'node:fs';
+          import { verifySendGridStagingCallback } from './scripts/verify-sendgrid-staging-callback.mjs';
+          const receipt = verifySendGridStagingCallback({
+            logs: JSON.parse(fs.readFileSync(process.argv[2], 'utf8')),
+            functionInfo: JSON.parse(fs.readFileSync(process.argv[3], 'utf8')),
+            callbackUrl: process.env.STAGING_CALLBACK_URL,
+            communicationsSha: process.env.COMMUNICATIONS_SHA,
+            stagingSha: process.env.GITHUB_SHA,
+            runId: process.env.GITHUB_RUN_ID,
+            sendGridTestHttp: process.env.SENDGRID_TEST_HTTP,
+            startTime: process.env.SENDGRID_PROOF_START,
+            runtimeServiceAccount: process.env.RUNTIME_SERVICE_ACCOUNT,
+          });
+          fs.writeFileSync('artifacts-sendgrid.json', JSON.stringify(receipt, null, 2)+'\n');
           NODE
 
       - name: Delete and reconcile temporary SendGrid webhook
