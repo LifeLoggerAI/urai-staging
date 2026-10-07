@@ -20,7 +20,7 @@ function fixture({update=()=>{},reviewer='LimberNutz0',permission='write'}={}) {
 }
 const options=()=>({sha,ref:`refs/heads/${controller.branch}`,profileName:'working-pr84',runId:'123',provider:'sendgrid',policy,api:fixture()});
 
-test('canonical759 and exact unmerged working84 are distinct governed source profiles',async()=>{
+test('current canonical main and retained admitted component84 are distinct governed source profiles',async()=>{
   assert.equal(sourceProfile('working-pr84').sha,'274f53573f4d3bf843047e285f080083a55fe1ab');
   for(const profileName of ['canonical-main','working-pr84']){
     const binding=await verifyStagingVerificationBinding({...options(),profileName});
@@ -46,7 +46,7 @@ test('arbitrary profile, producer SHA or controller branch fails before any appr
   }
 });
 test('controller109 exact head, lineage and nondraft identity are enforced',async()=>{
-  for(const update of [value=>{value.head.sha='b'.repeat(40);},value=>{value.head.ref='other';},value=>{value.base.ref='main';},value=>{value.draft=true;},value=>{value.state='closed';}]){
+  for(const update of [value=>{value.head.sha='b'.repeat(40);},value=>{value.head.ref='other';},value=>{value.base.ref='historical-base';},value=>{value.draft=true;},value=>{value.state='closed';}]){
     await assert.rejects(verifyStagingVerificationBinding({...options(),api:fixture({update})}));
   }
 });
@@ -70,4 +70,5 @@ test('retained proof rejects stale controller/run, wrong provider/reviewer/PR an
     assert.throws(()=>checkRetainedBinding(value,{stagingSha:sha,communicationsSha:original.communications.sha,runId:'123',provider:'sendgrid'}));
   }
 });
+
 

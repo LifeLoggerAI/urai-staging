@@ -1,17 +1,16 @@
 # SendGrid staging independent review prerequisite
 
 PR #109 is the proposed combined staging verification controller. Its owned branch is
-`repair/staging-provider-harness-converged-20261007`, targeting the unchanged #106
-branch `governance/sendgrid-current-review-20261006`. Main, #106, and canonical
-`config/staging-consumers.json` retain Communications
-`759f664cdf00a48272f5401b7cfc45bbd8afb537`. Predecessor approvals do not transfer.
+`repair/staging-provider-harness-converged-20261007`, targeting canonical `main`.
+The proposed canonical consumer manifest selects deliberately admitted Communications
+`89e37603ef28a1309e2311ed7cf36bd64592b8c8`. Predecessor approvals do not transfer.
 
 This draft offers two source-controlled verification profiles: `canonical-main`
-checks that retained main759 pin; `working-pr84` checks unmerged Communications
+checks that admitted main pin; `working-pr84` retains the original component source of Communications
 #84 at `274f53573f4d3bf843047e285f080083a55fe1ab`, on
 `codex/communications-component-integration-20261007`. Neither profile changes
-canonical consumers or admits arbitrary repository/branch/SHA inputs. This is
-scoped proposed staging verification, not main adoption or runtime acceptance.
+provider permissions or admits arbitrary repository/branch/SHA inputs. The proposed
+source/policy admission has not established protected runtime acceptance.
 
 Before protected SendGrid or Twilio execution, the actual `$GITHUB_SHA` must equal
 the unchanged open, non-draft PR #109 head on its declared branch and base, with:
@@ -36,3 +35,13 @@ No approval is recorded by this document. No provider operation, spend, producti
 
 STAGING_REVIEW_PR_NUMBER is explicitly 109. A new PR or merge commit must be reviewed at its own exact identity and the bound review target deliberately updated; a closed/predecessor review cannot silently authorize it. The current draft has no actual native independent approval or protected provider execution receipt.
 
+
+
+## Current canonical source admission
+
+Communications #84 is merged at `89e37603ef28a1309e2311ed7cf36bd64592b8c8`.
+Both proposed canonical consumer pins and the native controller lineage now select
+that admitted owner source; the retained working-pr84 profile remains its exact
+component parent. The canon provenance notice admitted by Staging #110 is retained.
+The new controller head must earn fresh exact-head checks and native independent
+approval. No prior source check or approval transfers, and no provider call was made.

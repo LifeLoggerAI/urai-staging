@@ -56,7 +56,7 @@ for (const marker of required) if (!authorityText.includes(marker)) throw new Er
 const communicationsInputBlock = text.match(/communications_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
 if (!communicationsInputBlock.includes('required: true')) throw new Error('communications_sha must remain a required workflow_dispatch input');
 if (/\bdefault\s*:/.test(communicationsInputBlock)) throw new Error('communications_sha must not carry a stale workflow_dispatch default; exact authority must be supplied explicitly');
-if (!text.includes("EXPECTED_COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || '759f664cdf00a48272f5401b7cfc45bbd8afb537' }}")) throw new Error('owner-trigger path must remain pinned to current canonical Communications authority');
+if (!text.includes("EXPECTED_COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || '89e37603ef28a1309e2311ed7cf36bd64592b8c8' }}")) throw new Error('owner-trigger path must remain pinned to current canonical Communications authority');
 if (!text.includes("CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}")) throw new Error('controller SHA must bind to the actual executing source');
 const gateIndex=text.indexOf('node scripts/verify-staging-verification-binding.mjs');
 if (!(gateIndex > 0 && gateIndex < text.indexOf('- name: Authenticate WIF'))) throw new Error('Twilio native exact-head review must precede WIF/provider mutation');
@@ -81,3 +81,4 @@ if (!uploadStep.startsWith('- name: Upload sanitized retained proof')) throw new
 if (!uploadStep.includes('if: ${{ success() }}')) throw new Error('sanitized proof upload must be success-gated');
 if (/if:\s*always\(\)/.test(uploadStep.split(/\n\s*- name:/, 1)[0])) throw new Error('sanitized proof upload cannot run on failure');
 console.log('Communications main Twilio staging workflow contract OK');
+

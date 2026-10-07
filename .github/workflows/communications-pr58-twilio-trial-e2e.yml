@@ -61,7 +61,7 @@ jobs:
       pull-requests: read
       id-token: write
     env:
-      EXPECTED_COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || '759f664cdf00a48272f5401b7cfc45bbd8afb537' }}
+      EXPECTED_COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || '89e37603ef28a1309e2311ed7cf36bd64592b8c8' }}
       COMMUNICATIONS_SOURCE_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_source_profile || 'canonical-main' }}
       CONFIRM_STAGING_PROJECT: ${{ inputs.confirm_staging_project }}
       CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}
@@ -366,3 +366,4 @@ jobs:
           path: artifacts/communications-twilio/receipt.json
           if-no-files-found: error
           retention-days: 90
+
