@@ -65,12 +65,14 @@ function setJsonHeaders(request: functions.Request, response: functions.Response
   response.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-URAI-Staging-Write-Key');
   response.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.set('Cache-Control', 'no-store');
+  response.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
 }
 
 function rejectUnapprovedOrigin(request: functions.Request, response: functions.Response): boolean {
   const origin = request.get('origin');
   if (isAllowedStagingOrigin(origin)) return false;
   response.set('Cache-Control', 'no-store');
+  response.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   response.status(403).json({ status: 'error', error: 'origin_not_allowed' });
   return true;
 }
