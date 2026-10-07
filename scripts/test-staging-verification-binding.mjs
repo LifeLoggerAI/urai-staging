@@ -32,13 +32,17 @@ test('current canonical main and retained admitted component84 are distinct gove
     assert.equal(checkRetainedBinding(binding,{stagingSha:sha,communicationsSha:binding.communications.sha,runId:'123',provider:'sendgrid'}).stagingReviewPr,109);
   }
 });
-test('predecessor working84 source cannot authorize current verification or retained proof',async()=>{
-  const predecessor='911ba3d2739ad64100148cfc827c55ad8915ff7a';
-  await assert.rejects(verifyStagingVerificationBinding({...options(),expectedCommunicationsSha:predecessor,
-    api:()=>{throw Error('API SHOULD NOT RUN');}}),/outside selected/);
-  const binding=structuredClone(await verifyStagingVerificationBinding(options()));
-  binding.communications.sha=predecessor;
-  assert.throws(()=>checkRetainedBinding(binding,{stagingSha:sha,communicationsSha:predecessor,runId:'123',provider:'sendgrid'}),/governed profile/);
+test('predecessor canonical main and working84 sources cannot authorize current verification or retained proof',async()=>{
+  for(const [profileName,predecessor] of [
+    ['canonical-main','89e37603ef28a1309e2311ed7cf36bd64592b8c8'],
+    ['working-pr84','911ba3d2739ad64100148cfc827c55ad8915ff7a']
+  ]){
+    await assert.rejects(verifyStagingVerificationBinding({...options(),profileName,expectedCommunicationsSha:predecessor,
+      api:()=>{throw Error('API SHOULD NOT RUN');}}),/outside selected/);
+    const binding=structuredClone(await verifyStagingVerificationBinding({...options(),profileName}));
+    binding.communications.sha=predecessor;
+    assert.throws(()=>checkRetainedBinding(binding,{stagingSha:sha,communicationsSha:predecessor,runId:'123',provider:'sendgrid'}),/governed profile/);
+  }
 });
 test('arbitrary profile, producer SHA or controller branch fails before any approval request',async()=>{
   for(const bad of [{profileName:'attacker'},{expectedCommunicationsSha:'b'.repeat(40)},{ref:'refs/heads/main'},{ref:'refs/heads/arbitrary'}]){

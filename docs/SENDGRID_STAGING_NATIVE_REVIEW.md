@@ -3,9 +3,9 @@
 PR #109 is the proposed combined staging verification controller. Its owned branch is
 `repair/staging-provider-harness-converged-20261007`, targeting canonical `main`.
 The proposed canonical consumer manifest selects deliberately admitted Communications
-`89e37603ef28a1309e2311ed7cf36bd64592b8c8`. Predecessor approvals do not transfer.
+`40cd2f4b6d422734869486a49cddac9e103a58f1`. Predecessor approvals do not transfer.
 
-This draft offers two source-controlled verification profiles: `canonical-main`
+This controller offers two source-controlled verification profiles: `canonical-main`
 checks that admitted main pin; `working-pr84` retains the original component source of Communications
 #84 at `274f53573f4d3bf843047e285f080083a55fe1ab`, on
 `codex/communications-component-integration-20261007`. Neither profile changes
@@ -33,13 +33,14 @@ embedding a circular self-referential commit SHA in source.
 
 No approval is recorded by this document. No provider operation, spend, production deployment or external message is authorized by a preflight receipt. Human independence remains a real disclosure and judgment requirement.
 
-STAGING_REVIEW_PR_NUMBER is explicitly 109. A new PR or merge commit must be reviewed at its own exact identity and the bound review target deliberately updated; a closed/predecessor review cannot silently authorize it. The current draft has no actual native independent approval or protected provider execution receipt.
+STAGING_REVIEW_PR_NUMBER is explicitly 109. A new PR or merge commit must be reviewed at its own exact identity and the bound review target deliberately updated; a closed/predecessor review cannot silently authorize it. The current controller has no actual native independent approval or protected provider execution receipt.
 
 
 
 ## Current canonical source admission
 
-Communications #84 is merged at `89e37603ef28a1309e2311ed7cf36bd64592b8c8`.
+Communications #88 is merged at `40cd2f4b6d422734869486a49cddac9e103a58f1`.
+The prior #84 merge `89e37603ef28a1309e2311ed7cf36bd64592b8c8` remains historical source evidence.
 Both proposed canonical consumer pins and the native controller lineage now select
 that admitted owner source; the retained working-pr84 profile remains its exact
 component parent. The canon provenance notice admitted by Staging #110 is retained.

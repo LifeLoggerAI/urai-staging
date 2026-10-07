@@ -46,7 +46,7 @@ function validateProviders(providers, requiredIds, lane) {
 validateProviders(registry.councilProviders, requiredCouncil, 'Council')
 validateProviders(registry.voiceProviders, requiredVoice, 'Voice')
 
-const communicationsExactSha = '89e37603ef28a1309e2311ed7cf36bd64592b8c8'
+const communicationsExactSha = '40cd2f4b6d422734869486a49cddac9e103a58f1'
 assert.equal(registry.sourceSnapshot?.repository, 'LifeLoggerAI/urai-communications')
 assert.equal(registry.sourceSnapshot?.sourceBranch, 'main')
 assert.equal(registry.sourceSnapshot?.sourceRef, 'refs/heads/main')

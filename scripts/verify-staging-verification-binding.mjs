@@ -6,7 +6,7 @@ import { verifyStagingApproval } from './verify-sendgrid-staging-approval.mjs';
 
 export const controller = Object.freeze({ repository:'LifeLoggerAI/urai-staging', pr:109,
   branch:'repair/staging-provider-harness-converged-20261007', base:'main', reviewer:'LimberNutz0' });
-export const canonicalCommunicationsSha = '89e37603ef28a1309e2311ed7cf36bd64592b8c8';
+export const canonicalCommunicationsSha = '40cd2f4b6d422734869486a49cddac9e103a58f1';
 const profiles = Object.freeze({
   'canonical-main': Object.freeze({ repository:'LifeLoggerAI/urai-communications', sha:canonicalCommunicationsSha, branch:'main', pr:null }),
   'working-pr84': Object.freeze({ repository:'LifeLoggerAI/urai-communications', sha:'274f53573f4d3bf843047e285f080083a55fe1ab',

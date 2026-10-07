@@ -14,7 +14,7 @@ const required = [
   'workflow_dispatch:',
   'environment: staging',
   'LifeLoggerAI/urai-communications',
-  '89e37603ef28a1309e2311ed7cf36bd64592b8c8',
+  '40cd2f4b6d422734869486a49cddac9e103a58f1',
   '274f53573f4d3bf843047e285f080083a55fe1ab',
   "STAGING_REVIEW_PR_NUMBER: '109'",
   'verify-staging-verification-binding.mjs',
