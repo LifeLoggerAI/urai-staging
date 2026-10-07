@@ -64,7 +64,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -n "${CROSS_REPO_READ_TOKEN:-}" ]; then
-            live_sha="$(curl --silent --show-error --fail \
+            live_sha="$(curl --connect-timeout 10 --max-time 30 --silent --show-error --fail \
               -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -143,7 +143,7 @@ jobs:
           echo "STAGING_CALLBACK_URL=$callback_url" >> "$GITHUB_ENV"
           echo "SENDGRID_PROOF_FRIENDLY_NAME=$friendly_name" >> "$GITHUB_ENV"
 
-          all="$(curl -fsS \
+          all="$(curl --connect-timeout 10 --max-time 30 -fsS \
             -H "Authorization: Bearer $SENDGRID_API_KEY" \
             https://api.sendgrid.com/v3/user/webhooks/event/settings/all)"
           printf '%s' "$all" > "$RUNNER_TEMP/sendgrid-before.json"
@@ -153,7 +153,7 @@ jobs:
 
           create_body="$(node -e "process.stdout.write(JSON.stringify({enabled:false,url:process.env.STAGING_CALLBACK_URL,processed:true,delivered:true,deferred:true,bounce:true,dropped:true,spam_report:true,unsubscribe:true,open:false,click:false,group_unsubscribe:false,group_resubscribe:false,friendly_name:process.env.SENDGRID_PROOF_FRIENDLY_NAME}))")"
           set +e
-          code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-create.json" -w '%{http_code}' \
+          code="$(curl --connect-timeout 10 --max-time 30 -sS -o "$RUNNER_TEMP/sendgrid-create.json" -w '%{http_code}' \
             -X POST https://api.sendgrid.com/v3/user/webhooks/event/settings \
             -H "Authorization: Bearer $SENDGRID_API_KEY" \
             -H 'Content-Type: application/json' \
@@ -178,7 +178,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-signed.json" -w '%{http_code}'             -X PATCH "https://api.sendgrid.com/v3/user/webhooks/event/settings/signed/$SENDGRID_STAGING_WEBHOOK_ID"             -H "Authorization: Bearer $SENDGRID_API_KEY"             -H 'Content-Type: application/json'             --data '{"enabled":true}')"
+          code="$(curl --connect-timeout 10 --max-time 30 -sS -o "$RUNNER_TEMP/sendgrid-signed.json" -w '%{http_code}'             -X PATCH "https://api.sendgrid.com/v3/user/webhooks/event/settings/signed/$SENDGRID_STAGING_WEBHOOK_ID"             -H "Authorization: Bearer $SENDGRID_API_KEY"             -H 'Content-Type: application/json'             --data '{"enabled":true}')"
           test "$code" = "200" || { cat "$RUNNER_TEMP/sendgrid-signed.json"; exit 54; }
           public_key="$(node -e "const x=require(process.argv[1]); if(!x.public_key) process.exit(1); process.stdout.write(x.public_key)" "$RUNNER_TEMP/sendgrid-signed.json")"
           echo "::add-mask::$public_key"
@@ -282,13 +282,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          patch_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-enable.json" -w '%{http_code}'             -X PATCH "https://api.sendgrid.com/v3/user/webhooks/event/settings/$SENDGRID_STAGING_WEBHOOK_ID"             -H "Authorization: Bearer $SENDGRID_API_KEY"             -H 'Content-Type: application/json'             --data '{"enabled":true}')"
+          patch_code="$(curl --connect-timeout 10 --max-time 30 -sS -o "$RUNNER_TEMP/sendgrid-enable.json" -w '%{http_code}'             -X PATCH "https://api.sendgrid.com/v3/user/webhooks/event/settings/$SENDGRID_STAGING_WEBHOOK_ID"             -H "Authorization: Bearer $SENDGRID_API_KEY"             -H 'Content-Type: application/json'             --data '{"enabled":true}')"
           test "$patch_code" = "200" || { cat "$RUNNER_TEMP/sendgrid-enable.json"; exit 61; }
 
           start_time="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           echo "SENDGRID_PROOF_START=$start_time" >> "$GITHUB_ENV"
           test_body="$(node -e "process.stdout.write(JSON.stringify({id:process.env.SENDGRID_STAGING_WEBHOOK_ID,url:process.env.STAGING_CALLBACK_URL}))")"
-          test_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-test.txt" -w '%{http_code}'             -X POST https://api.sendgrid.com/v3/user/webhooks/event/test             -H "Authorization: Bearer $SENDGRID_API_KEY"             -H 'Content-Type: application/json'             --data "$test_body")"
+          test_code="$(curl --connect-timeout 10 --max-time 30 -sS -o "$RUNNER_TEMP/sendgrid-test.txt" -w '%{http_code}'             -X POST https://api.sendgrid.com/v3/user/webhooks/event/test             -H "Authorization: Bearer $SENDGRID_API_KEY"             -H 'Content-Type: application/json'             --data "$test_body")"
           test "$test_code" = "204" || { cat "$RUNNER_TEMP/sendgrid-test.txt"; exit 62; }
           echo "SENDGRID_TEST_HTTP=$test_code" >> "$GITHUB_ENV"
           sleep 12
@@ -334,7 +334,7 @@ jobs:
           delete_webhook() {
             local webhook_id="$1"
             local delete_code
-            delete_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-delete-$webhook_id.txt" -w '%{http_code}' \
+            delete_code="$(curl --connect-timeout 10 --max-time 30 -sS -o "$RUNNER_TEMP/sendgrid-delete-$webhook_id.txt" -w '%{http_code}' \
               -X DELETE "https://api.sendgrid.com/v3/user/webhooks/event/settings/$webhook_id" \
               -H "Authorization: Bearer $SENDGRID_API_KEY" || true)"
             case "$delete_code" in
@@ -358,7 +358,7 @@ jobs:
               echo 'Run-unique SendGrid webhook identity exists but API key is unavailable for reconciliation.' >&2
               cleanup_failed=1
             else
-              current_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-current.json" -w '%{http_code}' \
+              current_code="$(curl --connect-timeout 10 --max-time 30 -sS -o "$RUNNER_TEMP/sendgrid-current.json" -w '%{http_code}' \
                 -H "Authorization: Bearer $SENDGRID_API_KEY" \
                 https://api.sendgrid.com/v3/user/webhooks/event/settings/all || true)"
               if [ "$current_code" != "200" ]; then
@@ -379,7 +379,7 @@ NODE
                   delete_webhook "$orphan_id"
                 done
 
-                verify_code="$(curl -sS -o "$RUNNER_TEMP/sendgrid-after-cleanup.json" -w '%{http_code}' \
+                verify_code="$(curl --connect-timeout 10 --max-time 30 -sS -o "$RUNNER_TEMP/sendgrid-after-cleanup.json" -w '%{http_code}' \
                   -H "Authorization: Bearer $SENDGRID_API_KEY" \
                   https://api.sendgrid.com/v3/user/webhooks/event/settings/all || true)"
                 if [ "$verify_code" != "200" ]; then
