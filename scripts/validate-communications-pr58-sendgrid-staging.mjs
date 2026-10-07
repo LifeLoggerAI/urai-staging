@@ -25,6 +25,7 @@ const required = [
   'https://api.sendgrid.com/v3/user/webhooks/event/test',
   'DELETE',
   'UrAi Staging Signed Proof',
+  'export STAGING_CALLBACK_URL="$callback_url"',
   'gcloud logging read',
   'secretMaterialRetained:false',
   'productionDeploymentAuthorized:false',
