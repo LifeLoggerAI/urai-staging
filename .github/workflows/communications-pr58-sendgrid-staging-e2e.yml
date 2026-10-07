@@ -390,13 +390,13 @@ jobs:
                 cleanup_failed=1
               else
                 mapfile -t orphan_ids < <(node - "$RUNNER_TEMP/sendgrid-current.json" "$STAGING_CALLBACK_URL" "$SENDGRID_PROOF_FRIENDLY_NAME" <<'NODE'
-const fs=require('node:fs');
-const [file,url,name]=process.argv.slice(2);
-const x=JSON.parse(fs.readFileSync(file,'utf8'));
-for (const webhook of x.webhooks||[]) {
-  if ((webhook.url===url || webhook.friendly_name===name) && webhook.id) console.log(webhook.id);
-}
-NODE
+          const fs=require('node:fs');
+          const [file,url,name]=process.argv.slice(2);
+          const x=JSON.parse(fs.readFileSync(file,'utf8'));
+          for (const webhook of x.webhooks||[]) {
+            if ((webhook.url===url || webhook.friendly_name===name) && webhook.id) console.log(webhook.id);
+          }
+          NODE
                 )
                 for orphan_id in "${orphan_ids[@]}"; do
                   echo "::add-mask::$orphan_id"
@@ -411,12 +411,12 @@ NODE
                   cleanup_failed=1
                 else
                   remaining="$(node - "$RUNNER_TEMP/sendgrid-after-cleanup.json" "$STAGING_CALLBACK_URL" "$SENDGRID_PROOF_FRIENDLY_NAME" <<'NODE'
-const fs=require('node:fs');
-const [file,url,name]=process.argv.slice(2);
-const x=JSON.parse(fs.readFileSync(file,'utf8'));
-const matches=(x.webhooks||[]).filter(webhook=>webhook.url===url || webhook.friendly_name===name);
-process.stdout.write(String(matches.length));
-NODE
+          const fs=require('node:fs');
+          const [file,url,name]=process.argv.slice(2);
+          const x=JSON.parse(fs.readFileSync(file,'utf8'));
+          const matches=(x.webhooks||[]).filter(webhook=>webhook.url===url || webhook.friendly_name===name);
+          process.stdout.write(String(matches.length));
+          NODE
                   )"
                   if [ "$remaining" != "0" ]; then
                     echo "Temporary SendGrid webhook reconciliation left $remaining matching endpoint(s)." >&2
