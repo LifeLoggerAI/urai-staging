@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { checkRetainedBinding } from './verify-staging-verification-binding.mjs';
 
 const project = 'urai-staging';
 const service = 'deliverystatuscallback';
@@ -7,11 +8,13 @@ const callbackBase = 'https://us-central1-urai-staging.cloudfunctions.net/delive
 
 export function verifySendGridStagingCallback({
   logs, functionInfo, callbackUrl, communicationsSha, stagingSha, runId,
-  sendGridTestHttp, startTime, runtimeServiceAccount,
+  sendGridTestHttp, startTime, runtimeServiceAccount,verificationBinding,communicationsLiveRefVerified,
 }) {
   assert.match(communicationsSha || '', /^[a-f0-9]{40}$/, 'Missing exact Communications source SHA');
   assert.match(stagingSha || '', /^[a-f0-9]{40}$/, 'Missing exact Staging controller SHA');
   assert.match(String(runId || ''), /^[0-9]+$/, 'Missing exact workflow run identity');
+  const reviewBinding = checkRetainedBinding(verificationBinding,{stagingSha,communicationsSha,runId,provider:'sendgrid'});
+  assert.equal(communicationsLiveRefVerified,true,'Selected live Communications source ref was not verified');
   assert.equal(Number(sendGridTestHttp), 204, 'SendGrid integration test did not return 204');
   const startedAt = Date.parse(startTime || '');
   assert.ok(Number.isFinite(startedAt), 'Missing provider test start time');
@@ -43,6 +46,7 @@ export function verifySendGridStagingCallback({
     communicationsSha,
     stagingControllerSha: stagingSha,
     workflowRunId: String(runId),
+    ...reviewBinding,
     stagingProject: project,
     sendGridTestHttp: 204,
     callbackHttp: Number(ok.httpRequest.status),

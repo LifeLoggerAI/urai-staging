@@ -2,8 +2,10 @@ import fs from 'node:fs';
 
 const path = '.github/workflows/communications-pr58-twilio-trial-e2e.yml';
 const text = fs.readFileSync(path,'utf8');
+const sourceRefHelper = fs.readFileSync('scripts/assert-current-communications-source.sh','utf8');
+const authorityText = `${text}\n${sourceRefHelper}`;
 const required = [
-  'name: Communications main Twilio API-Key Trial Protected Staging E2E',
+  'name: Communications selected Twilio API-Key Trial Protected Staging E2E',
   'workflow_dispatch:',
   'issue_comment:',
   "github.event.issue.number == 76",
@@ -11,7 +13,9 @@ const required = [
   "github.event.comment.author_association == 'OWNER'",
   'github.actor == github.repository_owner',
   'environment: staging',
-  'https://api.github.com/repos/LifeLoggerAI/urai-communications/git/ref/heads/main',
+  'https://api.github.com/repos/LifeLoggerAI/urai-communications/git/ref/heads/$COMMUNICATIONS_BRANCH',
+  'verify-staging-verification-binding.mjs',
+  "STAGING_REVIEW_PR_NUMBER: '109'",
   'LifeLoggerAI/urai-communications',
   'functions:adminTwilioTestSend,functions:adminProviderReadiness,functions:adminDeliveryProof,functions:twilioDeliveryStatusCallback',
   'ENABLE_WEBHOOK_TEST_MODE=false',
@@ -23,7 +27,7 @@ const required = [
   "TWILIO_FROM_NUMBER: ''",
   'URAI_CROSS_REPO_READ_TOKEN',
   'URAI_CROSS_REPO_READ_SSH_KEY',
-  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main',
+  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git "refs/heads/$COMMUNICATIONS_BRANCH"',
   'ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}',
   'GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT',
   'RUNTIME_SERVICE_ACCOUNT',
@@ -47,13 +51,15 @@ const required = [
   'TWILIO_PROOF_WINDOW_DEPLOY_STARTED=true',
   "if: ${{ always() && env.TWILIO_PROOF_WINDOW_DEPLOY_STARTED == 'true' }}"
 ];
-for (const marker of required) if (!text.includes(marker)) throw new Error(`missing Communications Twilio staging marker: ${marker}`);
+for (const marker of required) if (!authorityText.includes(marker)) throw new Error(`missing Communications Twilio staging marker: ${marker}`);
 
 const communicationsInputBlock = text.match(/communications_sha:\n([\s\S]*?)\n\s*expected_controller_sha:/)?.[1] ?? '';
 if (!communicationsInputBlock.includes('required: true')) throw new Error('communications_sha must remain a required workflow_dispatch input');
 if (/\bdefault\s*:/.test(communicationsInputBlock)) throw new Error('communications_sha must not carry a stale workflow_dispatch default; exact authority must be supplied explicitly');
-if (!text.includes("COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7' }}")) throw new Error('owner-trigger path must remain pinned to current Communications main authority');
-if (!text.includes("CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}")) throw new Error('owner-trigger path must bind controller SHA to the triggering main commit');
+if (!text.includes("EXPECTED_COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || '759f664cdf00a48272f5401b7cfc45bbd8afb537' }}")) throw new Error('owner-trigger path must remain pinned to current canonical Communications authority');
+if (!text.includes("CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}")) throw new Error('controller SHA must bind to the actual executing source');
+const gateIndex=text.indexOf('node scripts/verify-staging-verification-binding.mjs');
+if (!(gateIndex > 0 && gateIndex < text.indexOf('- name: Authenticate WIF'))) throw new Error('Twilio native exact-head review must precede WIF/provider mutation');
 if (!text.includes('vars.GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT')) throw new Error('Twilio controller must bind the provider-read runtime service account variable');
 if (!text.includes('test "$RUNTIME_SERVICE_ACCOUNT" != "$DEPLOY_SERVICE_ACCOUNT"')) throw new Error('Twilio controller must keep runtime and deploy service accounts distinct');
 

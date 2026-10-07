@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { verifySendGridStagingCallback } from './verify-sendgrid-staging-callback.mjs';
+import { sourceProfile } from './verify-staging-verification-binding.mjs';
 
-const communicationsSha = 'a'.repeat(40);
+const communicationsSha = sourceProfile('working-pr84').sha;
 const stagingSha = 'b'.repeat(40);
 const callbackUrl = `https://us-central1-urai-staging.cloudfunctions.net/deliveryStatusCallback?uraiProof=${communicationsSha.slice(0, 12)}-123`;
 const revision = 'deliverystatuscallback-00042-abc';
@@ -19,6 +20,13 @@ const fixture = () => ({
   functionInfo: { name: 'projects/urai-staging/locations/us-central1/functions/deliveryStatusCallback', state: 'ACTIVE', serviceConfig: { revision, serviceAccountEmail: runtimeServiceAccount } },
   callbackUrl, communicationsSha, stagingSha, runId: '123', sendGridTestHttp: 204,
   startTime: '2026-10-07T05:00:00Z', runtimeServiceAccount,
+  communicationsLiveRefVerified:true,
+  verificationBinding:{schemaVersion:'urai-proposed-staging-verification-binding-v1',scope:'proposed-staging-verification-only',
+    provider:'sendgrid',profileName:'working-pr84',communications:sourceProfile('working-pr84'),canonicalConsumerAdopted:false,
+    canonicalConsumerSha:sourceProfile('canonical-main').sha,stagingControllerSha:stagingSha,workflowRunId:'123',
+    checkedAt:'2026-10-07T04:59:00Z',providerMutationAuthorizedByThisReceipt:false,productionDeploymentAuthorized:false,
+    approval:{repository:'LifeLoggerAI/urai-staging',prNumber:109,sha:stagingSha,reviewer:'LimberNutz0',reviewId:101,
+      reviewerAccountType:'User',reviewerPermission:'write',requiredWorkflows:['CI','URAI Production Verify']}},
 });
 
 test('seals a successful provider test only against its exact run and deployed callback', () => {
@@ -28,6 +36,10 @@ test('seals a successful provider test only against its exact run and deployed c
   assert.equal(receipt.communicationsSha, communicationsSha);
   assert.equal(receipt.workflowRunId, '123');
   assert.equal(receipt.callbackIdentityMatched, true);
+  assert.equal(receipt.stagingReviewPr,109);
+  assert.equal(receipt.nativeReviewer,'LimberNutz0');
+  assert.equal(receipt.communicationsPr,84);
+  assert.equal(receipt.canonicalConsumerAdopted,false);
   assert.equal(receipt.secretMaterialRetained, false);
   assert.ok(!JSON.stringify(receipt).includes(runtimeServiceAccount));
 });
@@ -78,4 +90,12 @@ test('matching proof can coexist with unrelated traffic without retaining raw lo
   input.logs.unshift({ ...structuredClone(post), httpRequest: { requestMethod: 'POST', status: 200, requestUrl: 'https://unrelated.example/' }, textPayload: 'private raw log value' });
   const receipt = verifySendGridStagingCallback(input);
   assert.ok(!JSON.stringify(receipt).includes('private raw log value'));
+});
+
+test('callback proof cannot promote missing or predecessor native review/source binding',()=>{
+  for(const mutate of [x=>{delete x.verificationBinding;},x=>{x.communicationsLiveRefVerified=false;},
+    x=>{x.verificationBinding.workflowRunId='122';},x=>{x.verificationBinding.approval.prNumber=106;},
+    x=>{x.verificationBinding.approval.sha='a'.repeat(40);},x=>{x.verificationBinding.approval.reviewer='Other';}]){
+    const input=structuredClone(fixture());mutate(input);assert.throws(()=>verifySendGridStagingCallback(input));
+  }
 });

@@ -1,7 +1,14 @@
-name: Communications main SendGrid Signed Protected Staging E2E
+name: Communications selected SendGrid Signed Protected Staging E2E
 
 on:
   workflow_dispatch:
+    inputs:
+      communications_source_profile:
+        description: Governed source for this proposed PR109 verification; canonical consumers remain unchanged
+        required: true
+        type: choice
+        default: working-pr84
+        options: [working-pr84, canonical-main]
 
 permissions:
   contents: read
@@ -13,9 +20,9 @@ concurrency:
 
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
-  COMMUNICATIONS_PR_NUMBER: '75'
-  STAGING_REVIEW_PR_NUMBER: '106'
-  COMMUNICATIONS_SHA: '759f664cdf00a48272f5401b7cfc45bbd8afb537'
+  STAGING_REVIEW_PR_NUMBER: '109'
+  COMMUNICATIONS_SOURCE_PROFILE: ${{ inputs.communications_source_profile }}
+  STAGING_PROVIDER: sendgrid
   STAGING_PROJECT_ID: urai-staging
   FIREBASE_CLI_VERSION: '15.23.0'
 
@@ -63,36 +70,13 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain --untracked-files=all)"
-          node scripts/verify-sendgrid-staging-approval.mjs
+          node scripts/verify-staging-verification-binding.mjs
 
       - name: Prove exact bounded authority
         shell: bash
         run: |
           set -euo pipefail
-          if [ -n "${CROSS_REPO_READ_TOKEN:-}" ]; then
-            live_sha="$(curl --connect-timeout 10 --max-time 30 --silent --show-error --fail \
-              -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              https://api.github.com/repos/LifeLoggerAI/urai-communications/git/ref/heads/main \
-              | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>process.stdout.write(JSON.parse(s).object.sha))")"
-            echo "CROSS_REPO_AUTH_MODE=token" >> "$GITHUB_ENV"
-          elif [ -n "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
-            umask 077
-            key_file="$RUNNER_TEMP/urai-cross-repo-read"
-            known_hosts="$RUNNER_TEMP/urai-github-known-hosts"
-            printf '%s\n' "$CROSS_REPO_READ_SSH_KEY" > "$key_file"
-            ssh-keyscan -t ed25519 github.com > "$known_hosts" 2>/dev/null
-            live_sha="$(GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o UserKnownHostsFile=$known_hosts -o StrictHostKeyChecking=yes" \
-              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main \
-              | awk 'NR==1 {print $1}')"
-            test -n "$live_sha" || { echo 'read-only deploy key could not resolve Communications main head' >&2; exit 41; }
-            echo "CROSS_REPO_AUTH_MODE=ssh" >> "$GITHUB_ENV"
-          else
-            echo 'missing URAI_CROSS_REPO_READ_TOKEN and URAI_CROSS_REPO_READ_SSH_KEY' >&2
-            exit 41
-          fi
-          test "$live_sha" = "$COMMUNICATIONS_SHA" || { echo "Communications main moved: $live_sha" >&2; exit 42; }
+          bash scripts/assert-current-communications-source.sh
           node scripts/validate-staging-consumers.mjs
           node scripts/validate-communications-pr58-sendgrid-staging.mjs
           for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL; do
@@ -181,6 +165,8 @@ jobs:
       # deadline-bounded so mandatory webhook reconciliation retains a cleanup window.
       - name: Require reserved provider-mutation and cleanup budget
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           test -n "${SENDGRID_JOB_START_EPOCH:-}" || { echo 'SendGrid job start marker missing.' >&2; exit 56; }
@@ -191,6 +177,8 @@ jobs:
             echo "Provider mutation refused: setup consumed ${elapsed_seconds}s; at least 25 minutes of the 35-minute job budget must remain before webhook creation." >&2
             exit 56
           fi
+          node scripts/verify-staging-verification-binding.mjs
+          bash scripts/assert-current-communications-source.sh
           echo "SENDGRID_MUTATION_ADMISSION_ELAPSED_SECONDS=$elapsed_seconds" >> "$GITHUB_ENV"
 
       - name: Prove SendGrid webhook capacity and create temporary disabled endpoint
@@ -336,6 +324,8 @@ jobs:
             sendGridTestHttp: process.env.SENDGRID_TEST_HTTP,
             startTime: process.env.SENDGRID_PROOF_START,
             runtimeServiceAccount: process.env.RUNTIME_SERVICE_ACCOUNT,
+            verificationBinding: JSON.parse(fs.readFileSync(process.env.STAGING_VERIFICATION_BINDING_PATH, 'utf8')),
+            communicationsLiveRefVerified: process.env.COMMUNICATIONS_SOURCE_REF_VERIFIED === 'true',
           });
           fs.writeFileSync('artifacts-sendgrid.json', JSON.stringify(receipt, null, 2)+'\n');
           NODE

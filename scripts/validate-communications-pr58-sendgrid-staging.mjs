@@ -5,18 +5,24 @@ const workflowPath = '.github/workflows/communications-pr58-sendgrid-staging-e2e
 const bootstrapPath = 'scripts/bootstrap-staging-sendgrid-proof-iam.sh';
 const text = fs.readFileSync(workflowPath, 'utf8');
 const callbackHelper = fs.readFileSync('scripts/verify-sendgrid-staging-callback.mjs', 'utf8');
-const authorityText = `${text}\n${callbackHelper}`;
+const bindingHelper = fs.readFileSync('scripts/verify-staging-verification-binding.mjs','utf8');
+const sourceRefHelper = fs.readFileSync('scripts/assert-current-communications-source.sh','utf8');
+const authorityText = `${text}\n${callbackHelper}\n${bindingHelper}\n${sourceRefHelper}`;
 const bootstrap = fs.readFileSync(bootstrapPath, 'utf8');
 const required = [
-  'name: Communications main SendGrid Signed Protected Staging E2E',
+  'name: Communications selected SendGrid Signed Protected Staging E2E',
   'workflow_dispatch:',
   'environment: staging',
   'LifeLoggerAI/urai-communications',
   '759f664cdf00a48272f5401b7cfc45bbd8afb537',
+  '3acd5382007a54705682a6f268d2fd3128fc4d4b',
+  "STAGING_REVIEW_PR_NUMBER: '109'",
+  'verify-staging-verification-binding.mjs',
+  'working-pr84',
   'SENDGRID_API_KEY',
   'URAI_CROSS_REPO_READ_TOKEN',
   'URAI_CROSS_REPO_READ_SSH_KEY',
-  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main',
+  'git ls-remote git@github.com:LifeLoggerAI/urai-communications.git "refs/heads/$COMMUNICATIONS_BRANCH"',
   'ssh-key: ${{ secrets.URAI_CROSS_REPO_READ_SSH_KEY }}',
   'SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY',
   'DELIVERY_STATUS_CALLBACK_SECRET',
@@ -110,5 +116,5 @@ for (const marker of ['roles/owner','roles/editor','roles/firebase.admin','roles
   if (!bootstrap.includes(marker)) throw new Error(`missing broad-role rejection marker: ${marker}`);
 }
 console.log('Communications main SendGrid least-privilege IAM bootstrap contract OK');
-const callbackTests = spawnSync(process.execPath, ['--test', 'scripts/test-sendgrid-staging-callback.mjs'], { stdio: 'inherit' });
+const callbackTests = spawnSync(process.execPath, ['--test', 'scripts/test-sendgrid-staging-callback.mjs','scripts/test-staging-verification-binding.mjs'], { stdio: 'inherit' });
 if (callbackTests.status !== 0) throw new Error('Run-bound SendGrid callback proof tests failed');

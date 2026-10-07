@@ -1,14 +1,20 @@
-name: Communications main Twilio API-Key Trial Protected Staging E2E
+name: Communications selected Twilio API-Key Trial Protected Staging E2E
 
 on:
   workflow_dispatch:
     inputs:
+      communications_source_profile:
+        description: Governed proposed source; canonical consumers remain unchanged
+        required: true
+        type: choice
+        default: working-pr84
+        options: [working-pr84, canonical-main]
       communications_sha:
-        description: Exact urai-communications PR #75 SHA authorized by config/staging-consumers.json
+        description: Exact SHA of the selected canonical-main or working-pr84 source profile
         required: true
         type: string
       expected_controller_sha:
-        description: Exact current urai-staging main SHA
+        description: Exact current PR109 controller SHA to be independently reviewed
         required: true
         type: string
       confirm_staging_project:
@@ -28,7 +34,8 @@ concurrency:
 
 env:
   COMMUNICATIONS_REPOSITORY: LifeLoggerAI/urai-communications
-  COMMUNICATIONS_PR_NUMBER: '75'
+  STAGING_REVIEW_PR_NUMBER: '109'
+  STAGING_PROVIDER: twilio
   STAGING_PROJECT_ID: urai-staging
   EXPECTED_ENVIRONMENT: staging
   FIREBASE_CLI_VERSION: '15.23.0'
@@ -51,9 +58,12 @@ jobs:
     permissions:
       contents: read
       actions: read
+      pull-requests: read
       id-token: write
     env:
-      COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || 'dfb8df01fa2c6c2c67db80b78f7b42f7577930b7' }}
+      EXPECTED_COMMUNICATIONS_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_sha || '759f664cdf00a48272f5401b7cfc45bbd8afb537' }}
+      COMMUNICATIONS_SOURCE_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.communications_source_profile || 'canonical-main' }}
+      CONFIRM_STAGING_PROJECT: ${{ inputs.confirm_staging_project }}
       CONTROLLER_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_controller_sha || github.sha }}
       WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
       DEPLOY_SERVICE_ACCOUNT: ${{ vars.GCP_STAGING_DEPLOY_SERVICE_ACCOUNT }}
@@ -82,16 +92,27 @@ jobs:
           persist-credentials: false
           show-progress: false
 
+      - name: Setup Node for read-only approval preflight
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Require native exact-head staging verification binding
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          node scripts/verify-staging-verification-binding.mjs
+
       - name: Prove exact bounded authority
         shell: bash
         run: |
           set -euo pipefail
-          test "${{ github.ref }}" = 'refs/heads/main'
           test "${{ github.sha }}" = "$CONTROLLER_SHA"
           test "$(git rev-parse HEAD)" = "$CONTROLLER_SHA"
-          test "$(git ls-remote --exit-code origin refs/heads/main | awk '{print $1}')" = "$CONTROLLER_SHA"
           if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then
-            test "${{ inputs.confirm_staging_project }}" = 'urai-staging'
+            test "$CONFIRM_STAGING_PROJECT" = 'urai-staging'
           else
             test "${{ github.event_name }}" = 'issue_comment'
             test "${{ github.event.issue.number }}" = '76'
@@ -99,50 +120,8 @@ jobs:
             test "${{ github.event.comment.author_association }}" = 'OWNER'
             test "${{ github.actor }}" = "${{ github.repository_owner }}"
           fi
-          live_communications_sha=""
-          if [ -n "${CROSS_REPO_READ_TOKEN:-}" ]; then
-            set +e
-            response="$(curl --silent --show-error --fail \
-              -H "Authorization: Bearer $CROSS_REPO_READ_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              https://api.github.com/repos/LifeLoggerAI/urai-communications/git/ref/heads/main)"
-            status=$?
-            set -e
-            if [ "$status" -eq 0 ] && [ -n "$response" ]; then
-              live_communications_sha="$(printf '%s' "$response" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const x=JSON.parse(s);process.stdout.write(x.object.sha)})")"
-              echo "CROSS_REPO_AUTH_MODE=token" >> "$GITHUB_ENV"
-            fi
-          fi
-          if [ -z "$live_communications_sha" ] && [ -n "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
-            umask 077
-            key_file="$RUNNER_TEMP/urai-cross-repo-read"
-            known_hosts="$RUNNER_TEMP/urai-github-known-hosts"
-            printf '%s\n' "$CROSS_REPO_READ_SSH_KEY" > "$key_file"
-            ssh-keyscan -t ed25519 github.com > "$known_hosts" 2>/dev/null
-            live_communications_sha="$(GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o UserKnownHostsFile=$known_hosts -o StrictHostKeyChecking=yes" \
-              git ls-remote git@github.com:LifeLoggerAI/urai-communications.git refs/heads/main | awk 'NR==1 {print $1}')"
-            test -n "$live_communications_sha" || { echo 'read-only deploy key could not resolve Communications main head' >&2; exit 46; }
-            echo "CROSS_REPO_AUTH_MODE=ssh" >> "$GITHUB_ENV"
-          fi
-          test -n "$live_communications_sha" || { echo 'No valid protected cross-repository read authority is configured for Communications main.' >&2; exit 46; }
-          test "$live_communications_sha" = "$COMMUNICATIONS_SHA"
+          bash scripts/assert-current-communications-source.sh
           node scripts/validate-staging-consumers.mjs
-          COMMUNICATIONS_SHA="$COMMUNICATIONS_SHA" node <<'NODE'
-          const fs = require('node:fs');
-          const authority = JSON.parse(fs.readFileSync('config/staging-consumers.json','utf8'));
-          const c = authority.consumers.find((entry) => entry.id === 'urai-communications-pr75-twilio-trial-e2e');
-          const failures = [];
-          if (!c) failures.push('consumer missing');
-          if (c?.exactSha !== process.env.COMMUNICATIONS_SHA) failures.push('exact SHA');
-          if (c?.providerProject !== 'urai-staging' || c?.allowedEnvironment !== 'staging') failures.push('project/environment');
-          if (JSON.stringify(c?.initialFunctionDeploymentAllowlist) !== JSON.stringify(['adminTwilioTestSend','adminProviderReadiness','adminDeliveryProof','twilioDeliveryStatusCallback'])) failures.push('function allowlist');
-          if (JSON.stringify(c?.secretWriteAllowlist) !== JSON.stringify(['TWILIO_AUTH_TOKEN','TWILIO_ACCOUNT_SID','TWILIO_API_KEY_SID','TWILIO_API_KEY_SECRET'])) failures.push('secret allowlist');
-          if (c?.productionDeploymentAuthorized !== false || c?.productionDataAuthorized !== false) failures.push('production authority');
-          if (c?.twilioTrialModeOnly !== true || c?.twilioProductionMessagingAuthorized !== false) failures.push('Twilio mode');
-          if (c?.rollbackToDeliveryDisabledRequired !== true) failures.push('rollback');
-          if (failures.length) throw new Error(failures.join(', '));
-          NODE
           for name in WIF_PROVIDER DEPLOY_SERVICE_ACCOUNT RUNTIME_SERVICE_ACCOUNT STAGING_FUNCTIONS_BASE_URL STAGING_TENANT_ID TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_API_KEY_SID TWILIO_API_KEY_SECRET STAGING_TEST_PHONE; do
             test -n "${!name:-}" || { echo "missing protected staging input: $name" >&2; exit 41; }
           done
@@ -289,6 +268,13 @@ jobs:
             rm -f "$RUNNER_TEMP/firebase-signin.json"
           fi
 
+      - name: Recheck native source and review before trial proof
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/verify-staging-verification-binding.mjs
+          bash scripts/assert-current-communications-source.sh
+
       - name: Execute real URAI to Twilio trial round trip
         working-directory: communications-source
         shell: bash
@@ -320,6 +306,8 @@ jobs:
           fs.writeFileSync('artifacts/communications-twilio/receipt.json', JSON.stringify({
             schemaVersion:'urai-communications-pr75-twilio-trial-e2e-1',
             stagingControllerSha:process.env.CONTROLLER_SHA,
+            workflowRunId:process.env.GITHUB_RUN_ID,
+            verificationBinding:JSON.parse(fs.readFileSync(process.env.STAGING_VERIFICATION_BINDING_PATH,'utf8')),
             communicationsSha:process.env.COMMUNICATIONS_SHA,
             projectId:'urai-staging',
             environment:'staging',
