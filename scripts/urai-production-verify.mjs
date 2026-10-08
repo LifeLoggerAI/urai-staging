@@ -6,7 +6,8 @@ const commands = [];
 if (existsSync('package.json')) {
   // Match the canonical staging bootstrap before root scripts delegate to Functions.
   if (existsSync('functions/package.json')) {
-    commands.push(['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts']]);
+    commands.push(['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts', '--engine-strict', '--audit=false']]);
+    commands.push(['node', ['scripts/check-installed-security.mjs']]);
   }
   commands.push(['npm', ['run', 'typecheck', '--if-present']]);
   commands.push(['npm', ['test', '--if-present']]);

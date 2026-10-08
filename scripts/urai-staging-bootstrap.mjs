@@ -90,7 +90,9 @@ if (process.env.URAI_SKIP_RULES === '1') {
 
 const commands = [
   ['node', ['--test', 'scripts/test-twilio-trial-sender.mjs','scripts/test-sendgrid-staging-budget.mjs']],
-  ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts']],
+  ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts', '--engine-strict', '--audit=false']],
+  ['node', ['scripts/check-installed-security.mjs']],
+  ['node', ['--test', 'scripts/test-security-dependency-compatibility.mjs']],
   ['npm', ['run', 'doctor']],
   ['npm', ['run', 'test:workstream-c-root']],
   ['npm', ['run', 'test:workstream-c-confinement']],

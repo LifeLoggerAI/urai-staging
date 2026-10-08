@@ -107,6 +107,7 @@ jobs:
           path: |
             artifacts/launch/staging-bootstrap-report.json
             artifacts/launch/staging-bootstrap-summary.md
+            artifacts/launch/staging-installed-security.json
           if-no-files-found: error
           retention-days: 90
 
