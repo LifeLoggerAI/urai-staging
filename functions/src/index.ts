@@ -1,5 +1,6 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import { initializeApp } from 'firebase-admin/app';
+import { getFirestore, FieldValue, Timestamp, type DocumentData } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions/v1';
 import { getCompletionSummary, FEATURE_MATRIX, ROADMAP_PHASES } from './lib/featureRegistry';
 import { requireAdmin, requireAuth } from './lib/auth';
 import {
@@ -32,10 +33,10 @@ import {
   requiredString,
 } from './lib/validation';
 
-admin.initializeApp();
+initializeApp();
 
-const db = admin.firestore();
-const serverTimestamp = admin.firestore.FieldValue.serverTimestamp;
+const db = getFirestore();
+const serverTimestamp = FieldValue.serverTimestamp;
 const companionRateLimiter = new FixedWindowRateLimiter(
   STAGING_COMPANION_REQUESTS_PER_WINDOW,
   STAGING_HTTP_RATE_WINDOW_MS,
@@ -65,12 +66,14 @@ function setJsonHeaders(request: functions.Request, response: functions.Response
   response.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-URAI-Staging-Write-Key');
   response.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.set('Cache-Control', 'no-store');
+  response.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
 }
 
 function rejectUnapprovedOrigin(request: functions.Request, response: functions.Response): boolean {
   const origin = request.get('origin');
   if (isAllowedStagingOrigin(origin)) return false;
   response.set('Cache-Control', 'no-store');
+  response.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   response.status(403).json({ status: 'error', error: 'origin_not_allowed' });
   return true;
 }
@@ -154,7 +157,7 @@ async function consumeDurableDailyBudget(
       environment: 'staging',
       syntheticOnly: true,
       updatedAt: serverTimestamp(),
-      expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + STAGING_HTTP_BUDGET_RETENTION_MS),
+      expiresAt: Timestamp.fromMillis(Date.now() + STAGING_HTTP_BUDGET_RETENTION_MS),
     }, { merge: true });
     return true;
   });
@@ -265,7 +268,7 @@ export const waitlist = stagingWriteHttpRuntime.https.onRequest(async (request, 
     handle: typeof body.handle === 'string' ? body.handle.slice(0, 80) : null,
     intent: typeof body.intent === 'string' ? body.intent.slice(0, 160) : null,
     createdAt: serverTimestamp(),
-    expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + STAGING_WAITLIST_RETENTION_MS),
+    expiresAt: Timestamp.fromMillis(Date.now() + STAGING_WAITLIST_RETENTION_MS),
     environment: 'staging',
     synthetic: true,
   };
@@ -281,7 +284,7 @@ export const waitlist = stagingWriteHttpRuntime.https.onRequest(async (request, 
 });
 
 export const cleanupExpiredStagingHttpData = functions.pubsub.schedule('every 24 hours').onRun(async () => {
-  const now = admin.firestore.Timestamp.now();
+  const now = Timestamp.now();
   const collections = ['staging_waitlist', 'staging_http_budgets'] as const;
   let deleted = 0;
   for (const collectionName of collections) {
@@ -376,7 +379,7 @@ export const setFeatureFlag = functions.https.onCall(async (data: unknown, conte
   const enabled = requiredBoolean(input.enabled, 'enabled');
   const description = optionalString(input.description, 'description', 500);
 
-  const flagUpdate: admin.firestore.DocumentData = {
+  const flagUpdate: DocumentData = {
     flag,
     enabled,
     updatedAt: serverTimestamp(),

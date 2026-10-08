@@ -49,7 +49,7 @@ test('workflow enforces approval before WIF and every provider mutation',()=>{
   const source=fs.readFileSync('.github/workflows/communications-pr58-sendgrid-staging-e2e.yml','utf8');
   const gate=source.indexOf('run: |\n          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"');
   assert.ok(gate>0);
-  assert.ok(source.indexOf('node scripts/verify-sendgrid-staging-approval.mjs',gate)<source.indexOf('- name: Authenticate WIF'));
+  assert.ok(source.indexOf('node scripts/verify-staging-verification-binding.mjs',gate)<source.indexOf('- name: Authenticate WIF'));
   for(const step of ['Authenticate WIF','Resolve SendGrid API key','Prove SendGrid webhook capacity','Enable signed webhook','Deploy exact signed callback'])assert.ok(source.indexOf('- name: '+step)>gate,step);
   assert.match(source,/pull-requests: read/);
   assert.doesNotMatch(source,/pull-requests: write/);
@@ -64,7 +64,7 @@ test('accepts governed write maintain or admin reviewer eligibility',async()=>{
 
 test('review target binds the current converged controller rather than a predecessor PR',()=>{
   const workflow=fs.readFileSync('.github/workflows/communications-pr58-sendgrid-staging-e2e.yml','utf8');
-  assert.match(workflow,/STAGING_REVIEW_PR_NUMBER: '85'/);
+  assert.match(workflow,/STAGING_REVIEW_PR_NUMBER: '109'/);
   const documentation=fs.readFileSync('docs/SENDGRID_STAGING_NATIVE_REVIEW.md','utf8');
-  assert.match(documentation,/STAGING_REVIEW_PR_NUMBER is explicitly 85/);
+  assert.match(documentation,/STAGING_REVIEW_PR_NUMBER is explicitly 109/);
 });

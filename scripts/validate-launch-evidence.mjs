@@ -7,12 +7,20 @@ const reportPath = path.join(root, 'artifacts', 'launch', 'staging-bootstrap-rep
 const summaryPath = path.join(root, 'artifacts', 'launch', 'staging-bootstrap-summary.md');
 const consumersPath = path.join(root, 'config', 'staging-consumers.json');
 const problems = [];
+const securityPath = path.join(root, 'artifacts', 'launch', 'staging-installed-security.json');
 
 if (!fs.existsSync(reportPath)) problems.push(`Missing report: ${path.relative(root, reportPath)}`);
 if (!fs.existsSync(summaryPath)) problems.push(`Missing summary: ${path.relative(root, summaryPath)}`);
+if (!fs.existsSync(securityPath)) problems.push('Missing actual installed-dependency security receipt.');
 
 if (!problems.length) {
   const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  const security = JSON.parse(fs.readFileSync(securityPath, 'utf8'));
+  if (security.sourceSha !== report.sourceSha) problems.push('Installed-dependency security receipt is for another source SHA.');
+  if (security.status !== 'PASS_WITHIN_CURRENT_REVIEWED_SNAPSHOT') problems.push('Installed-dependency security scan did not pass.');
+  if (security.primaryCommit !== 'ccd4868bd8cfbed178f5ada1194b4fe30674c25b' || security.reviewedRecords !== 36576) problems.push('Wrong or incomplete official advisory snapshot.');
+  if (security.findings?.length !== 0 || security.graphProblems?.length !== 0) problems.push('Installed graph retains advisory findings or unresolved dependencies.');
+  if (!Number.isInteger(security.installedNodes) || security.installedNodes < 1) problems.push('Empty installed dependency graph.');
   const authority = fs.existsSync(consumersPath)
     ? JSON.parse(fs.readFileSync(consumersPath, 'utf8'))
     : null;

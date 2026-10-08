@@ -89,7 +89,10 @@ if (process.env.URAI_SKIP_RULES === '1') {
 }
 
 const commands = [
-  ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts']],
+  ['node', ['--test', 'scripts/test-twilio-trial-sender.mjs','scripts/test-sendgrid-staging-budget.mjs']],
+  ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts', '--engine-strict', '--audit=false']],
+  ['node', ['scripts/check-installed-security.mjs']],
+  ['node', ['--test', 'scripts/test-security-dependency-compatibility.mjs']],
   ['npm', ['run', 'doctor']],
   ['npm', ['run', 'test:workstream-c-root']],
   ['npm', ['run', 'test:workstream-c-confinement']],
@@ -203,7 +206,10 @@ function writeSummary() {
   if (report.activeConsumers.length) {
     lines.push('## Active consumer authority', '');
     for (const consumer of report.activeConsumers) {
-      lines.push(`- ${consumer.id}: ${consumer.repository} PR #${consumer.pullRequest} @ ${consumer.exactSha} (${consumer.mode}; ${consumer.dataPolicy})`);
+      const sourceIdentity = Number.isInteger(consumer.pullRequest) && consumer.pullRequest > 0
+        ? `PR #${consumer.pullRequest}`
+        : (consumer.sourceRef || 'source ref missing');
+      lines.push(`- ${consumer.id}: ${consumer.repository} ${sourceIdentity} @ ${consumer.exactSha} (${consumer.mode}; ${consumer.dataPolicy})`);
     }
     lines.push('');
   }
@@ -225,3 +231,4 @@ function writeSummary() {
   lines.push('');
   fs.writeFileSync(summaryPath, `${lines.join('\n')}\n`);
 }
+
