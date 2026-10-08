@@ -204,7 +204,10 @@ function writeSummary() {
   if (report.activeConsumers.length) {
     lines.push('## Active consumer authority', '');
     for (const consumer of report.activeConsumers) {
-      lines.push(`- ${consumer.id}: ${consumer.repository} PR #${consumer.pullRequest} @ ${consumer.exactSha} (${consumer.mode}; ${consumer.dataPolicy})`);
+      const sourceIdentity = Number.isInteger(consumer.pullRequest) && consumer.pullRequest > 0
+        ? `PR #${consumer.pullRequest}`
+        : (consumer.sourceRef || 'source ref missing');
+      lines.push(`- ${consumer.id}: ${consumer.repository} ${sourceIdentity} @ ${consumer.exactSha} (${consumer.mode}; ${consumer.dataPolicy})`);
     }
     lines.push('');
   }
