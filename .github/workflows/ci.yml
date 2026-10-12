@@ -57,6 +57,9 @@ jobs:
       - name: Validate staging deploy workflow definition
         run: node scripts/validate-staging-deploy-workflow.mjs
 
+      - name: Verify fail-closed real Spatial export staging assembler
+        run: npm run test:consumer-staging
+
       - name: Validate staging WIF bootstrap contract
         run: node scripts/validate-staging-wif-bootstrap.mjs
 

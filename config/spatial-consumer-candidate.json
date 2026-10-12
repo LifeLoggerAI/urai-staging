@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "urai-spatial-consumer-staging-candidate-1",
+  "repository": "LifeLoggerAI/urai-spatial",
+  "sourceSha": "dbbe1188ff045ba71c3cb1a60a0d084d13c4fd32",
+  "sourcePullRequest": 1810,
+  "controllerPullRequest": 1636,
+  "stagingRepository": "LifeLoggerAI/urai-staging",
+  "stagingProject": "urai-staging",
+  "stagingControllerPullRequest": 109,
+  "state": "source-only-pending-governed-admission",
+  "privateBuildDataRequired": false,
+  "finalAssetAdmissions": 0,
+  "independentReviewApproved": false,
+  "accessRestrictedStagingConfigured": false,
+  "consumerHostingMutationAuthorized": false,
+  "spatialFunctionsStagingAdmitted": false,
+  "productionDeploymentAuthorized": false,
+  "publicLaunchAuthorized": false,
+  "originalMediaAuthorizedForArtifact": false
+}
