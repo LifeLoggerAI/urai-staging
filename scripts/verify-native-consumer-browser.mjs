@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+// Exercises the actual staging assembler public/ directory; never dev source.
+import fs from 'node:fs'
+import path from 'node:path'
+import { createHash } from 'node:crypto'
+import { pathToFileURL } from 'node:url'
+
+const root = path.resolve(process.env.URAI_NATIVE_OUTPUT || '')
+const playwrightRoot = process.env.URAI_PLAYWRIGHT_ROOT
+const base = process.env.URAI_NATIVE_BASE_URL || 'http://127.0.0.1:4173'
+const evidence = path.resolve(process.env.URAI_BROWSER_EVIDENCE || 'artifacts/native-consumer-browser')
+const expected = 'cddb62ae9c2dd5e47a90416be9f307c157b3710f7fede1c855d3f029536103e7'
+if (!root || !playwrightRoot || !fs.existsSync(path.join(root, 'public'))) throw new Error('Real native assembler output / Playwright runtime unavailable')
+const original = fs.readFileSync(path.join(root, 'consumer-artifact-manifest.json'))
+if (createHash('sha256').update(original).digest('hex') !== expected) throw new Error('Native package manifest has not passed source-identity proof')
+const manifest = JSON.parse(original.toString('utf8'))
+if (manifest.sourceSha !== '5e9801bda83e0a14795c8307fb717fe73bc7a6a4' || manifest.fileCount !== 1522 || manifest.deployed !== false) throw new Error('Unsafe native package authority')
+fs.mkdirSync(evidence, { recursive: true })
+const { chromium } = await import(pathToFileURL(path.join(playwrightRoot, 'node_modules/playwright/index.mjs')).href)
+const results = { schemaVersion: 'urai-native-package-browser-evidence-1', sourceSha: manifest.sourceSha,
+  nativeManifestSha256: expected, servedDirectory: 'native-assembled-public',
+  scope: 'isolated-compiled-static-frontend-no-authenticated-provider-or-production-claim',
+  pages: [], interactions: [], pageErrors: [], consoleErrors: [], failedRequests: [], badNetwork: [], javascriptRequests: 0, screenshots: [], failures: [],
+  authenticatedBackendVerified: false, lifeMoviesVerified: false, finalArtAccepted: false, deployed: false }
+const safePath = url => { try { const u = new URL(url); return u.origin === base ? u.pathname : 'external:' + u.hostname } catch { return 'malformed-url' } }
+const appRoutes = ['/home/', '/ascent/', '/life-map/', '/focus/', '/replay/', '/unwind/', '/login/', '/privacy-controls/']
+let browser
+try {
+  browser = await chromium.launch({ headless: true, args: ['--enable-unsafe-swiftshader', '--disable-gpu-sandbox', '--disable-dev-shm-usage'] })
+  async function scenario(label, viewport, reducedMotion = false, noWebGL = false) {
+    const context = await browser.newContext({ viewport, reducedMotion: reducedMotion ? 'reduce' : 'no-preference' })
+    const page = await context.newPage()
+    if (noWebGL) await page.addInitScript(() => {
+      const originalGetContext = HTMLCanvasElement.prototype.getContext
+      HTMLCanvasElement.prototype.getContext = function (type, ...rest) {
+        if (type === 'webgl' || type === 'webgl2' || type === 'experimental-webgl') return null
+        return originalGetContext.call(this, type, ...rest)
+      }
+    })
+    page.on('pageerror', error => results.pageErrors.push({ scenario: label, message: String(error).slice(0, 450) }))
+    page.on('console', event => { if (event.type() === 'error') results.consoleErrors.push({ scenario: label, text: event.text().slice(0, 450) }) })
+    page.on('requestfailed', request => results.failedRequests.push({ scenario: label, path: safePath(request.url()), failure: request.failure() }))
+    page.on('response', response => {
+      if (response.url().includes('/_next/static/') && /\.js(?:\?|$)/.test(response.url()) && response.ok()) results.javascriptRequests++
+      if (new URL(response.url()).origin === base && response.status() >= 400) results.badNetwork.push({ scenario: label, status: response.status(), path: safePath(response.url()) })
+    })
+    const routes = label === 'desktop' ? appRoutes : ['/home/', '/life-map/', '/focus/', '/replay/']
+    for (const route of routes) {
+      let response
+      try {
+        response = await page.goto(base + route, { waitUntil: 'domcontentloaded', timeout: 35000 })
+        await page.waitForTimeout(2100)
+        const title = await page.title()
+        const body = (await page.locator('body').innerText({ timeout: 10000 })).slice(0, 220)
+        const h1 = await page.locator('h1').allTextContents()
+        const canvas = await page.locator('canvas').count()
+        const scripts = await page.locator('script[src*="_next/static/"]').count()
+        const status = response?.status() ?? null
+        results.pages.push({ scenario: label, route, status, title: title.slice(0, 120), h1: h1.slice(0, 2), canvas, scriptElements: scripts, bodyLength: body.length })
+        if (status !== 200 || scripts < 1 || body.length < 10) results.failures.push(label + ' compiled route not usable: ' + route)
+        if (['/home/', '/life-map/', '/focus/', '/replay/'].includes(route)) {
+          const screenshot = label + '-' + route.replace(/[^a-z0-9]/gi, '-') + '.png'
+          await page.screenshot({ path: path.join(evidence, screenshot), timeout: 20000 })
+          results.screenshots.push(screenshot)
+        }
+        if (route === '/home/' && label === 'desktop') {
+          // Exercise actual browser focus/keyboard semantics, without forging a memory.
+          await page.keyboard.press('Tab')
+          results.interactions.push({ scenario: label, operation: 'keyboard-tab-home', focused: await page.evaluate(() => document.activeElement?.tagName || null) })
+          const links = await page.locator('a[href]').evaluateAll(nodes => nodes.slice(0, 45).map(a => a.getAttribute('href')))
+          results.interactions.push({ scenario: label, operation: 'real-home-anchor-inventory', links: links.slice(0, 35) })
+        }
+      } catch (error) {
+        results.failures.push(label + ' ' + route + ' ' + String(error).slice(0, 290))
+      }
+    }
+    await context.close()
+  }
+  await scenario('desktop', { width: 1440, height: 900 })
+  await scenario('mobile-reduced-motion', { width: 390, height: 844 }, true)
+  await scenario('no-webgl', { width: 1024, height: 768 }, true, true)
+  const xr = await fetch(base + '/xr/', { redirect: 'manual' })
+  results.interactions.push({ operation: 'protected-xr-static-route', status: xr.status })
+  if (xr.status !== 404) results.failures.push('XR static route unexpectedly accessible: HTTP ' + xr.status)
+  if (results.javascriptRequests < 4) results.failures.push('Real compiled Next.js runtime did not load enough JavaScript chunks')
+  const home = results.pages.find(p => p.scenario === 'desktop' && p.route === '/home/')
+  if (!home || !home.canvas) results.failures.push('Real Home canvas absent; actual WebGL geometry not demonstrated')
+} catch (error) {
+  results.failures.push('Browser launch or navigation could not complete: ' + String(error).slice(0, 500))
+} finally {
+  await browser?.close()
+  fs.writeFileSync(path.join(evidence, 'browser-results.json'), JSON.stringify(results, null, 2) + '\n')
+  console.log(JSON.stringify({ sourceSha: results.sourceSha, pages: results.pages.length, jsRequests: results.javascriptRequests, screenshots: results.screenshots.length, pageErrors: results.pageErrors.length, badNetwork: results.badNetwork.length, failures: results.failures }, null, 2))
+}
+if (results.failures.length || results.pageErrors.length || results.badNetwork.some(x => x.path.startsWith('/_next/static/'))) process.exitCode = 1
