@@ -9,12 +9,12 @@ const root = path.resolve(process.env.URAI_NATIVE_OUTPUT || '')
 const playwrightRoot = process.env.URAI_PLAYWRIGHT_ROOT
 const base = process.env.URAI_NATIVE_BASE_URL || 'http://127.0.0.1:4173'
 const evidence = path.resolve(process.env.URAI_BROWSER_EVIDENCE || 'artifacts/native-consumer-browser')
-const expected = '0387ff221d5ab0dd96df5ab5da7b6b711bbdfe4f2fa668085543ab08abe32f9b'
+const expected = '279735522dda1008c74b9c303fb15fe9b497d3cfe081e5a1013f1f1e32eccde2'
 if (!root || !playwrightRoot || !fs.existsSync(path.join(root, 'public'))) throw new Error('Real native assembler output / Playwright runtime unavailable')
 const original = fs.readFileSync(path.join(root, 'consumer-artifact-manifest.json'))
 if (createHash('sha256').update(original).digest('hex') !== expected) throw new Error('Native package manifest has not passed source-identity proof')
 const manifest = JSON.parse(original.toString('utf8'))
-if (manifest.sourceSha !== '5e9801bda83e0a14795c8307fb717fe73bc7a6a4' || manifest.fileCount !== 1522 || manifest.servedFileCount !== 1521 || manifest.restrictedStaticPrefixes?.join(',') !== '/xr/,/spatial/ar-vr/' || manifest.deployed !== false) throw new Error('Unsafe native package authority or XR staging exposure')
+if (manifest.sourceSha !== '5eb2320fdd52c1e18a9c568b2168e0e03797fa33' || manifest.fileCount !== 1522 || manifest.servedFileCount !== 1521 || manifest.restrictedStaticPrefixes?.join(',') !== '/xr/,/spatial/ar-vr/' || manifest.deployed !== false) throw new Error('Unsafe native package authority or XR staging exposure')
 fs.mkdirSync(evidence, { recursive: true })
 const { chromium } = await import(pathToFileURL(path.join(playwrightRoot, 'node_modules/playwright/index.mjs')).href)
 const results = { schemaVersion: 'urai-native-package-browser-evidence-1', sourceSha: manifest.sourceSha,
@@ -79,6 +79,52 @@ try {
   await scenario('desktop', { width: 1440, height: 900 })
   await scenario('mobile-reduced-motion', { width: 390, height: 844 }, true)
   await scenario('no-webgl', { width: 1024, height: 768 }, true, true)
+  // A passing route load is not proof of the actual memory journey. Exercise
+  // Focus -> Replay -> Escape in the same isolated native package, including
+  // reduced motion, and measure return events across possible hard navigations.
+  async function verifyReplayReturn(label, viewport, reduce = false) {
+    const context = await browser.newContext({ viewport, reducedMotion: reduce ? 'reduce' : 'no-preference' })
+    const page = await context.newPage()
+    let returns = 0
+    try {
+      page.on('pageerror', error => results.pageErrors.push({ scenario: label, message: String(error).slice(0, 450) }))
+      await page.exposeFunction('__uraiCountReturn', () => { returns++ })
+      await page.goto(base + '/focus/?memoryId=demo%3Aseed-memory-bloom&demo=1', { waitUntil: 'domcontentloaded', timeout: 35000 })
+      await page.getByTestId('urai-final-focus-chamber').first().waitFor({ state: 'visible', timeout: 35000 })
+      const entry = page.getByRole('button', { name: /Open Replay for|Replay this memory/i }).first()
+      await entry.waitFor({ state: 'visible', timeout: 35000 })
+      await entry.click()
+      await page.waitForURL(/\/replay\/?\?/, { timeout: 35000 })
+      const replay = page.getByTestId('cinematic-replay-client').first()
+      await replay.waitFor({ state: 'visible', timeout: 35000 })
+      await page.locator('main.replayWorld[data-replay-media-ready="true"]').first().waitFor({ state: 'attached', timeout: 60000 })
+      await page.evaluate(() => window.addEventListener('urai:world-return', () => { void window.__uraiCountReturn() }))
+      await page.keyboard.press('Escape')
+      await page.waitForURL(/\/(focus|unwind)(\/|\?|$)/, { timeout: 35000 })
+      await replay.waitFor({ state: 'detached', timeout: 35000 })
+      const final = new URL(page.url()).pathname
+      const destinationVisible = final.replace(/\/$/, '') === '/focus'
+        ? await page.getByTestId('urai-final-focus-chamber').first().isVisible()
+        : await page.locator('main').first().isVisible()
+      const focused = await page.evaluate(() => ({
+        tag: document.activeElement?.tagName || null,
+        name: document.activeElement?.getAttribute?.('aria-label') || null
+      }))
+      results.interactions.push({
+        scenario: label, operation: 'actual-focus-replay-escape-return',
+        destination: final, returnEventCount: returns,
+        replayUnmounted: await replay.count() === 0,
+        destinationVisible, focused
+      })
+      if (returns !== 1 || !destinationVisible) {
+        results.failures.push(label + ' Replay Escape did not perform one complete return with mounted destination')
+      }
+    } catch (error) {
+      results.failures.push(label + ' actual Focus-Replay-Escape flow: ' + String(error).slice(0, 350))
+    } finally { await context.close() }
+  }
+  await verifyReplayReturn('desktop-escape', { width: 1440, height: 900 })
+  await verifyReplayReturn('mobile-reduced-motion-escape', { width: 390, height: 844 }, true)
   // Direct and encoded requests must not reveal a disabled XR page, navmesh,
   // or a directory index, even on a generic static Hosting server.
   for (const route of ['/xr', '/xr/', '/xr/navmeshes/home-platform-v1.json',

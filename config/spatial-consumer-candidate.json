@@ -1,7 +1,7 @@
 {
   "schemaVersion": "urai-spatial-consumer-staging-candidate-1",
   "repository": "LifeLoggerAI/urai-spatial",
-  "sourceSha": "5e9801bda83e0a14795c8307fb717fe73bc7a6a4",
+  "sourceSha": "5eb2320fdd52c1e18a9c568b2168e0e03797fa33",
   "sourcePullRequest": 1810,
   "controllerPullRequest": 1636,
   "stagingRepository": "LifeLoggerAI/urai-staging",

@@ -7,9 +7,9 @@ from pathlib import Path, PurePosixPath
 import stat
 import zipfile
 
-SOURCE = '5e9801bda83e0a14795c8307fb717fe73bc7a6a4'
-ZIP_SHA = 'f1f3ec5657feb62fd6c8cc3fc39ed4acb1c1e8828b1b34ce6e052f281adcdfcc'
-NATIVE_MANIFEST_SHA = '0387ff221d5ab0dd96df5ab5da7b6b711bbdfe4f2fa668085543ab08abe32f9b'
+SOURCE = '5eb2320fdd52c1e18a9c568b2168e0e03797fa33'
+ZIP_SHA = 'faa0b9f1adf0deb8ce1866175842f99e7dabc247db9d8f6c960c50768abd30bb'
+NATIVE_MANIFEST_SHA = '279735522dda1008c74b9c303fb15fe9b497d3cfe081e5a1013f1f1e32eccde2'
 MANIFEST_PATH = 'artifacts/consumer-export/real-static-manifest.json'
 EXPORT_PREFIX = 'urai-tier1/out/'
 
@@ -63,7 +63,7 @@ def archive(archive, destination):
         or manifest.get('repository') != 'LifeLoggerAI/urai-spatial'
         or manifest.get('sourceSha') != SOURCE
         or manifest.get('fileCount') != 1522
-        or manifest.get('totalBytes') != 143738546):
+        or manifest.get('totalBytes') != 143738572):
         refuse('source manifest is not the previously verified build')
     expected = manifest.get('files')
     if not isinstance(expected, list) or len(expected) != 1522:
