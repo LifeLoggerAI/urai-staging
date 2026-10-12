@@ -9,12 +9,12 @@ const root = path.resolve(process.env.URAI_NATIVE_OUTPUT || '')
 const playwrightRoot = process.env.URAI_PLAYWRIGHT_ROOT
 const base = process.env.URAI_NATIVE_BASE_URL || 'http://127.0.0.1:4173'
 const evidence = path.resolve(process.env.URAI_BROWSER_EVIDENCE || 'artifacts/native-consumer-browser')
-const expected = 'cddb62ae9c2dd5e47a90416be9f307c157b3710f7fede1c855d3f029536103e7'
+const expected = '0387ff221d5ab0dd96df5ab5da7b6b711bbdfe4f2fa668085543ab08abe32f9b'
 if (!root || !playwrightRoot || !fs.existsSync(path.join(root, 'public'))) throw new Error('Real native assembler output / Playwright runtime unavailable')
 const original = fs.readFileSync(path.join(root, 'consumer-artifact-manifest.json'))
 if (createHash('sha256').update(original).digest('hex') !== expected) throw new Error('Native package manifest has not passed source-identity proof')
 const manifest = JSON.parse(original.toString('utf8'))
-if (manifest.sourceSha !== '5e9801bda83e0a14795c8307fb717fe73bc7a6a4' || manifest.fileCount !== 1522 || manifest.deployed !== false) throw new Error('Unsafe native package authority')
+if (manifest.sourceSha !== '5e9801bda83e0a14795c8307fb717fe73bc7a6a4' || manifest.fileCount !== 1522 || manifest.servedFileCount !== 1521 || manifest.restrictedStaticPrefixes?.join(',') !== '/xr/,/spatial/ar-vr/' || manifest.deployed !== false) throw new Error('Unsafe native package authority or XR staging exposure')
 fs.mkdirSync(evidence, { recursive: true })
 const { chromium } = await import(pathToFileURL(path.join(playwrightRoot, 'node_modules/playwright/index.mjs')).href)
 const results = { schemaVersion: 'urai-native-package-browser-evidence-1', sourceSha: manifest.sourceSha,
@@ -79,9 +79,22 @@ try {
   await scenario('desktop', { width: 1440, height: 900 })
   await scenario('mobile-reduced-motion', { width: 390, height: 844 }, true)
   await scenario('no-webgl', { width: 1024, height: 768 }, true, true)
-  const xr = await fetch(base + '/xr/', { redirect: 'manual' })
-  results.interactions.push({ operation: 'protected-xr-static-route', status: xr.status })
-  if (xr.status !== 404) results.failures.push('XR static route unexpectedly accessible: HTTP ' + xr.status)
+  // Direct and encoded requests must not reveal a disabled XR page, navmesh,
+  // or a directory index, even on a generic static Hosting server.
+  for (const route of ['/xr', '/xr/', '/xr/navmeshes/home-platform-v1.json',
+    '/xr/%6eavmeshes/home-platform-v1.json', '/xr%2Fnavmeshes%2Fhome-platform-v1.json',
+    '/spatial/ar-vr', '/spatial/ar-vr/']) {
+    const response = await fetch(base + route, { redirect: 'manual' })
+    results.interactions.push({ operation: 'denied-static-xr-route', route, status: response.status })
+    if (response.status !== 404) results.failures.push('Protected static XR route exposed: ' + route + ' HTTP ' + response.status)
+  }
+  // Non-private XR illustration and clearly disclosed static signaling status
+  // remain available; they are not permission to activate an XR experience.
+  for (const route of ['/assets/urai/xr/ar/unsupported-fallback.webp', '/api/xr/signaling']) {
+    const response = await fetch(base + route, { redirect: 'manual' })
+    results.interactions.push({ operation: 'allowed-xr-fallback', route, status: response.status })
+    if (response.status !== 200) results.failures.push('Permitted XR fallback unexpectedly unavailable: ' + route)
+  }
   if (results.javascriptRequests < 4) results.failures.push('Real compiled Next.js runtime did not load enough JavaScript chunks')
   const home = results.pages.find(p => p.scenario === 'desktop' && p.route === '/home/')
   if (!home || !home.canvas) results.failures.push('Real Home canvas absent; actual WebGL geometry not demonstrated')

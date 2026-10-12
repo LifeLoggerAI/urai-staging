@@ -81,3 +81,42 @@ test('rejects private credentials, links and XR disclosure while preserving orig
     assert.throws(()=>prepareConsumerStagingBundle(f),/not fail-closed/)
   })
 })
+
+
+test('disabled XR entries are physically withheld from Hosting public while preserving public fallback art', () => runFixture(f => {
+  write(f.spatialExport, 'xr/navmeshes/home-platform-v1.json', '{"protected":true}')
+  write(f.spatialExport, 'spatial/ar-vr/internal-room.json', '{"protected":true}')
+  write(f.spatialExport, 'assets/urai/xr/ar/unsupported-fallback.webp', 'public-accessible-illustration')
+  write(f.spatialExport, 'api/xr/signaling', '{"serverRelayAvailable":false}')
+  const result = prepareConsumerStagingBundle(f)
+  assert.equal(result.manifest.fileCount, pages.length + 7)
+  assert.equal(result.manifest.servedFileCount, pages.length + 5)
+  assert.deepEqual(result.manifest.restrictedStaticPrefixes, ['/xr/', '/spatial/ar-vr/'])
+  assert.deepEqual(result.manifest.withheldFiles.map(x => x.path).sort(), ['spatial/ar-vr/internal-room.json', 'xr/navmeshes/home-platform-v1.json'])
+  for (const item of result.manifest.withheldFiles) {
+    assert.equal(fs.existsSync(path.join(f.outputDirectory, 'public', item.path)), false)
+    assert.ok(fs.existsSync(path.join(f.spatialExport, item.path)), 'source material must remain unmodified')
+  }
+  assert.equal(fs.existsSync(path.join(f.outputDirectory, 'public/xr')), false)
+  assert.ok(fs.existsSync(path.join(f.outputDirectory, 'public/assets/urai/xr/ar/unsupported-fallback.webp')))
+  assert.ok(fs.existsSync(path.join(f.outputDirectory, 'public/api/xr/signaling')))
+  const candidate = JSON.parse(fs.readFileSync(path.join(f.outputDirectory, 'UNAPPROVED-firebase.consumer-staging.json')))
+  assert.ok(candidate.hosting.rewrites.every(x => x.source !== '**' && !x.source.startsWith('/xr')))
+}))
+
+test('XR staging packaging fails closed on activated or malformed route governance', () => {
+  runFixture(f => {
+    const file = path.join(f.spatialExport, 'static-launch-boundary.json')
+    const boundary = JSON.parse(fs.readFileSync(file))
+    boundary.routes[0].enabled = true
+    fs.writeFileSync(file, JSON.stringify(boundary))
+    assert.throws(() => prepareConsumerStagingBundle(f), /Both gated XR entry directories/)
+  })
+  runFixture(f => {
+    const file = path.join(f.spatialExport, 'static-launch-boundary.json')
+    const boundary = JSON.parse(fs.readFileSync(file))
+    boundary.routes[0].route = '/xr/../private'
+    fs.writeFileSync(file, JSON.stringify(boundary))
+    assert.throws(() => prepareConsumerStagingBundle(f), /Unsafe disabled static route prefix/)
+  })
+})

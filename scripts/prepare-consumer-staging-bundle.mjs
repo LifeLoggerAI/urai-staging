@@ -121,16 +121,38 @@ export function prepareConsumerStagingBundle({ spatialExport, outputDirectory, c
   }
   assertSource(src, candidate)
 
+  // A route disabled in the compiled NO-GO boundary may still contain data
+  // under its directory (e.g. /xr/navmeshes/home-platform-v1.json). Keeping
+  // that data in Hosting public/ leaks it even if HTML route files are absent.
+  // Filter only the exact disabled route subtrees; XR preview illustrations
+  // under /assets/ remain available as nonprivate accessibility fallbacks.
+  const boundary = readObject(path.join(src, boundaryFile), 'Spatial static route gate')
+  const restrictedRoutes = boundary.routes.filter(route => !route.enabled).map(route => {
+    if (typeof route.route !== 'string' || !/^\/[a-z0-9-]+(?:\/[a-z0-9-]+)*$/.test(route.route)) {
+      throw new Error('Unsafe disabled static route prefix')
+    }
+    return route.route.slice(1) + '/'
+  })
+  if (!restrictedRoutes.includes('xr/') || !restrictedRoutes.includes('spatial/ar-vr/')) {
+    throw new Error('Both gated XR entry directories must remain restricted')
+  }
+  const withheldFiles = listing.files.filter(file => restrictedRoutes.some(prefix => file.path.startsWith(prefix)))
+  const servedFiles = listing.files.filter(file => !restrictedRoutes.some(prefix => file.path.startsWith(prefix)))
   const payload = path.join(dst, 'public')
   fs.mkdirSync(payload, { recursive: true })
-  for (const item of listing.files) {
+  for (const item of servedFiles) {
     const from = path.join(src, ...item.path.split('/'))
     const to = path.join(payload, ...item.path.split('/'))
     fs.mkdirSync(path.dirname(to), { recursive: true })
     fs.copyFileSync(from, to, fs.constants.COPYFILE_EXCL)
   }
   const copied = safeWalk(payload)
-  if (JSON.stringify(copied) !== JSON.stringify(listing)) throw new Error('Staged consumer bytes differ from verified source')
+  if (JSON.stringify(copied.files) !== JSON.stringify(servedFiles)) {
+    throw new Error('Staged public consumer bytes differ from filtered verified source')
+  }
+  if (withheldFiles.some(file => fs.existsSync(path.join(payload, ...file.path.split('/'))))) {
+    throw new Error('Restricted XR file leaked into Hosting public root')
+  }
 
   const manifest = {
     schemaVersion: 'urai-private-consumer-staging-artifact-1',
@@ -151,6 +173,13 @@ export function prepareConsumerStagingBundle({ spatialExport, outputDirectory, c
     files: listing.files,
     fileCount: listing.files.length,
     totalBytes: listing.totalBytes,
+    // files/fileCount remain the exact unchanged upstream source inventory.
+    // Only servedFiles are copied into the public Hosting candidate.
+    restrictedStaticPrefixes: restrictedRoutes.map(prefix => '/' + prefix),
+    withheldFiles,
+    servedFiles,
+    servedFileCount: servedFiles.length,
+    servedTotalBytes: copied.totalBytes,
     stagingBlockers: [
       'Independent exact-source staging controller review',
       'Authenticated edge access restriction and staging Hosting authority',
@@ -182,6 +211,9 @@ export function prepareConsumerStagingBundle({ spatialExport, outputDirectory, c
         { source: '/api/buildinfo', function: 'buildinfo' }
       ]
     }
+  }
+  if (firebaseCandidate.hosting.rewrites.some(rule => rule.source === '**' || rule.source === '/xr/**' || rule.source === '/spatial/ar-vr/**')) {
+    throw new Error('Unsafe catch-all/XR Hosting rewrite')
   }
   fs.writeFileSync(path.join(dst, 'UNAPPROVED-firebase.consumer-staging.json'), JSON.stringify(firebaseCandidate, null, 2) + '\n', { mode: 0o600 })
   return { manifest, manifestPath: path.join(dst, 'consumer-artifact-manifest.json') }

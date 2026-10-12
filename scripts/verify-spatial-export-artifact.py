@@ -9,7 +9,7 @@ import zipfile
 
 SOURCE = '5e9801bda83e0a14795c8307fb717fe73bc7a6a4'
 ZIP_SHA = 'f1f3ec5657feb62fd6c8cc3fc39ed4acb1c1e8828b1b34ce6e052f281adcdfcc'
-NATIVE_MANIFEST_SHA = 'cddb62ae9c2dd5e47a90416be9f307c157b3710f7fede1c855d3f029536103e7'
+NATIVE_MANIFEST_SHA = '0387ff221d5ab0dd96df5ab5da7b6b711bbdfe4f2fa668085543ab08abe32f9b'
 MANIFEST_PATH = 'artifacts/consumer-export/real-static-manifest.json'
 EXPORT_PREFIX = 'urai-tier1/out/'
 
@@ -95,8 +95,32 @@ def native(destination, output):
         or bound.get('stagingDeploymentAuthorized') is not False
         or bound.get('finalAssetAdmissions') != 0 or bound.get('files') != source['files']):
         refuse('native assembler identity, contents, or fail-closed authority differs')
+    # Verify both inventories: immutable compiled inputs and actual public bytes.
+    restricted = ['/xr/', '/spatial/ar-vr/']
+    source_files = source['files']
+    allowed = [entry for entry in source_files if not any(entry['path'].startswith(prefix.lstrip('/')) for prefix in restricted)]
+    withheld = [entry for entry in source_files if any(entry['path'].startswith(prefix.lstrip('/')) for prefix in restricted)]
+    if (bound.get('restrictedStaticPrefixes') != restricted
+        or bound.get('servedFiles') != allowed
+        or bound.get('withheldFiles') != withheld
+        or bound.get('servedFileCount') != len(allowed)
+        or bound.get('servedTotalBytes') != sum(x['bytes'] for x in allowed)):
+        refuse('public serving inventory or restricted XR routing diverged')
+    served = output / 'public'
+    actual_names = {x.relative_to(served).as_posix() for x in served.rglob('*') if x.is_file()}
+    if actual_names != {x['path'] for x in allowed}:
+        refuse('extra, absent, or forbidden files in Hosting public root')
+    for item in allowed:
+        candidate = served.joinpath(*PurePosixPath(item['path']).parts)
+        if (not candidate.is_file() or candidate.is_symlink()
+            or candidate.stat().st_size != item['bytes']
+            or digest(candidate) != item['sha256']):
+            refuse('served file digest mismatch: ' + item['path'])
     if not (output / 'UNAPPROVED-firebase.consumer-staging.json').is_file():
         refuse('missing explicitly unapproved Firebase config')
+    hosted = json.loads((output / 'UNAPPROVED-firebase.consumer-staging.json').read_text())
+    if any(rule.get('source') in ('**', '/xr/**', '/spatial/ar-vr/**') for rule in hosted.get('hosting', {}).get('rewrites', [])):
+        refuse('unsafe staging Hosting catchall or protected route')
     print(json.dumps({'stage': 'native-output-byte-identical', 'sourceSha': SOURCE,
                       'nativeManifestSha256': NATIVE_MANIFEST_SHA,
                       'files': len(bound['files']), 'deployed': False}))
