@@ -26,7 +26,7 @@ elif [ -n "${CROSS_REPO_READ_SSH_KEY:-}" ]; then
   printf '%s\n' "$CROSS_REPO_READ_SSH_KEY" > "$key_file"
   # GitHub's reviewed Ed25519 host key (docs.github.com; verified 2026-10-14).
   # Do not trust a host key obtained from the network during this run.
-  printf '%s\\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > "$known_hosts"
+  printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > "$known_hosts"
   live_sha="$(GIT_SSH_COMMAND="ssh -i $key_file -o IdentitiesOnly=yes -o UserKnownHostsFile=$known_hosts -o StrictHostKeyChecking=yes" \
     timeout --kill-after=5s 30s git ls-remote git@github.com:LifeLoggerAI/urai-communications.git "refs/heads/$COMMUNICATIONS_BRANCH" \
     | awk 'NR==1 {print $1}')"
