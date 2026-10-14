@@ -141,6 +141,81 @@ try {
     getDoc(doc(a.firestore, 'staging_events', receipt.eventId)));
   record('authenticated-event-functions-writes-not-client-readable');
 
+  // Real Firebase SDK -> Functions -> Firestore transaction -> Storage
+  // lifecycle, using fixed synthetic bytes only. This is an isolated
+  // emulator-only proof, not certified production Life Graph or provider work.
+  await mustDeny('memory-missing-consent-denied',
+    call(a, 'createStagingSyntheticMemory', { decisionReceiptId: 'synthetic_receipt_invalid1234' }));
+  await mustDeny('memory-unauthenticated-consent-denied',
+    call(guest, 'grantStagingSyntheticMemoryConsent', { purpose: 'memory.storage', confirmed: true }));
+  await mustDeny('memory-explicit-consent-required',
+    call(a, 'grantStagingSyntheticMemoryConsent', { purpose: 'memory.storage', confirmed: false }));
+  const granted = (await call(a, 'grantStagingSyntheticMemoryConsent', {
+    purpose: 'memory.storage', confirmed: true,
+  })).data;
+  assert.equal(granted.status, 'granted');
+  assert.equal(granted.synthetic, true);
+  const grantReceipt = granted.decisionReceiptId;
+  assert.match(grantReceipt, /^synthetic_receipt_/);
+  record('memory-consent-receipt-created-in-firestore-service');
+
+  await mustDeny('memory-forged-consent-receipt-denied',
+    call(a, 'createStagingSyntheticMemory', { decisionReceiptId: 'synthetic_receipt_invalid1234' }));
+  await mustDeny('memory-second-grant-denied',
+    call(a, 'grantStagingSyntheticMemoryConsent', { purpose: 'memory.storage', confirmed: true }));
+
+  const firstMemory = (await call(a, 'createStagingSyntheticMemory', {
+    decisionReceiptId: grantReceipt,
+  })).data;
+  assert.equal(firstMemory.ownerUid, ua.user.uid);
+  assert.match(firstMemory.sourceSha256, /^[a-f0-9]{64}$/);
+  const secondMemory = (await call(a, 'createStagingSyntheticMemory', {
+    decisionReceiptId: grantReceipt, relatedMemoryId: firstMemory.memoryId,
+  })).data;
+  const graph = (await call(a, 'getStagingSyntheticLifeGraph', {
+    ownerUid: ua.user.uid,
+  })).data;
+  assert.equal(graph.nodes.length, 2);
+  assert.equal(graph.nodes.find(n => n.memoryId === secondMemory.memoryId)?.relatesTo, firstMemory.memoryId);
+  record('memory-real-firestore-life-graph-relationship-created');
+
+  const retrieval = (await call(a, 'retrieveStagingSyntheticMemory', {
+    ownerUid: ua.user.uid, memoryId: firstMemory.memoryId,
+  })).data;
+  const actual = Buffer.from(retrieval.mediaBase64, 'base64');
+  assert.equal(actual.toString('utf8'), 'URAI_DISPOSABLE_SYNTHETIC_MEMORY:' + firstMemory.memoryId);
+  assert.equal(retrieval.sourceSha256, firstMemory.sourceSha256);
+  record('memory-permissioned-retrieval-actual-storage-fixity');
+
+  await mustDeny('memory-cross-user-retrieval-denied',
+    call(b, 'retrieveStagingSyntheticMemory', {
+      ownerUid: ua.user.uid, memoryId: firstMemory.memoryId,
+    }));
+  await mustDeny('memory-cross-user-graph-denied',
+    call(b, 'getStagingSyntheticLifeGraph', { ownerUid: ua.user.uid }));
+  await mustDeny('memory-direct-client-firestore-denied',
+    getDoc(doc(a.firestore, 'staging_synthetic_memories', ua.user.uid, 'items', firstMemory.memoryId)));
+  await mustDeny('memory-direct-client-storage-denied',
+    getMetadata(ref(a.storage, 'staging_synthetic_memories/' + ua.user.uid + '/' + firstMemory.memoryId + '.bin')));
+
+  const revoked = (await call(a, 'revokeStagingSyntheticMemoryConsent', {
+    decisionReceiptId: grantReceipt,
+  })).data;
+  assert.equal(revoked.status, 'revoked');
+  assert.equal(revoked.deletedMemoryCount, 2);
+  assert.equal(revoked.graphCleared, true);
+  record('memory-revocation-before-storage-deletion-and-graph-cleanup');
+  await mustDeny('memory-retrieval-after-revocation-denied',
+    call(a, 'retrieveStagingSyntheticMemory', {
+      ownerUid: ua.user.uid, memoryId: firstMemory.memoryId,
+    }));
+  await mustDeny('memory-graph-after-revocation-denied',
+    call(a, 'getStagingSyntheticLifeGraph', { ownerUid: ua.user.uid }));
+  await mustDeny('memory-new-ingestion-after-revocation-denied',
+    call(a, 'createStagingSyntheticMemory', { decisionReceiptId: grantReceipt }));
+  await mustDeny('memory-consent-regrant-sticky-denied',
+    call(a, 'grantStagingSyntheticMemoryConsent', { purpose: 'memory.storage', confirmed: true }));
+
   await deleteObject(owned);
   await deleteDoc(ownerDoc);
   record('synthetic-owner-storage-and-firestore-deletion');
