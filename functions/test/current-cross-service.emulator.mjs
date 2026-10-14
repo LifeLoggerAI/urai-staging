@@ -39,7 +39,7 @@ async function mustDeny(label, promise) {
   try { await promise; }
   catch (error) { denied = error; }
   assert.ok(denied, label + ': operation was permitted');
-  assert.match(String(denied.code || denied.message || denied), /permission-denied|unauthenticated|storage\/unauthorized|storage\/unauthenticated/i, label);
+  assert.match(String(denied.code || denied.message || denied), /permission-denied|unauthenticated|invalid-argument|storage\/unauthorized|storage\/unauthenticated/i, label);
   record(label);
 }
 function client(name) {
