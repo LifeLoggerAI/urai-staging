@@ -30,7 +30,7 @@
     "test:smoke:staging": "npm run smoke:staging",
     "verify:release": "npm run check:deploy",
     "lock:staging": "bash scripts/urai-staging-lock.sh",
-    "emulators": "bash scripts/run-with-java.sh ./functions/node_modules/.bin/firebase emulators:start --config firebase.json --only functions,firestore,hosting",
+    "emulators": "bash scripts/run-with-java.sh ./functions/node_modules/.bin/firebase emulators:start --config firebase.json --only functions,firestore,hosting,storage",
     "emulators:test": "npm run test:e2e",
     "deploy:staging": "npm run lock:staging",
     "ship:urai:staging": "npm run deploy:staging",
