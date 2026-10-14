@@ -22,6 +22,7 @@ jobs:
       ADMIN_SHA: 8313188532aef304a3b55771c5080f87e4ac71eb
       PRIVACY_SHA: c54e9e59c9cbf2d7e29d91eef1c2dcc15dbcc036
       JOBS_SHA: ed9719503c6bb967ff17af9d140ae51c9ea661d9
+      SPATIAL_C1_SHA: 4951e2bde4f6708cf2b83e6413f7f61748bb0dd0
       NO_GCE_CHECK: 'true'
       URAI_EMULATOR_PROJECT: urai-staging-test
     steps:
@@ -41,7 +42,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=all)"
           test '${{ github.repository }}' = 'LifeLoggerAI/urai-staging'
           test '${{ github.event.pull_request.base.ref }}' = 'main'
-          for sha in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
+          for sha in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA" "$SPATIAL_C1_SHA"; do
             [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
           done
           test "$URAI_EMULATOR_PROJECT" = 'urai-staging-test'
@@ -123,6 +124,56 @@ jobs:
           set -euo pipefail
           npm --prefix functions ci --ignore-scripts --no-audit --no-fund
           npm --prefix functions run build
+
+      - name: Verify exact canonical Spatial Life Graph consent and temporal authority source
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/urai-current-cross-repositories/urai-spatial"
+          git clone -q --no-checkout --depth 1 --branch proof/current-c1-memory-graph-fence-20261014 \
+            "https://github.com/LifeLoggerAI/urai-spatial.git" "$root"
+          git -C "$root" checkout -q --detach "$SPATIAL_C1_SHA"
+          test "$(git -C "$root" rev-parse HEAD)" = "$SPATIAL_C1_SHA"
+          test -z "$(git -C "$root" status --porcelain --untracked-files=all)"
+          test -d "$GITHUB_WORKSPACE/functions/node_modules/typescript"
+          # Actual unmodified Spatial production module and its source-level
+          # regression tests; staging's locked TypeScript dependency only.
+          ln -s "$GITHUB_WORKSPACE/functions/node_modules" "$root/node_modules"
+          (
+            cd "$root"
+            node --test \
+              urai-tier1/tests/life-graph-authority-behavior.test.mjs \
+              urai-tier1/tests/person-state-authority-behavior.test.mjs
+          )
+          rm "$root/node_modules"
+          test -z "$(git -C "$root" status --porcelain --untracked-files=all)"
+          node --input-type=module - <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          const receipt = {
+            schemaVersion: 'urai-canonical-spatial-c1-source-tests-1',
+            stagingSourceSha: process.env.TARGET_SHA,
+            spatialExactSha: process.env.SPATIAL_C1_SHA,
+            sourceBranch: 'proof/current-c1-memory-graph-fence-20261014',
+            testModules: [
+              'urai-tier1/tests/life-graph-authority-behavior.test.mjs',
+              'urai-tier1/tests/person-state-authority-behavior.test.mjs',
+            ],
+            coverage: [
+              'current canonical C1 consent revoked before Jobs block',
+              'expired missing malformed or foreign C1 grant',
+              'current Life Graph source binding and SceneTruth',
+              'owner-scoped temporal authority and transaction retries',
+            ],
+            actualCanonicalSourceUnderTest: true,
+            mockedDatabaseServiceInTheseSourceTests: true,
+            separateActualFirebaseEmulatorStepRequired: true,
+            cloudStagingAccepted: false,
+            productionDataProcessed: false,
+            providerOrHostingMutations: false,
+          };
+          writeFileSync('artifacts/current-cross-service/canonical-spatial-contract.json',
+            JSON.stringify(receipt, null, 2) + '\n');
+          NODE
 
       - name: Execute real Auth Functions Firestore Storage emulators
         shell: bash
