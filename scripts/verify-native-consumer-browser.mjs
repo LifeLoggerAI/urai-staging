@@ -9,14 +9,14 @@ const root = path.resolve(process.env.URAI_NATIVE_OUTPUT || '')
 const playwrightRoot = process.env.URAI_PLAYWRIGHT_ROOT
 const base = process.env.URAI_NATIVE_BASE_URL || 'http://127.0.0.1:4173'
 const evidence = path.resolve(process.env.URAI_BROWSER_EVIDENCE || 'artifacts/native-consumer-browser')
-const expected = '07cb7a6bd32a43f33f118997151e9b753714afbd069ab00b01784ef6639a1b8a'
+const expected = 'e080edf4b99fe02a185b1f02baf33bb02eefcf0d0244423100312f163683b86b'
 if (!root || !playwrightRoot || !fs.existsSync(path.join(root, 'public'))) throw new Error('Real native assembler output / Playwright runtime unavailable')
 const original = fs.readFileSync(path.join(root, 'consumer-artifact-manifest.json'))
 if (createHash('sha256').update(original).digest('hex') !== expected) throw new Error('Native package manifest has not passed source-identity proof')
 const manifest = JSON.parse(original.toString('utf8'))
-if (manifest.sourceSha !== '9f7127753c81ad5e3b4cd0e6a9261ad98ccb0c52' ||
-  manifest.sourceArtifact?.zipSha256 !== '90b26a23f30495619e5cebf26573146e103ea915547cb2822ee28d0a6b7eaeb1' ||
-  manifest.sourceArtifact?.artifactId !== 11855755491 ||
+if (manifest.sourceSha !== 'b0318f4251f8f47ef5f232a54c6e52dc637116c7' ||
+  manifest.sourceArtifact?.zipSha256 !== '4181a341c47536d26cfe488d9bdc9a84ad1fd4a1bbed7009a43f535b2e6738a4' ||
+  manifest.sourceArtifact?.artifactId !== 11866083981 ||
   manifest.fileCount !== 1525 || manifest.servedFileCount !== 1522 || manifest.restrictedStaticPrefixes?.join(',') !== '/xr/,/spatial/ar-vr/' || manifest.deployed !== false) throw new Error('Unsafe native package authority or XR staging exposure')
 fs.mkdirSync(evidence, { recursive: true })
 const { chromium } = await import(pathToFileURL(path.join(playwrightRoot, 'node_modules/playwright/index.mjs')).href)

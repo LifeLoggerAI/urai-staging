@@ -9,13 +9,13 @@ import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 
 const shaPattern = /^[a-f0-9]{40}$/
-const pinnedSource = '9f7127753c81ad5e3b4cd0e6a9261ad98ccb0c52'
+const pinnedSource = 'b0318f4251f8f47ef5f232a54c6e52dc637116c7'
 const pinnedArtifact = {
-  "workflowRunId": 38477717820,
-  "artifactId": 11855755491,
-  "zipSha256": "90b26a23f30495619e5cebf26573146e103ea915547cb2822ee28d0a6b7eaeb1",
-  "sourceManifestSha256": "7656abc6a07e76c5ae0d8caabd5b878a59d2ae0aaf4126d0e17c41e695c7cc0c",
-  "sourceTreeSha": "d04ef33310631f853d897c23a76f61aec8ad6827",
+  "workflowRunId": 38501789880,
+  "artifactId": 11866083981,
+  "zipSha256": "4181a341c47536d26cfe488d9bdc9a84ad1fd4a1bbed7009a43f535b2e6738a4",
+  "sourceManifestSha256": "207545643b0b7db72ae283e815ece282c26617a69dc13048a1c3a844920e80d8",
+  "sourceTreeSha": "9f879f084355c51f04f6cdc502ef513de0591ca4",
   "fileCount": 1525,
   "totalBytes": 143890239
 }
