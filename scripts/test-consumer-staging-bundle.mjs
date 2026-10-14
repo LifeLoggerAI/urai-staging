@@ -71,7 +71,7 @@ test('assembles real route-shaped consumer bytes without mutating staging public
 
 test('rejects fabricated or incomplete static build and mismatched source identities', () => {
   runFixture(f => { fs.rmSync(path.join(f.spatialExport,'replay/index.html'));assert.throws(()=>prepareConsumerStagingBundle(f),/route missing/) })
-  runFixture(f => { f.candidate.sourceSha='f'.repeat(40);fs.writeFileSync(f.candidatePath,JSON.stringify(f.candidate));assert.throws(()=>prepareConsumerStagingBundle(f),/does not match pinned/) })
+  runFixture(f => { f.candidate.sourceSha='f'.repeat(40);fs.writeFileSync(f.candidatePath,JSON.stringify(f.candidate));assert.throws(()=>prepareConsumerStagingBundle(f),/Unapproved consumer or asset authority/) })
   runFixture(f => { f.candidate.independentReviewApproved=true;fs.writeFileSync(f.candidatePath,JSON.stringify(f.candidate));assert.throws(()=>prepareConsumerStagingBundle(f),/Unapproved consumer/) })
   runFixture(f => { fs.rmSync(path.join(f.spatialExport,'_next'),{recursive:true,force:true});assert.throws(()=>prepareConsumerStagingBundle(f),/Next.js JavaScript/) })
 })
@@ -85,7 +85,7 @@ test('rejects private credentials, links and XR disclosure while preserving orig
       releaseClassification:'GO',sourceSha:f.candidate.sourceSha,
       providerActivation:true,deviceAcceptance:true,routes:[]
     }))
-    assert.throws(()=>prepareConsumerStagingBundle(f),/not fail-closed/)
+    assert.throws(()=>prepareConsumerStagingBundle(f),/Compiled deployment proof hash differs from gated source authority/)
   })
 })
 
