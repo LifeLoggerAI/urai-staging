@@ -1,8 +1,17 @@
 {
   "schemaVersion": "urai-spatial-consumer-staging-candidate-1",
   "repository": "LifeLoggerAI/urai-spatial",
-  "sourceSha": "5eb2320fdd52c1e18a9c568b2168e0e03797fa33",
-  "sourcePullRequest": 1810,
+  "sourceSha": "9f7127753c81ad5e3b4cd0e6a9261ad98ccb0c52",
+  "sourcePullRequest": 1636,
+  "sourceArtifact": {
+    "workflowRunId": 38477717820,
+    "artifactId": 11855755491,
+    "zipSha256": "90b26a23f30495619e5cebf26573146e103ea915547cb2822ee28d0a6b7eaeb1",
+    "sourceManifestSha256": "7656abc6a07e76c5ae0d8caabd5b878a59d2ae0aaf4126d0e17c41e695c7cc0c",
+    "sourceTreeSha": "d04ef33310631f853d897c23a76f61aec8ad6827",
+    "fileCount": 1525,
+    "totalBytes": 143890239
+  },
   "controllerPullRequest": 1636,
   "stagingRepository": "LifeLoggerAI/urai-staging",
   "stagingProject": "urai-staging",

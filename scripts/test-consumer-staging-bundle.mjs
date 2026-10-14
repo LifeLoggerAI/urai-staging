@@ -25,14 +25,20 @@ function fixture() {
   fs.mkdirSync(spatialExport)
   for (const page of pages) write(spatialExport, page, '<!doctype html><html><body>UrAi compiled static route</body></html>')
   write(spatialExport, '_next/static/chunks/app.js', '/* synthetic compiled JS marker */')
-  write(spatialExport, 'api/system/deploy-proof', JSON.stringify({
+  const proof = JSON.stringify({
     service:'urai-spatial-deploy-proof',repository:candidate.repository,
+    claimBoundaries:{webxr:'governed-post-launch-gated'},
     deploymentFreshness:{ commitSha:candidate.sourceSha }
-  }))
+  })
+  write(spatialExport, 'api/system/deploy-proof', proof)
   write(spatialExport, 'static-launch-boundary.json', JSON.stringify({
     releaseClassification:'NO-GO',sourceSha:candidate.sourceSha,
+    compiledProofSha256:createHash('sha256').update(proof).digest('hex'),
     providerActivation:false,deviceAcceptance:false,
-    routes:[{route:'/xr',enabled:false},{route:'/spatial/ar-vr',enabled:false}]
+    routes:[
+      {route:'/xr',enabled:false,expectedStatus:404,previewOnly:false},
+      {route:'/spatial/ar-vr',enabled:false,expectedStatus:200,previewOnly:true}
+    ]
   }))
   fs.writeFileSync(candidatePath, JSON.stringify(candidate))
   return {root,spatialExport,outputDirectory,candidatePath,candidate}
@@ -45,6 +51,7 @@ function runFixture(fn) {
 test('assembles real route-shaped consumer bytes without mutating staging public, reviews or live services', () => runFixture(f => {
   const output=prepareConsumerStagingBundle(f)
   assert.equal(output.manifest.sourceSha,f.candidate.sourceSha)
+  assert.deepEqual(output.manifest.sourceArtifact,f.candidate.sourceArtifact)
   assert.equal(output.manifest.fileCount,pages.length+3)
   assert.equal(output.manifest.deployed,false)
   assert.equal(output.manifest.stagingDeploymentAuthorized,false)
@@ -103,6 +110,32 @@ test('disabled XR entries are physically withheld from Hosting public while pres
   const candidate = JSON.parse(fs.readFileSync(path.join(f.outputDirectory, 'UNAPPROVED-firebase.consumer-staging.json')))
   assert.ok(candidate.hosting.rewrites.every(x => x.source !== '**' && !x.source.startsWith('/xr')))
 }))
+
+test('real source-side technical preview is withheld from native staging public', () => runFixture(f => {
+  write(f.spatialExport, 'spatial/ar-vr/index.html', '<!doctype html><title>Disabled technical preview</title>')
+  write(f.spatialExport, 'spatial/ar-vr/index.txt', 'preview without immersive WebXR authority')
+  const output = prepareConsumerStagingBundle(f)
+  assert.deepEqual(output.manifest.withheldFiles.map(x => x.path).sort(),
+    ['spatial/ar-vr/index.html', 'spatial/ar-vr/index.txt'])
+  assert.equal(fs.existsSync(path.join(f.outputDirectory, 'public/spatial/ar-vr/index.html')), false)
+  assert.equal(output.manifest.deployed, false)
+  assert.equal(output.manifest.stagingDeploymentAuthorized, false)
+}))
+
+test('reject changed export digest and activated XR technical preview', () => {
+  runFixture(f => {
+    f.candidate.sourceArtifact.zipSha256 = 'f'.repeat(64)
+    fs.writeFileSync(f.candidatePath, JSON.stringify(f.candidate))
+    assert.throws(() => prepareConsumerStagingBundle(f), /Unapproved consumer or asset authority/)
+  })
+  runFixture(f => {
+    const file = path.join(f.spatialExport, 'static-launch-boundary.json')
+    const boundary = JSON.parse(fs.readFileSync(file))
+    boundary.routes[1].enabled = true
+    fs.writeFileSync(file, JSON.stringify(boundary))
+    assert.throws(() => prepareConsumerStagingBundle(f), /Unapproved immersive XR preview authority/)
+  })
+})
 
 test('XR staging packaging fails closed on activated or malformed route governance', () => {
   runFixture(f => {

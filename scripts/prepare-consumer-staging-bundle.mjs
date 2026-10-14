@@ -9,6 +9,16 @@ import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 
 const shaPattern = /^[a-f0-9]{40}$/
+const pinnedSource = '9f7127753c81ad5e3b4cd0e6a9261ad98ccb0c52'
+const pinnedArtifact = {
+  "workflowRunId": 38477717820,
+  "artifactId": 11855755491,
+  "zipSha256": "90b26a23f30495619e5cebf26573146e103ea915547cb2822ee28d0a6b7eaeb1",
+  "sourceManifestSha256": "7656abc6a07e76c5ae0d8caabd5b878a59d2ae0aaf4126d0e17c41e695c7cc0c",
+  "sourceTreeSha": "d04ef33310631f853d897c23a76f61aec8ad6827",
+  "fileCount": 1525,
+  "totalBytes": 143890239
+}
 const requiredPages = [
   'index.html', 'home/index.html', 'ascent/index.html',
   'life-map/index.html', 'focus/index.html', 'replay/index.html',
@@ -64,7 +74,11 @@ function assertSource(src, candidate) {
     !shaPattern.test(candidate.sourceSha) ||
     candidate.stagingRepository !== 'LifeLoggerAI/urai-staging' ||
     candidate.stagingProject !== 'urai-staging' ||
-    candidate.sourcePullRequest !== 1810 || candidate.controllerPullRequest !== 1636 ||
+    candidate.sourceSha !== pinnedSource ||
+    candidate.sourcePullRequest !== 1636 || candidate.controllerPullRequest !== 1636 ||
+    !candidate.sourceArtifact ||
+    Object.keys(candidate.sourceArtifact).length !== Object.keys(pinnedArtifact).length ||
+    Object.entries(pinnedArtifact).some(([key, value]) => candidate.sourceArtifact[key] !== value) ||
     candidate.stagingControllerPullRequest !== 109 || candidate.state !== 'source-only-pending-governed-admission' ||
     candidate.finalAssetAdmissions !== 0 ||
     candidate.independentReviewApproved !== false ||
@@ -78,6 +92,12 @@ function assertSource(src, candidate) {
   }
   const proof = readObject(path.join(src, fingerprintFile), 'Compiled Spatial deployment proof')
   const boundary = readObject(path.join(src, boundaryFile), 'Spatial static route gate')
+  if (boundary.compiledProofSha256 !== hash(fs.readFileSync(path.join(src, fingerprintFile)))) {
+    throw new Error('Compiled deployment proof hash differs from gated source authority')
+  }
+  if (proof.claimBoundaries?.webxr !== 'governed-post-launch-gated') {
+    throw new Error('Compiled WebXR release contract no longer fail closed')
+  }
   if (proof.service !== 'urai-spatial-deploy-proof' || proof.repository !== candidate.repository ||
     proof.deploymentFreshness?.commitSha !== candidate.sourceSha) {
     throw new Error('Static export compiled authority does not match pinned Spatial source')
@@ -90,7 +110,15 @@ function assertSource(src, candidate) {
     throw new Error('Static launch boundary is not fail-closed for this exact source')
   }
   for (const route of boundary.routes) {
-    if (!route.enabled) {
+    const withheldPreview = route.route === '/spatial/ar-vr' && route.enabled === false &&
+      route.previewOnly === true && route.expectedStatus === 200
+    if (route.route === '/spatial/ar-vr' && !withheldPreview) {
+      throw new Error('Unapproved immersive XR preview authority')
+    }
+    if (route.route === '/xr' && (route.previewOnly !== false || route.expectedStatus !== 404)) {
+      throw new Error('Unapproved immersive XR route authority')
+    }
+    if (!route.enabled && !withheldPreview) {
       for (const suffix of ['/index.html', '.html']) {
         if (fs.existsSync(path.join(src, route.route.replace(/^\/+/, '') + suffix))) {
           throw new Error('Disabled XR route contains publicly served HTML: ' + route.route)
@@ -159,6 +187,7 @@ export function prepareConsumerStagingBundle({ spatialExport, outputDirectory, c
     repository: candidate.repository,
     sourceSha: candidate.sourceSha,
     sourcePullRequest: candidate.sourcePullRequest,
+    sourceArtifact: candidate.sourceArtifact,
     stagingRepository: candidate.stagingRepository,
     stagingProject: candidate.stagingProject,
     stagingControllerPullRequest: candidate.stagingControllerPullRequest,

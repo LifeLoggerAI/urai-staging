@@ -7,9 +7,15 @@ from pathlib import Path, PurePosixPath
 import stat
 import zipfile
 
-SOURCE = '5eb2320fdd52c1e18a9c568b2168e0e03797fa33'
-ZIP_SHA = 'faa0b9f1adf0deb8ce1866175842f99e7dabc247db9d8f6c960c50768abd30bb'
-NATIVE_MANIFEST_SHA = '279735522dda1008c74b9c303fb15fe9b497d3cfe081e5a1013f1f1e32eccde2'
+SOURCE = '9f7127753c81ad5e3b4cd0e6a9261ad98ccb0c52'
+ZIP_SHA = '90b26a23f30495619e5cebf26573146e103ea915547cb2822ee28d0a6b7eaeb1'
+NATIVE_MANIFEST_SHA = '07cb7a6bd32a43f33f118997151e9b753714afbd069ab00b01784ef6639a1b8a'
+SOURCE_MANIFEST_SHA = '7656abc6a07e76c5ae0d8caabd5b878a59d2ae0aaf4126d0e17c41e695c7cc0c'
+SOURCE_TREE_SHA = 'd04ef33310631f853d897c23a76f61aec8ad6827'
+ARTIFACT_ID = 11855755491
+SOURCE_RUN_ID = 38477717820
+FILE_COUNT = 1525
+FILE_BYTES = 143890239
 MANIFEST_PATH = 'artifacts/consumer-export/real-static-manifest.json'
 EXPORT_PREFIX = 'urai-tier1/out/'
 
@@ -58,15 +64,18 @@ def archive(archive, destination):
             with zipped.open(info) as source, open(target, 'xb') as output:
                 for chunk in iter(lambda: source.read(1024 * 1024), b''):
                     output.write(chunk)
+    if digest(destination / MANIFEST_PATH) != SOURCE_MANIFEST_SHA:
+        refuse('source manifest SHA-256 diverged from pinned GitHub artifact')
     manifest = json.loads((destination / MANIFEST_PATH).read_text())
     if (manifest.get('schemaVersion') != 'urai-real-spatial-static-export-1'
         or manifest.get('repository') != 'LifeLoggerAI/urai-spatial'
         or manifest.get('sourceSha') != SOURCE
-        or manifest.get('fileCount') != 1522
-        or manifest.get('totalBytes') != 143738572):
+        or manifest.get('sourceTreeSha') != SOURCE_TREE_SHA
+        or manifest.get('fileCount') != FILE_COUNT
+        or manifest.get('totalBytes') != FILE_BYTES):
         refuse('source manifest is not the previously verified build')
     expected = manifest.get('files')
-    if not isinstance(expected, list) or len(expected) != 1522:
+    if not isinstance(expected, list) or len(expected) != FILE_COUNT:
         refuse('invalid file hash inventory')
     export = destination / 'urai-tier1/out'
     seen = set()
@@ -91,7 +100,13 @@ def native(destination, output):
         refuse('native assembler manifest diverged from the original verified package')
     source = json.loads((destination / MANIFEST_PATH).read_text())
     bound = json.loads(manifest_path.read_text())
-    if (bound.get('sourceSha') != SOURCE or bound.get('deployed') is not False
+    artifact = {'workflowRunId': SOURCE_RUN_ID, 'artifactId': ARTIFACT_ID,
+                'zipSha256': ZIP_SHA, 'sourceManifestSha256': SOURCE_MANIFEST_SHA,
+                'sourceTreeSha': SOURCE_TREE_SHA, 'fileCount': FILE_COUNT,
+                'totalBytes': FILE_BYTES}
+    if (bound.get('sourceSha') != SOURCE or bound.get('sourcePullRequest') != 1636
+        or bound.get('sourceArtifact') != artifact
+        or bound.get('deployed') is not False
         or bound.get('stagingDeploymentAuthorized') is not False
         or bound.get('finalAssetAdmissions') != 0 or bound.get('files') != source['files']):
         refuse('native assembler identity, contents, or fail-closed authority differs')
