@@ -430,3 +430,11 @@ export const getStagingCompletionMatrix = functions.https.onCall(async (_data: u
     matrix: FEATURE_MATRIX,
   };
 });
+
+export {
+  grantStagingSyntheticMemoryConsent,
+  createStagingSyntheticMemory,
+  retrieveStagingSyntheticMemory,
+  getStagingSyntheticLifeGraph,
+  revokeStagingSyntheticMemoryConsent,
+} from './syntheticMemoryLifecycle';
