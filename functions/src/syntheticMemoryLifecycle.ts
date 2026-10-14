@@ -36,7 +36,7 @@ function assertCurrentConsent(row: FirebaseFirestore.DocumentData | undefined, n
     row.policyVersion !== policyVersion || row.status !== 'granted' ||
     typeof row.decisionReceiptId !== 'string' || !/^synthetic_receipt_[A-Za-z0-9_-]{8,120}$/.test(row.decisionReceiptId) ||
     typeof row.expiresAtMillis !== 'number' || !Number.isSafeInteger(row.expiresAtMillis) ||
-    row.expiresAtMillis <= now) deny('SYNTHETIC_MEMORY_CONSENT_MISSING_REVOKED_OR_EXPIRED');
+    row.expiresAtMillis <= now) throw new functions.https.HttpsError('permission-denied', 'SYNTHETIC_MEMORY_CONSENT_MISSING_REVOKED_OR_EXPIRED');
   return row;
 }
 function assertOwner(input: Record<string, unknown>, uid: string) {
@@ -138,7 +138,7 @@ export const retrieveStagingSyntheticMemory = functions.https.onCall(async (data
     ]);
     const consent = assertCurrentConsent(c.data());
     const row = m.data();
-    if (!row) deny('SYNTHETIC_MEMORY_UNAVAILABLE');
+    if (!row) throw new functions.https.HttpsError('permission-denied', 'SYNTHETIC_MEMORY_UNAVAILABLE');
     if (!m.exists || !g.exists || row.ownerUid !== uid ||
       row.state !== 'ACTIVE' || row.synthetic !== true ||
       row.sourceEvidenceClass !== 'SYNTHETIC_TEST_ONLY' ||
