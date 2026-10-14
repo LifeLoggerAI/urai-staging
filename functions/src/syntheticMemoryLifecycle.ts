@@ -31,7 +31,7 @@ function consentRef(uid: string) { return getFirestore().doc('staging_synthetic_
 function memoryRef(uid: string, id: string) { return getFirestore().doc('staging_synthetic_memories/' + uid + '/items/' + id); }
 function graphRef(uid: string, id: string) { return getFirestore().doc('staging_synthetic_life_graph/' + uid + '/nodes/' + id); }
 function memoryBucket() { return getStorage().bucket(bucketName); }
-function assertCurrentConsent(row: FirebaseFirestore.DocumentData | undefined, now = Date.now()) {
+function assertCurrentConsent(row: FirebaseFirestore.DocumentData | undefined, now = Date.now()): FirebaseFirestore.DocumentData {
   if (!row || row.ownerUid === undefined || row.purpose !== purpose ||
     row.policyVersion !== policyVersion || row.status !== 'granted' ||
     typeof row.decisionReceiptId !== 'string' || !/^synthetic_receipt_[A-Za-z0-9_-]{8,120}$/.test(row.decisionReceiptId) ||
@@ -138,7 +138,8 @@ export const retrieveStagingSyntheticMemory = functions.https.onCall(async (data
     ]);
     const consent = assertCurrentConsent(c.data());
     const row = m.data();
-    if (!m.exists || !g.exists || !row || row.ownerUid !== uid ||
+    if (!row) deny('SYNTHETIC_MEMORY_UNAVAILABLE');
+    if (!m.exists || !g.exists || row.ownerUid !== uid ||
       row.state !== 'ACTIVE' || row.synthetic !== true ||
       row.sourceEvidenceClass !== 'SYNTHETIC_TEST_ONLY' ||
       row.decisionReceiptId !== consent.decisionReceiptId ||
