@@ -1,0 +1,149 @@
+name: UrAi Current Cross-Service Emulator Evidence
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: urai-current-cross-service-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  current-cross-service:
+    name: Admin Privacy Jobs source contracts and real Firebase emulators (nonrelease)
+    if: ${{ github.event.pull_request.number == 109 && github.event.pull_request.head.repo.full_name == 'LifeLoggerAI/urai-staging' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      TARGET_SHA: ${{ github.event.pull_request.head.sha }}
+      ADMIN_SHA: 8313188532aef304a3b55771c5080f87e4ac71eb
+      PRIVACY_SHA: c54e9e59c9cbf2d7e29d91eef1c2dcc15dbcc036
+      JOBS_SHA: ed9719503c6bb967ff17af9d140ae51c9ea661d9
+      NO_GCE_CHECK: 'true'
+      URAI_EMULATOR_PROJECT: urai-staging-test
+    steps:
+      - name: Checkout exact staging head without persistent credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Verify exact staging identity and clean checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          test '${{ github.repository }}' = 'LifeLoggerAI/urai-staging'
+          test '${{ github.event.pull_request.base.ref }}' = 'main'
+          for sha in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA"; do
+            [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          done
+          test "$URAI_EMULATOR_PROJECT" = 'urai-staging-test'
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test -z "${FIREBASE_TOKEN:-}"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Set up Java 21 for Firebase emulators
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Clone immutable public Admin Privacy Jobs heads and test contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/urai-current-cross-repositories"
+          mkdir -p "$root" artifacts/current-cross-service
+          clone_at() {
+            local name="$1" branch="$2" sha="$3" path="$root/$1"
+            git clone -q --no-checkout --depth 1 --branch "$branch" "https://github.com/LifeLoggerAI/$name.git" "$path"
+            git -C "$path" checkout -q --detach "$sha"
+            test "$(git -C "$path" rev-parse HEAD)" = "$sha"
+            test -z "$(git -C "$path" status --porcelain --untracked-files=all)"
+          }
+          clone_at urai-admin repair/admin-security-privacy-20261007 "$ADMIN_SHA"
+          clone_at urai-privacy repair/export-attempt-authority-20261007 "$PRIVACY_SHA"
+          clone_at urai-jobs proof/private-captured-reality-sfm-audit-20261012 "$JOBS_SHA"
+          (
+            cd "$root/urai-admin"
+            node scripts/test-institutional-control-plane-contract.mjs
+            node scripts/test-firestore-rules-contract.mjs
+          )
+          (
+            cd "$root/urai-privacy"
+            node scripts/check-deletion-orchestration-contract.mjs
+            node scripts/validate-rules.mjs
+          )
+          (
+            cd "$root/urai-jobs"
+            node scripts/consent-revocation-contract.mjs
+            node scripts/runtime-job-admission-contract.mjs
+          )
+          for name in urai-admin urai-privacy urai-jobs; do
+            test -z "$(git -C "$root/$name" status --porcelain --untracked-files=all)"
+          done
+          node --input-type=module - <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          const receipt = {
+            schemaVersion: 'urai-current-cross-repository-source-contracts-1',
+            environment: 'credential-free-public-exact-head',
+            stagingSourceSha: process.env.TARGET_SHA,
+            sourceHeads: {
+              admin: process.env.ADMIN_SHA,
+              privacy: process.env.PRIVACY_SHA,
+              jobs: process.env.JOBS_SHA,
+            },
+            executed: [
+              'admin institutional control and Firestore rules contracts',
+              'privacy deletion orchestration and static rules contracts',
+              'jobs consent revocation and runtime-job admission contracts',
+            ],
+            upstreamSourceIdentitiesVerified: true,
+            executedAgainstRealDeployedServices: false,
+            crossServiceRuntimeIntegrationVerified: false,
+            mutations: false,
+            productionAccessAuthorized: false,
+          };
+          writeFileSync('artifacts/current-cross-service/source-contracts.json', JSON.stringify(receipt, null, 2) + '\n');
+          NODE
+
+      - name: Install locked staging functions dependencies and build
+        run: |
+          set -euo pipefail
+          npm --prefix functions ci --ignore-scripts --no-audit --no-fund
+          npm --prefix functions run build
+
+      - name: Execute real Auth Functions Firestore Storage emulators
+        shell: bash
+        env:
+          URAI_CROSS_SERVICE_RECEIPT: ${{ github.workspace }}/artifacts/current-cross-service/authenticated-emulator.json
+        run: |
+          set -euo pipefail
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test -z "${FIREBASE_TOKEN:-}"
+          test "$URAI_EMULATOR_PROJECT" = 'urai-staging-test'
+          NO_GCE_CHECK=true functions/node_modules/.bin/firebase emulators:exec \
+            --project "$URAI_EMULATOR_PROJECT" \
+            --config firebase.json \
+            --only auth,firestore,storage,functions \
+            "node functions/test/current-cross-service.emulator.mjs"
+
+      - name: Preserve exact-head current cross-service evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: urai-current-cross-service-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: artifacts/current-cross-service/
+          if-no-files-found: warn
+          retention-days: 90
