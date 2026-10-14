@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import { controller,sourceProfile,verifyCanonicalPolicy,verifyStagingVerificationBinding,checkRetainedBinding } from './verify-staging-verification-binding.mjs';
 
 const sha='a'.repeat(40);
@@ -77,3 +78,14 @@ test('retained proof rejects stale controller/run, wrong provider/reviewer/PR an
 
 
 
+
+test('GitHub Ed25519 source-key pin denies network-supplied host trust', () => {
+  const script = fs.readFileSync('scripts/assert-current-communications-source.sh', 'utf8');
+  const key = 'AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl';
+  const expectedLine = `printf '%s\\n' 'github.com ssh-ed25519 ${key}' > "$known_hosts"`;
+  assert.ok(script.includes(expectedLine), 'SSH host key must be pinned to the reviewed GitHub key');
+  const fingerprint = 'SHA256:' + createHash('sha256').update(Buffer.from(key, 'base64')).digest('base64').replace(/=+$/, '');
+  assert.equal(fingerprint, 'SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU');
+  assert.doesNotMatch(script, /ssh-keyscan/, 'unverified network host keys are prohibited');
+  assert.match(script, /StrictHostKeyChecking=yes/);
+});
