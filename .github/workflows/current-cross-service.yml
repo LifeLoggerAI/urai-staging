@@ -21,8 +21,8 @@ jobs:
       TARGET_SHA: ${{ github.event.pull_request.head.sha }}
       ADMIN_SHA: 8313188532aef304a3b55771c5080f87e4ac71eb
       PRIVACY_SHA: 809d94ad7fc93322780d13ff3f0bade7612b3ec2
-      JOBS_SHA: 7e6cf28e9875c9d10c1ebf08e41c7da1be8db74f
-      STORYTIME_SHA: f9f960a1d2a4d4ebdbade0aa70b08c507ffed7f4
+      JOBS_SHA: a8603dd3b48fff649dac7203c8c8c4ac84afc946
+      STORYTIME_SHA: 31cf72a01b65667de89c9ad565b6f0a4e51759a0
       STUDIO_SHA: 4d13b8b4f66768c69d9e828f503ec65de0c85a16
       SPATIAL_C1_SHA: 4951e2bde4f6708cf2b83e6413f7f61748bb0dd0
       NO_GCE_CHECK: 'true'
@@ -131,7 +131,7 @@ jobs:
           assert.ok(studioContract.includes("schemaVersion: 'urai-life-movie-longform-v1'"));
           assert.ok(jobsContract.includes("z.literal('urai-life-movie-longform-v1')"));
           const mainPin = /jobsSourceSha:\s*'([0-9a-f]{40})'/.exec(studioContract)?.[1];
-          assert.match(mainPin ?? '', /^[0-9a-f]{40}$/);
+          assert.equal(mainPin, '9d29be1bcd3a45a4b9a743df9c9706c00811f38b', 'Studio approved Jobs main pin must remain unchanged');
           const receipt = {
             schemaVersion: 'urai-standalone-cinema-source-bindings-1',
             stagingSourceSha: process.env.TARGET_SHA,
