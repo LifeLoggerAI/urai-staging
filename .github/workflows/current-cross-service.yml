@@ -20,8 +20,10 @@ jobs:
     env:
       TARGET_SHA: ${{ github.event.pull_request.head.sha }}
       ADMIN_SHA: 8313188532aef304a3b55771c5080f87e4ac71eb
-      PRIVACY_SHA: c54e9e59c9cbf2d7e29d91eef1c2dcc15dbcc036
-      JOBS_SHA: ed9719503c6bb967ff17af9d140ae51c9ea661d9
+      PRIVACY_SHA: 809d94ad7fc93322780d13ff3f0bade7612b3ec2
+      JOBS_SHA: 7e6cf28e9875c9d10c1ebf08e41c7da1be8db74f
+      STORYTIME_SHA: f9f960a1d2a4d4ebdbade0aa70b08c507ffed7f4
+      STUDIO_SHA: 4d13b8b4f66768c69d9e828f503ec65de0c85a16
       SPATIAL_C1_SHA: 4951e2bde4f6708cf2b83e6413f7f61748bb0dd0
       NO_GCE_CHECK: 'true'
       URAI_EMULATOR_PROJECT: urai-staging-test
@@ -42,7 +44,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=all)"
           test '${{ github.repository }}' = 'LifeLoggerAI/urai-staging'
           test '${{ github.event.pull_request.base.ref }}' = 'main'
-          for sha in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA" "$SPATIAL_C1_SHA"; do
+          for sha in "$ADMIN_SHA" "$PRIVACY_SHA" "$JOBS_SHA" "$STORYTIME_SHA" "$STUDIO_SHA" "$SPATIAL_C1_SHA"; do
             [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
           done
           test "$URAI_EMULATOR_PROJECT" = 'urai-staging-test'
@@ -75,7 +77,9 @@ jobs:
           }
           clone_at urai-admin repair/admin-security-privacy-20261007 "$ADMIN_SHA"
           clone_at urai-privacy repair/export-attempt-authority-20261007 "$PRIVACY_SHA"
-          clone_at urai-jobs proof/private-captured-reality-sfm-audit-20261012 "$JOBS_SHA"
+          clone_at urai-jobs repair/life-movie-convergence-20261007 "$JOBS_SHA"
+          clone_at urai-storytime codex/wave31-disposable-storytime-jobs-harness-20261014 "$STORYTIME_SHA"
+          clone_at urai-studio repair/studio-convergence-20261007 "$STUDIO_SHA"
           (
             cd "$root/urai-admin"
             node scripts/test-institutional-control-plane-contract.mjs
@@ -91,9 +95,58 @@ jobs:
             node scripts/consent-revocation-contract.mjs
             node scripts/runtime-job-admission-contract.mjs
           )
-          for name in urai-admin urai-privacy urai-jobs; do
+          # The existing Storytime runner's offline boundary checks are real
+          # source tests. They are NOT connected Jobs/Studio emulator proof.
+          (
+            cd "$root/urai-storytime"
+            node --test tests/unit/storytime-jobs-staging-acceptance.test.mjs
+          )
+          for name in urai-admin urai-privacy urai-jobs urai-storytime urai-studio; do
             test -z "$(git -C "$root/$name" status --porcelain --untracked-files=all)"
           done
+          # Cross-owner SOURCE binding check. Actual Auth/Firestore/Functions/
+          # Storage emulator execution remains the separate next stage below.
+          node --input-type=module - <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync, writeFileSync } from 'node:fs';
+          import { join } from 'node:path';
+          const root = join(process.env.RUNNER_TEMP, 'urai-current-cross-repositories');
+          const read = (owner, file) => readFileSync(join(root, owner, file), 'utf8');
+          const story = read('urai-storytime', 'functions/src/storytime.ts');
+          const narrator = read('urai-jobs', 'functions/src/jobs/storytimeNarratorBridge.ts');
+          const studioAuth = read('urai-studio', 'apps/studio/lib/studio-life-movie-longform-auth.ts');
+          const studioContract = read('urai-studio', 'apps/studio/lib/studio-life-movie-longform-contract.ts');
+          const jobsContract = read('urai-jobs', 'functions/src/jobs/studioLifeMovieLongformContract.ts');
+          assert.ok(story.includes('storytimeJobsBridgeRequest({') && story.includes('boundStorytimeRemoteJob(bridge, externalJobId)'));
+          assert.ok(story.includes('decisionReceiptId: consentReceiptId'));
+          assert.ok(narrator.includes("z.literal('storytime.voiceover')") && narrator.includes("action: z.literal('create')"));
+          assert.ok(narrator.includes('narratorPlaybackAuthority(') && narrator.includes('outputDeletionState'));
+          assert.ok(studioAuth.includes('memberships/${auth.uid}_${auth.tenantId}') && studioAuth.includes('refreshStudioLongformAuth('));
+          assert.ok(studioContract.includes("schemaVersion: 'urai-life-movie-longform-v1'"));
+          assert.ok(jobsContract.includes("z.literal('urai-life-movie-longform-v1')"));
+          const mainPin = /jobsSourceSha:\s*'([0-9a-f]{40})'/.exec(studioContract)?.[1];
+          assert.match(mainPin ?? '', /^[0-9a-f]{40}$/);
+          const receipt = {
+            schemaVersion: 'urai-standalone-cinema-source-bindings-1',
+            stagingSourceSha: process.env.TARGET_SHA,
+            sourceHeads: { storytime: process.env.STORYTIME_SHA, jobs: process.env.JOBS_SHA,
+              studio: process.env.STUDIO_SHA, privacy: process.env.PRIVACY_SHA },
+            storytimeToJobs: { createConsentAndRemoteJobIdentityContractLocated: true,
+              authorizationAndDeletionImplementationLocated: true },
+            studioToJobs: { schemaVersion: 'urai-life-movie-longform-v1',
+              studioPinnedJobsMainSha: mainPin, candidateJobsOwnerSha: process.env.JOBS_SHA,
+              ownerEqualsPinnedMain: mainPin === process.env.JOBS_SHA,
+              requiresDeliberateJobsOwnerSourceAdmission: mainPin !== process.env.JOBS_SHA },
+            evidenceLevel: 'READ_ONLY_EXACT_SOURCE_AND_STORYTIME_OFFLINE_TESTS',
+            crossServiceRuntimeAccepted: false, protectedStagingAccepted: false,
+            authenticatedStudioDispatchVerified: false, privateLifeMovieAccepted: false,
+            providerSpendingOrProductionMutation: false,
+          };
+          writeFileSync('artifacts/current-cross-service/standalone-source-bindings.json',
+            JSON.stringify(receipt, null, 2) + '\n');
+          console.log(JSON.stringify({ sourceCompatibility: 'EXACT_OWNER_SOURCES_IDENTIFIED',
+            studioJobsSourceRequiresReview: receipt.studioToJobs.requiresDeliberateJobsOwnerSourceAdmission }));
+          NODE
           node --input-type=module - <<'NODE'
           import { writeFileSync } from 'node:fs';
           const receipt = {
@@ -104,6 +157,8 @@ jobs:
               admin: process.env.ADMIN_SHA,
               privacy: process.env.PRIVACY_SHA,
               jobs: process.env.JOBS_SHA,
+              storytime: process.env.STORYTIME_SHA,
+              studio: process.env.STUDIO_SHA,
             },
             executed: [
               'admin institutional control and Firestore rules contracts',
