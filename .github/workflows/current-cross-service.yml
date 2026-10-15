@@ -73,6 +73,7 @@ jobs:
             # GitHub shallow branch cloning only fetches current tip; the
             # pinned commit may be an earlier, now-unreachable shallow object.
             # Fetch EXACT immutable SHA instead, without force or branch movement.
+            mkdir -p "$path"
             git -C "$path" init -q
             git -C "$path" remote add origin "https://github.com/LifeLoggerAI/$name.git"
             git -C "$path" -c protocol.version=2 fetch -q --no-tags --depth 1 origin "$sha"
