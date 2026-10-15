@@ -70,8 +70,13 @@ jobs:
           mkdir -p "$root" artifacts/current-cross-service
           clone_at() {
             local name="$1" branch="$2" sha="$3" path="$root/$1"
-            git clone -q --no-checkout --depth 1 --branch "$branch" "https://github.com/LifeLoggerAI/$name.git" "$path"
-            git -C "$path" checkout -q --detach "$sha"
+            # GitHub shallow branch cloning only fetches current tip; the
+            # pinned commit may be an earlier, now-unreachable shallow object.
+            # Fetch EXACT immutable SHA instead, without force or branch movement.
+            git -C "$path" init -q
+            git -C "$path" remote add origin "https://github.com/LifeLoggerAI/$name.git"
+            git -C "$path" -c protocol.version=2 fetch -q --no-tags --depth 1 origin "$sha"
+            git -C "$path" checkout -q --detach FETCH_HEAD
             test "$(git -C "$path" rev-parse HEAD)" = "$sha"
             test -z "$(git -C "$path" status --porcelain --untracked-files=all)"
           }
