@@ -10,7 +10,7 @@
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "exactSha": "759f664cdf00a48272f5401b7cfc45bbd8afb537",
+      "exactSha": "40cd2f4b6d422734869486a49cddac9e103a58f1",
       "sourceRef": "refs/heads/main",
       "mode": "twilio-trial-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -49,7 +49,7 @@
           "URAI_CROSS_REPO_READ_SSH_KEY"
         ]
       },
-      "trialSenderMode": "provider-assigned",
+      "trialSenderMode": "explicit-owned-trial-number",
       "sourceBranch": "main"
     },
     {
@@ -57,7 +57,7 @@
       "state": "active",
       "repository": "LifeLoggerAI/urai-communications",
       "repositoryId": 1169785707,
-      "exactSha": "759f664cdf00a48272f5401b7cfc45bbd8afb537",
+      "exactSha": "40cd2f4b6d422734869486a49cddac9e103a58f1",
       "sourceRef": "refs/heads/main",
       "mode": "sendgrid-signed-protected-staging-e2e",
       "dataPolicy": "synthetic-only",
@@ -138,3 +138,5 @@
     }
   ]
 }
+
+

@@ -60,3 +60,5 @@ Verified runtime -> merged implementation -> exact-head release evidence -> loca
 ## Required adoption action
 
 After upstream PR #102 merges, reconcile Staging's active consumer registry, provider boundaries and release contracts against the merged canon. Classify conflicts as RESOLVED, DEFERRED with an external blocker, or SUPERSEDED with provenance retained.
+
+

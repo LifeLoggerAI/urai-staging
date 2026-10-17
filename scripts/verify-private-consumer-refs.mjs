@@ -105,9 +105,10 @@ export async function verifyConsumers({
   fetchImpl = globalThis.fetch,
   sshResolver = null,
 }) {
-  const consumers = (doc.consumers || []).filter(
-    (c) => c.state === 'active' && protectedModes.has(c.refVerification?.mode),
-  )
+  const consumers = (doc.consumers || []).filter((c) => c.state === 'active')
+  if (consumers.length === 0 || consumers.some(
+    (c) => !protectedModes.has(c.refVerification?.mode),
+  )) throw new Error('No fully protected active consumer reference set')
   let ownedSshResolver = sshResolver || null
   const results = []
   try {
@@ -166,7 +167,19 @@ export async function verifyConsumers({
 export async function collectConsumerEvidence(options) {
   const results = []
   for (const consumer of options.doc.consumers || []) {
-    if (consumer.state !== 'active' || !protectedModes.has(consumer.refVerification?.mode)) continue
+    if (consumer.state !== 'active') continue
+    if (!protectedModes.has(consumer.refVerification?.mode)) {
+      results.push({
+        id: consumer.id,
+        repository: consumer.repository,
+        sourceRef: consumer.sourceRef,
+        expectedSha: consumer.exactSha,
+        matched: false,
+        errorCode: 'active_consumer_mode_not_protected',
+        httpStatus: null,
+      })
+      continue
+    }
     try {
       results.push(...await verifyConsumers({ ...options, doc: { consumers: [consumer] } }))
     } catch (error) {
@@ -185,12 +198,28 @@ export async function collectConsumerEvidence(options) {
   return results
 }
 
+/** Never grant readiness from an empty or silently filtered protected set.
+ * Each active consumer must have independently resolved its exact live SHA. */
+export function protectedConsumerReadiness(doc, results, credentialAvailable) {
+  const active = Array.isArray(doc?.consumers) ?
+    doc.consumers.filter((c) => c?.state === 'active') : []
+  return Boolean(credentialAvailable) && active.length > 0 &&
+    results.length === active.length &&
+    active.every((c, index) => protectedModes.has(c.refVerification?.mode) &&
+      /^[a-f0-9]{40}$/.test(c.exactSha) &&
+      results[index]?.matched === true && results[index]?.id === c.id &&
+      results[index]?.repository === c.repository &&
+      results[index]?.sourceRef === c.sourceRef &&
+      results[index]?.expectedSha === c.exactSha &&
+      results[index]?.liveSha === c.exactSha)
+}
+
 async function main() {
   const doc = JSON.parse(fs.readFileSync('config/staging-consumers.json', 'utf8'))
   const token = process.env.CROSS_REPO_READ_TOKEN || ''
   const sshKey = process.env.CROSS_REPO_READ_SSH_KEY || ''
   const results = await collectConsumerEvidence({ doc, token, sshKey })
-  const passed = Boolean(token || sshKey) && results.every((result) => result.matched)
+  const passed = protectedConsumerReadiness(doc, results, Boolean(token || sshKey))
   fs.mkdirSync('artifacts/private-consumer-refs', { recursive: true })
   fs.writeFileSync(
     'artifacts/private-consumer-refs/receipt.json',

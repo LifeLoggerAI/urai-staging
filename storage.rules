@@ -10,7 +10,7 @@ service firebase.storage {
     }
 
     function isAdmin() {
-      return signedIn() && request.auth.token.role == 'admin';
+      return signedIn() && request.auth.token.get('role', '') == 'admin';
     }
 
     match /staging_users/{userId}/{allPaths=**} {
