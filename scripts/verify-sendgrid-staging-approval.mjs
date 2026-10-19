@@ -69,7 +69,9 @@ export async function verifyStagingApproval({ sha, prNumber, api }) {
   const last = await api(prPath);
   checkPR(last);
   requireTrue(last.updated_at === first.updated_at, 'Review target changed during preflight; rerun');
-  return { repository, prNumber, sha, reviewer, reviewId: decision.id, requiredWorkflows: requiredWorkflows.map(x => x[0]) };
+  return { repository, prNumber, sha, reviewer, reviewId: decision.id,
+    reviewerAccountType:decision.user.type, reviewerPermission:eligibility.permission,
+    requiredWorkflows: requiredWorkflows.map(x => x[0]) };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const token = process.env.GITHUB_TOKEN;
@@ -86,4 +88,3 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const receipt = await verifyStagingApproval({ sha: process.env.GITHUB_SHA, prNumber:Number(process.env.STAGING_REVIEW_PR_NUMBER), api });
   console.log(JSON.stringify({ ...receipt, providerMutationAuthorizedByThisReceipt:false }));
 }
-

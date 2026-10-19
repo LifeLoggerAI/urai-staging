@@ -50,7 +50,7 @@ jobs:
           java-version: '21'
 
       - name: Install exact functions dependency graph
-        run: npm --prefix functions ci --ignore-scripts
+        run: npm --prefix functions ci --ignore-scripts --engine-strict --audit=false
 
       - name: Prove install preserved exact source
         shell: bash
@@ -73,5 +73,6 @@ jobs:
           path: |
             artifacts/launch/staging-bootstrap-report.json
             artifacts/launch/staging-bootstrap-summary.md
+            artifacts/launch/staging-installed-security.json
           if-no-files-found: error
           retention-days: 90

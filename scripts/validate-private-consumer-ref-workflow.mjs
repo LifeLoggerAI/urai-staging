@@ -5,6 +5,7 @@ import {
   resolveViaApi,
   verifyConsumers,
   collectConsumerEvidence,
+  protectedConsumerReadiness,
 } from './verify-private-consumer-refs.mjs'
 
 const workflow = fs.readFileSync('.github/workflows/private-consumer-ref-verification.yml', 'utf8')
@@ -206,4 +207,38 @@ assert.ok(!JSON.stringify(sanitized).includes('sensitive-raw-provider-output'))
 const missing = await collectConsumerEvidence({ doc: { consumers: [strictConsumer] }, token: '', sshKey: '' })
 assert.equal(missing[0].matched, false)
 assert.match(workflow, /if: \$\{\{ always\(\) \}\}/)
+const admitted = { id:branchConsumer.id, repository:branchConsumer.repository,
+  sourceRef:branchConsumer.sourceRef, expectedSha:sha, liveSha:sha, matched:true }
+assert.equal(protectedConsumerReadiness({ consumers:[branchConsumer] }, [admitted], true), true)
+assert.equal(protectedConsumerReadiness({ consumers:[] }, [], true), false,
+  'configured credential must never certify zero active consumer checks')
+assert.equal(protectedConsumerReadiness({ consumers:[branchConsumer] }, [], true), false)
+assert.equal(protectedConsumerReadiness({ consumers:[branchConsumer] }, [admitted], false), false)
+assert.equal(protectedConsumerReadiness({ consumers:[branchConsumer] },
+  [{ ...admitted, liveSha:otherSha }], true), false)
+assert.equal(protectedConsumerReadiness({ consumers:[branchConsumer] },
+  [{ ...admitted, sourceRef:'refs/heads/wrong' }], true), false)
+assert.equal(protectedConsumerReadiness({ consumers:[branchConsumer] },
+  [{ ...admitted }, { ...admitted }], true), false)
+assert.equal(protectedConsumerReadiness({ consumers:[{ ...branchConsumer,
+  refVerification:{ mode:'disabled' } }] }, [], true), false)
+const unknown = { ...branchConsumer, id:'invalid-active', refVerification:{ mode:'disabled' } }
+const disallowed = await collectConsumerEvidence({
+  doc:{ consumers:[unknown] }, token:'synthetic-token',
+  fetchImpl:async () => { throw new Error('must not contact API for disallowed mode') },
+})
+assert.equal(disallowed.length, 1)
+assert.equal(disallowed[0].matched, false)
+assert.equal(disallowed[0].errorCode, 'active_consumer_mode_not_protected')
+assert.equal(protectedConsumerReadiness({
+  consumers:[branchConsumer,unknown] }, [admitted,...disallowed], true), false)
+await assert.rejects(
+  () => verifyConsumers({ doc:{ consumers:[] }, token:'synthetic-token' }),
+  /No fully protected active consumer reference set/,
+)
+await assert.rejects(
+  () => verifyConsumers({ doc:{ consumers:[unknown] }, token:'synthetic-token' }),
+  /No fully protected active consumer reference set/,
+)
 console.log('failure continuation, credential omission, and sanitized evidence retention OK')
+console.log('empty, unsupported, mismatched, omitted and surplus active-ref guards OK')
