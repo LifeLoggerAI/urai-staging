@@ -106,7 +106,7 @@ test('staging launch evidence binds current Git HEAD and rejects stale/unverifia
     assert.equal(folderLinked.status, 1, 'symlinked evidence directory accepted');
     assert.match(folderLinked.stderr, /linked or unsafe launch evidence input/i);
     rmSync(evidenceFolder);
-    renameSync(relocatedFolder);
+    renameSync(relocatedFolder, evidenceFolder);
 
     const stale = 'a'.repeat(40);
     report.sourceSha = stale;
