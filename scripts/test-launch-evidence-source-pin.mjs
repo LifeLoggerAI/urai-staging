@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
 import { spawnSync, execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, copyFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, copyFileSync, symlinkSync, linkSync, renameSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -70,6 +70,44 @@ test('staging launch evidence binds current Git HEAD and rejects stale/unverifia
     execFileSync('git', ['-C', root, 'restore', 'README.md']);
     const restored = run(root);
     assert.equal(restored.status, 0, restored.stderr);
+
+    // Valid bytes from a linked input are not a trustworthy local receipt:
+    // symlinked files, hardlinked files and symlinked parent directories
+    // must be rejected even when every JSON field and Git SHA matches.
+    const evidencePaths = [
+      'artifacts/launch/staging-bootstrap-report.json',
+      'artifacts/launch/staging-installed-security.json',
+      'artifacts/launch/staging-bootstrap-summary.md',
+      'config/staging-consumers.json',
+    ];
+    for (const [index, relative] of evidencePaths.entries()) {
+      const target = join(root, relative);
+      const linkedCopy = join(root, 'link-fixture-' + index + '.bin');
+      copyFileSync(target, linkedCopy);
+      rmSync(target);
+      symlinkSync(linkedCopy, target);
+      const symlinked = run(root);
+      assert.equal(symlinked.status, 1, 'linked evidence accepted: ' + relative);
+      assert.match(symlinked.stderr, /linked or unsafe launch evidence input/i);
+      rmSync(target);
+      copyFileSync(linkedCopy, target);
+      rmSync(target);
+      linkSync(linkedCopy, target);
+      const hardlinked = run(root);
+      assert.equal(hardlinked.status, 1, 'hardlinked evidence accepted: ' + relative);
+      assert.match(hardlinked.stderr, /linked or unsafe launch evidence input/i);
+      rmSync(target);
+      copyFileSync(linkedCopy, target);
+    }
+    const evidenceFolder = join(root, 'artifacts', 'launch');
+    const relocatedFolder = join(root, 'artifacts', 'launch-contents');
+    renameSync(evidenceFolder, relocatedFolder);
+    symlinkSync(relocatedFolder, evidenceFolder);
+    const folderLinked = run(root);
+    assert.equal(folderLinked.status, 1, 'symlinked evidence directory accepted');
+    assert.match(folderLinked.stderr, /linked or unsafe launch evidence input/i);
+    rmSync(evidenceFolder);
+    renameSync(relocatedFolder, evidenceFolder);
 
     const stale = 'a'.repeat(40);
     report.sourceSha = stale;
