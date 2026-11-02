@@ -50,6 +50,17 @@ if (!problems.length) {
   } catch {
     problems.push('Cannot independently verify checked-out Git HEAD for launch evidence.');
   }
+  // A matching HEAD alone does not establish that the validator ran on its
+  // committed source. Tracked edits (including staged edits) invalidate the
+  // exact-head launch report; ignored generated artifacts are unaffected.
+  try {
+    const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=no'], {
+      cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+    if (trackedChanges) problems.push('Checked-out tracked source differs from the exact Git HEAD.');
+  } catch {
+    problems.push('Cannot independently verify clean tracked source for launch evidence.');
+  }
   if (report.projectId !== 'urai-staging') problems.push(`Unexpected projectId: ${report.projectId}`);
   if (report.environment !== 'staging') problems.push(`Unexpected environment: ${report.environment}`);
   if (report.productionAllowed !== false) problems.push('Evidence must record productionAllowed=false.');
