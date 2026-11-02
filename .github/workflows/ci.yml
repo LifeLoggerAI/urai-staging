@@ -102,6 +102,9 @@ jobs:
       - name: Validate nonrelease 19-repo evidence ledger
         run: node --test scripts/test-r317-release-ledger.mjs
 
+      - name: Reject partial and substituted bootstrap report inventories
+        run: node --test scripts/test-launch-evidence-command-inventory.mjs
+
       - name: Regression test exact-source launch evidence admission
         run: node --test scripts/test-launch-evidence-source-pin.mjs
 
