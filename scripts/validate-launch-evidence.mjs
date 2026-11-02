@@ -8,12 +8,37 @@ const reportPath = path.join(root, 'artifacts', 'launch', 'staging-bootstrap-rep
 const summaryPath = path.join(root, 'artifacts', 'launch', 'staging-bootstrap-summary.md');
 const consumersPath = path.join(root, 'config', 'staging-consumers.json');
 const problems = [];
+
+// Release evidence must be actual private regular files, not aliases to
+// mutable external content. Reject linked ancestors and hardlinks.
+function safeEvidencePath(file) {
+  const relative = path.relative(root, file);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) return false;
+  let current = root;
+  for (const part of relative.split(path.sep)) {
+    current = path.join(current, part);
+    try {
+      const info = fs.lstatSync(current);
+      if (info.isSymbolicLink()) return false;
+      if (current === file && (!info.isFile() || info.nlink !== 1)) return false;
+      if (current !== file && !info.isDirectory()) return false;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}
 const securityPath = path.join(root, 'artifacts', 'launch', 'staging-installed-security.json');
 
 if (!fs.existsSync(reportPath)) problems.push(`Missing report: ${path.relative(root, reportPath)}`);
 if (!fs.existsSync(summaryPath)) problems.push(`Missing summary: ${path.relative(root, summaryPath)}`);
 if (!fs.existsSync(securityPath)) problems.push('Missing actual installed-dependency security receipt.');
 
+for (const candidate of [reportPath, summaryPath, securityPath, consumersPath]) {
+  if (fs.existsSync(candidate) && !safeEvidencePath(candidate)) {
+    problems.push('Linked or unsafe launch evidence input: ' + path.relative(root, candidate));
+  }
+}
 if (!problems.length) {
   const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
   const security = JSON.parse(fs.readFileSync(securityPath, 'utf8'));
