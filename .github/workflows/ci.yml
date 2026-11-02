@@ -51,6 +51,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Guard canonical product and staging release ownership
+        run: node --test scripts/test-cross-repo-release-ownership.mjs
+
       - name: Test native SendGrid staging approval preflight
         run: node --test scripts/test-sendgrid-staging-approval.mjs
 
