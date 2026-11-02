@@ -99,6 +99,12 @@ jobs:
       - name: Bootstrap staging validation
         run: node scripts/urai-staging-bootstrap.mjs
 
+      - name: Validate nonrelease 19-repo evidence ledger
+        run: node --test scripts/test-r317-release-ledger.mjs
+
+      - name: Regression test exact-source launch evidence admission
+        run: node --test scripts/test-launch-evidence-source-pin.mjs
+
       - name: Validate launch evidence
         run: node scripts/validate-launch-evidence.mjs
 

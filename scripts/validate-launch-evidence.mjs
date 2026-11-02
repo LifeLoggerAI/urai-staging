@@ -1,18 +1,44 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const reportPath = path.join(root, 'artifacts', 'launch', 'staging-bootstrap-report.json');
 const summaryPath = path.join(root, 'artifacts', 'launch', 'staging-bootstrap-summary.md');
 const consumersPath = path.join(root, 'config', 'staging-consumers.json');
 const problems = [];
+
+// Release evidence must be actual private regular files, not aliases to
+// mutable external content. Reject linked ancestors and hardlinks.
+function safeEvidencePath(file) {
+  const relative = path.relative(root, file);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) return false;
+  let current = root;
+  for (const part of relative.split(path.sep)) {
+    current = path.join(current, part);
+    try {
+      const info = fs.lstatSync(current);
+      if (info.isSymbolicLink()) return false;
+      if (current === file && (!info.isFile() || info.nlink !== 1)) return false;
+      if (current !== file && !info.isDirectory()) return false;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}
 const securityPath = path.join(root, 'artifacts', 'launch', 'staging-installed-security.json');
 
 if (!fs.existsSync(reportPath)) problems.push(`Missing report: ${path.relative(root, reportPath)}`);
 if (!fs.existsSync(summaryPath)) problems.push(`Missing summary: ${path.relative(root, summaryPath)}`);
 if (!fs.existsSync(securityPath)) problems.push('Missing actual installed-dependency security receipt.');
 
+for (const candidate of [reportPath, summaryPath, securityPath, consumersPath]) {
+  if (fs.existsSync(candidate) && !safeEvidencePath(candidate)) {
+    problems.push('Linked or unsafe launch evidence input: ' + path.relative(root, candidate));
+  }
+}
 if (!problems.length) {
   const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
   const security = JSON.parse(fs.readFileSync(securityPath, 'utf8'));
@@ -37,6 +63,29 @@ if (!problems.length) {
 
   if (report.repo !== 'LifeLoggerAI/urai-staging') problems.push(`Unexpected repo: ${report.repo}`);
   if (!/^[0-9a-f]{40}$/.test(report.sourceSha ?? '')) problems.push(`Invalid exact source SHA: ${String(report.sourceSha)}`);
+  // A self-consistent report/security pair is not proof of the current checkout.
+  // Reject stale or unverifiable Git identity even if both evidence files agree.
+  try {
+    const actualHead = execFileSync('git', ['rev-parse', '--verify', 'HEAD'], {
+      cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+    if (!/^[0-9a-f]{40}$/.test(actualHead) || report.sourceSha !== actualHead) {
+      problems.push('Launch evidence source SHA does not match exact checked-out Git HEAD.');
+    }
+  } catch {
+    problems.push('Cannot independently verify checked-out Git HEAD for launch evidence.');
+  }
+  // A matching HEAD alone does not establish that the validator ran on its
+  // committed source. Tracked edits (including staged edits) invalidate the
+  // exact-head launch report; ignored generated artifacts are unaffected.
+  try {
+    const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=no'], {
+      cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+    if (trackedChanges) problems.push('Checked-out tracked source differs from the exact Git HEAD.');
+  } catch {
+    problems.push('Cannot independently verify clean tracked source for launch evidence.');
+  }
   if (report.projectId !== 'urai-staging') problems.push(`Unexpected projectId: ${report.projectId}`);
   if (report.environment !== 'staging') problems.push(`Unexpected environment: ${report.environment}`);
   if (report.productionAllowed !== false) problems.push('Evidence must record productionAllowed=false.');
