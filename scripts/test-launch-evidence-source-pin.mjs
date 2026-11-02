@@ -54,6 +54,22 @@ test('staging launch evidence binds current Git HEAD and rejects stale/unverifia
 
     const valid = run(root);
     assert.equal(valid.status, 0, valid.stderr);
+    // Matching Git HEAD alone cannot authenticate a dirty source checkout.
+    // Reject both unstaged and staged edits while retaining the original
+    // clean-head, stale-report and missing-Git acceptance cases.
+    put(root, 'README.md', 'changed after the recorded Git commit');
+    const dirty = run(root);
+    assert.equal(dirty.status, 1);
+    assert.match(dirty.stderr, /Checked-out tracked source differs from the exact Git HEAD/);
+    execFileSync('git', ['-C', root, 'add', 'README.md']);
+    const stagedDirty = run(root);
+    assert.equal(stagedDirty.status, 1);
+    assert.match(stagedDirty.stderr, /Checked-out tracked source differs from the exact Git HEAD/);
+    execFileSync('git', ['-C', root, 'restore', '--staged', 'README.md']);
+    execFileSync('git', ['-C', root, 'restore', 'README.md']);
+    const restored = run(root);
+    assert.equal(restored.status, 0, restored.stderr);
+
     const stale = 'a'.repeat(40);
     report.sourceSha = stale;
     security.sourceSha = stale;
