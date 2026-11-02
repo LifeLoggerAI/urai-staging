@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const reportPath = path.join(root, 'artifacts', 'launch', 'staging-bootstrap-report.json');
@@ -37,6 +38,18 @@ if (!problems.length) {
 
   if (report.repo !== 'LifeLoggerAI/urai-staging') problems.push(`Unexpected repo: ${report.repo}`);
   if (!/^[0-9a-f]{40}$/.test(report.sourceSha ?? '')) problems.push(`Invalid exact source SHA: ${String(report.sourceSha)}`);
+  // A self-consistent report/security pair is not proof of the current checkout.
+  // Reject stale or unverifiable Git identity even if both evidence files agree.
+  try {
+    const actualHead = execFileSync('git', ['rev-parse', '--verify', 'HEAD'], {
+      cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+    if (!/^[0-9a-f]{40}$/.test(actualHead) || report.sourceSha !== actualHead) {
+      problems.push('Launch evidence source SHA does not match exact checked-out Git HEAD.');
+    }
+  } catch {
+    problems.push('Cannot independently verify checked-out Git HEAD for launch evidence.');
+  }
   if (report.projectId !== 'urai-staging') problems.push(`Unexpected projectId: ${report.projectId}`);
   if (report.environment !== 'staging') problems.push(`Unexpected environment: ${report.environment}`);
   if (report.productionAllowed !== false) problems.push('Evidence must record productionAllowed=false.');
