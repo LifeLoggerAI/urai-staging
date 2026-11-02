@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "urai.genesis.release-evidence-snapshot.v1",
+  "observedOn": "2026-11-02",
+  "authoritativeTracker": "LifeLoggerAI/urai-staging#116",
+  "classification": "PRIVATE NONRELEASE OBSERVATION — NOT A FROZEN CANDIDATE",
+  "releaseVerdict": "NO-GO",
+  "repositories": [
+    {
+      "name": "UrAi",
+      "mainSha": "8cac3ba513830c11261d57bc2b5dd7ad8b83e85a",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "UrAi-Dev",
+      "mainSha": "08257158e2ffee8bbeb183ae89185f1677bad1da",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "UrAiProd",
+      "mainSha": "d3d7ce6e607a5ee1be2c9f9ede6eecf1cfb393b9",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-spatial",
+      "mainSha": "da94837c2457b0a7590e26a7a644cd728de8afb8",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-jobs",
+      "mainSha": "9d29be1bcd3a45a4b9a743df9c9706c00811f38b",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-privacy",
+      "mainSha": "1163d6f32a123ef9a6638e092a3eee5ec4a3b317",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-studio",
+      "mainSha": "854477d80b1a7aa718edb60d1ed4c1cf22dbed9d",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-storytime",
+      "mainSha": "73f586a0a2931961ae221af7cfc0caf1b6aef39d",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "asset-factory",
+      "mainSha": "a49f611ade29a1754787701ab4bf915c85c0cdc6",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-content",
+      "mainSha": "988ca4f7f38b1ce86e4d3f426361b5866fd23e0d",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-marketing",
+      "mainSha": "b421ab5ca2c4a76a1b63e7c8d43996cf7a764354",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-admin",
+      "mainSha": "1cde00e69238f6a32237af2d1914a1b77339d5bc",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-analytics",
+      "mainSha": "a6e98090843301ad4f377c1cd8a840edfe517c8c",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-communications",
+      "mainSha": "40cd2f4b6d422734869486a49cddac9e103a58f1",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-staging",
+      "mainSha": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "B2Bportal",
+      "mainSha": "4aea8574970d28a293f921a34156c4cc5a971213",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-labs-llc",
+      "mainSha": "61c48fbdf3453394571a393430458fc916a2db89",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-foundation",
+      "mainSha": "8ee8036b649ae9c9e73ae374a7247f0bb34c4c03",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-investors",
+      "mainSha": "1c248838072a2ada4da52d943b10c933a5016a26",
+      "source": "authenticated GitHub branch read",
+      "releaseCandidateAccepted": false
+    }
+  ],
+  "openDraftCandidates": [
+    {
+      "repository": "urai-jobs",
+      "prNumber": 233,
+      "observedHeadSha": "b138015d053aea8e56db1d2d00a5b37b9295d1b1",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "repository": "urai-studio",
+      "prNumber": 178,
+      "observedHeadSha": "1c63504c19f869b18e338a2e23e1073c3164e454",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "repository": "urai-staging",
+      "prNumber": 117,
+      "observedHeadSha": "a3051c8c7b51d6d91b564c8c57de30cbe1f12064",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "repository": "urai-spatial",
+      "prNumber": 1945,
+      "observedHeadSha": "03d934b6692d26b7f15f37873eacb0b3af15336f",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "repository": "urai-privacy",
+      "prNumber": 183,
+      "observedHeadSha": "b207812b19d435763a9ddc2024b0850dd834fa2c",
+      "draft": true,
+      "merged": false
+    }
+  ],
+  "gates": [
+    {
+      "id": "19-main-refs-observed",
+      "status": "PASS",
+      "evidence": "19 authenticated GitHub main branch SHA reads; not release candidate acceptance"
+    },
+    {
+      "id": "jobs-233-media-suite",
+      "status": "NOT RUN",
+      "evidence": "Current-head locked-dependency checkout unavailable in local runtime"
+    },
+    {
+      "id": "studio-178-media-suite",
+      "status": "NOT RUN",
+      "evidence": "Current-head Node20 locked-dependency checkout unavailable in local runtime"
+    },
+    {
+      "id": "current-head-hosted-ci",
+      "status": "BLOCKED",
+      "evidence": "Jobs 41431421338, Studio 41429627002, Staging 41418350982 have 0 executed steps"
+    },
+    {
+      "id": "trusted-private-consent-issuer",
+      "status": "BLOCKED",
+      "evidence": "No authenticated owner-confirmed scoped grant issuer and protected IAM acceptance"
+    },
+    {
+      "id": "jobs-privacy-studio-runtime",
+      "status": "NOT RUN",
+      "evidence": "No protected cross-service creation/revocation acceptance receipt"
+    },
+    {
+      "id": "original-spatial-native-webgl",
+      "status": "BLOCKED",
+      "evidence": "Spatial #1945 native Windows GPU footage, dark-frame and Life Map arrival not accepted"
+    },
+    {
+      "id": "protected-staging-rollback",
+      "status": "NOT RUN",
+      "evidence": "No current candidate protected deployment and rollback receipt"
+    },
+    {
+      "id": "accessibility-performance-i18n-xr",
+      "status": "NOT RUN",
+      "evidence": "No comprehensive current hardware/device/language acceptance"
+    },
+    {
+      "id": "store-stripe-provider-readiness",
+      "status": "NOT RUN",
+      "evidence": "Live store/payment provider acceptance not verified"
+    },
+    {
+      "id": "genesis-native-film",
+      "status": "BLOCKED",
+      "evidence": "Authentic original application footage not independently accepted"
+    },
+    {
+      "id": "independent-non-author-review",
+      "status": "BLOCKED",
+      "evidence": "Required independent security and visual approval not recorded"
+    },
+    {
+      "id": "founder-production-authorization",
+      "status": "BLOCKED",
+      "evidence": "Production and publishing expressly remain on HOLD"
+    }
+  ]
+}
