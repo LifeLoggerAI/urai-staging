@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { hasExactStagingBootstrapInventory } from './staging-bootstrap-command-manifest.mjs';
 
 const root = process.cwd();
 const reportPath = path.join(root, 'artifacts', 'launch', 'staging-bootstrap-report.json');
@@ -32,6 +33,7 @@ if (!problems.length) {
   const passedCommands = commands.filter(
     (command) => command?.status === 'passed' && command?.exitCode === 0,
   );
+  if (!hasExactStagingBootstrapInventory(commands)) problems.push('Bootstrap command inventory is incomplete, reordered or substituted.');
   const expectedScore = commands.length === 0
     ? 0
     : Math.round((passedCommands.length / commands.length) * 100);
