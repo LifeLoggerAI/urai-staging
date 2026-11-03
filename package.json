@@ -29,7 +29,7 @@
     "launch:p0:commands": "npm run doctor && node scripts/launch-p0.mjs",
     "smoke:staging": "bash scripts/smoke-staging.sh",
     "test:smoke:staging": "npm run smoke:staging",
-    "verify:release": "npm run check:deploy && npm run verify:privacy-jobs:admission && node scripts/validate-launch-evidence.mjs",
+    "verify:release": "npm run check:deploy && npm run test:r422:federated:abi && npm run verify:privacy-jobs:admission && node scripts/validate-launch-evidence.mjs",
     "lock:staging": "bash scripts/urai-staging-lock.sh",
     "emulators": "bash scripts/run-with-java.sh ./functions/node_modules/.bin/firebase emulators:start --config firebase.json --only functions,firestore,hosting,storage",
     "emulators:test": "npm run test:e2e",
