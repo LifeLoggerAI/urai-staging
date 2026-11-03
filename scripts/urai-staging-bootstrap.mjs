@@ -2,6 +2,8 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { stagingBootstrapCommands } from './staging-bootstrap-command-manifest.mjs';
+import { stagingBootstrapCommandEnvironment } from './staging-bootstrap-command-environment.mjs';
 
 const root = process.cwd();
 const pkgPath = path.join(root, 'package.json');
@@ -88,23 +90,7 @@ if (process.env.URAI_SKIP_RULES === '1') {
   report.skipped.push('URAI_SKIP_RULES was ignored; canonical staging verification always runs emulator-backed rules tests.');
 }
 
-const commands = [
-  ['node', ['--test', 'scripts/test-twilio-trial-sender.mjs','scripts/test-sendgrid-staging-budget.mjs']],
-  ['npm', ['--prefix', 'functions', 'ci', '--ignore-scripts', '--engine-strict', '--audit=false']],
-  ['node', ['scripts/check-installed-security.mjs']],
-  ['node', ['--test', 'scripts/test-security-dependency-compatibility.mjs']],
-  ['npm', ['run', 'doctor']],
-  ['npm', ['run', 'test:workstream-c-root']],
-  ['npm', ['run', 'test:workstream-c-confinement']],
-  ['npm', ['run', 'check:deploy']],
-  ['npm', ['run', 'check:lockfile']],
-  ['npm', ['run', 'check:types']],
-  ['npm', ['run', 'lint']],
-  ['npm', ['run', 'test:unit']],
-  ['npm', ['run', 'test:rules']],
-  ['npm', ['run', 'build']],
-  ['npm', ['run', 'launch:p0']]
-];
+const commands = stagingBootstrapCommands;
 
 if (problems.length) {
   report.status = 'failed';
@@ -123,7 +109,8 @@ for (const [cmd, args] of commands) {
   console.log(`\n$ ${commandText}`);
   const result = spawnSync(cmd, args, {
     cwd: root,
-    env,
+    // Prevent the final launch:p0 check from passing after printing a dry-run list.
+    env: stagingBootstrapCommandEnvironment(cmd, args, env),
     shell: process.platform === 'win32',
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],

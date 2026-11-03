@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "urai.genesis.omega.source-gated-release-ledger.v1",
+  "wave": "R398",
+  "observationDateUtc": "2026-11-03",
+  "classification": "SOURCE OBSERVATION ONLY - NOT A FROZEN OR ACCEPTED RELEASE CANDIDATE",
+  "releaseVerdict": "NO-GO",
+  "authoritativeTracker": "LifeLoggerAI/urai-staging#116",
+  "sourceMethod": "Authenticated GitHub main, exact PR head, PR review, commit workflow, sampled job and Vercel project/deployment readbacks; no release rights inferred",
+  "repositories": [
+    ["UrAi","8cac3ba513830c11261d57bc2b5dd7ad8b83e85a"],
+    ["urai-marketing","b421ab5ca2c4a76a1b63e7c8d43996cf7a764354"],
+    ["UrAi-Dev","08257158e2ffee8bbeb183ae89185f1677bad1da"],
+    ["UrAiProd","d3d7ce6e607a5ee1be2c9f9ede6eecf1cfb393b9"],
+    ["urai-analytics","a6e98090843301ad4f377c1cd8a840edfe517c8c"],
+    ["urai-labs-llc","61c48fbdf3453394571a393430458fc916a2db89"],
+    ["urai-investors","1c248838072a2ada4da52d943b10c933a5016a26"],
+    ["urai-privacy","1163d6f32a123ef9a6638e092a3eee5ec4a3b317"],
+    ["urai-admin","1cde00e69238f6a32237af2d1914a1b77339d5bc"],
+    ["asset-factory","a49f611ade29a1754787701ab4bf915c85c0cdc6"],
+    ["urai-content","988ca4f7f38b1ce86e4d3f426361b5866fd23e0d"],
+    ["urai-foundation","8ee8036b649ae9c9e73ae374a7247f0bb34c4c03"],
+    ["urai-studio","854477d80b1a7aa718edb60d1ed4c1cf22dbed9d"],
+    ["urai-staging","bda659ad23590b39e7f32de349f8a3723455ce02"],
+    ["urai-jobs","9d29be1bcd3a45a4b9a743df9c9706c00811f38b"],
+    ["urai-spatial","da94837c2457b0a7590e26a7a644cd728de8afb8"],
+    ["urai-communications","40cd2f4b6d422734869486a49cddac9e103a58f1"],
+    ["B2Bportal","4aea8574970d28a293f921a34156c4cc5a971213"],
+    ["urai-storytime","73f586a0a2931961ae221af7cfc0caf1b6aef39d"]
+  ],
+  "draftCandidates": [
+    {"repository":"urai-spatial","pr":1959,"sha":"776be3bc7b372d3a0752e54a6052b75ddcd3887c","draft":true,"merged":false,"reviews":0,"workflowResults":{"success":0,"failure":12,"skipped":0,"startupFailure":0},"sampleRun":41561097812,"sampleJobSteps":0,"releaseAccepted":false},
+    {"repository":"urai-privacy","pr":184,"sha":"996310d0c8e0832a91afb0288253970476497cca","draft":true,"merged":false,"reviews":0,"workflowResults":{"success":0,"failure":5,"skipped":0,"startupFailure":0},"sampleRun":41560984938,"sampleJobSteps":0,"releaseAccepted":false},
+    {"repository":"urai-jobs","pr":235,"sha":"a5987323390acbc7205373f06d79273e1eedb48e","draft":true,"merged":false,"reviews":0,"workflowResults":{"success":0,"failure":10,"skipped":0,"startupFailure":0},"sampleRun":41562028177,"sampleJobSteps":0,"releaseAccepted":false},
+    {"repository":"urai-studio","pr":178,"sha":"8c62bc3a4bb3216a28c362d93b5f17bdedb12b03","draft":true,"merged":false,"reviews":0,"workflowResults":{"success":0,"failure":3,"skipped":0,"startupFailure":0},"sampleRun":41563004454,"sampleJobSteps":0,"releaseAccepted":false},
+    {"repository":"urai-staging","pr":118,"sha":"235097199d47020af1fe6d5822c78a11272050fb","draft":true,"merged":false,"reviews":0,"workflowResults":{"success":0,"failure":3,"skipped":1,"startupFailure":0},"sampleRun":41519864630,"sampleJobSteps":0,"releaseAccepted":false},
+    {"repository":"urai-content","pr":112,"sha":"d0a7b7e07c7589f3f925d86c14b375764e4f25cc","draft":true,"merged":false,"reviews":0,"workflowResults":{"success":0,"failure":3,"skipped":0,"startupFailure":0},"sampleRun":41566790902,"sampleJobSteps":0,"releaseAccepted":false},
+    {"repository":"urai-marketing","pr":59,"sha":"576a2bfb18a441ef8dcb91cf127d253d14fb7d2d","draft":true,"merged":false,"reviews":0,"workflowResults":{"success":0,"failure":0,"skipped":0,"startupFailure":3},"sampleRun":41435334463,"sampleJobSteps":0,"releaseAccepted":false}
+  ],
+  "providers": {
+    "githubActions": {"state":"BLOCKED","observation":"Seven inspected exact-head PR candidates have no passed workflows or independent reviews; sampled job steps are zero. Root billing/runner cause remains unconfirmed.","supportCase":"4889576"},
+    "vercelContent": {"state":"ERROR","project":"urai-content","deploymentId":"dpl_7Zw5D4kaB7f4bNg4oFd6YGzVJ8PJ","observedError":"ENOENT /vercel/path0/vercel/path0/.next/routes-manifest.json","releaseSourceProved":false},
+    "vercelApp": {"state":"READY_STALE_SOURCE","project":"urai-app","deploymentId":"dpl_7emaaGLM3WgCkD8Hm4CrcvzLNqBu","sourceRepo":"UrAi","deployedSha":"e94aba47b1a5705d8557c3d1a1a1ee89b7b0e2e6","releaseSourceProved":false},
+    "trustedLifeMovieConsentIssuer": {"state":"NOT ACCEPTED","lifeMovieRenderAuthorityEnabled":false},
+    "crossServiceAuthenticatedE2E": {"state":"NOT VERIFIED"}
+  },
+  "mandatoryReleaseGates": [
+    ["G1_SOURCE","HOLD"], ["G2_BUILD","HOLD"], ["G3_INTEGRATION","HOLD"],
+    ["G4_PRIVACY","HOLD"], ["G5_SECURITY","HOLD"], ["G6_VISUAL","HOLD"],
+    ["G7_ACCESSIBILITY","HOLD"], ["G8_PERFORMANCE","HOLD"], ["G9_PROVIDERS","HOLD"],
+    ["G10_INFRASTRUCTURE","HOLD"], ["G11_GOVERNANCE","HOLD"], ["G12_DISTRIBUTION","HOLD"]
+  ],
+  "evidenceScope": {
+    "mainReferencesObserved": 19,
+    "activeDraftCandidatesObserved": 7,
+    "protectedExactShaCiPassed": false,
+    "authenticatedDeletionAndConsentE2EPassed": false,
+    "independentNonAuthorApprovalVerified": false,
+    "protectedPreviewAndRollbackVerified": false,
+    "productionPromotionAuthorized": false,
+    "notes": "This snapshot supersedes no historical ledger. Its exact recorded heads are observations, not a frozen manifest, permission to merge, or a substitute for host-side CI/provider evidence."
+  }
+}

@@ -44,7 +44,7 @@ if (errors.length) {
 }
 
 console.log('URAI staging repo doctor passed. You are in the Firebase staging shell repo.');
-console.log('For full product V1 checks, cd into LifeLoggerAI/UrAi.');
+console.log('For canonical consumer checks use LifeLoggerAI/urai-spatial/urai-tier1; legacy UrAi is reference-only.');
 console.log('Staging commands:');
 console.log('  unset NPM_CONFIG_PREFIX');
 console.log('  npm install');

@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import { stagingBootstrapCommandTexts } from './staging-bootstrap-command-manifest.mjs';
 
 const validator = fileURLToPath(new URL('./validate-launch-evidence.mjs', import.meta.url));
 function put(root, relative, value) {
@@ -25,13 +26,13 @@ test('staging launch evidence binds current Git HEAD and rejects stale/unverifia
     execFileSync('git', ['-C', root, 'add', 'README.md']);
     execFileSync('git', ['-C', root, 'commit', '-qm', 'synthetic fixture']);
     const head = execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-    const commands = [{ command: 'synthetic checks', status: 'passed', exitCode: 0 }];
+    const commands = stagingBootstrapCommandTexts.map(command => ({ command, status: 'passed', exitCode: 0 }));
     const report = {
       repo: 'LifeLoggerAI/urai-staging', kind: 'staging-bootstrap', sourceSha: head,
       projectId: 'urai-staging', environment: 'staging', productionAllowed: false,
       cloudDeploymentPerformed: false, liveSmokePerformed: false,
       providerMutationPerformed: false, activeConsumers: [], commands,
-      status: 'passed', commandCount: 1, passedCount: 1, failedCount: 0,
+      status: 'passed', commandCount: commands.length, passedCount: commands.length, failedCount: 0,
       sourceBootstrapScore: 100,
     };
     const security = {
@@ -44,8 +45,8 @@ test('staging launch evidence binds current Git HEAD and rejects stale/unverifia
       '- Environment: staging', '- Production allowed: false',
       '- Cloud deployment performed: false', '- Live smoke performed: false',
       '- Provider mutation performed: false', '- Status: passed',
-      '- Source bootstrap score: 100/100', '- Passed commands: 1',
-      '- Failed commands: 0', '- Total commands: 1',
+      '- Source bootstrap score: 100/100', '- Passed commands: ' + commands.length,
+      '- Failed commands: 0', '- Total commands: ' + commands.length,
     ].join('\n');
     put(root, 'config/staging-consumers.json', { consumers: [] });
     put(root, 'artifacts/launch/staging-bootstrap-report.json', report);

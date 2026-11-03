@@ -1,0 +1,326 @@
+{
+  "schemaVersion": "urai.genesis.release-evidence-snapshot.v1",
+  "observedOn": "2026-11-02",
+  "wave": "R349",
+  "authoritativeTracker": "LifeLoggerAI/urai-staging#116",
+  "classification": "PRIVATE NONRELEASE OBSERVATION - NOT A FROZEN RELEASE CANDIDATE",
+  "releaseVerdict": "NO-GO",
+  "repositories": [
+    {
+      "name": "UrAi",
+      "mainSha": "8cac3ba513830c11261d57bc2b5dd7ad8b83e85a",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "UrAi-Dev",
+      "mainSha": "08257158e2ffee8bbeb183ae89185f1677bad1da",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "UrAiProd",
+      "mainSha": "d3d7ce6e607a5ee1be2c9f9ede6eecf1cfb393b9",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-spatial",
+      "mainSha": "da94837c2457b0a7590e26a7a644cd728de8afb8",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-privacy",
+      "mainSha": "1163d6f32a123ef9a6638e092a3eee5ec4a3b317",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-jobs",
+      "mainSha": "9d29be1bcd3a45a4b9a743df9c9706c00811f38b",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-studio",
+      "mainSha": "854477d80b1a7aa718edb60d1ed4c1cf22dbed9d",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-staging",
+      "mainSha": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "asset-factory",
+      "mainSha": "a49f611ade29a1754787701ab4bf915c85c0cdc6",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-content",
+      "mainSha": "988ca4f7f38b1ce86e4d3f426361b5866fd23e0d",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-storytime",
+      "mainSha": "73f586a0a2931961ae221af7cfc0caf1b6aef39d",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-communications",
+      "mainSha": "40cd2f4b6d422734869486a49cddac9e103a58f1",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-admin",
+      "mainSha": "1cde00e69238f6a32237af2d1914a1b77339d5",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-analytics",
+      "mainSha": "a6e98090843301ad4f377c1cd8a840edfe517c8c",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-marketing",
+      "mainSha": "b421ab5ca2c4a76a1b63e7c8d43996cf7a764354",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "B2Bportal",
+      "mainSha": "4aea8574970d28a293f921a34156c4cc5a971213",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-foundation",
+      "mainSha": "8ee8036b649ae9c9e73ae374a7247f0bb34c4c03",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-labs-llc",
+      "mainSha": "61c48fbdf3453394571a393430458fc916a2db89",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    },
+    {
+      "name": "urai-investors",
+      "mainSha": "1c248838072a2ada4da52d943b10c933a5016a26",
+      "source": "authenticated GitHub main branch read 2026-11-02",
+      "releaseCandidateAccepted": false
+    }
+  ],
+  "openDraftCandidates": [
+    {
+      "repository": "urai-spatial",
+      "prNumber": 1949,
+      "observedHeadSha": "821d0b7da2b3c3f56d9c7d59e2bb21d067c3e9e9",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "repository": "urai-privacy",
+      "prNumber": 183,
+      "observedHeadSha": "1f1850a52626f76a758a303a60696ce847b6eb4d",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "repository": "urai-jobs",
+      "prNumber": 233,
+      "observedHeadSha": "2463ee364ef298b929829bed7241d778c8693ffa",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "repository": "urai-studio",
+      "prNumber": 178,
+      "observedHeadSha": "1c63504c19f869b18e338a2e23e1073c3164e454",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "repository": "urai-staging",
+      "prNumber": 118,
+      "observedHeadSha": "e6292073fe9ea4a7bc704996e8acc11f5fb772ad",
+      "draft": true,
+      "merged": false
+    }
+  ],
+  "observedHostedRuns": [
+    {
+      "repository": "urai-spatial",
+      "prNumber": 1949,
+      "sha": "821d0b7da2b3c3f56d9c7d59e2bb21d067c3e9e9",
+      "returned": 0,
+      "success": 0,
+      "failure": 0,
+      "skipped": 0,
+      "meaning": "No PR-triggered runs returned; not a CI PASS"
+    },
+    {
+      "repository": "urai-privacy",
+      "prNumber": 183,
+      "sha": "1f1850a52626f76a758a303a60696ce847b6eb4d",
+      "returned": 5,
+      "success": 0,
+      "failure": 5,
+      "skipped": 0,
+      "meaning": "Five workflows failed; runner admission not demonstrated"
+    },
+    {
+      "repository": "urai-jobs",
+      "prNumber": 233,
+      "sha": "2463ee364ef298b929829bed7241d778c8693ffa",
+      "returned": 10,
+      "success": 0,
+      "failure": 10,
+      "skipped": 0,
+      "meaning": "Ten workflows failed; runner admission not demonstrated"
+    },
+    {
+      "repository": "urai-studio",
+      "prNumber": 178,
+      "sha": "1c63504c19f869b18e338a2e23e1073c3164e454",
+      "returned": 3,
+      "success": 0,
+      "failure": 3,
+      "skipped": 0,
+      "meaning": "Three workflows failed; runner admission not demonstrated"
+    },
+    {
+      "repository": "urai-staging",
+      "prNumber": 118,
+      "sha": "e6292073fe9ea4a7bc704996e8acc11f5fb772ad",
+      "returned": 4,
+      "success": 0,
+      "failure": 3,
+      "skipped": 1,
+      "meaning": "Three failed and one skipped; runner admission not demonstrated"
+    }
+  ],
+  "observedIndependentReviewCount": 0,
+  "priorIsolatedReceipts": [
+    {
+      "repository": "urai-spatial",
+      "sha": "821d0b7da2b3c3f56d9c7d59e2bb21d067c3e9e9",
+      "results": "218/218 original Tier 1 suites; 1741/1741 Functions tests; typecheck and Next.js build PASS",
+      "scope": "isolated exact-commit source",
+      "productionAccepted": false
+    },
+    {
+      "repository": "urai-studio",
+      "sha": "1c63504c19f869b18e338a2e23e1073c3164e454",
+      "results": "152/152 original tests; TypeScript and build PASS",
+      "scope": "isolated exact-commit source",
+      "productionAccepted": false
+    },
+    {
+      "repository": "urai-jobs",
+      "sha": "2463ee364ef298b929829bed7241d778c8693ffa",
+      "results": "47/47 consent transport checks; real synthetic FFmpeg timing smoke PASS",
+      "scope": "isolated targeted source",
+      "productionAccepted": false
+    },
+    {
+      "repository": "urai-privacy",
+      "sha": "1f1850a52626f76a758a303a60696ce847b6eb4d",
+      "results": "10/10 own-claim guard tests passed pre-commit with matching source blob; 72/72 prior pure Privacy-Jobs tests on related source; exact-head full suite NOT RUN",
+      "scope": "offline targeted source plus GitHub blob readback",
+      "productionAccepted": false
+    }
+  ],
+  "gates": [
+    {
+      "id": "19-main-refs-observed",
+      "status": "PASS",
+      "evidence": "19 authenticated GitHub main branch reads on November 2; this is source observation only, not release acceptance"
+    },
+    {
+      "id": "spatial-exact-head-source-suite",
+      "status": "PASS",
+      "evidence": "R345 at Spatial 821d0b7: original Tier 1 218/218 and Functions 1741/1741, TypeScript and Next.js build passed in isolated environment"
+    },
+    {
+      "id": "privacy-current-head-original-suite",
+      "status": "NOT RUN",
+      "evidence": "Privacy PR 183 head 1f1850a: original full unit and Functions suites not executed at this exact commit"
+    },
+    {
+      "id": "privacy-current-head-firebase-emulators",
+      "status": "BLOCKED",
+      "evidence": "Current-head Firebase emulator execution unavailable in current environment; no authenticated emulator receipt"
+    },
+    {
+      "id": "jobs-233-media-suite",
+      "status": "NOT RUN",
+      "evidence": "Jobs PR 233 consent transport 47/47 and real FFmpeg smoke passed previously, but the complete original suite has not passed on this exact head"
+    },
+    {
+      "id": "studio-178-source-suite",
+      "status": "PASS",
+      "evidence": "R345 isolated Studio 1c63504: original 152/152 tests, TypeScript check and build passed; no live service integration"
+    },
+    {
+      "id": "current-head-hosted-ci",
+      "status": "BLOCKED",
+      "evidence": "GitHub current PR runs: Privacy 5 failures, Jobs 10 failures, Studio 3 failures, Staging 3 failures plus 1 skipped; Spatial current SHA no PR runs returned"
+    },
+    {
+      "id": "trusted-private-consent-issuer",
+      "status": "BLOCKED",
+      "evidence": "No approved owner-confirmed movie-scoped consent grant issuer or protected IAM receipt"
+    },
+    {
+      "id": "jobs-privacy-studio-runtime",
+      "status": "NOT RUN",
+      "evidence": "No authenticated source-rights checked end-to-end protected Jobs-Privacy-Studio processing and revocation receipt"
+    },
+    {
+      "id": "original-spatial-native-webgl",
+      "status": "BLOCKED",
+      "evidence": "No independently accepted real-device Home-Ascent-Life Map-Focus-Replay decoded-pixel and camera evidence at unified SHA"
+    },
+    {
+      "id": "protected-staging-rollback",
+      "status": "NOT RUN",
+      "evidence": "No current candidate protected staging deployment, live authenticated route testing, and rollback receipt"
+    },
+    {
+      "id": "accessibility-performance-i18n-xr",
+      "status": "NOT RUN",
+      "evidence": "No complete current-hardware accessibility, mobile, language, XR and performance matrix"
+    },
+    {
+      "id": "store-stripe-provider-readiness",
+      "status": "NOT RUN",
+      "evidence": "No release-candidate store approval, payment/webhook entitlement readiness and provider acceptance receipt"
+    },
+    {
+      "id": "genesis-native-film",
+      "status": "BLOCKED",
+      "evidence": "No independently accepted native application film and authentic visual provenance"
+    },
+    {
+      "id": "independent-non-author-review",
+      "status": "BLOCKED",
+      "evidence": "Five inspected critical draft PRs have zero submitted independent reviews as of current GitHub read"
+    },
+    {
+      "id": "founder-production-authorization",
+      "status": "BLOCKED",
+      "evidence": "Founder-controlled global release and production publishing explicitly remain on HOLD"
+    }
+  ]
+}

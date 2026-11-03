@@ -51,6 +51,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Guard canonical product and staging release ownership
+        run: node --test scripts/test-cross-repo-release-ownership.mjs
+
       - name: Test native SendGrid staging approval preflight
         run: node --test scripts/test-sendgrid-staging-approval.mjs
 
@@ -101,6 +104,21 @@ jobs:
 
       - name: Validate nonrelease 19-repo evidence ledger
         run: node --test scripts/test-r317-release-ledger.mjs
+
+      - name: Reject partial and substituted bootstrap report inventories
+        run: node --test scripts/test-launch-evidence-command-inventory.mjs
+
+      - name: Reject malformed and overlapping staging execution timestamps
+        run: node --test scripts/test-staging-evidence-timing.mjs
+
+      - name: Regression-test Privacy Jobs staging consumer boundary
+        run: node --test scripts/test-privacy-jobs-staging-admission.mjs
+
+      - name: Guard against final launch P0 bootstrap dry-run false success
+        run: node --test scripts/test-staging-bootstrap-command-environment.mjs
+
+      - name: Ensure Genesis release verifier cannot bypass staging admission
+        run: node --test scripts/test-genesis-release-gate-wiring.mjs
 
       - name: Regression test exact-source launch evidence admission
         run: node --test scripts/test-launch-evidence-source-pin.mjs
