@@ -128,8 +128,11 @@ try {
       system: true, role: 'system', consumerId: 'urai-jobs',
     });
     console.log('R439_SIGNER_PROBE', JSON.stringify({
-      generatedJwt: /^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$/.test(probeToken),
+      segmentCount: probeToken.split('.').length,
+      segmentLengths: probeToken.split('.').map(s => s.length),
+      jwtCharacterSetValid: /^[A-Za-z0-9_.-]+$/.test(probeToken),
       tokenLengthValid: probeToken.length <= 8192,
+      containsUnexpectedChars: /[^A-Za-z0-9_.-]/.test(probeToken),
     }));
   } catch (error) {
     console.error('R439_SIGNER_FAILURE', JSON.stringify({
