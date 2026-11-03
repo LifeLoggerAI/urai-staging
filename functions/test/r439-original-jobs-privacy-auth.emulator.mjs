@@ -97,7 +97,7 @@ try {
   const serviceAuth = getAdminAuth(adminApp);
 
   const expected = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=' + API_KEY;
-  const localExchange = (url, options) => {
+  const localExchange = async (url, options) => {
     assert.equal(url, expected, 'Jobs requests only expected Identity Toolkit operation');
     assert.equal(options.method, 'POST');
     assert.equal(options.redirect, 'error');
