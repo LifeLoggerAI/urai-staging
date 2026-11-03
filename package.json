@@ -16,7 +16,7 @@
     "test:rules": "bash scripts/run-with-java.sh npm --prefix functions run test:rules",
     "test:e2e": "bash scripts/run-with-java.sh npm --prefix functions run test:e2e",
     "test:smoke": "npm run smoke:staging",
-    "check": "npm run test:release-ownership && npm run test:r398:ledger && npm run test:staging:evidence:timing && npm run test:privacy-jobs:admission && npm run test:staging:bootstrap:execution && npm run test:r422:federated:abi && npm run test:r423:worker:deletion && npm run test:r424:signed:rehearsal && npm run test:genesis:release:wiring && npm --prefix functions run typecheck && npm --prefix functions run build && npm --prefix functions run test:unit && npm run test:workstream-c-root && npm run test:workstream-c-confinement && npm run validate:providers",
+    "check": "npm run test:release-ownership && npm run test:r398:ledger && npm run test:staging:evidence:timing && npm run test:privacy-jobs:admission && npm run test:staging:bootstrap:execution && npm run test:r422:federated:abi && npm run test:r423:worker:deletion && npm run test:r424:signed:rehearsal && npm run test:r425:evidence:escrow && npm run test:genesis:release:wiring && npm --prefix functions run typecheck && npm --prefix functions run build && npm --prefix functions run test:unit && npm run test:workstream-c-root && npm run test:workstream-c-confinement && npm run validate:providers",
     "check:all": "npm run check && npm run test:e2e",
     "check:deploy": "npm run test:release-ownership && node scripts/check-deploy-readiness-v2.mjs",
     "check:firebase": "npm run check:deploy",
@@ -29,7 +29,7 @@
     "launch:p0:commands": "npm run doctor && node scripts/launch-p0.mjs",
     "smoke:staging": "bash scripts/smoke-staging.sh",
     "test:smoke:staging": "npm run smoke:staging",
-    "verify:release": "npm run check:deploy && npm run test:r422:federated:abi && npm run test:r423:worker:deletion && npm run test:r424:signed:rehearsal && npm run verify:privacy-jobs:admission && node scripts/validate-launch-evidence.mjs",
+    "verify:release": "npm run check:deploy && npm run test:r422:federated:abi && npm run test:r423:worker:deletion && npm run test:r424:signed:rehearsal && npm run test:r425:evidence:escrow && npm run verify:privacy-jobs:admission && node scripts/validate-launch-evidence.mjs",
     "lock:staging": "bash scripts/urai-staging-lock.sh",
     "emulators": "bash scripts/run-with-java.sh ./functions/node_modules/.bin/firebase emulators:start --config firebase.json --only functions,firestore,hosting,storage",
     "emulators:test": "npm run test:e2e",
@@ -44,7 +44,8 @@
     "test:r422:federated:abi": "node --test scripts/test-r422-federated-source-contract.mjs",
     "test:r423:worker:deletion": "node --test scripts/test-r423-worker-deletion-source-contract.mjs",
     "test:r424:signed:rehearsal": "node --test scripts/test-r424-signed-rehearsal.mjs",
-    "test:genesis:release:wiring": "node --test scripts/test-genesis-release-gate-wiring.mjs"
+    "test:genesis:release:wiring": "node --test scripts/test-genesis-release-gate-wiring.mjs",
+    "test:r425:evidence:escrow": "node --test scripts/test-r425-evidence-source-contract.mjs"
   },
   "engines": {
     "node": "22"

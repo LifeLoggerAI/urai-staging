@@ -74,6 +74,9 @@ jobs:
       - name: Verify R424 original signed identity synthetic rehearsal before emulators
         run: npm run test:r424:signed:rehearsal
 
+      - name: Verify original R426 R427 evidence escrow fail-closed behavior before emulators
+        run: npm run test:r425:evidence:escrow
+
       - name: Build original Functions
         run: npm --prefix functions run build
 
