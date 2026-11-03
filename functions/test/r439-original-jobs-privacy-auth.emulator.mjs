@@ -112,6 +112,10 @@ try {
       contentType: result.headers.get('content-type'),
       hasIdToken: typeof probe.idToken === 'string',
       localIdMatches: probe.localId === SERVICE_UID,
+      localIdType: typeof probe.localId,
+      userIdMatches: probe.userId === SERVICE_UID,
+      userIdType: typeof probe.userId,
+      responseKeys: Object.keys(probe).filter(k => !/token|password|credential|secret/i.test(k)).slice(0, 15),
       expiresType: typeof probe.expiresIn,
       errorCode: probe.error?.message || null,
     }));
