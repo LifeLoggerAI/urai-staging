@@ -16,7 +16,7 @@
     "test:rules": "bash scripts/run-with-java.sh npm --prefix functions run test:rules",
     "test:e2e": "bash scripts/run-with-java.sh npm --prefix functions run test:e2e",
     "test:smoke": "npm run smoke:staging",
-    "check": "npm run test:release-ownership && npm run test:r398:ledger && npm --prefix functions run typecheck && npm --prefix functions run build && npm --prefix functions run test:unit && npm run test:workstream-c-root && npm run test:workstream-c-confinement && npm run validate:providers",
+    "check": "npm run test:release-ownership && npm run test:r398:ledger && npm run test:staging:evidence:timing && npm --prefix functions run typecheck && npm --prefix functions run build && npm --prefix functions run test:unit && npm run test:workstream-c-root && npm run test:workstream-c-confinement && npm run validate:providers",
     "check:all": "npm run check && npm run test:e2e",
     "check:deploy": "npm run test:release-ownership && node scripts/check-deploy-readiness-v2.mjs",
     "check:firebase": "npm run check:deploy",
@@ -36,7 +36,8 @@
     "deploy:staging": "npm run lock:staging",
     "ship:urai:staging": "npm run deploy:staging",
     "validate:providers": "node scripts/validate-provider-readiness-20261001.mjs",
-    "test:r398:ledger": "node --test docs/release-evidence/test-r398-omega-ledger.mjs"
+    "test:r398:ledger": "node --test docs/release-evidence/test-r398-omega-ledger.mjs",
+    "test:staging:evidence:timing": "node --test scripts/test-staging-evidence-timing.mjs"
   },
   "engines": {
     "node": "22"
