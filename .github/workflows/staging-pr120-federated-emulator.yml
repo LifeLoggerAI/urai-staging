@@ -1,0 +1,124 @@
+name: UrAi Staging PR120 Federated ABI and Authenticated Emulator Evidence (nonrelease)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: urai-staging-pr120-federated-emulator-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr120-federated-authenticated-emulator:
+    name: Exact-head Firebase Auth Firestore Storage Functions (synthetic only)
+    if: ${{ github.event.pull_request.number == 120 && github.event.pull_request.head.repo.full_name == 'LifeLoggerAI/urai-staging' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      TARGET_SHA: ${{ github.event.pull_request.head.sha }}
+      URAI_EMULATOR_PROJECT: urai-staging-test
+      NO_GCE_CHECK: 'true'
+      URAI_CROSS_SERVICE_RECEIPT: ${{ github.workspace }}/artifacts/current-cross-service/authenticated-emulator.json
+      FIREBASE_AUTH_EMULATOR_HOST: 127.0.0.1:9099
+      FIRESTORE_EMULATOR_HOST: 127.0.0.1:8080
+      FIREBASE_STORAGE_EMULATOR_HOST: 127.0.0.1:9199
+      FIREBASE_FUNCTIONS_EMULATOR_HOST: 127.0.0.1:5001
+    steps:
+      - name: Checkout exact PR120 head without persistent credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Enforce source, stacked PR, and synthetic-only boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ github.repository }}' = 'LifeLoggerAI/urai-staging'
+          test '${{ github.event.pull_request.base.ref }}' = 'fix/genesis-staging-command-inventory-20261102'
+          test '${{ github.event.pull_request.head.ref }}' = 'test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103'
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          test "$URAI_EMULATOR_PROJECT" = 'urai-staging-test'
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test -z "${FIREBASE_TOKEN:-}"
+
+      - name: Setup locked Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22.16.0'
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Setup Java 21 for the actual Firebase emulators
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install immutable Functions dependencies
+        run: npm --prefix functions ci --ignore-scripts --engine-strict --audit=false
+
+      - name: Verify immutable Privacy Jobs Studio Spatial source ABI before emulator
+        run: node --test scripts/test-r422-federated-source-contract.mjs scripts/test-genesis-release-gate-wiring.mjs
+
+      - name: Build original Functions
+        run: npm --prefix functions run build
+
+      - name: Execute original authenticated 40-check emulator suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test -z "${FIREBASE_TOKEN:-}"
+          test ! -e artifacts/current-cross-service/authenticated-emulator.json
+          mkdir -p artifacts/current-cross-service
+          functions/node_modules/.bin/firebase emulators:exec \
+            --project urai-staging-test --config firebase.json \
+            --only auth,firestore,storage,functions \
+            'node functions/test/current-cross-service.emulator.mjs'
+
+      - name: Validate synthetic evidence cannot certify cloud acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { lstatSync, readFileSync } from 'node:fs';
+          const file = process.env.URAI_CROSS_SERVICE_RECEIPT;
+          const stat = lstatSync(file);
+          assert.equal(stat.isFile() && !stat.isSymbolicLink() && stat.nlink === 1, true);
+          const receipt = JSON.parse(readFileSync(file, 'utf8'));
+          assert.equal(receipt.schemaVersion, 'urai-current-cross-service-emulator-1');
+          assert.equal(receipt.environment, 'disposable-firebase-emulators-only');
+          assert.equal(receipt.projectId, 'urai-staging-test');
+          assert.equal(receipt.exactStagingSource, process.env.TARGET_SHA);
+          assert.equal(receipt.testsPassed, 40);
+          assert.equal(receipt.evidence?.length, 40);
+          assert.deepEqual(receipt.realEmulatorServices, ['Authentication', 'Firestore', 'Storage', 'Functions']);
+          assert.equal(receipt.syntheticFixturesOnly, true);
+          for (const field of [
+            'cloudAuthenticated', 'cloudStagingDeployed',
+            'jobsWorkerAndPrivacyRuntimeServiceIntegrated',
+            'revocationServerPropagationVerified', 'productionAccessOrSpending',
+            'finalReleaseAccepted'
+          ]) assert.equal(receipt[field], false, field);
+          console.log('PR120_SYNTHETIC_EMULATOR_EVIDENCE_PASS 40/40 - NONRELEASE ONLY');
+          NODE
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Preserve pinned local emulator receipt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: urai-pr120-source-abi-auth-emulator-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: artifacts/current-cross-service/authenticated-emulator.json
+          if-no-files-found: warn
+          retention-days: 90
