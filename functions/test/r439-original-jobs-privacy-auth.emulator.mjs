@@ -121,6 +121,24 @@ try {
     firebaseProjectId: PROJECT, dedicatedJobsUid: SERVICE_UID, firebaseWebApiKey: API_KEY,
   }, { adminAuth: serviceAuth, fetchImpl: localExchange });
 
+  // Redacted preflight isolates local emulator signer errors before original provider.
+  // Never log or persist the generated custom token itself.
+  try {
+    const probeToken = await serviceAuth.createCustomToken(SERVICE_UID, {
+      system: true, role: 'system', consumerId: 'urai-jobs',
+    });
+    console.log('R439_SIGNER_PROBE', JSON.stringify({
+      generatedJwt: /^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$/.test(probeToken),
+      tokenLengthValid: probeToken.length <= 8192,
+    }));
+  } catch (error) {
+    console.error('R439_SIGNER_FAILURE', JSON.stringify({
+      code: typeof error?.code === 'string' ? error.code : 'unavailable',
+      category: error?.constructor?.name || 'unknown',
+      message: String(error?.message || '').slice(0, 180).replace(/[A-Za-z0-9_-]{30,}/g, '[redacted]'),
+    }));
+    throw error;
+  }
   const idToken = await getDedicatedIdToken();
   assert.match(idToken, /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
   record('original-jobs-provider-exchanges-synthetic-custom-token-with-real-emulator');
