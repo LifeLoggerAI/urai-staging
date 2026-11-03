@@ -8,7 +8,7 @@
  * No production credentials, provider rendering, real users or API keys.
  */
 import assert from 'node:assert/strict';
-import { createHash, generateKeyPairSync } from 'node:crypto';
+import { createHash, generateKeyPairSync, sign } from 'node:crypto';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -117,9 +117,26 @@ try {
     }));
     return result;
   };
+  // Firebase Auth emulator's Admin custom-token shortcut generates alg:none
+  // with an empty signature. The production provider correctly rejects that.
+  // Re-sign ONLY within this synthetic harness using our ephemeral RSA key.
+  // No production trust logic, real signer or environment configuration changes.
+  const syntheticSignedAdmin = {
+    app: serviceAuth.app,
+    createCustomToken: async (uid, claims) => {
+      const unsigned = await serviceAuth.createCustomToken(uid, claims);
+      const sections = unsigned.split('.');
+      assert.equal(sections.length, 3);
+      assert.equal(sections[2], '', 'emulator-specific unsigned token expected');
+      const header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
+      const body = header + '.' + sections[1];
+      const signature = sign('RSA-SHA256', Buffer.from(body), privateKey).toString('base64url');
+      return body + '.' + signature;
+    },
+  };
   const getDedicatedIdToken = tokenModule.createDedicatedJobsFirebaseIdTokenProvider({
     firebaseProjectId: PROJECT, dedicatedJobsUid: SERVICE_UID, firebaseWebApiKey: API_KEY,
-  }, { adminAuth: serviceAuth, fetchImpl: localExchange });
+  }, { adminAuth: syntheticSignedAdmin, fetchImpl: localExchange });
 
   // Redacted preflight isolates local emulator signer errors before original provider.
   // Never log or persist the generated custom token itself.
