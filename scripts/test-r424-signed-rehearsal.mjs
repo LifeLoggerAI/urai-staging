@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
+import { readFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync, symlinkSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,6 +41,12 @@ test('R424 original Jobs Privacy Studio signed-identity rehearsal 18/18, render 
       copyFileSync(join(fixture,file),dest);
     }
     const jobs=join(temporary,'urai-jobs');
+    // Original Jobs runner resolves TypeScript from its Functions package path.
+    // Stage only the already-installed test dependency, never production credentials.
+    const requireFromStagingFunctions = createRequire(new URL('../functions/package.json', import.meta.url));
+    const typescriptPackage = dirname(requireFromStagingFunctions.resolve('typescript/package.json'));
+    mkdirSync(join(jobs,'functions/node_modules'), {recursive:true});
+    symlinkSync(typescriptPackage,join(jobs,'functions/node_modules/typescript'),'dir');
     const env={PATH:process.env.PATH||'',HOME:process.env.HOME||'/tmp',CI:'1',
       URAI_PRIVACY_ROOT:join(temporary,'urai-privacy'),URAI_STUDIO_ROOT:join(temporary,'urai-studio'),
       NODE_PATH:join(process.cwd(),'functions/node_modules')};
