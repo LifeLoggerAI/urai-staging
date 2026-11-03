@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { stagingBootstrapCommands } from './staging-bootstrap-command-manifest.mjs';
+import { stagingBootstrapCommandEnvironment } from './staging-bootstrap-command-environment.mjs';
 
 const root = process.cwd();
 const pkgPath = path.join(root, 'package.json');
@@ -108,7 +109,8 @@ for (const [cmd, args] of commands) {
   console.log(`\n$ ${commandText}`);
   const result = spawnSync(cmd, args, {
     cwd: root,
-    env,
+    // Prevent the final launch:p0 check from passing after printing a dry-run list.
+    env: stagingBootstrapCommandEnvironment(cmd, args, env),
     shell: process.platform === 'win32',
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
