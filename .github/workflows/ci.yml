@@ -114,6 +114,9 @@ jobs:
       - name: Regression-test Privacy Jobs staging consumer boundary
         run: node --test scripts/test-privacy-jobs-staging-admission.mjs
 
+      - name: Guard against final launch P0 bootstrap dry-run false success
+        run: node --test scripts/test-staging-bootstrap-command-environment.mjs
+
       - name: Regression test exact-source launch evidence admission
         run: node --test scripts/test-launch-evidence-source-pin.mjs
 
