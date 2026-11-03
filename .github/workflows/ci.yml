@@ -111,6 +111,9 @@ jobs:
       - name: Reject malformed and overlapping staging execution timestamps
         run: node --test scripts/test-staging-evidence-timing.mjs
 
+      - name: Regression-test Privacy Jobs staging consumer boundary
+        run: node --test scripts/test-privacy-jobs-staging-admission.mjs
+
       - name: Regression test exact-source launch evidence admission
         run: node --test scripts/test-launch-evidence-source-pin.mjs
 
