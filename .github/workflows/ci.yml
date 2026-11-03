@@ -108,6 +108,9 @@ jobs:
       - name: Reject partial and substituted bootstrap report inventories
         run: node --test scripts/test-launch-evidence-command-inventory.mjs
 
+      - name: Reject malformed and overlapping staging execution timestamps
+        run: node --test scripts/test-staging-evidence-timing.mjs
+
       - name: Regression test exact-source launch evidence admission
         run: node --test scripts/test-launch-evidence-source-pin.mjs
 
