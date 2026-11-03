@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "urai-r425-source-evidence-v1",
+  "productionAuthorized": false,
+  "environment": "synthetic-local-only",
+  "repository": "LifeLoggerAI/urai-jobs",
+  "commit": "7f3108cebc9fc9a251de24a0632a47a7824f96a4",
+  "pins": {
+    "r426-original-source-evidence.mjs": "1ad836d9f04d34c29ecc26cb7c83b07d971705e0",
+    "r426-original-source-evidence.test.mjs": "4c01dd0e115a4cf4dbd419da83b667c795e8fc51",
+    "r427-evidence-escrow.mjs": "5192840d093546ed1f2c4a8ab04f8c2773272d57",
+    "r427-evidence-escrow.test.mjs": "c95a4fc9124e1d903532cdfa9cfe1dda3c6fffe1"
+  }
+}

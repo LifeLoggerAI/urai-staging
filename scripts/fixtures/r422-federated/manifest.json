@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "urai-r422-federated-source-abi-v1",
+  "environment": "offline-synthetic-only",
+  "productionAuthorized": false,
+  "entries": [
+    {
+      "id": "privacy",
+      "repository": "LifeLoggerAI/urai-privacy",
+      "path": "functions/src/consent-revocation-jobs-contract.ts",
+      "commit": "bc0bbb056bba07af1d46714213f169faca306622",
+      "blob": "6cca2b9456319927cf22511c7d51c1f16ddf051c"
+    },
+    {
+      "id": "jobs",
+      "repository": "LifeLoggerAI/urai-jobs",
+      "path": "functions/src/privacy/consentBlocks.ts",
+      "commit": "e909d03b30b4340374fe9f353ec068f261a4b9eb",
+      "blob": "8bd86161687402ebb610cc30f6677f88521c2c1c"
+    },
+    {
+      "id": "order",
+      "repository": "LifeLoggerAI/urai-jobs",
+      "path": "functions/src/privacy/consentRevocationOrder.ts",
+      "commit": "e909d03b30b4340374fe9f353ec068f261a4b9eb",
+      "blob": "33c71b71a7a505d17f8b5b51189573a954873593"
+    },
+    {
+      "id": "gate",
+      "repository": "LifeLoggerAI/urai-jobs",
+      "path": "functions/src/privacy/lifeMovieConsentGate.ts",
+      "commit": "e909d03b30b4340374fe9f353ec068f261a4b9eb",
+      "blob": "53761ac0f5c0340563b13fdd9a12a90e75409d42"
+    },
+    {
+      "id": "studio",
+      "repository": "LifeLoggerAI/urai-studio",
+      "path": "apps/studio/lib/studio-life-movie-jobs-client.ts",
+      "commit": "8c62bc3a4bb3216a28c362d93b5f17bdedb12b03",
+      "blob": "0ca262e114b0439426d75cf7ac510e289ba315eb"
+    },
+    {
+      "id": "spatial",
+      "repository": "LifeLoggerAI/urai-spatial",
+      "path": "urai-tier1/src/spatial/life-movie/privateLifeMovieRouteSelection.ts",
+      "commit": "e3347d0e1ee57eaabafcfd50e2b033f7476aecf8",
+      "blob": "5ba1491f694873582cf3a37a371dbbce7758d48f"
+    }
+  ]
+}

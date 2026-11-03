@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "urai-r424-signed-rehearsal-v1",
+  "environment": "offline-synthetic-only",
+  "productionAuthorized": false,
+  "refs": {
+    "jobs": "e909d03b30b4340374fe9f353ec068f261a4b9eb",
+    "privacy": "bc0bbb056bba07af1d46714213f169faca306622",
+    "studio": "8c62bc3a4bb3216a28c362d93b5f17bdedb12b03"
+  },
+  "sha": {
+    "jobs/functions/src/privacy/lifeMovieConsentGate.ts": "53761ac0f5c0340563b13fdd9a12a90e75409d42",
+    "jobs/functions/src/privacy/lifeMovieBoundedResponse.ts": "88b5c3117b9c8d5d8d903efc015b58bc17590b0d",
+    "jobs/functions/src/privacy/lifeMovieConsentDecision.ts": "c1e05bf386bd47ff64bec20623cc50f29a9d1aa5",
+    "jobs/functions/src/privacy/lifeMovieConsentTransport.ts": "c1bdbb0f196f2f678bdf2d377d1aa0eea0cc56ae",
+    "jobs/functions/src/privacy/lifeMovieJobsTokenProvider.ts": "648225708e055592ee697e0dc342bfcf1bc144e4",
+    "jobs/functions/src/privacy/lifeMovieJobsPrivacyClient.ts": "73d65b003f4141cd471db1e6a0edff9d7a1c747f",
+    "jobs/functions/src/privacy/lifeMovieAdmissionPreflight.ts": "ed9d6289d3443aa634748649a2df19c64016c02f",
+    "jobs/functions/src/jobs/studioLifeMovieContract.ts": "5f944e906de7243d7415ac479cf92356b09c84c9",
+    "jobs/scripts/integration/r421-run-synthetic-cross-service.mjs": "a0a32e1d2be5dbb4905b41c31172a6e28a7085f2",
+    "jobs/scripts/integration/r421-synthetic-cross-service.test.mjs": "00a99f38f5d537b576dd0cfb05c6874104b7f562",
+    "jobs/functions/package.json": "3a1fbbe23bf1098701f2c6aea4db2e4a844faaea",
+    "privacy/functions/src/life-movie-jobs-identity.ts": "78f3cfe4b22fd39500ce3d94de55c9c5f46c7970",
+    "privacy/functions/src/consent-decision.ts": "35c699bd225c687bab8f1fd8e7315facc16c8148",
+    "privacy/functions/src/life-movie-scoped-receipt.ts": "a41f4cf9c2efb525115ec31359d936c8b2f66f6e",
+    "privacy/functions/src/life-movie-render-authorization.ts": "a75e4f2297c331baa52b044f2842820adbdc7fc8",
+    "privacy/functions/src/life-movie-deletion-fence.ts": "e08751e59846b06e366d93d1d8bdac7afeaf3b6e",
+    "privacy/functions/src/cross-user-authority.ts": "443097baa409c289b4189f98e4c56c7ab70aaa31",
+    "studio/apps/studio/lib/studio-life-movie-jobs-client.ts": "0ca262e114b0439426d75cf7ac510e289ba315eb",
+    "studio/apps/studio/lib/studio-life-movie-longform-contract.ts": "b61484f218a46b56fbe479dadec73595b8599b3f",
+    "studio/apps/studio/lib/studio-life-movie-jobs-bridge.ts": "c995395da7f543659512dc633e3a2497ff4bb6ff"
+  }
+}

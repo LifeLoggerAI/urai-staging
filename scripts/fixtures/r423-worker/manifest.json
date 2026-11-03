@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "urai-r423-worker-source-fence-v1",
+  "environment": "synthetic-offline-only",
+  "productionAuthorized": false,
+  "consumer": "LifeLoggerAI/urai-jobs",
+  "commit": "dbe75780ba5f540f0c874990207a33173b60ec1c",
+  "files": [
+    {
+      "path": "workers/studio-worker/index.js",
+      "sha": "e37d15b79fc986554943efd9aedd2edd814f88e9"
+    },
+    {
+      "path": "functions/src/privacy/ownerDeletionFence.ts",
+      "sha": "3501db8b6a5cbc4ddcf038fcf00e0a7a8574eb33"
+    },
+    {
+      "path": "scripts/life-movies-worker-owner-deletion-fence.test.mjs",
+      "sha": "3fa1127e0aba6928b9045dd9eaca87d30160fc80"
+    }
+  ]
+}
