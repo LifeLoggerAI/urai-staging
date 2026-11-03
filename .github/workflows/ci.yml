@@ -117,6 +117,9 @@ jobs:
       - name: Guard against final launch P0 bootstrap dry-run false success
         run: node --test scripts/test-staging-bootstrap-command-environment.mjs
 
+      - name: Ensure Genesis release verifier cannot bypass staging admission
+        run: node --test scripts/test-genesis-release-gate-wiring.mjs
+
       - name: Regression test exact-source launch evidence admission
         run: node --test scripts/test-launch-evidence-source-pin.mjs
 
