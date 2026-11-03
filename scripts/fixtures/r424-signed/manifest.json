@@ -3,8 +3,8 @@
   "environment": "offline-synthetic-only",
   "productionAuthorized": false,
   "refs": {
-    "jobs": "98a28c29a9fb0946927771f924090237f987d1a8",
-    "privacy": "3f94e0050c5994a369cdc531ff864d0a2eadbbad",
+    "jobs": "e909d03b30b4340374fe9f353ec068f261a4b9eb",
+    "privacy": "bc0bbb056bba07af1d46714213f169faca306622",
     "studio": "8c62bc3a4bb3216a28c362d93b5f17bdedb12b03"
   },
   "sha": {
