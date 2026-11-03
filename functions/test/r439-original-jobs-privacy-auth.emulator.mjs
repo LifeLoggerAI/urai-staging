@@ -105,7 +105,17 @@ try {
     const request = JSON.parse(options.body);
     assert.equal(request.returnSecureToken, true);
     assert.equal(typeof request.token, 'string');
-    return fetch('http://' + HOST + '/identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=' + API_KEY, options);
+    const result = await fetch('http://' + HOST + '/identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=' + API_KEY, options);
+    const probe = await result.clone().json().catch(() => ({}));
+    console.log('R439_EXCHANGE_PROBE', JSON.stringify({
+      httpStatus: result.status,
+      contentType: result.headers.get('content-type'),
+      hasIdToken: typeof probe.idToken === 'string',
+      localIdMatches: probe.localId === SERVICE_UID,
+      expiresType: typeof probe.expiresIn,
+      errorCode: probe.error?.message || null,
+    }));
+    return result;
   };
   const getDedicatedIdToken = tokenModule.createDedicatedJobsFirebaseIdTokenProvider({
     firebaseProjectId: PROJECT, dedicatedJobsUid: SERVICE_UID, firebaseWebApiKey: API_KEY,
