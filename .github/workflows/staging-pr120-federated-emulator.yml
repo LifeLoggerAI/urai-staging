@@ -68,6 +68,9 @@ jobs:
       - name: Verify immutable Privacy Jobs Studio Spatial source ABI before emulator
         run: node --test scripts/test-r422-federated-source-contract.mjs scripts/test-genesis-release-gate-wiring.mjs
 
+      - name: Verify original Jobs render-worker deletion guard before emulators
+        run: node --test scripts/test-r423-worker-deletion-source-contract.mjs
+
       - name: Build original Functions
         run: npm --prefix functions run build
 
