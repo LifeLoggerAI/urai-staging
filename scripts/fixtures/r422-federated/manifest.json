@@ -7,28 +7,28 @@
       "id": "privacy",
       "repository": "LifeLoggerAI/urai-privacy",
       "path": "functions/src/consent-revocation-jobs-contract.ts",
-      "commit": "3f94e0050c5994a369cdc531ff864d0a2eadbbad",
+      "commit": "bc0bbb056bba07af1d46714213f169faca306622",
       "blob": "6cca2b9456319927cf22511c7d51c1f16ddf051c"
     },
     {
       "id": "jobs",
       "repository": "LifeLoggerAI/urai-jobs",
       "path": "functions/src/privacy/consentBlocks.ts",
-      "commit": "3183d7661ab67b66c5228dffac95cf5b5fa166ee",
+      "commit": "e909d03b30b4340374fe9f353ec068f261a4b9eb",
       "blob": "8bd86161687402ebb610cc30f6677f88521c2c1c"
     },
     {
       "id": "order",
       "repository": "LifeLoggerAI/urai-jobs",
       "path": "functions/src/privacy/consentRevocationOrder.ts",
-      "commit": "3183d7661ab67b66c5228dffac95cf5b5fa166ee",
+      "commit": "e909d03b30b4340374fe9f353ec068f261a4b9eb",
       "blob": "33c71b71a7a505d17f8b5b51189573a954873593"
     },
     {
       "id": "gate",
       "repository": "LifeLoggerAI/urai-jobs",
       "path": "functions/src/privacy/lifeMovieConsentGate.ts",
-      "commit": "3183d7661ab67b66c5228dffac95cf5b5fa166ee",
+      "commit": "e909d03b30b4340374fe9f353ec068f261a4b9eb",
       "blob": "53761ac0f5c0340563b13fdd9a12a90e75409d42"
     },
     {
