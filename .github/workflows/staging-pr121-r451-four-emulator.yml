@@ -1,0 +1,142 @@
+name: UrAi Staging PR121 R451 Combined Firebase Emulator (nonrelease)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: urai-staging-pr121-r451-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  r451-four-emulator-source-pinned:
+    name: Exact-source 18+40 Auth Privacy and synthetic private-memory acceptance
+    if: ${{ github.event.pull_request.number == 121 && github.event.pull_request.head.repo.full_name == 'LifeLoggerAI/urai-staging' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      TARGET_SHA: ${{ github.event.pull_request.head.sha }}
+      URAI_EMULATOR_PROJECT: urai-staging-test
+      NO_GCE_CHECK: 'true'
+      FIREBASE_AUTH_EMULATOR_HOST: 127.0.0.1:9099
+      FIRESTORE_EMULATOR_HOST: 127.0.0.1:8080
+      FIREBASE_STORAGE_EMULATOR_HOST: 127.0.0.1:9199
+      FIREBASE_FUNCTIONS_EMULATOR_HOST: 127.0.0.1:5001
+      URAI_R451_RECEIPT: ${{ github.workspace }}/artifacts/r451/combined.json
+    steps:
+      - name: Checkout immutable PR head without retained credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+
+      - name: Enforce exact SHA and nonproduction boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ github.repository }}' = 'LifeLoggerAI/urai-staging'
+          test '${{ github.event.pull_request.base.ref }}' = 'test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103'
+          test '${{ github.event.pull_request.head.ref }}' = 'test/r439-firebase-jobs-privacy-auth-emulator-20261103'
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          test "$URAI_EMULATOR_PROJECT" = 'urai-staging-test'
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test -z "${FIREBASE_TOKEN:-}"
+          test -z "${GCLOUD_PROJECT:-}"
+          test -z "${GOOGLE_CLOUD_PROJECT:-}"
+          test -z "${FIREBASE_CONFIG:-}"
+          test ! -e "$URAI_R451_RECEIPT"
+
+      - name: Setup frozen Node.js 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22.16.0'
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Setup Java 21 for genuine Firebase emulators
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install frozen Functions dependencies (no lifecycle scripts)
+        run: npm --prefix functions ci --ignore-scripts --engine-strict --audit=false --fund=false
+
+      - name: Verify original-source fixture and test syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check functions/test/r450-original-auth-emulator-boundary.mjs
+          node --check scripts/r451-combined-emulator-acceptance.mjs
+          node --test scripts/test-r422-federated-source-contract.mjs scripts/test-r423-worker-deletion-source-contract.mjs
+          node --test scripts/test-r424-signed-rehearsal.mjs
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+
+      - name: Build original staging Functions
+        run: npm --prefix functions run build
+
+      - name: Execute one actual four-emulator session with 18+40 source-bound checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$URAI_EMULATOR_PROJECT" = 'urai-staging-test'
+          test -z "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+          test -z "${FIREBASE_TOKEN:-}"
+          test ! -e "$URAI_R451_RECEIPT"
+          mkdir -p "$(dirname "$URAI_R451_RECEIPT")"
+          functions/node_modules/.bin/firebase emulators:exec \
+            --project urai-staging-test --config firebase.json \
+            --only auth,firestore,storage,functions \
+            'node scripts/r451-combined-emulator-acceptance.mjs'
+
+      - name: Validate scope, anti-replay and exact-head receipt (NOT release authority)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { lstatSync, readFileSync } from 'node:fs';
+          const stat = lstatSync(process.env.URAI_R451_RECEIPT);
+          assert.ok(stat.isFile() && !stat.isSymbolicLink() && stat.nlink === 1);
+          const r = JSON.parse(readFileSync(process.env.URAI_R451_RECEIPT, 'utf8'));
+          assert.equal(r.schemaVersion, 'urai-r451-four-emulator-combined-1');
+          assert.equal(r.exactStagingSource, process.env.TARGET_SHA);
+          assert.equal(r.projectId, 'urai-staging-test');
+          assert.equal(r.environment, 'disposable-four-firebase-emulators-only');
+          assert.equal(r.checksPassed, 58);
+          assert.equal(r.originalSourceBlobsVerified, 4);
+          assert.equal(r.suites?.length, 2);
+          assert.deepEqual(r.suites.map(s => s.passed), [18, 40]);
+          for (const suite of r.suites) assert.match(suite.logSha256, /^[a-f0-9]{64}$/);
+          assert.deepEqual(r.actualEmulatorServices, ['Authentication', 'Firestore', 'Storage', 'Functions']);
+          assert.equal(r.stagedSyntheticMemoriesOnly, true);
+          for (const field of [
+            'cryptographicallyVerifiedCloudIAM',
+            'actualJobsWorkerAndPrivacyCallableIntegrated',
+            'actualStudioAndReplayIntegrated',
+            'positiveRenderConsentGranted',
+            'realPrivateMovieGenerationVerified',
+            'productionAccessOrSpending',
+            'finalReleaseAccepted',
+          ]) assert.equal(r[field], false, field);
+          console.log('R451_58_CASE_SYNTHETIC_ONLY_ACCEPTANCE_PASS');
+          NODE
+          sha256sum "$URAI_R451_RECEIPT"
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Preserve scoped receipt (not protected cloud evidence escrow)
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: urai-r451-firebase-emulator-${{ env.TARGET_SHA }}-${{ github.run_id }}
+          path: artifacts/r451/combined.json
+          if-no-files-found: warn
+          retention-days: 90
