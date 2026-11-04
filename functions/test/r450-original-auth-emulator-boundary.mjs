@@ -18,6 +18,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
+import { requireFirebaseAuthDenial } from '../../scripts/r454-specific-firebase-denial.mjs';
 import { initializeApp as initializeAdminApp, deleteApp as deleteAdminApp, cert } from 'firebase-admin/app';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { initializeApp as initializeClientApp, deleteApp as deleteClientApp } from 'firebase/app';
@@ -41,8 +42,8 @@ const sourceFiles = [
 const checks = [];
 const pass = name => checks.push(name);
 const blob = b => createHash('sha1').update('blob ' + b.length + '\0').update(b).digest('hex');
-const mustReject = async (name, thunk) => {
-  await assert.rejects(thunk, undefined, name);
+const mustReject = async (name, thunk, allowedCodes, messagePattern = null) => {
+  await requireFirebaseAuthDenial(name, thunk, allowedCodes, messagePattern);
   pass(name);
 };
 
@@ -190,12 +191,12 @@ try {
   otherProjectApp = initializeAdminApp({ projectId: 'urai-r450-other' }, 'r450-other-project');
   await mustReject('other-project-admin-rejects-emulator-id-token', async () => {
     await getAdminAuth(otherProjectApp).verifyIdToken(serviceIdToken, true);
-  });
+  }, ['auth/argument-error', 'auth/invalid-id-token'], /aud(?:ience)?|project/i);
 
   await adminAuth.updateUser(SERVICE_UID, { disabled: true });
   await mustReject('disabled-service-rejected-by-firebase-admin-check-revoked', async () => {
     await adminAuth.verifyIdToken(serviceIdToken, true);
-  });
+  }, ['auth/user-disabled']);
 
   // No tests mutate external GCP state. Receipt must not be mistaken for
   // a positive cross-project identity grant or end-to-end private rendering.
