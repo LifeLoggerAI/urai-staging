@@ -50,7 +50,7 @@ assert.equal(process.env.URAI_EMULATOR_PROJECT, PROJECT, 'fixed disposable Fireb
 assert.equal(manifest.schemaVersion, 'urai-r424-signed-rehearsal-v1');
 assert.equal(manifest.environment, 'offline-synthetic-only');
 assert.equal(manifest.productionAuthorized, false);
-assert.equal(manifest.refs.privacy, '3f94e0050c5994a369cdc531ff864d0a2eadbbad');
+assert.equal(manifest.refs.privacy, 'e6d71fd19f0f74d3d39e11b8716d5b868565d304');
 record('strict-disposable-auth-emulator-admission');
 
 const temp = mkdtempSync(join(tmpdir(), 'urai-r439-auth-'));
