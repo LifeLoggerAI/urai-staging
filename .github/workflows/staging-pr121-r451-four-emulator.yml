@@ -75,6 +75,7 @@ jobs:
           set -euo pipefail
           node --check functions/test/r450-original-auth-emulator-boundary.mjs
           node --check scripts/r451-combined-emulator-acceptance.mjs
+          node --test scripts/r454-specific-firebase-denial.test.mjs
           node --test scripts/test-r422-federated-source-contract.mjs scripts/test-r423-worker-deletion-source-contract.mjs
           node --test scripts/test-r424-signed-rehearsal.mjs
           test "$(git rev-parse HEAD)" = "$TARGET_SHA"
