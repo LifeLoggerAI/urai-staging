@@ -130,7 +130,19 @@ try {
       console.log('R439_EMULATOR_LOCALID_SHIM', JSON.stringify({
         verifiedTokenUidMatches: true, syntheticEmulatorOnly: true,
       }));
-      return new Response(JSON.stringify({ ...probe, localId: verifiedEmulatorToken.uid }), {
+      const tokenParts = probe.idToken.split('.');
+      assert.equal(tokenParts.length, 3);
+      assert.equal(tokenParts[2], '', 'expect unsigned emulator ID token');
+      // The emulator also returns alg:none ID tokens with empty signatures.
+      // Original Jobs requires three nonempty JWT segments. Sign synthetic
+      // response only using the same ephemeral test key; cloud JWT trust
+      // remains untested because Auth emulator disables signature checks.
+      const idHeader = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
+      const signedInput = idHeader + '.' + tokenParts[1];
+      const signedIdToken = signedInput + '.' + sign('RSA-SHA256', Buffer.from(signedInput), privateKey).toString('base64url');
+      return new Response(JSON.stringify({
+        ...probe, localId: verifiedEmulatorToken.uid, idToken: signedIdToken,
+      }), {
         status: result.status,
         headers: { 'content-type': 'application/json' },
       });
