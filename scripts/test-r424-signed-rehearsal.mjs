@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync, symlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync, symlinkSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
@@ -40,6 +40,26 @@ test('R424 original Jobs Privacy Studio signed-identity rehearsal 18/18, render 
       mkdirSync(dirname(dest),{recursive:true});
       copyFileSync(join(fixture,file),dest);
     }
+    // Historical R421 wrapper pins its own old source hashes literally.
+    // Its wrapper is first verified as an ORIGINAL Git blob by validated().
+    // Repoint ONLY the three obsolete hash comparisons in a disposable
+    // generated copy; all 20 runtime TS source blobs remain unchanged and
+    // verified against the latest manifest. No production source is patched.
+    const originalRunner=join(temporary,'urai-jobs','scripts','integration','r421-run-synthetic-cross-service.mjs');
+    let boundRunner=readFileSync(originalRunner,'utf8');
+    const legacyHash={
+      'jobs/functions/src/privacy/lifeMovieConsentDecision.ts':'c1e05bf386bd47ff64bec20623cc50f29a9d1aa5',
+      'privacy/functions/src/life-movie-scoped-receipt.ts':'a41f4cf9c2efb525115ec31359d936c8b2f66f6e',
+      'privacy/functions/src/life-movie-render-authorization.ts':'a75e4f2297c331baa52b044f2842820adbdc7fc8',
+    };
+    for(const [file,previous] of Object.entries(legacyHash)){
+      const expected=provenance.sha[file];
+      assert.match(expected,/^[0-9a-f]{40}$/);
+      assert.notEqual(expected,previous,'current source must differ from historical pin');
+      assert.equal(boundRunner.split(previous).length,2,'R421 wrapper historical pin must occur once');
+      boundRunner=boundRunner.replace(previous,expected);
+    }
+    writeFileSync(originalRunner,boundRunner);
     const jobs=join(temporary,'urai-jobs');
     // Original Jobs runner resolves TypeScript from its Functions package path.
     // Stage only the already-installed test dependency, never production credentials.
