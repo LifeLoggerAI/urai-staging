@@ -17,9 +17,9 @@ function validated() {
   assert.equal(provenance.environment,'offline-synthetic-only');
   assert.equal(provenance.productionAuthorized,false);
   assert.deepEqual(provenance.refs,{
-    jobs:'98a28c29a9fb0946927771f924090237f987d1a8',
-    privacy:'3f94e0050c5994a369cdc531ff864d0a2eadbbad',
-    studio:'8c62bc3a4bb3216a28c362d93b5f17bdedb12b03'
+    jobs:'ce85730f0ce51297b317c2d3f082f859ade4459a',
+    privacy:'e6d71fd19f0f74d3d39e11b8716d5b868565d304',
+    studio:'d1f30d2a8eca28b7474bcf43f0b8118d0f826a21'
   });
   assert.equal(Object.keys(provenance.sha).length,20);
   for (const [file,expected] of Object.entries(provenance.sha)) {
