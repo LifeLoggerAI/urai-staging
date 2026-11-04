@@ -225,10 +225,16 @@ try {
   const identity = { uid: verified.uid, token: verified };
   assert.equal(privacy.isTrustedJobsConsentCaller(identity, SERVICE_UID), true);
   const verify = (t, checkRevoked) => serviceAuth.verifyIdToken(t, checkRevoked);
+  // Firebase Auth emulator ID tokens use alg:none and have an empty
+  // signature segment. Admin can authenticate them in emulator-only mode,
+  // but the real Privacy service identity guard requires 3 nonempty JWT
+  // segments. Do not weaken the guard to manufacture a successful Jobs
+  // identity. A real signed cloud IAM service principal is still required.
+  assert.equal(originalEmulatorIdToken.split('.')[2], '');
   assert.equal(await privacy.isTrustedActiveJobsConsentCaller(
     identity, SERVICE_UID, 'Bearer ' + originalEmulatorIdToken, verify,
-  ), true);
-  record('original-privacy-check-revoked-trusts-exact-dedicated-uid');
+  ), false);
+  record('current-privacy-rejects-unsigned-emulator-id-token');
 
   assert.equal(privacy.isTrustedJobsConsentCaller(identity, 'different-system-uid'), false);
   assert.equal(await privacy.isTrustedActiveJobsConsentCaller(
