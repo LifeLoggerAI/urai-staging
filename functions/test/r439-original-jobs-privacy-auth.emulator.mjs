@@ -8,7 +8,7 @@
  * No production credentials, provider rendering, real users or API keys.
  */
 import assert from 'node:assert/strict';
-import { createHash, generateKeyPairSync, sign } from 'node:crypto';
+import { createHash, generateKeyPairSync, sign, verify as verifySignature } from 'node:crypto';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -81,7 +81,7 @@ try {
 
   // Ephemeral, synthetic RSA key used only to exercise the Auth emulator's
   // custom-token protocol. Never persisted or accepted by a cloud project.
-  const { privateKey } = generateKeyPairSync('rsa', {
+  const { publicKey, privateKey } = generateKeyPairSync('rsa', {
     modulusLength: 2048,
     publicKeyEncoding: { type: 'spki', format: 'pem' },
     privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
@@ -96,6 +96,9 @@ try {
   }, 'r439-isolated-synthetic-issuer');
   const serviceAuth = getAdminAuth(adminApp);
 
+  // Emulator-issued credentials and locally signed provider-format JWTs
+  // must remain separate; only the former are accepted as emulator identity.
+  let originalEmulatorIdToken = null;
   const expected = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=' + API_KEY;
   const localExchange = async (url, options) => {
     assert.equal(url, expected, 'Jobs requests only expected Identity Toolkit operation');
@@ -127,6 +130,7 @@ try {
       const verifiedEmulatorToken = await serviceAuth.verifyIdToken(probe.idToken, true);
       assert.equal(verifiedEmulatorToken.uid, SERVICE_UID);
       assert.equal(verifiedEmulatorToken.aud, PROJECT);
+      originalEmulatorIdToken = probe.idToken;
       console.log('R439_EMULATOR_LOCALID_SHIM', JSON.stringify({
         verifiedTokenUidMatches: true, syntheticEmulatorOnly: true,
       }));
@@ -195,26 +199,40 @@ try {
   assert.match(idToken, /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
   record('original-jobs-provider-exchanges-synthetic-custom-token-with-real-emulator');
 
-  const verified = await serviceAuth.verifyIdToken(idToken, true);
+  // The locally generated RSA signature verifies against our ephemeral
+  // key, NOT Firebase. The source Jobs provider checks JWT syntax, but it
+  // would be unsafe to present this synthetic JWT as a genuine IAM bearer.
+  const signedParts = idToken.split('.');
+  assert.equal(verifySignature('RSA-SHA256', Buffer.from(signedParts.slice(0, 2).join('.')),
+    publicKey, Buffer.from(signedParts[2], 'base64url')), true);
+  assert.ok(originalEmulatorIdToken, 'real emulator ID token must have been captured');
+  const verified = await serviceAuth.verifyIdToken(originalEmulatorIdToken, true);
+  const signedClaims = JSON.parse(Buffer.from(signedParts[1], 'base64url').toString('utf8'));
+  assert.equal(signedClaims.sub, verified.uid);
+  assert.equal(signedClaims.aud, verified.aud);
+  assert.equal(signedClaims.consumerId, verified.consumerId);
+  await assert.rejects(() => serviceAuth.verifyIdToken(idToken, true),
+    /invalid signature|invalid token|argument/i);
+  record('synthetic-rsa-token-is-locally-verified-but-not-a-firebase-bearer');
   assert.equal(verified.uid, SERVICE_UID);
   assert.equal(verified.aud, PROJECT);
   assert.equal(verified.system, true);
   assert.equal(verified.role, 'system');
   assert.equal(verified.consumerId, 'urai-jobs');
   assert.equal(verified.firebase?.sign_in_provider, 'custom');
-  record('admin-sdk-verifies-emulator-issued-id-token-project-and-claims');
+  record('admin-sdk-verifies-original-unsigned-emulator-id-token-project-and-claims');
 
   const identity = { uid: verified.uid, token: verified };
   assert.equal(privacy.isTrustedJobsConsentCaller(identity, SERVICE_UID), true);
   const verify = (t, checkRevoked) => serviceAuth.verifyIdToken(t, checkRevoked);
   assert.equal(await privacy.isTrustedActiveJobsConsentCaller(
-    identity, SERVICE_UID, 'Bearer ' + idToken, verify,
+    identity, SERVICE_UID, 'Bearer ' + originalEmulatorIdToken, verify,
   ), true);
   record('original-privacy-check-revoked-trusts-exact-dedicated-uid');
 
   assert.equal(privacy.isTrustedJobsConsentCaller(identity, 'different-system-uid'), false);
   assert.equal(await privacy.isTrustedActiveJobsConsentCaller(
-    identity, 'different-system-uid', 'Bearer ' + idToken, verify,
+    identity, 'different-system-uid', 'Bearer ' + originalEmulatorIdToken, verify,
   ), false);
   record('wrong-system-uid-fails-closed');
 
@@ -243,7 +261,7 @@ try {
     identity, SERVICE_UID, 'Bearer ' + ownerIdToken, verify,
   ), false);
   assert.equal(await privacy.isTrustedActiveJobsConsentCaller(
-    identity, SERVICE_UID, 'Basic ' + idToken, verify,
+    identity, SERVICE_UID, 'Basic ' + originalEmulatorIdToken, verify,
   ), false);
   record('swapped-bearer-and-invalid-header-denied');
 
@@ -258,7 +276,7 @@ try {
   record('wrong-consumer-and-role-claims-denied');
 
   wrongApp = initializeAdminApp({ projectId: 'urai-staging-other' }, 'r439-cross-project-denial');
-  await assert.rejects(() => getAdminAuth(wrongApp).verifyIdToken(idToken, true));
+  await assert.rejects(() => getAdminAuth(wrongApp).verifyIdToken(originalEmulatorIdToken, true));
   record('other-project-admin-sdk-rejects-token-audience');
 
   assert.throws(() => tokenModule.createDedicatedJobsFirebaseIdTokenProvider(
@@ -269,7 +287,7 @@ try {
 
   await serviceAuth.updateUser(SERVICE_UID, { disabled: true });
   assert.equal(await privacy.isTrustedActiveJobsConsentCaller(
-    identity, SERVICE_UID, 'Bearer ' + idToken, verify,
+    identity, SERVICE_UID, 'Bearer ' + originalEmulatorIdToken, verify,
   ), false);
   record('disabled-service-identity-fails-current-recheck');
 
@@ -281,6 +299,8 @@ try {
     testsPassed: labels.length, tests: labels,
     realEmulator: ['Authentication'], syntheticEphemeralSigner: true,
     originalJobsProviderExecuted: true, originalPrivacyIdentityGuardExecuted: true,
+    emulatorIdentityTokenVerified: true, localRsaSignatureVerified: true,
+    ephemeralSignatureIsNotFirebaseAuthority: true,
     firebaseAdminVerified: true, revokedIdentityDenied: true,
     fullServiceToServiceCallableInvoked: false, sourceRightsGranted: false,
     renderingActivated: false, cloudIAMVerified: false, crossRepoRenderE2EVerified: false,
