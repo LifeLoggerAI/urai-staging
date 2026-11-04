@@ -119,6 +119,22 @@ try {
       expiresType: typeof probe.expiresIn,
       errorCode: probe.error?.message || null,
     }));
+    if (result.status === 200 && typeof probe.idToken === 'string' && typeof probe.localId === 'undefined') {
+      // Emulator-specific response compatibility: actual Identity Toolkit
+      // production responses carry localId, but this emulator revision omits it.
+      // Derive only from the Admin SDK's verified emulator-issued token,
+      // NOT from the request body or user-provided claims.
+      const verifiedEmulatorToken = await serviceAuth.verifyIdToken(probe.idToken, true);
+      assert.equal(verifiedEmulatorToken.uid, SERVICE_UID);
+      assert.equal(verifiedEmulatorToken.aud, PROJECT);
+      console.log('R439_EMULATOR_LOCALID_SHIM', JSON.stringify({
+        verifiedTokenUidMatches: true, syntheticEmulatorOnly: true,
+      }));
+      return new Response(JSON.stringify({ ...probe, localId: verifiedEmulatorToken.uid }), {
+        status: result.status,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
     return result;
   };
   // Firebase Auth emulator's Admin custom-token shortcut generates alg:none
