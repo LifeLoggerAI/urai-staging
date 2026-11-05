@@ -198,3 +198,39 @@ test('R729 app-specific required check must be from matching GitHub App ID',asyn
     if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks=[{context:'CI',app_id:9999}];
   }),/did not satisfy an enforced GitHub Actions check/);
 });
+
+
+test('R734 review submission after initial GitHub read invalidates the source verdict', async()=>{
+  let reads=0;
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy') && route.includes('/reviews?') && ++reads===2){
+      v.push({...v[0],id:991,user:{login:'SecondReviewer',type:'User'},state:'CHANGES_REQUESTED',
+        submitted_at:'2026-11-05T17:00:00Z'});
+    }
+  }), /review history changed during verification/);
+});
+
+test('R734 approval dismissed after first review read cannot be used', async()=>{
+  let reads=0;
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy') && route.includes('/reviews?') && ++reads===2){
+      v[0].state='DISMISSED';
+    }
+  }), /review history changed during verification/);
+});
+
+test('R734 approval removed during workflow checks cannot be used', async()=>{
+  let reads=0;
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy') && route.includes('/reviews?') && ++reads===2){
+      v.splice(0,v.length);
+    }
+  }), /review history changed during verification/);
+});
+
+test('R734 unchanged review snapshot still passes source-only and never grants release', async()=>{
+  const verdict=await probe(()=>{});
+  assert.equal(verdict.accepted.length,2);
+  assert.equal(verdict.productionAuthorized,false);
+  assert.equal(verdict.runtimeCertified,false);
+});
