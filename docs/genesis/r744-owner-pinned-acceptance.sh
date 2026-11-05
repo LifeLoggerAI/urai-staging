@@ -54,6 +54,29 @@ expect_denial() {
 }
 record frozen-functions-install npm --prefix functions ci --ignore-scripts --engine-strict --no-audit --no-fund || exit 4
 record original-root-check npm run check || failed=1
+# Pin the full reviewed 30-entrypoint native source regression inventory.
+# 29 source-only entrypoints passed on this exact tree; the thirtieth requires
+# the real frozen firebase-tools dependency graph and must never be skipped.
+native_tests=(
+  scripts/test-*.mjs
+  scripts/r454-specific-firebase-denial.test.mjs
+  scripts/fixtures/r423-worker/scripts/life-movies-worker-owner-deletion-fence.test.mjs
+  scripts/fixtures/r425-evidence/scripts/r426-original-source-evidence.test.mjs
+  scripts/fixtures/r425-evidence/scripts/r427-evidence-escrow.test.mjs
+  docs/release-evidence/test-r398-omega-ledger.mjs
+)
+[[ "${#native_tests[@]}" == 30 ]] || { echo 'Native test inventory changed; HOLD' >&2; exit 4; }
+for f in "${native_tests[@]}"; do
+  [[ -f "$f" && -n "$(git -C "$SRC" ls-files -- "$f")" ]] || { echo "Untracked/missing native test: $f" >&2; exit 4; }
+done
+record expanded-native-source-tests node --test --test-concurrency=2 "${native_tests[@]}" || failed=1
+if ! grep -Fxq '# tests 322' "$OUT/expanded-native-source-tests.log" ||
+   ! grep -Fxq '# pass 322' "$OUT/expanded-native-source-tests.log" ||
+   ! grep -Fxq '# fail 0' "$OUT/expanded-native-source-tests.log" ||
+   ! grep -Fxq '# skipped 0' "$OUT/expanded-native-source-tests.log"; then
+  echo 'Expanded native test proof incomplete; HOLD' >&2
+  failed=1
+fi
 FIREBASE="$SRC/functions/node_modules/.bin/firebase"
 [[ -x "$FIREBASE" ]] || { echo 'Frozen Firebase CLI missing' >&2; exit 4; }
 [[ ! -e "$URAI_R451_RECEIPT" ]] || { echo 'Receipt exists; possible replay' >&2; exit 4; }
