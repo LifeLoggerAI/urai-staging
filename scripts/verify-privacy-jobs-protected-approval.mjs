@@ -117,15 +117,40 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     }
     requireFact(eligibleApproval?.reviewId > 0, `${repo}: no eligible current-head independent APPROVED review`);
 
-    const response = await githubGet(`${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=100`);
-    requireFact(Array.isArray(response?.workflow_runs), `${repo}: protected workflow evidence unavailable`);
+    // A rerun of an older workflow can be hidden beyond the first 100 runs.
+    // Read complete bounded history before approving source. Missing, malformed,
+    // contradictory or overlong GitHub histories MUST fail closed.
+    const workflowRuns = [];
+    const workflowPageSize = 100;
+    const maxWorkflowPages = 10;
+    let workflowHistoryComplete = false;
+    let expectedRunCount = null;
+    for (let page = 1; page <= maxWorkflowPages; page++) {
+      const result = await githubGet(
+        `${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=${workflowPageSize}&page=${page}`);
+      requireFact(Array.isArray(result?.workflow_runs) && result.workflow_runs.length <= workflowPageSize,
+        `${repo}: protected workflow history page ${page} missing or malformed`);
+      if (result.total_count !== undefined) {
+        requireFact(Number.isSafeInteger(result.total_count) && result.total_count >= 0 &&
+          (expectedRunCount === null || expectedRunCount === result.total_count),
+          `${repo}: protected workflow history count invalid or changed`);
+        expectedRunCount = result.total_count;
+      }
+      workflowRuns.push(...result.workflow_runs);
+      if (result.workflow_runs.length < workflowPageSize) {
+        workflowHistoryComplete = true;
+        break;
+      }
+    }
+    requireFact(workflowHistoryComplete,
+      `${repo}: protected workflow history exceeds ${maxWorkflowPages} pages; fail closed`);
+    requireFact(expectedRunCount === null || expectedRunCount === workflowRuns.length,
+      `${repo}: protected workflow history count incomplete`);
     // Do not let an older green run override a newer failure or incomplete rerun.
     // GitHub run ids advance as runs are created; run_attempt orders reruns
     // of the same id. Inconsistent duplicate identities fail closed.
-    requireFact(response.workflow_runs.length <= 100,
-      `${repo}: malformed protected workflow history page`);
     for (const workflow of workflows) {
-      const history = response.workflow_runs.filter(run =>
+      const history = workflowRuns.filter(run =>
         run?.name === workflow && run.head_sha === consumer.exactSha &&
         run.head_branch === branch && run.event === 'pull_request');
       requireFact(history.length > 0 && history.every(run =>

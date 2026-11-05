@@ -235,3 +235,59 @@ test('R736 unrelated failed workflow does not override required success',async()
   });
   assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
 });
+
+
+test('R738 failed rerun on later workflow page blocks older green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1'))
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:400+i})));
+    if(route.endsWith('page=2'))
+      v.workflow_runs=[{...v.workflow_runs[0],id:9001,conclusion:'failure'}];
+  }),/latest exact-head run not successful/);
+});
+test('R738 successful later workflow run clears earlier failure without production authority',async()=>{
+  const result=await probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1')){
+      v.workflow_runs[0].conclusion='failure';
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:500+i})));
+    }
+    if(route.endsWith('page=2'))
+      v.workflow_runs=[{...v.workflow_runs[0],id:9001,conclusion:'success'}];
+  });
+  assert.equal(result.accepted.length,2);assert.equal(result.productionAuthorized,false);
+});
+test('R738 missing later workflow page fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1'))
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:600+i})));
+    if(route.endsWith('page=2'))throw Error('GitHub workflow later page unavailable');
+  }),/later page unavailable/);
+});
+test('R738 malformed later workflow page fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1'))
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:700+i})));
+    if(route.endsWith('page=2'))v.workflow_runs=null;
+  }),/history page 2 missing or malformed/);
+});
+test('R738 overlong protected workflow history fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:800+i})));
+  }),/history exceeds 10 pages/);
+});
+test('R738 inconsistent GitHub total_count fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))v.total_count=999;
+  }),/history count incomplete/);
+});
+test('R738 oversized workflow page fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
+      v.workflow_runs.push(...Array.from({length:99},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:1000+i})));
+  }),/history page 1 missing or malformed/);
+});
