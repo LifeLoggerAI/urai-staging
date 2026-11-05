@@ -5,8 +5,11 @@ import { privacyJobsStagingAdmissionProblems } from './validate-privacy-jobs-sta
 // This is independent source approval, not permission to deploy or claim live revocation.
 // Never accept caller-authored approval JSON; query GitHub on the protected runner.
 export const SOURCE_GATES = Object.freeze([
-  { repo: 'LifeLoggerAI/urai-privacy', workflows: ['URAI Privacy Release Verification', 'Release Verification'] },
-  { repo: 'LifeLoggerAI/urai-jobs', workflows: ['CI', 'URAI Jobs Final CI'] },
+  { repo: 'LifeLoggerAI/urai-privacy', workflows: ['URAI Privacy Release Verification', 'Release Verification'],
+    requiredChecks: ['release-verification', 'verify-release'] },
+  { repo: 'LifeLoggerAI/urai-jobs', workflows: ['CI', 'URAI Jobs Final CI'],
+    requiredChecks: ['build', 'Verify workspace and launch lock', 'Web typecheck and build',
+      'Functions build and tests', 'Firebase config smoke'] },
 ]);
 
 function requireFact(ok, description) {
@@ -17,7 +20,7 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
   const structure = privacyJobsStagingAdmissionProblems(authority);
   requireFact(structure.length === 0, `Source scope remains unapproved: ${structure.join('; ')}`);
   const accepted = [];
-  for (const { repo, workflows } of SOURCE_GATES) {
+  for (const { repo, workflows, requiredChecks } of SOURCE_GATES) {
     const consumer = authority.consumers.find(c => c.repository === repo);
     requireFact(consumer?.state === 'active', `${repo}: active reviewed consumer missing`);
     requireFact(Number.isSafeInteger(consumer.pullRequest) && consumer.pullRequest > 0, `${repo}: exact source PR is required`);
@@ -48,6 +51,12 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
       requiredStatus?.enforcement_level === 'everyone' &&
       requiredContexts.length > 0,
       `${repo}: main is not protected with mandatory required status checks for everyone`);
+    // Named release-critical jobs must be required on main AND bound to
+    // GitHub Actions app ID 15368. Context-only protection is insufficient.
+    requireFact(Array.isArray(requiredStatus?.checks) &&
+      requiredChecks.every(context => requiredStatus.checks.some(binding =>
+        binding?.context === context && binding.app_id === 15368)),
+      `${repo}: required source workflow job checks not pinned to GitHub Actions app`);
     requireFact(first.user?.login && first.user?.type === 'User', `${repo}: missing human PR author`);
 
     const ref = await githubGet(`${base}/git/ref/heads/${branch}`);
@@ -124,13 +133,18 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
       checksResponse.total_count === checksResponse.check_runs.length,
       `${repo}: complete exact-head check-run evidence unavailable`);
     const enforceRequiredCheckApp = check => {
-      if (check?.app?.slug !== 'github-actions') return false;
-      const bindings = (Array.isArray(requiredStatus.checks) ? requiredStatus.checks : [])
-        .filter(binding => binding?.context === check.name);
-      return bindings.every(binding =>
-        !Number.isSafeInteger(binding.app_id) || binding.app_id === -1 ||
-        binding.app_id === check.app.id);
+      if (check?.app?.slug !== 'github-actions' || check.app.id !== 15368) return false;
+      return requiredStatus.checks.some(binding =>
+        binding?.context === check.name && binding.app_id === 15368);
     };
+    // A green parent workflow does not prove every required job actually
+    // ran and passed. Require all named branch-protected release jobs on the
+    // exact candidate SHA, not only one check per parent workflow.
+    requireFact(requiredChecks.every(context => checksResponse.check_runs.some(check =>
+      check?.name === context && check.head_sha === consumer.exactSha &&
+      check.status === 'completed' && check.conclusion === 'success' &&
+      enforceRequiredCheckApp(check))),
+      `${repo}: required source workflow job checks not green on exact reviewed SHA`);
     for (const workflow of workflows) {
       const successfulRuns = response.workflow_runs.filter(run =>
         run.name === workflow && run.head_sha === consumer.exactSha &&

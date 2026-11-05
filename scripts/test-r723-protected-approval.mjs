@@ -13,12 +13,12 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   const sha=jobs?b:a;
   let value;
   if(/\/pulls\/\d+$/.test(route))value={state:'open',draft:false,merged_at:null,head:{sha,ref:'reviewed',repo:{full_name:repo}},base:{ref:'main',repo:{full_name:repo}},user:{login:'OriginalAuthor',type:'User'},updated_at:'2026-11-05T10:00:00Z'};
-  else if(route.endsWith('/branches/main')) value={name:'main',protected:true,commit:{sha:'d'.repeat(40)},protection:{enabled:true,required_status_checks:{enforcement_level:'everyone',contexts:['CI','Release Verification'],checks:[]}}};
+  else if(route.endsWith('/branches/main')) {const requiredChecks=SOURCE_GATES.find(x=>x.repo===repo).requiredChecks; value={name:'main',protected:true,commit:{sha:'d'.repeat(40)},protection:{enabled:true,required_status_checks:{enforcement_level:'everyone',contexts:requiredChecks,checks:requiredChecks.map(context=>({context,app_id:15368}))}}};}
   else if(route.includes('/git/ref/')) value={object:{sha}};
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
   else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10,check_suite_id:id+100}))};
-  else if(route.includes('/check-runs?'))value={total_count:2,check_runs:['CI','Release Verification'].map((name,id)=>({name,check_suite:{id:id+100},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};
+  else if(route.includes('/check-runs?')){const names=SOURCE_GATES.find(x=>x.repo===repo).requiredChecks;value={total_count:names.length,check_runs:names.map((name,id)=>({name,check_suite:{id:(jobs&&id>0?101:100+id)},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};}
   else throw Error('Unexpected GitHub request: '+route);
   const copy=structuredClone(value);mutate(route,copy);return copy;
 };
@@ -65,7 +65,7 @@ test('R727 unprotected main branch rejected even if reviewer and CI passed',asyn
 });
 test('R727 missing mandatory status checks rejected',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.endsWith('/branches/main'))v.protection.required_status_checks.contexts=[];
+    if(route.endsWith('/branches/main')){v.protection.required_status_checks.contexts=[];v.protection.required_status_checks.checks=[];}
   }),/mandatory required status checks/);
 });
 test('R727 admin-bypassable policy rejected',async()=>{
@@ -161,7 +161,7 @@ test('R730 ambiguous same-second changes request outranks approval',async()=>{
 test('R729 fake external app check cannot satisfy required CI',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('/check-runs?'))v.check_runs[0].app.slug='fake-ci';
-  }),/did not satisfy an enforced GitHub Actions check/);
+  }),/required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
 });
 test('R729 unrelated successful suite cannot be substituted',async()=>{
   await assert.rejects(probe((route,v)=>{
@@ -171,12 +171,12 @@ test('R729 unrelated successful suite cannot be substituted',async()=>{
 test('R729 failed required check rejects even when workflow claims success',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('/check-runs?'))v.check_runs[0].conclusion='failure';
-  }),/did not satisfy an enforced GitHub Actions check/);
+  }),/required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
 });
 test('R729 wrong commit check cannot authorize source',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('/check-runs?'))v.check_runs[0].head_sha='c'.repeat(40);
-  }),/did not satisfy an enforced GitHub Actions check/);
+  }),/required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
 });
 test('R729 missing check suite ID denies claimed successful workflow',async()=>{
   await assert.rejects(probe((route,v)=>{
@@ -190,13 +190,13 @@ test('R729 truncated check-run pagination denies all approvals',async()=>{
 });
 test('R729 checks not configured as mandatory reject unprotected workflow',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.endsWith('/branches/main'))v.protection.required_status_checks.contexts=['different-required-check'];
-  }),/did not satisfy an enforced GitHub Actions check/);
+    if(route.endsWith('/branches/main')){v.protection.required_status_checks.contexts=['different-required-check'];v.protection.required_status_checks.checks=[{context:'different-required-check',app_id:15368}];}
+  }),/required source workflow job checks not pinned|did not satisfy an enforced GitHub Actions check/);
 });
 test('R729 app-specific required check must be from matching GitHub App ID',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks=[{context:'CI',app_id:9999}];
-  }),/did not satisfy an enforced GitHub Actions check/);
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks=[{context:SOURCE_GATES.find(x=>x.repo=== (route.includes('urai-jobs')?'LifeLoggerAI/urai-jobs':'LifeLoggerAI/urai-privacy')).requiredChecks[0],app_id:9999}];
+  }),/required source workflow job checks not pinned|did not satisfy an enforced GitHub Actions check/);
 });
 
 test('R734 review submission after initial GitHub read invalidates the source verdict', async()=>{
@@ -232,4 +232,51 @@ test('R734 unchanged review snapshot still passes source-only and never grants r
   assert.equal(verdict.accepted.length,2);
   assert.equal(verdict.productionAuthorized,false);
   assert.equal(verdict.runtimeCertified,false);
+});
+
+
+
+test('R735 unrelated required checks cannot certify source workflows',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main')){
+      v.protection.required_status_checks.contexts=['UNRELATED_OPTIONAL_CHECK'];
+      v.protection.required_status_checks.checks=[{context:'UNRELATED_OPTIONAL_CHECK',app_id:15368}];
+    }
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 correct check names from unbound app cannot certify',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks.forEach(c=>{c.app_id=-1;});
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 one missing release-critical required job blocks source approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks.pop();
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 contexts alone without source app binding do not prove protection',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks=[];
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 status-check capitalization drift fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks[0].context+='-shadow';
+  }),/required source workflow job checks not pinned/);
+});
+
+test('R736 a failed extra required Jobs job must block even with workflow-level green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/check-runs?'))v.check_runs[2].conclusion='failure';
+  }),/required source workflow job checks not green/);
+});
+test('R736 one missing extra required Jobs job must block even with workflow-level green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/check-runs?')){v.check_runs.splice(2,1);v.total_count--;}
+  }),/required source workflow job checks not green/);
+});
+test('R736 a forged extra required Jobs job app cannot be used',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/check-runs?'))v.check_runs[2].app.id=9999;
+  }),/required source workflow job checks not green/);
 });
