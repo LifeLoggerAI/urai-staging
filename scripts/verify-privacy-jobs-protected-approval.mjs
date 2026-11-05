@@ -108,11 +108,40 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
 
     const response = await githubGet(`${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=100`);
     requireFact(Array.isArray(response?.workflow_runs), `${repo}: protected workflow evidence unavailable`);
+    // A successful workflow that is NOT required by branch protection is not
+    // protected CI evidence. Link each expected workflow's GitHub Actions
+    // check suite to at least one *enforced* successful check on this SHA.
+    const checksResponse = await githubGet(
+      `${base}/commits/${consumer.exactSha}/check-runs?per_page=100&filter=all`);
+    requireFact(Array.isArray(checksResponse?.check_runs) &&
+      Number.isSafeInteger(checksResponse.total_count) &&
+      checksResponse.total_count > 0 &&
+      checksResponse.total_count === checksResponse.check_runs.length,
+      `${repo}: complete exact-head check-run evidence unavailable`);
+    const enforceRequiredCheckApp = check => {
+      if (check?.app?.slug !== 'github-actions') return false;
+      const bindings = (Array.isArray(requiredStatus.checks) ? requiredStatus.checks : [])
+        .filter(binding => binding?.context === check.name);
+      return bindings.every(binding =>
+        !Number.isSafeInteger(binding.app_id) || binding.app_id === -1 ||
+        binding.app_id === check.app.id);
+    };
     for (const workflow of workflows) {
-      requireFact(response.workflow_runs.some(run => run.name === workflow && run.head_sha === consumer.exactSha &&
-          run.head_branch === branch && run.event === 'pull_request' && run.status === 'completed' &&
-          run.conclusion === 'success' && Number(run.run_attempt) >= 1),
-      `${repo}: protected workflow ${workflow} has no completed successful exact-head run`);
+      const successfulRuns = response.workflow_runs.filter(run =>
+        run.name === workflow && run.head_sha === consumer.exactSha &&
+        run.head_branch === branch && run.event === 'pull_request' &&
+        run.status === 'completed' && run.conclusion === 'success' &&
+        Number(run.run_attempt) >= 1 && Number.isSafeInteger(run.check_suite_id) &&
+        run.check_suite_id > 0);
+      requireFact(successfulRuns.length > 0,
+        `${repo}: protected workflow ${workflow} has no completed successful exact-head run`);
+      requireFact(successfulRuns.some(run => checksResponse.check_runs.some(check =>
+        requiredContexts.includes(check.name) &&
+        check.check_suite?.id === run.check_suite_id &&
+        check.head_sha === consumer.exactSha &&
+        check.status === 'completed' && check.conclusion === 'success' &&
+        enforceRequiredCheckApp(check))),
+        `${repo}: protected workflow ${workflow} did not satisfy an enforced GitHub Actions check`);
     }
     const last = await githubGet(`${base}/pulls/${consumer.pullRequest}`);
     requireFact(last.head?.sha === first.head.sha && last.head?.ref === first.head.ref &&
