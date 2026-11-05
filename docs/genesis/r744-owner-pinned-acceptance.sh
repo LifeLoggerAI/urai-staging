@@ -23,6 +23,7 @@ record() {
 for c in git node npm java sha256sum; do command -v "$c" >/dev/null || { echo "Missing $c" >&2; exit 2; }; done
 [[ "$(node --version)" == v22.* ]] || { echo 'Node 22 required' >&2; exit 2; }
 java -version >"$OUT/java-version.log" 2>&1 || exit 2
+record r747-fixture-selftest node --test "$SCRIPT_DIR/test-r747-fixture-preflight.mjs" || exit 2
 record git-init git init -q "$SRC"
 record git-remote git -C "$SRC" remote add origin "$URL"
 record git-fetch git -C "$SRC" fetch --no-tags --depth=1 origin refs/pull/134/head
@@ -35,6 +36,7 @@ assert_source() {
   [[ -z "$(git -C "$SRC" status --porcelain --untracked-files=no)" ]]
 }
 assert_source || { echo 'Exact Git source/tree failed' >&2; exit 3; }
+record r747-source-fixtures node "$SCRIPT_DIR/r747-verify-federated-fixtures.mjs" "$SRC" || exit 3
 cd "$SRC"
 unset FIREBASE_TOKEN GOOGLE_APPLICATION_CREDENTIALS GOOGLE_CLOUD_PROJECT GCLOUD_PROJECT FIREBASE_CONFIG GITHUB_TOKEN GH_TOKEN NPM_TOKEN URAI_CROSS_REPO_READ_TOKEN || true
 export HOME="$RUN_DIR/home" NPM_CONFIG_USERCONFIG=/dev/null CI=true NO_GCE_CHECK=true FIREBASE_CLI_DISABLE_UPDATE_CHECK=true
