@@ -199,7 +199,6 @@ test('R729 app-specific required check must be from matching GitHub App ID',asyn
   }),/did not satisfy an enforced GitHub Actions check/);
 });
 
-
 test('R734 review submission after initial GitHub read invalidates the source verdict', async()=>{
   let reads=0;
   await assert.rejects(probe((route,v)=>{
