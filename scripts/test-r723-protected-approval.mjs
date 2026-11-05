@@ -17,7 +17,8 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   else if(route.includes('/git/ref/')) value={object:{sha}};
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
-  else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10}))};
+  else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10,check_suite_id:id+100}))};
+  else if(route.includes('/check-runs?'))value={total_count:2,check_runs:['CI','Release Verification'].map((name,id)=>({name,check_suite:{id:id+100},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};
   else throw Error('Unexpected GitHub request: '+route);
   const copy=structuredClone(value);mutate(route,copy);return copy;
 };
@@ -88,4 +89,45 @@ test('R727 PR targeting an unprotected side branch rejected',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.endsWith('/pulls/221'))v.base.ref='release-shadow';
   }),/target protected main/);
+});
+
+test('R729 fake external app check cannot satisfy required CI',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/check-runs?'))v.check_runs[0].app.slug='fake-ci';
+  }),/did not satisfy an enforced GitHub Actions check/);
+});
+test('R729 unrelated successful suite cannot be substituted',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/check-runs?'))v.check_runs[0].check_suite.id=999999;
+  }),/did not satisfy an enforced GitHub Actions check/);
+});
+test('R729 failed required check rejects even when workflow claims success',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/check-runs?'))v.check_runs[0].conclusion='failure';
+  }),/did not satisfy an enforced GitHub Actions check/);
+});
+test('R729 wrong commit check cannot authorize source',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/check-runs?'))v.check_runs[0].head_sha='c'.repeat(40);
+  }),/did not satisfy an enforced GitHub Actions check/);
+});
+test('R729 missing check suite ID denies claimed successful workflow',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))delete v.workflow_runs[0].check_suite_id;
+  }),/no completed successful exact-head run/);
+});
+test('R729 truncated check-run pagination denies all approvals',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/check-runs?'))v.total_count=101;
+  }),/complete exact-head check-run evidence unavailable/);
+});
+test('R729 checks not configured as mandatory reject unprotected workflow',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.contexts=['different-required-check'];
+  }),/did not satisfy an enforced GitHub Actions check/);
+});
+test('R729 app-specific required check must be from matching GitHub App ID',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks=[{context:'CI',app_id:9999}];
+  }),/did not satisfy an enforced GitHub Actions check/);
 });
