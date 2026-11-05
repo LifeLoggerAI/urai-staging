@@ -381,3 +381,37 @@ test('R742 legitimate exact workflow identities still grant SOURCE only, never r
   assert.equal(verdict.runtimeCertified,false);
   assert.equal(verdict.providerDeletionAcknowledged,false);
 });
+
+test('R745 newer failed renamed run with the same immutable workflow identity rejects stale green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?')){
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,
+        name:'URAI Privacy Release Gates',conclusion:'failure'});
+    }
+  }),/exact-head history missing or malformed/);
+});
+test('R745 newer successful run sharing a name but with an untrusted workflow path rejects',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?')){
+      v.workflow_runs.push({...v.workflow_runs[0],id:9002,
+        path:'.github/workflows/release-verify.yml'});
+    }
+  }),/exact-head history missing or malformed/);
+});
+test('R745 newer successful run sharing a path but with a different workflow ID rejects',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/actions/runs?')){
+      v.workflow_runs.push({...v.workflow_runs[0],id:9003,workflow_id:999999999});
+    }
+  }),/exact-head history missing or malformed/);
+});
+test('R745 unrelated workflow histories are not mistaken for release source gates',async()=>{
+  const verdict=await probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?')){
+      v.workflow_runs.push({...v.workflow_runs[0],id:9004,name:'Unrelated diagnostics',
+        path:'.github/workflows/unrelated.yml',workflow_id:999999998,conclusion:'failure'});
+    }
+  });
+  assert.equal(verdict.accepted.length,2);
+  assert.equal(verdict.productionAuthorized,false);
+});
