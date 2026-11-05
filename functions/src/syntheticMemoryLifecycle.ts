@@ -64,30 +64,48 @@ async function assertLinkedParent(
 ): Promise<string | null> {
   if (relation !== graphRelation) deny('SYNTHETIC_MEMORY_RELATION_MISMATCH');
   if (relation === null) return null;
-  if (typeof relation !== 'string' || !/^[A-Za-z0-9_-]{6,128}$/.test(relation) ||
-      relation === id) return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
-  const [parent, linkedGraph] = await Promise.all([
-    tx.get(memoryRef(uid, relation)), tx.get(graphRef(uid, relation)),
-  ]);
-  const parentBytes = fixedBytes(relation);
-  const parentDigest = sha(parentBytes);
-  if (!parent.exists || !linkedGraph.exists ||
-      parent.get('ownerUid') !== uid || parent.get('memoryId') !== relation ||
-      parent.get('state') !== 'ACTIVE' || parent.get('synthetic') !== true ||
-      parent.get('purpose') !== purpose || parent.get('policyVersion') !== policyVersion ||
-      parent.get('sourceEvidenceClass') !== 'SYNTHETIC_TEST_ONLY' ||
-      parent.get('decisionReceiptId') !== receipt ||
-      parent.get('sourceSha256') !== parentDigest ||
-      parent.get('byteLength') !== parentBytes.length ||
-      parent.get('storagePath') !== 'staging_synthetic_memories/' + uid + '/' + relation + '.bin' ||
-      linkedGraph.get('ownerUid') !== uid || linkedGraph.get('memoryId') !== relation ||
-      linkedGraph.get('state') !== 'ACTIVE' || linkedGraph.get('synthetic') !== true ||
-      linkedGraph.get('decisionReceiptId') !== receipt ||
-      linkedGraph.get('sourceSha256') !== parentDigest ||
-      linkedGraph.get('relatesTo') !== parent.get('relatedMemoryId')) {
-    deny('SYNTHETIC_MEMORY_LINKED_SOURCE_UNAVAILABLE');
+  if (typeof relation !== 'string') return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
+  // Replay is a direct read, not a prerequisite Life Graph listing. Verify
+  // the complete ancestry here, not only the immediate linked parent.
+  // Each ancestor is read in the same Firestore transaction, before and
+  // again after media access. A bounded chain cannot hide a stale source
+  // or cycle that the Life Graph listing itself would reject.
+  const firstRelation = relation;
+  let ancestorId: string | null = relation;
+  const seen = new Set<string>([id]);
+  for (let depth = 0; ancestorId !== null; depth += 1) {
+    if (depth >= 128 || !/^[A-Za-z0-9_-]{6,128}$/.test(ancestorId) ||
+        seen.has(ancestorId)) return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
+    seen.add(ancestorId);
+    const checkedId: string = ancestorId;
+    const [parent, linkedGraph] = await Promise.all([
+      tx.get(memoryRef(uid, checkedId)), tx.get(graphRef(uid, checkedId)),
+    ]);
+    const parentBytes = fixedBytes(checkedId);
+    const parentDigest = sha(parentBytes);
+    if (!parent.exists || !linkedGraph.exists ||
+        parent.get('ownerUid') !== uid || parent.get('memoryId') !== checkedId ||
+        parent.get('state') !== 'ACTIVE' || parent.get('synthetic') !== true ||
+        parent.get('purpose') !== purpose || parent.get('policyVersion') !== policyVersion ||
+        parent.get('sourceEvidenceClass') !== 'SYNTHETIC_TEST_ONLY' ||
+        parent.get('decisionReceiptId') !== receipt ||
+        parent.get('sourceSha256') !== parentDigest ||
+        parent.get('byteLength') !== parentBytes.length ||
+        parent.get('storagePath') !== 'staging_synthetic_memories/' + uid + '/' + checkedId + '.bin' ||
+        linkedGraph.get('ownerUid') !== uid || linkedGraph.get('memoryId') !== checkedId ||
+        linkedGraph.get('state') !== 'ACTIVE' || linkedGraph.get('synthetic') !== true ||
+        linkedGraph.get('decisionReceiptId') !== receipt ||
+        linkedGraph.get('sourceSha256') !== parentDigest ||
+        linkedGraph.get('relatesTo') !== parent.get('relatedMemoryId')) {
+      deny('SYNTHETIC_MEMORY_LINKED_SOURCE_UNAVAILABLE');
+    }
+    const next: unknown = parent.get('relatedMemoryId');
+    if (next !== null && typeof next !== 'string') {
+      return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
+    }
+    ancestorId = next;
   }
-  return relation;
+  return firstRelation;
 }
 
 export const grantStagingSyntheticMemoryConsent = functions.https.onCall(async (data: unknown, context) => {
