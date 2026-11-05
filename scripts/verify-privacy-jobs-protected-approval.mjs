@@ -32,6 +32,22 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
       `${repo}: PR head does not match reviewed consumer SHA and branch`);
     requireFact(first.head?.repo?.full_name === repo && first.base?.repo?.full_name === repo,
       `${repo}: untrusted PR source/base repository`);
+    // Passing jobs alone does not make a branch protected. The final
+    // independent-source approval must target main with an enforced required
+    // status-check policy that applies to repository administrators, too.
+    requireFact(first.base?.ref === 'main', `${repo}: review PR must target protected main`);
+    const mainPolicy = await githubGet(`${base}/branches/main`);
+    const requiredStatus = mainPolicy?.protection?.required_status_checks;
+    const requiredContexts = [
+      ...(Array.isArray(requiredStatus?.contexts) ? requiredStatus.contexts : []),
+      ...(Array.isArray(requiredStatus?.checks)
+        ? requiredStatus.checks.map(check => check?.context) : [])
+    ].filter(context => typeof context === 'string' && context.trim().length > 0);
+    requireFact(mainPolicy?.name === 'main' && mainPolicy?.protected === true &&
+      mainPolicy?.protection?.enabled === true &&
+      requiredStatus?.enforcement_level === 'everyone' &&
+      requiredContexts.length > 0,
+      `${repo}: main is not protected with mandatory required status checks for everyone`);
     requireFact(first.user?.login && first.user?.type === 'User', `${repo}: missing human PR author`);
 
     const ref = await githubGet(`${base}/git/ref/heads/${branch}`);
@@ -72,8 +88,15 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     }
     const last = await githubGet(`${base}/pulls/${consumer.pullRequest}`);
     requireFact(last.head?.sha === first.head.sha && last.head?.ref === first.head.ref &&
-      last.updated_at === first.updated_at && last.state === 'open' && last.draft === false,
+      last.base?.ref === 'main' && last.updated_at === first.updated_at &&
+      last.state === 'open' && last.draft === false,
       `${repo}: source head or review metadata moved during verification`);
+    // Check again after the required workflows: policy removal mid-check must
+    // not turn an earlier protected read into a fresh release-ready claim.
+    const currentPolicy = await githubGet(`${base}/branches/main`);
+    requireFact(JSON.stringify(currentPolicy?.protection) === JSON.stringify(mainPolicy.protection) &&
+      currentPolicy?.protected === true && currentPolicy?.commit?.sha === mainPolicy?.commit?.sha,
+      `${repo}: protected main policy or source moved during verification`);
     accepted.push({ repository: repo, exactSha: consumer.exactSha, reviewId: eligibleApproval.reviewId,
       reviewer: eligibleApproval.reviewer, requiredWorkflows: workflows });
   }
