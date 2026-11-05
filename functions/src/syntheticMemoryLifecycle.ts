@@ -65,7 +65,7 @@ async function assertLinkedParent(
   if (relation !== graphRelation) deny('SYNTHETIC_MEMORY_RELATION_MISMATCH');
   if (relation === null) return null;
   if (typeof relation !== 'string' || !/^[A-Za-z0-9_-]{6,128}$/.test(relation) ||
-      relation === id) deny('SYNTHETIC_MEMORY_RELATION_INVALID');
+      relation === id) return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
   const [parent, linkedGraph] = await Promise.all([
     tx.get(memoryRef(uid, relation)), tx.get(graphRef(uid, relation)),
   ]);
@@ -87,7 +87,7 @@ async function assertLinkedParent(
       linkedGraph.get('relatesTo') !== parent.get('relatedMemoryId')) {
     deny('SYNTHETIC_MEMORY_LINKED_SOURCE_UNAVAILABLE');
   }
-  return relation as string;
+  return relation;
 }
 
 export const grantStagingSyntheticMemoryConsent = functions.https.onCall(async (data: unknown, context) => {
