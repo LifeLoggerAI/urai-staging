@@ -1,12 +1,12 @@
 # One UrAi Genesis — R744 isolated owner-run acceptance lane (HOLD)
 
-This remains a documentation and **non-deploying** owner-run checkout/test lane descended from the R744 isolated `main` acceptance branch. It does not merge, rebase, modify, or approve existing security/owner PRs. The pinned target is review-only R755 child #148: the R754 ES2020 correction (#146) plus synthetic memory owner/graph consistency fences. These remain source review candidates, not releases. The upstream security, timing and historical-ledger corrections remain inherited unchanged. All remain unmerged; this is neither a production candidate nor an approved release.
+This remains a documentation and **non-deploying** owner-run checkout/test lane descended from the R744 isolated `main` acceptance branch. It does not merge, rebase, modify, or approve existing security/owner PRs. The pinned target is review-only R763 child #154 (built on #151 and #148): R754 ES2020 compatibility, synthetic memory owner/graph provenance, validated backing sources, bounded graph size, and relationship integrity. These remain source review candidates, not releases. The upstream security, timing and historical-ledger corrections remain inherited unchanged. All remain unmerged; this is neither a production candidate nor an approved release.
 
 ## Exactly pinned candidate
 
-- Staging review: [PR #148](https://github.com/LifeLoggerAI/urai-staging/pull/148) (R755 memory owner/graph consistency correction, draft / unmerged)
-- Source commit: `09c08cc2c9d5e4f987b7051664ba2a0e45333646`
-- Git tree: `0688f4fbde627b03424d55b94f921307a119c7f4`
+- Staging review: [PR #154](https://github.com/LifeLoggerAI/urai-staging/pull/154) (R763 graph relationship integrity child, draft / unmerged)
+- Source commit: `15b035fe506d9548e57243fc57b6e8eab931b196`
+- Git tree: `f95afcb2d58841c00e00f347f1e62cd586c58607`
 - Expected tracked files: 239
 - Acceptance target: one disposable local checkout, Node 22, Java 17+, pinned original Functions npm lockfile, no paid provider, no real-user data.
 
@@ -18,7 +18,7 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 2. Real disposable Firebase Auth/Firestore/Storage/Functions emulator tests are not deployed Privacy–Jobs–Studio–Replay integration, cloud IAM attestation, provider deletion, or RuAi tenant isolation.
 3. A local pass cannot satisfy failed GitHub-hosted check runs, unprotected `main`, absent non-author review or missing authorized Privacy issuer/Jobs receiver.
 4. `scripts/validate-privacy-jobs-staging-admission.mjs` and `scripts/verify-privacy-jobs-protected-approval.mjs` must **deny** admission until genuine authority exists. A surprising success is a stop condition.
-5. Staging #134/#136 have overlapping verifier changes, reconciled on review-only child #138. Child #141 carries #140's stricter synthetic timing regressions without changing the verifier; child #143 restores the separately verified R745 historical ledger record. All remain unmerged. This pinned owner-run acceptance must run the original full-repository gates on #148's exact SHA; earlier #138/#140/#141/#143/#146 source-only results do not transfer. Do not merge or approve based on this script.
+5. Staging #134/#136 have overlapping verifier changes, reconciled on review-only child #138. Child #141 carries #140's stricter synthetic timing regressions without changing the verifier; child #143 restores the separately verified R745 historical ledger record. All remain unmerged. This pinned owner-run acceptance must run the original full-repository gates on #154's exact SHA; earlier #138/#140/#141/#143/#146 source-only results do not transfer. Do not merge or approve based on this script.
 
 ### Verified launch blockers
 
@@ -26,6 +26,13 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 - Branch protection and bound required checks need authorized GitHub owner administration. This app connection cannot change admin branch protection.
 - Privacy/Jobs staging consumers need **independent** code review and real bounded staging service identities. Never flip `state:active` merely to make a test pass.
 - Final device, visual, accessibility, 20+ locale, signed deletion, rollback, store/provider, RuAi isolation and founder acceptance are not certified.
+
+### R765 source-pinned owner acceptance against R763 #154 (REVIEW ONLY)
+
+- New candidate #154 exact commit `15b035fe506d9548e57243fc57b6e8eab931b196`, source tree `f95afcb2d58841c00e00f347f1e62cd586c58607`, tracked files 239.
+- Source #154 inherits #148 via #151 and hardens synthetic graph source fixity, bounded enumeration and parent-link integrity. Existing R761 evidence below is historical for #148, **not** proof of the current #154 source.
+- The owner-run script changes exactly its source commit, Git tree and PR ref. Its frozen install, native 322-case gate, exact four-Firebase-emulator checks, expected denial contracts and `productionAuthorized=false` are unchanged.
+- **NOT AUTHORIZED:** These source-pin adjustments do not certify the dependency-installed Functions build, actual Firebase emulator execution, GitHub Actions, independent security review or launch acceptance. Keep HOLD.
 
 ### R756 expanded native regression gate (REVIEW ONLY)
 
@@ -36,7 +43,7 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 
 ### Owner-controlled next actions
 
-1. Run the pinned script against Staging #148 and retain sanitized evidence. If the PR moves, stop and request a fresh SHA-pinned review candidate rather than editing expected hashes.
+1. Run the pinned script against Staging #154 and retain sanitized evidence. If the PR moves, stop and request a fresh SHA-pinned review candidate rather than editing expected hashes.
 2. Resolve GitHub account recovery, Actions runner eligibility/billing and protected `main` settings via provider-supported owner workflow. No payment or 2FA bypass is authorized by this document.
 3. Obtain non-author source/security review after the active verifier branches converge; observe protected GitHub checks executing actual steps.
 4. Complete real authorized staging integration and Gold Master visual/device/accessibility acceptance before requesting a founder GO.
