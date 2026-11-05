@@ -64,28 +64,43 @@ async function assertLinkedParent(
 ): Promise<string | null> {
   if (relation !== graphRelation) deny('SYNTHETIC_MEMORY_RELATION_MISMATCH');
   if (relation === null) return null;
-  if (typeof relation !== 'string' || !/^[A-Za-z0-9_-]{6,128}$/.test(relation) ||
-      relation === id) return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
-  const [parent, linkedGraph] = await Promise.all([
-    tx.get(memoryRef(uid, relation)), tx.get(graphRef(uid, relation)),
-  ]);
-  const parentBytes = fixedBytes(relation);
-  const parentDigest = sha(parentBytes);
-  if (!parent.exists || !linkedGraph.exists ||
-      parent.get('ownerUid') !== uid || parent.get('memoryId') !== relation ||
-      parent.get('state') !== 'ACTIVE' || parent.get('synthetic') !== true ||
-      parent.get('purpose') !== purpose || parent.get('policyVersion') !== policyVersion ||
-      parent.get('sourceEvidenceClass') !== 'SYNTHETIC_TEST_ONLY' ||
-      parent.get('decisionReceiptId') !== receipt ||
-      parent.get('sourceSha256') !== parentDigest ||
-      parent.get('byteLength') !== parentBytes.length ||
-      parent.get('storagePath') !== 'staging_synthetic_memories/' + uid + '/' + relation + '.bin' ||
-      linkedGraph.get('ownerUid') !== uid || linkedGraph.get('memoryId') !== relation ||
-      linkedGraph.get('state') !== 'ACTIVE' || linkedGraph.get('synthetic') !== true ||
-      linkedGraph.get('decisionReceiptId') !== receipt ||
-      linkedGraph.get('sourceSha256') !== parentDigest ||
-      linkedGraph.get('relatesTo') !== parent.get('relatedMemoryId')) {
-    deny('SYNTHETIC_MEMORY_LINKED_SOURCE_UNAVAILABLE');
+  if (typeof relation !== 'string') return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
+  // A graph read already rejects cycles and missing ancestors. A direct Replay
+  // read must enforce the same ancestry constraints without requiring callers
+  // to list the graph first. Follow only owner-scoped, consent-bound snapshots.
+  const seen = new Set<string>([id]);
+  let ancestor: string | null = relation;
+  for (let depth = 0; ancestor !== null; depth++) {
+    if (depth >= 128 || !/^[A-Za-z0-9_-]{6,128}$/.test(ancestor) || seen.has(ancestor)) {
+      return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
+    }
+    seen.add(ancestor);
+    const [source, node] = await Promise.all([
+      tx.get(memoryRef(uid, ancestor)), tx.get(graphRef(uid, ancestor)),
+    ]);
+    const expectedBytes = fixedBytes(ancestor);
+    const expectedDigest = sha(expectedBytes);
+    if (!source.exists || !node.exists ||
+        source.get('ownerUid') !== uid || source.get('memoryId') !== ancestor ||
+        source.get('state') !== 'ACTIVE' || source.get('synthetic') !== true ||
+        source.get('purpose') !== purpose || source.get('policyVersion') !== policyVersion ||
+        source.get('sourceEvidenceClass') !== 'SYNTHETIC_TEST_ONLY' ||
+        source.get('decisionReceiptId') !== receipt ||
+        source.get('sourceSha256') !== expectedDigest ||
+        source.get('byteLength') !== expectedBytes.length ||
+        source.get('storagePath') !== 'staging_synthetic_memories/' + uid + '/' + ancestor + '.bin' ||
+        node.get('ownerUid') !== uid || node.get('memoryId') !== ancestor ||
+        node.get('state') !== 'ACTIVE' || node.get('synthetic') !== true ||
+        node.get('decisionReceiptId') !== receipt ||
+        node.get('sourceSha256') !== expectedDigest ||
+        node.get('relatesTo') !== source.get('relatedMemoryId')) {
+      return deny('SYNTHETIC_MEMORY_LINKED_SOURCE_UNAVAILABLE');
+    }
+    const parent: unknown = source.get('relatedMemoryId');
+    if (parent !== null && typeof parent !== 'string') {
+      return deny('SYNTHETIC_MEMORY_RELATION_INVALID');
+    }
+    ancestor = parent as string | null;
   }
   return relation;
 }

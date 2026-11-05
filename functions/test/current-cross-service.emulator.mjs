@@ -308,6 +308,27 @@ try {
   });
   assert.equal((await readChild()).data.sourceSha256, secondMemory.sourceSha256,
     'valid related child memory remains retrievable');
+  // Graph-list security must also apply to direct Replay reads: do not
+  // authorize a child's file while a parent points at a missing ancestor
+  // or loops back to the child (both Firestore rows forged consistently).
+  for (const [label, invalidParentLink] of [
+    ['missing grandparent must deny direct child retrieval', 'missing_ancestor1234'],
+    ['parent-child ancestry cycle must deny direct child retrieval', secondMemory.memoryId],
+  ]) {
+    await Promise.all([
+      syntheticGraph.update({ relatesTo: invalidParentLink }),
+      syntheticMemory.update({ relatedMemoryId: invalidParentLink }),
+    ]);
+    try { await assertDenied(readChild(), label); }
+    finally {
+      await Promise.all([
+        syntheticGraph.update({ relatesTo: originalParentLink }),
+        syntheticMemory.update({ relatedMemoryId: originalParentLink }),
+      ]);
+    }
+  }
+  assert.equal((await readChild()).data.sourceSha256, secondMemory.sourceSha256,
+    'restored parent ancestry remains retrievable');
   await syntheticGraph.update({ state: 'REVOKED' });
   try { await assertDenied(readChild(), 'revoked linked parent graph must deny direct child retrieval'); }
   finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
