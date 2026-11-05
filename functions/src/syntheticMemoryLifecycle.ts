@@ -87,7 +87,7 @@ async function assertLinkedParent(
       linkedGraph.get('relatesTo') !== parent.get('relatedMemoryId')) {
     deny('SYNTHETIC_MEMORY_LINKED_SOURCE_UNAVAILABLE');
   }
-  return relation;
+  return relation as string;
 }
 
 export const grantStagingSyntheticMemoryConsent = functions.https.onCall(async (data: unknown, context) => {
