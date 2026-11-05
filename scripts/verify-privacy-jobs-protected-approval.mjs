@@ -55,23 +55,28 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
 
     // Full review-history read: later changes requests on any page invalidate stale approvals.
     // Refuse malformed/unavailable pages and unsupported histories. Never use caller approval JSON.
-    const reviews = [];
     const reviewPageSize = 100;
     const maxReviewPages = 10;
-    let reviewHistoryComplete = false;
-    for (let page = 1; page <= maxReviewPages; page++) {
-      const reviewPage = await githubGet(
-        `${base}/pulls/${consumer.pullRequest}/reviews?per_page=${reviewPageSize}&page=${page}`);
-      requireFact(Array.isArray(reviewPage) && reviewPage.length <= reviewPageSize,
-        `${repo}: GitHub review-history page ${page} unavailable or malformed`);
-      reviews.push(...reviewPage);
-      if (reviewPage.length < reviewPageSize) {
-        reviewHistoryComplete = true;
-        break;
+    const readReviewHistory = async () => {
+      const entries = [];
+      let reviewHistoryComplete = false;
+      for (let page = 1; page <= maxReviewPages; page++) {
+        const reviewPage = await githubGet(
+          `${base}/pulls/${consumer.pullRequest}/reviews?per_page=${reviewPageSize}&page=${page}`);
+        requireFact(Array.isArray(reviewPage) && reviewPage.length <= reviewPageSize,
+          `${repo}: GitHub review-history page ${page} unavailable or malformed`);
+        entries.push(...reviewPage);
+        if (reviewPage.length < reviewPageSize) {
+          reviewHistoryComplete = true;
+          break;
+        }
       }
-    }
-    requireFact(reviewHistoryComplete,
-      `${repo}: GitHub review history exceeds ${maxReviewPages} pages; fail closed`);
+      requireFact(reviewHistoryComplete,
+        `${repo}: GitHub review history exceeds ${maxReviewPages} pages; fail closed`);
+      return entries;
+    };
+    const reviews = await readReviewHistory();
+    const originalReviewSnapshot = JSON.stringify(reviews);
     // COMMENTED must not erase an outstanding CHANGES_REQUESTED review.
     const terminalStates = new Set(['APPROVED', 'CHANGES_REQUESTED', 'DISMISSED', 'COMMENTED']);
     const latest = new Map();
@@ -154,6 +159,12 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     requireFact(JSON.stringify(currentPolicy?.protection) === JSON.stringify(mainPolicy.protection) &&
       currentPolicy?.protected === true && currentPolicy?.commit?.sha === mainPolicy?.commit?.sha,
       `${repo}: protected main policy or source moved during verification`);
+    // Do not attest from an approval snapshot that became stale while CI was
+    // checked. New reviews, dismissed approvals and new change requests fail
+    // closed even if GitHub did not update the parent PR timestamp.
+    const currentReviews = await readReviewHistory();
+    requireFact(JSON.stringify(currentReviews) === originalReviewSnapshot,
+      `${repo}: review history changed during verification; retry required`);
     accepted.push({ repository: repo, exactSha: consumer.exactSha, reviewId: eligibleApproval.reviewId,
       reviewer: eligibleApproval.reviewer, requiredWorkflows: workflows });
   }
