@@ -27,6 +27,13 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 - Privacy/Jobs staging consumers need **independent** code review and real bounded staging service identities. Never flip `state:active` merely to make a test pass.
 - Final device, visual, accessibility, 20+ locale, signed deletion, rollback, store/provider, RuAi isolation and founder acceptance are not certified.
 
+### R756 expanded native regression gate (REVIEW ONLY)
+
+- Exact frozen Staging #143 Git tree: `98c24b1d31bb1250c1bef644b476a23cdc408426`, 239 files. Independently reconstituted from the original archived tree, and matched by `git write-tree`.
+- Original unchanged 29 native test entrypoints on that tree: **320/320 PASS**, zero failures/skips. This is source-only evidence; the independent `npm run check` passed its 13 Node suites (**201/201**) before Functions typecheck was blocked by absent Firebase/Node dependencies.
+- The owner runner now pins a **30-entrypoint** inventory: 29 source-tested entrypoints plus `scripts/test-security-dependency-compatibility.mjs` (2 tests). After the original frozen Functions install, it requires **322/322** in the raw Node TAP report with zero fails/skips, or HOLD. Missing/untracked entrypoints also HOLD.
+- Offline `npm --prefix functions ci` was attempted against the exact lockfile and failed `ENOTCACHED` on `zod-to-json-schema-3.25.2.tgz`; the full frozen build, dependency compatibility, Firebase emulators and hosted CI have **not** passed. Do not inherit source-only green into release authority.
+
 ### Owner-controlled next actions
 
 1. Run the pinned script against Staging #143 and retain sanitized evidence. If the PR moves, stop and request a fresh SHA-pinned review candidate rather than editing expected hashes.
