@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "urai-r720-public-denial-v1",
+  "environment": "offline-synthetic-only",
+  "productionAuthorized": false,
+  "claims": {
+    "providerDeletionAcknowledged": false,
+    "privateMediaRendered": false,
+    "ruaiTenantAuthorized": false
+  },
+  "refs": {
+    "privacy": "dd1697cc04833428d746a3f671a908f2825ee4b6",
+    "factory": "09fb062643cbad7cd0576fb85bb05d2db97d7d49"
+  },
+  "sha": {
+    "privacy/functions/src/deletion-contract.ts": "1a9ffd566bd6be8257b598a216cf254228971447",
+    "factory/assetfactory-studio/lib/server/assetProviderAdapters.ts": "06be3bd1dc6813445de23e95e8f85e34e13bf30a"
+  }
+}
