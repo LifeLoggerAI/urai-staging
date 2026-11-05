@@ -93,7 +93,7 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     // Even one eligible approval does not defeat another reviewer's
     // outstanding CHANGES_REQUESTED disposition.
     requireFact(![...latest.values()].some(review => review.state === 'CHANGES_REQUESTED'),
-      `${repo}: unresolved changes-requested reviewer`);
+      `${repo}: no eligible current-head independent APPROVED review; unresolved changes-requested reviewer`);
     let eligibleApproval = null;
     for (const review of latest.values()) {
       if (review.state !== 'APPROVED' || review.commit_id !== consumer.exactSha ||
