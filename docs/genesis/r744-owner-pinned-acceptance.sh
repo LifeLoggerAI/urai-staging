@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # R744 One UrAi: immutable synthetic-only owner acceptance; never deploy.
 set -Eeuo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$SCRIPT_DIR/test-r744-denial-contract.sh" || { echo 'R744 security preflight failed; no checkout attempted' >&2; exit 2; }
 URL='https://github.com/LifeLoggerAI/urai-staging.git'
 SHA='9bbc20983542256a0d78972455d0bec2c36b4b0d'
 TREE='a55ac4a5986b8001aaf9adcdd8dbfb3533c0efb5'
