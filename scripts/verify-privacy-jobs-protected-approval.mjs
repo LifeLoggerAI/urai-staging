@@ -6,8 +6,16 @@ import { privacyJobsStagingAdmissionProblems } from './validate-privacy-jobs-sta
 // Never accept caller-authored approval JSON; query GitHub on the protected runner.
 export const SOURCE_GATES = Object.freeze([
   { repo: 'LifeLoggerAI/urai-privacy', workflows: ['URAI Privacy Release Verification', 'Release Verification'],
+    workflowIdentity: {
+      'URAI Privacy Release Verification': { path: '.github/workflows/privacy-release-verification.yml', id: 304527913 },
+      'Release Verification': { path: '.github/workflows/release-verification.yml', id: 278089013 }
+    },
     requiredChecks: ['release-verification', 'verify-release'] },
   { repo: 'LifeLoggerAI/urai-jobs', workflows: ['CI', 'URAI Jobs Final CI'],
+    workflowIdentity: {
+      'CI': { path: '.github/workflows/ci.yml', id: 231042584 },
+      'URAI Jobs Final CI': { path: '.github/workflows/urai-jobs-final-ci.yml', id: 270630355 }
+    },
     requiredChecks: ['build', 'Verify workspace and launch lock', 'Web typecheck and build',
       'Functions build and tests', 'Firebase config smoke'] },
 ]);
@@ -20,7 +28,7 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
   const structure = privacyJobsStagingAdmissionProblems(authority);
   requireFact(structure.length === 0, `Source scope remains unapproved: ${structure.join('; ')}`);
   const accepted = [];
-  for (const { repo, workflows, requiredChecks } of SOURCE_GATES) {
+  for (const { repo, workflows, workflowIdentity, requiredChecks } of SOURCE_GATES) {
     const consumer = authority.consumers.find(c => c.repository === repo);
     requireFact(consumer?.state === 'active', `${repo}: active reviewed consumer missing`);
     requireFact(Number.isSafeInteger(consumer.pullRequest) && consumer.pullRequest > 0, `${repo}: exact source PR is required`);
@@ -146,6 +154,8 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
         run?.name === workflow && run.head_sha === consumer.exactSha &&
         run.head_branch === branch && run.event === 'pull_request');
       requireFact(history.length > 0 && history.every(run =>
+        run.path === workflowIdentity[workflow].path &&
+        run.workflow_id === workflowIdentity[workflow].id &&
         Number.isSafeInteger(run.id) && run.id > 0 &&
         Number.isSafeInteger(run.run_attempt) && run.run_attempt > 0 &&
         typeof run.status === 'string' &&
