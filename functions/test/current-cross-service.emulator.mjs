@@ -1,6 +1,7 @@
 // Actual SDK + Firebase emulators only. Not real cloud deployment or token
 // revocation propagation. Data is confined to a disposable synthetic project.
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
 import { initializeApp, deleteApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, createUserWithEmailAndPassword, signOut, getIdToken } from 'firebase/auth';
@@ -266,6 +267,40 @@ try {
     }
   }
   assert.equal((await readGraph()).data.nodes.length, 2, 'restored relationships remain usable');
+  // The creation API cannot form cycles, because it only links a new memory
+  // to an already existing one. A forged two-node cycle must not be surfaced.
+  const originalParentLink = (await syntheticGraph.get()).get('relatesTo');
+  assert.equal(originalParentLink, null);
+  await Promise.all([
+    syntheticGraph.update({ relatesTo: secondMemory.memoryId }),
+    syntheticMemory.update({ relatedMemoryId: secondMemory.memoryId }),
+  ]);
+  try { await assertDenied(readGraph(), 'two-node synthetic relation cycle must deny'); }
+  finally {
+    await Promise.all([
+      syntheticGraph.update({ relatesTo: originalParentLink }),
+      syntheticMemory.update({ relatedMemoryId: originalParentLink }),
+    ]);
+  }
+  // Direct Firestore writes can create document IDs that the legitimate
+  // synthetic memory creation endpoint never emits. Even a forged internally
+  // consistent row/node pair with such an ID must be rejected on graph read.
+  const invalidId = 'synthetic.invalid';
+  const invalidPayload = Buffer.from('URAI_DISPOSABLE_SYNTHETIC_MEMORY:' + invalidId);
+  const invalidDigest = createHash('sha256').update(invalidPayload).digest('hex');
+  const invalidGraph = localAdminDb.doc(`staging_synthetic_life_graph/${ua.user.uid}/nodes/${invalidId}`);
+  const invalidMemory = localAdminDb.doc(`staging_synthetic_memories/${ua.user.uid}/items/${invalidId}`);
+  await Promise.all([
+    invalidGraph.set({ ...savedParentGraph.data(), memoryId: invalidId,
+      relatesTo: null, sourceSha256: invalidDigest }),
+    invalidMemory.set({ ...originalSource.data(), memoryId: invalidId,
+      relatedMemoryId: null, sourceSha256: invalidDigest,
+      byteLength: invalidPayload.length,
+      storagePath: `staging_synthetic_memories/${ua.user.uid}/${invalidId}.bin` }),
+  ]);
+  try { await assertDenied(readGraph(), 'non-canonical synthetic document ID must deny'); }
+  finally { await Promise.all([invalidGraph.delete(), invalidMemory.delete()]); }
+  assert.equal((await readGraph()).data.nodes.length, 2, 'restored canonical graph remains usable');
   record('memory-permissioned-retrieval-actual-storage-fixity');
 
   await mustDeny('memory-cross-user-retrieval-denied',
