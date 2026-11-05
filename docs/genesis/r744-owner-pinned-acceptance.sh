@@ -4,8 +4,8 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 bash "$SCRIPT_DIR/test-r744-denial-contract.sh" || { echo 'R744 security preflight failed; no checkout attempted' >&2; exit 2; }
 URL='https://github.com/LifeLoggerAI/urai-staging.git'
-SHA='34643afb814ff9b4fe926d6d1866dcf4b311e579'
-TREE='98c24b1d31bb1250c1bef644b476a23cdc408426'
+SHA='b400b694482ac26bb88adebc8216ef198fe83e60'
+TREE='ed7beb947e5cfe9dff35e40d3791df0cbe353c5b'
 RUN_DIR="$(mktemp -d /tmp/one-urai-r744.XXXXXX)"
 SRC="$RUN_DIR/source"; OUT="$RUN_DIR/evidence"; mkdir -p "$OUT" "$RUN_DIR/home"
 printf 'schema=one-urai.r744.owner-acceptance.v1\nsha=%s\ntree=%s\nproductionAuthorized=false\n' "$SHA" "$TREE" > "$OUT/RESULTS.txt"
@@ -25,7 +25,7 @@ for c in git node npm java sha256sum; do command -v "$c" >/dev/null || { echo "M
 java -version >"$OUT/java-version.log" 2>&1 || exit 2
 record git-init git init -q "$SRC"
 record git-remote git -C "$SRC" remote add origin "$URL"
-record git-fetch git -C "$SRC" fetch --no-tags --depth=1 origin refs/pull/143/head
+record git-fetch git -C "$SRC" fetch --no-tags --depth=1 origin refs/pull/146/head
 [[ "$(git -C "$SRC" rev-parse FETCH_HEAD)" == "$SHA" ]] || { echo 'PR head moved: stop' >&2; exit 3; }
 record git-checkout git -C "$SRC" -c core.autocrlf=false checkout -q --detach "$SHA"
 assert_source() {
