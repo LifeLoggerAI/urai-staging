@@ -18,7 +18,7 @@ function validated() {
   assert.equal(provenance.productionAuthorized,false);
   assert.deepEqual(provenance.refs,{
     jobs:'ee548bc15d059ec98f2d8bddb004f5ec0df0a5b8',
-    privacy:'a8f2cb06a81cea1db714c509170ae6416cb6bb3a',
+    privacy:'dd1697cc04833428d746a3f671a908f2825ee4b6',
     studio:'e0e3c9f6de652243f6dd0d34ce5e66c22d5ae1f7'
   });
   assert.equal(Object.keys(provenance.sha).length,20);
