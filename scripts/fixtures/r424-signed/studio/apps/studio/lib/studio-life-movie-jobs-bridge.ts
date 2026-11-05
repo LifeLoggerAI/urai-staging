@@ -121,6 +121,17 @@ function assertSubtitleTimeline(value: string, durationMs: number) {
   }
 }
 
+// The receiving Jobs bridge caps idempotencyKey at 160 characters. Studio
+// accepts project IDs up to 128 characters, which would otherwise create a
+// 172-character key. Preserve existing short-ID keys and bind long IDs by
+// hashing the entire project identifier before adding the render-plan digest.
+function studioLifeMovieIdempotencyKey(projectId: string, renderPlanDigest: string): string {
+  const maxInlineProjectLength = 160 - 'life-movie::'.length - 32;
+  const projectToken = projectId.length <= maxInlineProjectLength ? projectId
+    : createHash('sha256').update(`urai-studio-project-id-v1:${projectId}`).digest('hex').slice(0, 32);
+  return `life-movie:${projectToken}:${renderPlanDigest.slice(0, 32)}`;
+}
+
 export function buildJobsLifeMovieEnvelope(input: BuildJobsLifeMovieEnvelopeInput) {
   const tenantId = safeSegment(input.tenantId, 'life_movie_invalid_tenant');
   const projectId = safeSegment(input.projectId, 'life_movie_invalid_project');
@@ -238,7 +249,7 @@ export function buildJobsLifeMovieEnvelope(input: BuildJobsLifeMovieEnvelopeInpu
   return {
     schemaVersion: 'urai-studio-jobs-envelope-1' as const,
     jobType: 'studio.render.video' as const,
-    idempotencyKey: `life-movie:${projectId}:${renderPlanDigest.slice(0,32)}`,
+    idempotencyKey: studioLifeMovieIdempotencyKey(projectId, renderPlanDigest),
     payload,
     executionAuthority: 'urai-jobs' as const,
     dispatchAuthorized: false as const,
