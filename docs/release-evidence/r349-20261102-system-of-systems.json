@@ -80,7 +80,7 @@
     },
     {
       "name": "urai-admin",
-      "mainSha": "1cde00e69238f6a32237af2d1914a1b77339d5",
+      "mainSha": "1cde00e69238f6a32237af2d1914a1b77339d5bc",
       "source": "authenticated GitHub main branch read 2026-11-02",
       "releaseCandidateAccepted": false
     },
