@@ -12,7 +12,8 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   const jobs=route.includes('urai-jobs');const repo=jobs?'LifeLoggerAI/urai-jobs':'LifeLoggerAI/urai-privacy';
   const sha=jobs?b:a;
   let value;
-  if(/\/pulls\/\d+$/.test(route))value={state:'open',draft:false,merged_at:null,head:{sha,ref:'reviewed',repo:{full_name:repo}},base:{repo:{full_name:repo}},user:{login:'OriginalAuthor',type:'User'},updated_at:'2026-11-05T10:00:00Z'};
+  if(/\/pulls\/\d+$/.test(route))value={state:'open',draft:false,merged_at:null,head:{sha,ref:'reviewed',repo:{full_name:repo}},base:{ref:'main',repo:{full_name:repo}},user:{login:'OriginalAuthor',type:'User'},updated_at:'2026-11-05T10:00:00Z'};
+  else if(route.endsWith('/branches/main')) value={name:'main',protected:true,commit:{sha:'d'.repeat(40)},protection:{enabled:true,required_status_checks:{enforcement_level:'everyone',contexts:['CI','Release Verification'],checks:[]}}};
   else if(route.includes('/git/ref/')) value={object:{sha}};
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
@@ -54,4 +55,37 @@ test('R723 mutation after review rejected',async()=>{
 });
 test('R723 branch mismatch rejected',async()=>{
   await assert.rejects(probe((route,v)=>{if(route.endsWith('/pulls/221'))v.head.ref='elsewhere'}),/PR head/);
+});
+
+test('R727 unprotected main branch rejected even if reviewer and CI passed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main')){v.protected=false;v.protection.enabled=false;}
+  }),/main is not protected/);
+});
+test('R727 missing mandatory status checks rejected',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.contexts=[];
+  }),/mandatory required status checks/);
+});
+test('R727 admin-bypassable policy rejected',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.enforcement_level='non_admins';
+  }),/mandatory required status checks/);
+});
+test('R727 protected policy removed mid-verification rejected',async()=>{
+  let seen=0;
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main') && ++seen===2)v.protected=false;
+  }),/policy or source moved/);
+});
+test('R727 protected main commit changed during verification rejected',async()=>{
+  let seen=0;
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main') && ++seen===2)v.commit.sha='e'.repeat(40);
+  }),/policy or source moved/);
+});
+test('R727 PR targeting an unprotected side branch rejected',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/pulls/221'))v.base.ref='release-shadow';
+  }),/target protected main/);
 });
