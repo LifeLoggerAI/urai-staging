@@ -299,7 +299,8 @@ export const revokeStagingSyntheticMemoryConsent = functions.https.onCall(async 
   // Consent revokes access BEFORE deleting any bytes. If cleanup fails, the
   // next invocation retries; reads stay denied while a retry is outstanding.
   const docs = await db.collection('staging_synthetic_memories').doc(uid).collection('items').get();
-  const batch = db.batch();
+  let batch = db.batch();
+  let pendingWrites = 0;
   let removed = 0;
   for (const item of docs.docs) {
     const row = item.data();
@@ -309,9 +310,18 @@ export const revokeStagingSyntheticMemoryConsent = functions.https.onCall(async 
     await memoryBucket().file(row.storagePath).delete({ignoreNotFound:true});
     batch.delete(item.ref);
     batch.delete(graphRef(uid, item.id));
+    pendingWrites += 2;
     removed++;
+    // Two document deletes per memory: keep well below the 500-write batch
+    // limit. Previous committed chunks remain denied by revoked consent;
+    // retries complete any uncommitted residual cleanup after a failure.
+    if (pendingWrites >= 400) {
+      await batch.commit();
+      batch = db.batch();
+      pendingWrites = 0;
+    }
   }
-  if (removed) await batch.commit();
+  if (pendingWrites) await batch.commit();
   const orphanGraph = await db.collection('staging_synthetic_life_graph').doc(uid).collection('nodes').get();
   if (!orphanGraph.empty) deny('SYNTHETIC_GRAPH_CLEANUP_INCOMPLETE');
   await ref.update({cleanupComplete: true});
