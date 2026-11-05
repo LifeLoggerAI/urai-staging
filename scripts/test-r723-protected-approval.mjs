@@ -45,7 +45,7 @@ test('R723 self approval and reader-only reviewer rejected',async()=>{
 });
 test('R723 stale or superseded approval rejected',async()=>{
   await assert.rejects(probe((route,v)=>{if(route.includes('/reviews?'))v[0].commit_id='c'.repeat(40)}),/no eligible current-head/);
-  await assert.rejects(probe((route,v)=>{if(route.includes('/reviews?'))v.push({...v[0],id:201,state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'})}),/no eligible current-head/);
+  await assert.rejects(probe((route,v)=>{if(route.includes('/reviews?'))v.push({...v[0],id:201,state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'})}),/unresolved changes-requested reviewer/);
 });
 test('R723 failed or missing protected CI rejected',async()=>{
   await assert.rejects(probe((route,v)=>{if(route.includes('/actions/runs?'))v.workflow_runs[0].conclusion='failure'}),/protected workflow/);
