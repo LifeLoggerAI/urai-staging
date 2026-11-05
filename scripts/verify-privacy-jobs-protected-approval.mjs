@@ -6,15 +6,15 @@ import { privacyJobsStagingAdmissionProblems } from './validate-privacy-jobs-sta
 // Never accept caller-authored approval JSON; query GitHub on the protected runner.
 export const SOURCE_GATES = Object.freeze([
   { repo: 'LifeLoggerAI/urai-privacy', workflows: ['URAI Privacy Release Verification', 'Release Verification'],
-    workflowIdentity: {
-      'URAI Privacy Release Verification': { path: '.github/workflows/privacy-release-verification.yml', id: 304527913 },
-      'Release Verification': { path: '.github/workflows/release-verification.yml', id: 278089013 }
+    workflowIdentities: {
+      'URAI Privacy Release Verification': { id: 304527913, path: '.github/workflows/privacy-release-verification.yml' },
+      'Release Verification': { id: 278089013, path: '.github/workflows/release-verification.yml' },
     },
     requiredChecks: ['release-verification', 'verify-release'] },
   { repo: 'LifeLoggerAI/urai-jobs', workflows: ['CI', 'URAI Jobs Final CI'],
-    workflowIdentity: {
-      'CI': { path: '.github/workflows/ci.yml', id: 231042584 },
-      'URAI Jobs Final CI': { path: '.github/workflows/urai-jobs-final-ci.yml', id: 270630355 }
+    workflowIdentities: {
+      'CI': { id: 231042584, path: '.github/workflows/ci.yml' },
+      'URAI Jobs Final CI': { id: 270630355, path: '.github/workflows/urai-jobs-final-ci.yml' },
     },
     requiredChecks: ['build', 'Verify workspace and launch lock', 'Web typecheck and build',
       'Functions build and tests', 'Firebase config smoke'] },
@@ -28,7 +28,7 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
   const structure = privacyJobsStagingAdmissionProblems(authority);
   requireFact(structure.length === 0, `Source scope remains unapproved: ${structure.join('; ')}`);
   const accepted = [];
-  for (const { repo, workflows, workflowIdentity, requiredChecks } of SOURCE_GATES) {
+  for (const { repo, workflows, workflowIdentities, requiredChecks } of SOURCE_GATES) {
     const consumer = authority.consumers.find(c => c.repository === repo);
     requireFact(consumer?.state === 'active', `${repo}: active reviewed consumer missing`);
     requireFact(Number.isSafeInteger(consumer.pullRequest) && consumer.pullRequest > 0, `${repo}: exact source PR is required`);
@@ -135,30 +135,49 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     const readWorkflowHistory = async () => {
       const entries = [];
       let complete = false;
+      let expectedCount = null;
       for (let page = 1; page <= 10; page++) {
         const response = await githubGet(
           `${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=100&page=${page}`);
         requireFact(Array.isArray(response?.workflow_runs) && response.workflow_runs.length <= 100,
           `${repo}: protected workflow history page unavailable or malformed`);
+        requireFact(Number.isSafeInteger(response.total_count) && response.total_count >= 0 &&
+          (expectedCount === null || expectedCount === response.total_count),
+          `${repo}: protected workflow history count invalid or changed`);
+        expectedCount = response.total_count;
         entries.push(...response.workflow_runs);
         if (response.workflow_runs.length < 100) { complete = true; break; }
       }
       requireFact(complete, `${repo}: protected workflow history incomplete; fail closed`);
+      requireFact(expectedCount === entries.length,
+        `${repo}: protected workflow history count incomplete`);
       return entries;
     };
     const workflowHistory = await readWorkflowHistory();
     const originalWorkflowSnapshot = JSON.stringify(workflowHistory);
     const latestRuns = new Map();
     for (const workflow of workflows) {
+      const expected = workflowIdentities?.[workflow];
+      requireFact(Number.isSafeInteger(expected?.id) && expected.id > 0 &&
+        expected.path?.startsWith('.github/workflows/'),
+        `${repo}: trusted workflow identity policy unavailable`);
+      // GitHub workflow display names are not unique or immutable. A different
+      // workflow may claim the same name and pass a check from the same App.
+      // The reviewed source must match the actual GitHub workflow ID and path.
+      // Converged R738/R740/R745: inspect every exact-head run that claims
+      // the expected display name, immutable workflow ID, OR workflow path.
+      // A later failed renamed run must not hide behind a prior green run.
+      // A forged same-name run cannot impersonate an unrelated workflow.
       const history = workflowHistory.filter(run =>
-        (run?.name === workflow || run?.workflow_id === workflowIdentity[workflow].id ||
-          run?.path === workflowIdentity[workflow].path) &&
+        (run?.name === workflow || run?.workflow_id === expected.id ||
+          run?.path === expected.path) &&
         run.head_sha === consumer.exactSha &&
         run.head_branch === branch && run.event === 'pull_request');
       requireFact(history.length > 0 && history.every(run =>
-        run.name === workflow &&
-        run.path === workflowIdentity[workflow].path &&
-        run.workflow_id === workflowIdentity[workflow].id &&
+        run.name === workflow && run.workflow_id === expected.id &&
+        run.path === expected.path),
+        `${repo}: protected workflow ${workflow} exact-head history missing or malformed (trusted workflow identity mismatch)`);
+      requireFact(history.every(run =>
         Number.isSafeInteger(run.id) && run.id > 0 &&
         Number.isSafeInteger(run.run_attempt) && run.run_attempt > 0 &&
         typeof run.status === 'string' &&
