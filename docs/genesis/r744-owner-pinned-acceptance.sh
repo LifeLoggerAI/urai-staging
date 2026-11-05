@@ -39,6 +39,17 @@ export HOME="$RUN_DIR/home" NPM_CONFIG_USERCONFIG=/dev/null CI=true NO_GCE_CHECK
 export URAI_EMULATOR_PROJECT=urai-staging-test TARGET_SHA="$SHA" URAI_R451_RECEIPT="$OUT/r451-combined.json"
 export FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
 export FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 FIREBASE_FUNCTIONS_EMULATOR_HOST=127.0.0.1:5001
+expect_denial() {
+  local label="$1" marker="$2"
+  shift 2
+  local rc=0
+  record "$label" "$@" || rc=$?
+  if [[ "$rc" -ne 1 ]] || ! grep -Fq -- "$marker" "$OUT/$label.log"; then
+    echo "Unsafe or unverified denial: $label, exit=$rc. Read $OUT/$label.log" >&2
+    return 1
+  fi
+  printf '[R744] verified expected denial: %s\n' "$label"
+}
 record frozen-functions-install npm --prefix functions ci --ignore-scripts --engine-strict --no-audit --no-fund || exit 4
 record original-root-check npm run check || failed=1
 FIREBASE="$SRC/functions/node_modules/.bin/firebase"
@@ -62,8 +73,8 @@ if [[ -f "$URAI_R451_RECEIPT" ]]; then
 else failed=1; fi
 record r439-auth "$FIREBASE" emulators:exec --project urai-staging-test --config firebase.json --only auth 'node functions/test/r439-original-jobs-privacy-auth.emulator.mjs' || failed=1
 record firestore-storage-rules "$FIREBASE" emulators:exec --project urai-staging-test --config firebase.json --only firestore,storage 'cd functions && ./node_modules/.bin/vitest run test/firestore.rules.test.ts test/storage.rules.test.ts' || failed=1
-if record release-admission-denial node scripts/validate-privacy-jobs-staging-admission.mjs; then echo 'Unexpected source admission; emergency HOLD' >&2; failed=1; fi
-if record protected-approval-denial node scripts/verify-privacy-jobs-protected-approval.mjs; then echo 'Unexpected source approval; emergency HOLD' >&2; failed=1; fi
+expect_denial release-admission-denial '[GENESIS STAGING] BLOCKED: Privacy-to-Jobs staged consumer ownership is not accepted.' node scripts/validate-privacy-jobs-staging-admission.mjs || failed=1
+expect_denial protected-approval-denial '[GENESIS STAGING] HOLD: Protected GitHub read-only token is required; no source approval attested' node scripts/verify-privacy-jobs-protected-approval.mjs || failed=1
 assert_source || { echo 'Source changed after tests' >&2; exit 5; }
 [[ "$failed" == 0 ]] || exit 1
 echo 'Local original tests scoped PASS; hosted CI, real cross-service deletion, review and founder GO remain unverified.'
