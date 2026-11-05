@@ -301,6 +301,30 @@ try {
   try { await assertDenied(readGraph(), 'non-canonical synthetic document ID must deny'); }
   finally { await Promise.all([invalidGraph.delete(), invalidMemory.delete()]); }
   assert.equal((await readGraph()).data.nodes.length, 2, 'restored canonical graph remains usable');
+  // A valid child Replay read must honor its linked parent source, even when
+  // graph-list authorization is not called first. All records are disposable.
+  const readChild = () => call(a, 'retrieveStagingSyntheticMemory', {
+    ownerUid: ua.user.uid, memoryId: secondMemory.memoryId,
+  });
+  assert.equal((await readChild()).data.sourceSha256, secondMemory.sourceSha256,
+    'valid related child memory remains retrievable');
+  await syntheticGraph.update({ state: 'REVOKED' });
+  try { await assertDenied(readChild(), 'revoked linked parent graph must deny direct child retrieval'); }
+  finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
+  await syntheticMemory.delete();
+  try { await assertDenied(readChild(), 'orphaned parent must deny direct child retrieval'); }
+  finally { await syntheticMemory.set(originalSource.data()); }
+  await childGraph.update({ relatesTo: null });
+  try { await assertDenied(readChild(), 'mismatched child graph relation must deny direct child retrieval'); }
+  finally { await childGraph.update({ relatesTo: savedChildLink }); }
+  await childMemory.update({ relatedMemoryId: null });
+  try { await assertDenied(readChild(), 'mismatched child memory relation must deny direct child retrieval'); }
+  finally { await childMemory.update({ relatedMemoryId: savedChildLink }); }
+  await childMemory.update({ purpose: 'email.marketing' });
+  try { await assertDenied(readChild(), 'changed child purpose must deny direct child retrieval'); }
+  finally { await childMemory.update({ purpose: 'memory.storage' }); }
+  assert.equal((await readChild()).data.sourceSha256, secondMemory.sourceSha256,
+    'restored related child memory remains retrievable');
   record('memory-permissioned-retrieval-actual-storage-fixity');
 
   await mustDeny('memory-cross-user-retrieval-denied',

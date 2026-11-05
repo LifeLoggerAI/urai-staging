@@ -55,6 +55,40 @@ function strict(input: unknown, keys: string[]): Record<string, unknown> {
 function fixedBytes(id: string): Buffer {
   return Buffer.from('URAI_DISPOSABLE_SYNTHETIC_MEMORY:' + id, 'utf8');
 }
+// Bind direct Replay reads to the same parent/child source relationship that
+// Life Graph listing validates. Read the parent inside each consent transaction:
+// a revoked or changed parent must never authorize a stale child relationship.
+async function assertLinkedParent(
+  tx: FirebaseFirestore.Transaction, uid: string, id: string, receipt: string,
+  relation: unknown, graphRelation: unknown,
+): Promise<string | null> {
+  if (relation !== graphRelation) deny('SYNTHETIC_MEMORY_RELATION_MISMATCH');
+  if (relation === null) return null;
+  if (typeof relation !== 'string' || !/^[A-Za-z0-9_-]{6,128}$/.test(relation) ||
+      relation === id) deny('SYNTHETIC_MEMORY_RELATION_INVALID');
+  const [parent, linkedGraph] = await Promise.all([
+    tx.get(memoryRef(uid, relation)), tx.get(graphRef(uid, relation)),
+  ]);
+  const parentBytes = fixedBytes(relation);
+  const parentDigest = sha(parentBytes);
+  if (!parent.exists || !linkedGraph.exists ||
+      parent.get('ownerUid') !== uid || parent.get('memoryId') !== relation ||
+      parent.get('state') !== 'ACTIVE' || parent.get('synthetic') !== true ||
+      parent.get('purpose') !== purpose || parent.get('policyVersion') !== policyVersion ||
+      parent.get('sourceEvidenceClass') !== 'SYNTHETIC_TEST_ONLY' ||
+      parent.get('decisionReceiptId') !== receipt ||
+      parent.get('sourceSha256') !== parentDigest ||
+      parent.get('byteLength') !== parentBytes.length ||
+      parent.get('storagePath') !== 'staging_synthetic_memories/' + uid + '/' + relation + '.bin' ||
+      linkedGraph.get('ownerUid') !== uid || linkedGraph.get('memoryId') !== relation ||
+      linkedGraph.get('state') !== 'ACTIVE' || linkedGraph.get('synthetic') !== true ||
+      linkedGraph.get('decisionReceiptId') !== receipt ||
+      linkedGraph.get('sourceSha256') !== parentDigest ||
+      linkedGraph.get('relatesTo') !== parent.get('relatedMemoryId')) {
+    deny('SYNTHETIC_MEMORY_LINKED_SOURCE_UNAVAILABLE');
+  }
+  return relation as string;
+}
 
 export const grantStagingSyntheticMemoryConsent = functions.https.onCall(async (data: unknown, context) => {
   const uid = uidFrom(context);
@@ -146,9 +180,12 @@ export const retrieveStagingSyntheticMemory = functions.https.onCall(async (data
       g.get('ownerUid') !== uid || g.get('memoryId') !== id ||
       g.get('state') !== 'ACTIVE' || g.get('synthetic') !== true ||
       g.get('sourceSha256') !== row.sourceSha256 ||
-      g.get('decisionReceiptId') !== consent.decisionReceiptId) deny('SYNTHETIC_MEMORY_UNAVAILABLE');
+      g.get('decisionReceiptId') !== consent.decisionReceiptId ||
+      row.purpose !== purpose || row.policyVersion !== policyVersion) deny('SYNTHETIC_MEMORY_UNAVAILABLE');
+    const relation = await assertLinkedParent(tx, uid, id, consent.decisionReceiptId,
+      row.relatedMemoryId, g.get('relatesTo'));
     return { sourceSha256: String(row.sourceSha256), storagePath: String(row.storagePath),
-      receipt: String(consent.decisionReceiptId), byteLength: Number(row.byteLength) };
+      receipt: String(consent.decisionReceiptId), byteLength: Number(row.byteLength), relation };
   });
   const expectedPath = 'staging_synthetic_memories/' + uid + '/' + id + '.bin';
   if (first.storagePath !== expectedPath || !/^[0-9a-f]{64}$/.test(first.sourceSha256) ||
@@ -175,9 +212,12 @@ export const retrieveStagingSyntheticMemory = functions.https.onCall(async (data
       g.get('ownerUid') !== uid || g.get('memoryId') !== id ||
       g.get('state') !== 'ACTIVE' || g.get('synthetic') !== true ||
       g.get('sourceSha256') !== first.sourceSha256 ||
-      g.get('decisionReceiptId') !== first.receipt) {
+      g.get('decisionReceiptId') !== first.receipt ||
+      m.get('purpose') !== purpose || m.get('policyVersion') !== policyVersion ||
+      m.get('relatedMemoryId') !== first.relation || g.get('relatesTo') !== first.relation) {
       deny('SYNTHETIC_MEMORY_REVOKED_DURING_READ');
     }
+    await assertLinkedParent(tx, uid, id, first.receipt, first.relation, g.get('relatesTo'));
   });
   return { ownerUid: uid, memoryId: id, synthetic: true,
     sourceSha256: first.sourceSha256, mediaBase64: bytes.toString('base64') };
