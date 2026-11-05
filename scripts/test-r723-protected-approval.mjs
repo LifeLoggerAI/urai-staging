@@ -17,7 +17,10 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   else if(route.includes('/git/ref/')) value={object:{sha}};
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
-  else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10,check_suite_id:id+100}))};
+  else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,
+    workflow_id:SOURCE_GATES.find(x=>x.repo===repo).workflowIdentities[name].id,
+    path:SOURCE_GATES.find(x=>x.repo===repo).workflowIdentities[name].path,
+    head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10,check_suite_id:id+100}))};
   else if(route.includes('/check-runs?')){const names=SOURCE_GATES.find(x=>x.repo===repo).requiredChecks;value={total_count:names.length,check_runs:names.map((name,id)=>({id:1000+id,name,check_suite:{id:(jobs&&id>0?101:100+id)},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};}
   else throw Error('Unexpected GitHub request: '+route);
   const copy=structuredClone(value);mutate(route,copy);
@@ -417,4 +420,51 @@ test('R738 newer passing required check supersedes earlier failure without relea
   });
   assert.equal(result.accepted.length,2);
   assert.equal(result.productionAuthorized,false);
+});
+
+
+test('R740 rejects workflow display-name impersonation from an unrelated workflow ID and file', async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy') && route.includes('/actions/runs?')) {
+      v.workflow_runs[0].conclusion='failure';
+      v.workflow_runs.push({...v.workflow_runs[0],id:9009,conclusion:'success',
+        workflow_id:9999999,path:'.github/workflows/attacker-run.yml'});
+      v.total_count=v.workflow_runs.length;
+    }
+  }),/trusted workflow identity/);
+});
+
+test('R740 refuses expected workflow when GitHub workflow ID is missing', async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy') && route.includes('/actions/runs?'))
+      delete v.workflow_runs[0].workflow_id;
+  }),/trusted workflow identity/);
+});
+
+test('R740 refuses expected workflow with correct name and wrong workflow ID', async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs') && route.includes('/actions/runs?'))
+      v.workflow_runs[0].workflow_id=9999999;
+  }),/trusted workflow identity/);
+});
+
+test('R740 refuses expected workflow with correct name and wrong workflow file path', async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs') && route.includes('/actions/runs?'))
+      v.workflow_runs[0].path='.github/workflows/fake-ci.yml';
+  }),/trusted workflow identity/);
+});
+
+test('R740 rejects a missing workflow file path even if all job checks are green', async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy') && route.includes('/actions/runs?'))
+      delete v.workflow_runs[1].path;
+  }),/trusted workflow identity/);
+});
+
+test('R740 verified workflow identities keep approval SOURCE ONLY', async()=>{
+  const result=await probe(()=>{});
+  assert.equal(result.accepted.length,2);
+  assert.equal(result.productionAuthorized,false);
+  assert.equal(result.runtimeCertified,false);
 });
