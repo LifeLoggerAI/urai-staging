@@ -100,7 +100,7 @@ export function isSyntheticStagingEmail(value: unknown): value is string {
   if (!isLikelyEmail(value)) return false;
 
   const normalized = value.trim().toLowerCase();
-  const domain = normalized.split('@').at(-1) ?? '';
+  const domain = normalized.split('@').pop() ?? '';
 
   return SYNTHETIC_EMAIL_DOMAINS.has(domain) || domain.endsWith('.example');
 }
