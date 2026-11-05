@@ -18,9 +18,12 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
   else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10,check_suite_id:id+100}))};
-  else if(route.includes('/check-runs?')){const names=SOURCE_GATES.find(x=>x.repo===repo).requiredChecks;value={total_count:names.length,check_runs:names.map((name,id)=>({id:id+200,name,check_suite:{id:(jobs&&id>0?101:100+id)},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};}
+  else if(route.includes('/check-runs?')){const names=SOURCE_GATES.find(x=>x.repo===repo).requiredChecks;value={total_count:names.length,check_runs:names.map((name,id)=>({id:1000+id,name,check_suite:{id:(jobs&&id>0?101:100+id)},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};}
   else throw Error('Unexpected GitHub request: '+route);
-  const copy=structuredClone(value);mutate(route,copy);return copy;
+  const copy=structuredClone(value);mutate(route,copy);
+  if(route.includes('/actions/runs?') && copy.total_count === undefined &&
+      Array.isArray(copy.workflow_runs)) copy.total_count=copy.workflow_runs.length;
+  return copy;
 };
 const probe=(fn,auth=makeAuthority())=>verifyProtectedSourceApprovals(auth,makeAPI(fn));
 
@@ -161,22 +164,22 @@ test('R730 ambiguous same-second changes request outranks approval',async()=>{
 test('R729 fake external app check cannot satisfy required CI',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('/check-runs?'))v.check_runs[0].app.slug='fake-ci';
-  }),/required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
+  }),/latest required source check not green|required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
 });
 test('R729 unrelated successful suite cannot be substituted',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('/check-runs?'))v.check_runs[0].check_suite.id=999999;
-  }),/did not satisfy an enforced GitHub Actions check/);
+  }),/latest required source check not green|did not satisfy an enforced GitHub Actions check/);
 });
 test('R729 failed required check rejects even when workflow claims success',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('/check-runs?'))v.check_runs[0].conclusion='failure';
-  }),/required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
+  }),/latest required source check not green|required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
 });
 test('R729 wrong commit check cannot authorize source',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('/check-runs?'))v.check_runs[0].head_sha='c'.repeat(40);
-  }),/required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
+  }),/latest required source check not green|required source workflow job checks not green|did not satisfy an enforced GitHub Actions check/);
 });
 test('R729 missing check suite ID denies claimed successful workflow',async()=>{
   await assert.rejects(probe((route,v)=>{
@@ -268,87 +271,150 @@ test('R735 status-check capitalization drift fails closed',async()=>{
 test('R736 a failed extra required Jobs job must block even with workflow-level green',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('urai-jobs')&&route.includes('/check-runs?'))v.check_runs[2].conclusion='failure';
-  }),/required source workflow job checks not green/);
+  }),/latest required source check not green|required source workflow job checks not green/);
 });
 test('R736 one missing extra required Jobs job must block even with workflow-level green',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('urai-jobs')&&route.includes('/check-runs?')){v.check_runs.splice(2,1);v.total_count--;}
-  }),/required source workflow job checks not green/);
+  }),/latest required source check not green|required source workflow job checks not green/);
 });
 test('R736 a forged extra required Jobs job app cannot be used',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('urai-jobs')&&route.includes('/check-runs?'))v.check_runs[2].app.id=9999;
-  }),/required source workflow job checks not green/);
+  }),/latest required source check not green|required source workflow job checks not green/);
 });
 
-// R737: newer sibling workflow-history security regressions.
-test('R736 later failed exact-head workflow defeats stale green',async()=>{
+
+test('R737 newer failed workflow run defeats stale green run',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.includes('/actions/runs?'))
-      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'completed',conclusion:'failure'});
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,conclusion:'failure'});
   }),/latest exact-head run not successful/);
 });
-test('R736 newer in-progress run defeats stale successful run',async()=>{
+test('R737 newer in-progress workflow defeats stale green run',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.includes('/actions/runs?'))
-      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'in_progress',conclusion:'neutral'});
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'in_progress',conclusion:null});
   }),/latest exact-head run not successful/);
 });
-test('R736 later failed attempt of same workflow run rejects',async()=>{
+test('R737 newer failed attempt of same workflow run rejects',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.includes('/actions/runs?'))
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
       v.workflow_runs.push({...v.workflow_runs[0],run_attempt:2,conclusion:'failure'});
   }),/latest exact-head run not successful/);
 });
-test('R736 later success legitimately supersedes an earlier failed run',async()=>{
+test('R737 newer successful workflow supersedes older failure without production GO',async()=>{
   const r=await probe((route,v)=>{
-    if(route.includes('/actions/runs?')){
-      v.workflow_runs[0].status='completed';v.workflow_runs[0].conclusion='failure';
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?')){
+      v.workflow_runs[0].conclusion='failure';
       v.workflow_runs.push({...v.workflow_runs[0],id:9001,conclusion:'success'});
     }
   });
   assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
 });
-test('R736 malformed exact-head run identity denies approval',async()=>{
+test('R737 malformed workflow run id denies latest-run selection',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.includes('/actions/runs?'))v.workflow_runs[0].id='not-a-run-id';
-  }),/history missing or malformed/);
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))v.workflow_runs[0].id='forged';
+  }),/exact-head history missing or malformed/);
 });
-test('R736 same run attempt with contradictory outcomes fails closed',async()=>{
+test('R737 contradictory results of same run attempt fail closed',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.includes('/actions/runs?'))
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
       v.workflow_runs.push({...v.workflow_runs[0],conclusion:'failure'});
   }),/conflicting protected workflow run records/);
 });
-test('R736 unrelated failed workflow does not override required success',async()=>{
-  const r=await probe((route,v)=>{
-    if(route.includes('/actions/runs?'))
-      v.workflow_runs.push({...v.workflow_runs[0],id:9001,name:'Unrelated check',conclusion:'failure'});
-  });
-  assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
+test('R737 newer failed required check-run defeats older passing check-run',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/check-runs?')){
+      v.check_runs.push({...v.check_runs[2],id:9000,conclusion:'failure'});v.total_count++;
+    }
+  }),/latest required source check not green/);
+});
+test('R737 newer queued required check-run defeats older green check-run',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/check-runs?')){
+      v.check_runs.push({...v.check_runs[2],id:9000,status:'queued',conclusion:null});v.total_count++;
+    }
+  }),/latest required source check not green/);
+});
+test('R737 latest required check-run from unrelated suite cannot substitute old green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/check-runs?')){
+      v.check_runs.push({...v.check_runs[2],id:9000,check_suite:{id:999}});v.total_count++;
+    }
+  }),/latest required source check not green/);
+});
+test('R737 passing check history changed during verification rejects stale snapshot',async()=>{
+  let reads=0;
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/check-runs?')&&++reads===2){
+      v.check_runs.push({...v.check_runs[0],id:9000,conclusion:'failure'});v.total_count++;
+    }
+  }),/Actions evidence changed during verification/);
 });
 
-
-test('R737 an older successful check cannot mask a newer failed required check',async()=>{
+test('R738 missing workflow total_count refuses source approval',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.includes('urai-jobs') && route.includes('/check-runs?')) {
-      const old=v.check_runs.find(x=>x.name==='Firebase config smoke');
-      v.check_runs.push({...old,id:9001,conclusion:'failure'});v.total_count++;
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))v.total_count=null;
+  }),/protected workflow history count invalid or changed/);
+});
+test('R738 inconsistent workflow total_count refuses truncated history',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))v.total_count=999;
+  }),/protected workflow history count incomplete/);
+});
+test('R738 older green cannot hide newer failed second-page workflow',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1')){
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'Unrelated',id:400+i})));
+      v.total_count=101;
     }
-  }),/required source workflow job checks not green/);
+    if(route.endsWith('page=2')){
+      v.workflow_runs=[{...v.workflow_runs[0],id:9001,conclusion:'failure'}];
+      v.total_count=101;
+    }
+  }),/latest exact-head run not successful/);
 });
-test('R737 incomplete check-run identity must fail closed',async()=>{
+test('R738 second page unavailable must not certify partial workflow history',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.includes('urai-privacy') && route.includes('/check-runs?')) delete v.check_runs[0].id;
-  }),/required source workflow job checks not green|malformed required source check/);
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1')){
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'Unrelated',id:500+i})));
+      v.total_count=101;
+    }
+    if(route.endsWith('page=2'))throw Error('GitHub workflow page 2 unavailable');
+  }),/GitHub workflow page 2 unavailable/);
 });
-test('R737 a newer passing required check supersedes the earlier failure without production GO',async()=>{
-  const x=await probe((route,v)=>{
-    if(route.includes('urai-jobs') && route.includes('/check-runs?')) {
-      const old=v.check_runs.find(x=>x.name==='Firebase config smoke');
-      old.conclusion='failure';v.check_runs.push({...old,id:9001,conclusion:'success'});v.total_count++;
+test('R738 newer successful second-page workflow supersedes failed older run without release GO',async()=>{
+  const result=await probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1')){
+      v.workflow_runs[0].conclusion='failure';
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'Unrelated',id:600+i})));
+      v.total_count=101;
+    }
+    if(route.endsWith('page=2')){
+      v.workflow_runs=[{...v.workflow_runs[0],id:9001,conclusion:'success'}];
+      v.total_count=101;
     }
   });
-  assert.equal(x.accepted.length,2);
-  assert.equal(x.productionAuthorized,false);
+  assert.equal(result.accepted.length,2);
+  assert.equal(result.productionAuthorized,false);
+});
+test('R738 missing latest required check id cannot authorize source',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/check-runs?'))delete v.check_runs[0].id;
+  }),/latest required source check not green/);
+});
+test('R738 newer passing required check supersedes earlier failure without release GO',async()=>{
+  const result=await probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/check-runs?')){
+      const old=v.check_runs.find(x=>x.name==='Firebase config smoke');
+      old.conclusion='failure';
+      v.check_runs.push({...old,id:9001,conclusion:'success'});v.total_count++;
+    }
+  });
+  assert.equal(result.accepted.length,2);
+  assert.equal(result.productionAuthorized,false);
 });
