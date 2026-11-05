@@ -35,3 +35,9 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 4. Complete real authorized staging integration and Gold Master visual/device/accessibility acceptance before requesting a founder GO.
 
 **GENESIS = NO-GO / HOLD. No production merge, deployment, IAM activation, provider spending, secrets or customer data.**
+
+## R747 source-fixture preflight — no fake green
+
+The separate test file `docs/genesis/test-r747-fixture-preflight.mjs` is executed **before** any checkout. It was independently tested locally: 11/11 synthetic fixture adversarial cases PASS on Node 22. The dedicated `docs/genesis/r747-verify-federated-fixtures.mjs` executes **after** exact-source checkout and **before** frozen `npm ci`. It requires the complete R422 (6), R423 (3), R424 (20), and R425 (4) checked-in source fixtures to match all 33 pinned Git blob hashes, rejects unsafe paths/symlinks, validates the expected schema/environment and refuses any production-authority flag.
+
+The pinned #134 Git tree and four fixture manifests were independently inspected through GitHub: 33/33 blob references agree. This is a static integrity check, **not** the original R422–R425 maintained test run, Firebase emulator or protected CI. The owner-run launcher must still record all original runtime exit codes, genuine emulator receipts and expected denials. Any failure remains HOLD.
