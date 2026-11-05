@@ -53,19 +53,47 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     const ref = await githubGet(`${base}/git/ref/heads/${branch}`);
     requireFact(ref?.object?.sha === consumer.exactSha, `${repo}: live GitHub ref does not match reviewed SHA`);
 
-    const reviews = await githubGet(`${base}/pulls/${consumer.pullRequest}/reviews?per_page=100`);
-    requireFact(Array.isArray(reviews), `${repo}: GitHub reviews unavailable`);
-    // Ignore stale approval when the same reviewer later requested changes/dismissed.
-    const latest = new Map();
-    for (const review of reviews) {
-      const login = review?.user?.login;
-      if (login && review.submitted_at) {
-        const timestamp = Date.parse(review.submitted_at);
-        if (Number.isFinite(timestamp) && (!latest.has(login) || latest.get(login).timestamp <= timestamp)) {
-          latest.set(login, { ...review, timestamp });
-        }
+    // Full review-history read: later changes requests on any page invalidate stale approvals.
+    // Refuse malformed/unavailable pages and unsupported histories. Never use caller approval JSON.
+    const reviews = [];
+    const reviewPageSize = 100;
+    const maxReviewPages = 10;
+    let reviewHistoryComplete = false;
+    for (let page = 1; page <= maxReviewPages; page++) {
+      const reviewPage = await githubGet(
+        `${base}/pulls/${consumer.pullRequest}/reviews?per_page=${reviewPageSize}&page=${page}`);
+      requireFact(Array.isArray(reviewPage) && reviewPage.length <= reviewPageSize,
+        `${repo}: GitHub review-history page ${page} unavailable or malformed`);
+      reviews.push(...reviewPage);
+      if (reviewPage.length < reviewPageSize) {
+        reviewHistoryComplete = true;
+        break;
       }
     }
+    requireFact(reviewHistoryComplete,
+      `${repo}: GitHub review history exceeds ${maxReviewPages} pages; fail closed`);
+    // COMMENTED must not erase an outstanding CHANGES_REQUESTED review.
+    const terminalStates = new Set(['APPROVED', 'CHANGES_REQUESTED', 'DISMISSED', 'COMMENTED']);
+    const latest = new Map();
+    for (const review of reviews) {
+      if (review?.state === 'PENDING') continue;
+      const login = review?.user?.login;
+      const timestamp = Date.parse(review?.submitted_at ?? '');
+      requireFact(terminalStates.has(review?.state) && typeof login === 'string' &&
+        login.trim().length > 0 && Number.isFinite(timestamp),
+        `${repo}: malformed submitted review history`);
+      if (review.state === 'COMMENTED') continue;
+      const previous = latest.get(login);
+      if (!previous || timestamp > previous.timestamp ||
+          (timestamp === previous.timestamp && review.state === 'CHANGES_REQUESTED' &&
+            previous.state !== 'CHANGES_REQUESTED')) {
+        latest.set(login, { ...review, timestamp });
+      }
+    }
+    // Even one eligible approval does not defeat another reviewer's
+    // outstanding CHANGES_REQUESTED disposition.
+    requireFact(![...latest.values()].some(review => review.state === 'CHANGES_REQUESTED'),
+      `${repo}: unresolved changes-requested reviewer`);
     let eligibleApproval = null;
     for (const review of latest.values()) {
       if (review.state !== 'APPROVED' || review.commit_id !== consumer.exactSha ||

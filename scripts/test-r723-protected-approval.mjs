@@ -89,3 +89,70 @@ test('R727 PR targeting an unprotected side branch rejected',async()=>{
     if(route.endsWith('/pulls/221'))v.base.ref='release-shadow';
   }),/target protected main/);
 });
+
+
+test('R729 later changes-requested review beyond page 1 supersedes old approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/reviews?'))return;
+    if(route.endsWith('page=1'))v.push(...Array.from({length:99},(_,i)=>({...v[0],id:300+i})));
+    if(route.endsWith('page=2')){v[0].id=800;v[0].state='CHANGES_REQUESTED';v[0].submitted_at='2026-11-05T12:00:00Z';}
+  }),/unresolved changes-requested reviewer/);
+});
+test('R729 later independent approval can supersede earlier changes request',async()=>{
+  const verdict=await probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/reviews?'))return;
+    if(route.endsWith('page=1')){v[0].state='CHANGES_REQUESTED';v.push(...Array.from({length:99},(_,i)=>({...v[0],id:400+i})));}
+    if(route.endsWith('page=2')){v[0].id=801;v[0].state='APPROVED';v[0].submitted_at='2026-11-05T12:00:00Z';}
+  });
+  assert.equal(verdict.accepted.length,2);assert.equal(verdict.productionAuthorized,false);
+});
+test('R729 review-history fetch interruption rejects',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/reviews?'))return;
+    if(route.endsWith('page=1'))v.push(...Array.from({length:99},(_,i)=>({...v[0],id:500+i})));
+    if(route.endsWith('page=2'))throw Error('GitHub review page fetch denied');
+  }),/review page fetch denied/);
+});
+test('R729 overlong GitHub review history fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/reviews?'))
+      v.push(...Array.from({length:99},(_,i)=>({...v[0],id:600+i})));
+  }),/review history exceeds 10 pages/);
+});
+test('R730 outstanding second reviewer change request blocks approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1'))
+      v.push({...v[0],id:402,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'});
+  }),/unresolved changes-requested reviewer/);
+});
+test('R730 a later COMMENTED review cannot clear outstanding change request',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1')){
+      v.push({...v[0],id:403,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'});
+      v.push({...v[0],id:404,user:{login:'OtherReviewer',type:'User'},state:'COMMENTED',submitted_at:'2026-11-05T13:00:00Z'});
+    }
+  }),/unresolved changes-requested reviewer/);
+});
+test('R730 legitimate later approval clears earlier request without production GO',async()=>{
+  const x=await probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1')){
+      v.push({...v[0],id:405,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'});
+      v.push({...v[0],id:406,user:{login:'OtherReviewer',type:'User'},state:'APPROVED',submitted_at:'2026-11-05T13:00:00Z'});
+    }
+  });
+  assert.equal(x.accepted.length,2);assert.equal(x.productionAuthorized,false);
+});
+test('R730 malformed submitted change request fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1'))
+      v.push({...v[0],id:407,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'invalid'});
+  }),/malformed submitted review history/);
+});
+test('R730 ambiguous same-second changes request outranks approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1')){
+      v.push({...v[0],id:408,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'});
+      v.push({...v[0],id:409,user:{login:'OtherReviewer',type:'User'},state:'APPROVED',submitted_at:'2026-11-05T12:00:00Z'});
+    }
+  }),/unresolved changes-requested reviewer/);
+});
