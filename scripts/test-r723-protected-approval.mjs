@@ -13,7 +13,9 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   const sha=jobs?b:a;
   let value;
   if(/\/pulls\/\d+$/.test(route))value={state:'open',draft:false,merged_at:null,head:{sha,ref:'reviewed',repo:{full_name:repo}},base:{ref:'main',repo:{full_name:repo}},user:{login:'OriginalAuthor',type:'User'},updated_at:'2026-11-05T10:00:00Z'};
-  else if(route.endsWith('/branches/main')) value={name:'main',protected:true,commit:{sha:'d'.repeat(40)},protection:{enabled:true,required_status_checks:{enforcement_level:'everyone',contexts:['CI','Release Verification'],checks:[]}}};
+  else if(route.endsWith('/branches/main')) value={name:'main',protected:true,commit:{sha:'d'.repeat(40)},protection:{enabled:true,required_status_checks:{enforcement_level:'everyone',
+    contexts:SOURCE_GATES.find(x=>x.repo===repo).requiredChecks,
+    checks:SOURCE_GATES.find(x=>x.repo===repo).requiredChecks.map(context=>({context,app_id:15368}))}}};
   else if(route.includes('/git/ref/')) value={object:{sha}};
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
@@ -64,7 +66,7 @@ test('R727 unprotected main branch rejected even if reviewer and CI passed',asyn
 });
 test('R727 missing mandatory status checks rejected',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.endsWith('/branches/main'))v.protection.required_status_checks.contexts=[];
+    if(route.endsWith('/branches/main')){v.protection.required_status_checks.contexts=[];v.protection.required_status_checks.checks=[];}
   }),/mandatory required status checks/);
 });
 test('R727 admin-bypassable policy rejected',async()=>{
@@ -88,4 +90,204 @@ test('R727 PR targeting an unprotected side branch rejected',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.endsWith('/pulls/221'))v.base.ref='release-shadow';
   }),/target protected main/);
+});
+
+
+test('R729 later changes-requested review beyond page 1 supersedes old approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/reviews?'))return;
+    if(route.endsWith('page=1'))v.push(...Array.from({length:99},(_,i)=>({...v[0],id:300+i})));
+    if(route.endsWith('page=2')){v[0].id=800;v[0].state='CHANGES_REQUESTED';v[0].submitted_at='2026-11-05T12:00:00Z';}
+  }),/unresolved changes-requested reviewer/);
+});
+test('R729 later independent approval can supersede earlier changes request',async()=>{
+  const verdict=await probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/reviews?'))return;
+    if(route.endsWith('page=1')){v[0].state='CHANGES_REQUESTED';v.push(...Array.from({length:99},(_,i)=>({...v[0],id:400+i})));}
+    if(route.endsWith('page=2')){v[0].id=801;v[0].state='APPROVED';v[0].submitted_at='2026-11-05T12:00:00Z';}
+  });
+  assert.equal(verdict.accepted.length,2);assert.equal(verdict.productionAuthorized,false);
+});
+test('R729 review-history fetch interruption rejects',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/reviews?'))return;
+    if(route.endsWith('page=1'))v.push(...Array.from({length:99},(_,i)=>({...v[0],id:500+i})));
+    if(route.endsWith('page=2'))throw Error('GitHub review page fetch denied');
+  }),/review page fetch denied/);
+});
+test('R729 overlong GitHub review history fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/reviews?'))
+      v.push(...Array.from({length:99},(_,i)=>({...v[0],id:600+i})));
+  }),/review history exceeds 10 pages/);
+});
+test('R730 outstanding second reviewer change request blocks approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1'))
+      v.push({...v[0],id:402,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'});
+  }),/unresolved changes-requested reviewer/);
+});
+test('R730 a later COMMENTED review cannot clear outstanding change request',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1')){
+      v.push({...v[0],id:403,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'});
+      v.push({...v[0],id:404,user:{login:'OtherReviewer',type:'User'},state:'COMMENTED',submitted_at:'2026-11-05T13:00:00Z'});
+    }
+  }),/unresolved changes-requested reviewer/);
+});
+test('R730 legitimate later approval clears earlier request without production GO',async()=>{
+  const x=await probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1')){
+      v.push({...v[0],id:405,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'});
+      v.push({...v[0],id:406,user:{login:'OtherReviewer',type:'User'},state:'APPROVED',submitted_at:'2026-11-05T13:00:00Z'});
+    }
+  });
+  assert.equal(x.accepted.length,2);assert.equal(x.productionAuthorized,false);
+});
+test('R730 malformed submitted change request fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1'))
+      v.push({...v[0],id:407,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'invalid'});
+  }),/malformed submitted review history/);
+});
+test('R730 ambiguous same-second changes request outranks approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/reviews?') && route.endsWith('page=1')){
+      v.push({...v[0],id:408,user:{login:'OtherReviewer',type:'User'},state:'CHANGES_REQUESTED',submitted_at:'2026-11-05T12:00:00Z'});
+      v.push({...v[0],id:409,user:{login:'OtherReviewer',type:'User'},state:'APPROVED',submitted_at:'2026-11-05T12:00:00Z'});
+    }
+  }),/unresolved changes-requested reviewer/);
+});
+
+
+test('R735 unrelated required checks cannot certify source workflows',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main')){
+      v.protection.required_status_checks.contexts=['UNRELATED_OPTIONAL_CHECK'];
+      v.protection.required_status_checks.checks=[{context:'UNRELATED_OPTIONAL_CHECK',app_id:15368}];
+    }
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 correct check names from unbound app cannot certify',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks.forEach(c=>{c.app_id=-1;});
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 one missing release-critical required job blocks source approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks.pop();
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 contexts alone without source app binding do not prove protection',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks=[];
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 status-check capitalization drift fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks[0].context += '-shadow';
+  }),/required source workflow job checks not pinned/);
+});
+
+
+test('R736 later failed exact-head workflow defeats stale green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'completed',conclusion:'failure'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 newer in-progress run defeats stale successful run',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'in_progress',conclusion:'neutral'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 later failed attempt of same workflow run rejects',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],run_attempt:2,conclusion:'failure'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 later success legitimately supersedes an earlier failed run',async()=>{
+  const r=await probe((route,v)=>{
+    if(route.includes('/actions/runs?')){
+      v.workflow_runs[0].status='completed';v.workflow_runs[0].conclusion='failure';
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,conclusion:'success'});
+    }
+  });
+  assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
+});
+test('R736 malformed exact-head run identity denies approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))v.workflow_runs[0].id='not-a-run-id';
+  }),/history missing or malformed/);
+});
+test('R736 same run attempt with contradictory outcomes fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],conclusion:'failure'});
+  }),/conflicting protected workflow run records/);
+});
+test('R736 unrelated failed workflow does not override required success',async()=>{
+  const r=await probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,name:'Unrelated check',conclusion:'failure'});
+  });
+  assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
+});
+
+
+test('R738 failed rerun on later workflow page blocks older green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1'))
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:400+i})));
+    if(route.endsWith('page=2'))
+      v.workflow_runs=[{...v.workflow_runs[0],id:9001,conclusion:'failure'}];
+  }),/latest exact-head run not successful/);
+});
+test('R738 successful later workflow run clears earlier failure without production authority',async()=>{
+  const result=await probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1')){
+      v.workflow_runs[0].conclusion='failure';
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:500+i})));
+    }
+    if(route.endsWith('page=2'))
+      v.workflow_runs=[{...v.workflow_runs[0],id:9001,conclusion:'success'}];
+  });
+  assert.equal(result.accepted.length,2);assert.equal(result.productionAuthorized,false);
+});
+test('R738 missing later workflow page fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1'))
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:600+i})));
+    if(route.endsWith('page=2'))throw Error('GitHub workflow later page unavailable');
+  }),/later page unavailable/);
+});
+test('R738 malformed later workflow page fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    if(route.endsWith('page=1'))
+      v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:700+i})));
+    if(route.endsWith('page=2'))v.workflow_runs=null;
+  }),/history page 2 missing or malformed/);
+});
+test('R738 overlong protected workflow history fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(!route.includes('urai-privacy')||!route.includes('/actions/runs?'))return;
+    v.workflow_runs.push(...Array.from({length:98},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:800+i})));
+  }),/history exceeds 10 pages/);
+});
+test('R738 inconsistent GitHub total_count fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))v.total_count=999;
+  }),/history count incomplete/);
+});
+test('R738 oversized workflow page fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
+      v.workflow_runs.push(...Array.from({length:99},(_,i)=>({...v.workflow_runs[0],name:'OTHER',id:1000+i})));
+  }),/history page 1 missing or malformed/);
 });

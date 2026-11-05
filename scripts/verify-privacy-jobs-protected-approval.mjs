@@ -5,8 +5,11 @@ import { privacyJobsStagingAdmissionProblems } from './validate-privacy-jobs-sta
 // This is independent source approval, not permission to deploy or claim live revocation.
 // Never accept caller-authored approval JSON; query GitHub on the protected runner.
 export const SOURCE_GATES = Object.freeze([
-  { repo: 'LifeLoggerAI/urai-privacy', workflows: ['URAI Privacy Release Verification', 'Release Verification'] },
-  { repo: 'LifeLoggerAI/urai-jobs', workflows: ['CI', 'URAI Jobs Final CI'] },
+  { repo: 'LifeLoggerAI/urai-privacy', workflows: ['URAI Privacy Release Verification', 'Release Verification'],
+    requiredChecks: ['release-verification', 'verify-release'] },
+  { repo: 'LifeLoggerAI/urai-jobs', workflows: ['CI', 'URAI Jobs Final CI'],
+    requiredChecks: ['build', 'Verify workspace and launch lock', 'Web typecheck and build',
+      'Functions build and tests', 'Firebase config smoke'] },
 ]);
 
 function requireFact(ok, description) {
@@ -17,7 +20,7 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
   const structure = privacyJobsStagingAdmissionProblems(authority);
   requireFact(structure.length === 0, `Source scope remains unapproved: ${structure.join('; ')}`);
   const accepted = [];
-  for (const { repo, workflows } of SOURCE_GATES) {
+  for (const { repo, workflows, requiredChecks } of SOURCE_GATES) {
     const consumer = authority.consumers.find(c => c.repository === repo);
     requireFact(consumer?.state === 'active', `${repo}: active reviewed consumer missing`);
     requireFact(Number.isSafeInteger(consumer.pullRequest) && consumer.pullRequest > 0, `${repo}: exact source PR is required`);
@@ -48,24 +51,60 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
       requiredStatus?.enforcement_level === 'everyone' &&
       requiredContexts.length > 0,
       `${repo}: main is not protected with mandatory required status checks for everyone`);
+    // GitHub protects named *job check contexts*, not arbitrary successful workflow runs.
+    // Bind every release-critical job to the GitHub Actions app (id 15368).
+    // A successful but unrequired workflow, or an unrelated required check,
+    // must never be mistaken for protected SOURCE verification.
+    requireFact(Array.isArray(requiredStatus?.checks) &&
+      requiredChecks.every(context => requiredStatus.checks.some(check =>
+        check?.context === context && check.app_id === 15368)),
+      `${repo}: required source workflow job checks not pinned to GitHub Actions app`);
     requireFact(first.user?.login && first.user?.type === 'User', `${repo}: missing human PR author`);
 
     const ref = await githubGet(`${base}/git/ref/heads/${branch}`);
     requireFact(ref?.object?.sha === consumer.exactSha, `${repo}: live GitHub ref does not match reviewed SHA`);
 
-    const reviews = await githubGet(`${base}/pulls/${consumer.pullRequest}/reviews?per_page=100`);
-    requireFact(Array.isArray(reviews), `${repo}: GitHub reviews unavailable`);
-    // Ignore stale approval when the same reviewer later requested changes/dismissed.
-    const latest = new Map();
-    for (const review of reviews) {
-      const login = review?.user?.login;
-      if (login && review.submitted_at) {
-        const timestamp = Date.parse(review.submitted_at);
-        if (Number.isFinite(timestamp) && (!latest.has(login) || latest.get(login).timestamp <= timestamp)) {
-          latest.set(login, { ...review, timestamp });
-        }
+    // Full review-history read: later changes requests on any page invalidate stale approvals.
+    // Refuse malformed/unavailable pages and unsupported histories. Never use caller approval JSON.
+    const reviews = [];
+    const reviewPageSize = 100;
+    const maxReviewPages = 10;
+    let reviewHistoryComplete = false;
+    for (let page = 1; page <= maxReviewPages; page++) {
+      const reviewPage = await githubGet(
+        `${base}/pulls/${consumer.pullRequest}/reviews?per_page=${reviewPageSize}&page=${page}`);
+      requireFact(Array.isArray(reviewPage) && reviewPage.length <= reviewPageSize,
+        `${repo}: GitHub review-history page ${page} unavailable or malformed`);
+      reviews.push(...reviewPage);
+      if (reviewPage.length < reviewPageSize) {
+        reviewHistoryComplete = true;
+        break;
       }
     }
+    requireFact(reviewHistoryComplete,
+      `${repo}: GitHub review history exceeds ${maxReviewPages} pages; fail closed`);
+    // COMMENTED must not erase an outstanding CHANGES_REQUESTED review.
+    const terminalStates = new Set(['APPROVED', 'CHANGES_REQUESTED', 'DISMISSED', 'COMMENTED']);
+    const latest = new Map();
+    for (const review of reviews) {
+      if (review?.state === 'PENDING') continue;
+      const login = review?.user?.login;
+      const timestamp = Date.parse(review?.submitted_at ?? '');
+      requireFact(terminalStates.has(review?.state) && typeof login === 'string' &&
+        login.trim().length > 0 && Number.isFinite(timestamp),
+        `${repo}: malformed submitted review history`);
+      if (review.state === 'COMMENTED') continue;
+      const previous = latest.get(login);
+      if (!previous || timestamp > previous.timestamp ||
+          (timestamp === previous.timestamp && review.state === 'CHANGES_REQUESTED' &&
+            previous.state !== 'CHANGES_REQUESTED')) {
+        latest.set(login, { ...review, timestamp });
+      }
+    }
+    // Even one eligible approval does not defeat another reviewer's
+    // outstanding CHANGES_REQUESTED disposition.
+    requireFact(![...latest.values()].some(review => review.state === 'CHANGES_REQUESTED'),
+      `${repo}: no eligible current-head independent APPROVED review; unresolved changes-requested reviewer`);
     let eligibleApproval = null;
     for (const review of latest.values()) {
       if (review.state !== 'APPROVED' || review.commit_id !== consumer.exactSha ||
@@ -78,13 +117,56 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     }
     requireFact(eligibleApproval?.reviewId > 0, `${repo}: no eligible current-head independent APPROVED review`);
 
-    const response = await githubGet(`${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=100`);
-    requireFact(Array.isArray(response?.workflow_runs), `${repo}: protected workflow evidence unavailable`);
+    // A rerun of an older workflow can be hidden beyond the first 100 runs.
+    // Read complete bounded history before approving source. Missing, malformed,
+    // contradictory or overlong GitHub histories MUST fail closed.
+    const workflowRuns = [];
+    const workflowPageSize = 100;
+    const maxWorkflowPages = 10;
+    let workflowHistoryComplete = false;
+    let expectedRunCount = null;
+    for (let page = 1; page <= maxWorkflowPages; page++) {
+      const result = await githubGet(
+        `${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=${workflowPageSize}&page=${page}`);
+      requireFact(Array.isArray(result?.workflow_runs) && result.workflow_runs.length <= workflowPageSize,
+        `${repo}: protected workflow history page ${page} missing or malformed`);
+      if (result.total_count !== undefined) {
+        requireFact(Number.isSafeInteger(result.total_count) && result.total_count >= 0 &&
+          (expectedRunCount === null || expectedRunCount === result.total_count),
+          `${repo}: protected workflow history count invalid or changed`);
+        expectedRunCount = result.total_count;
+      }
+      workflowRuns.push(...result.workflow_runs);
+      if (result.workflow_runs.length < workflowPageSize) {
+        workflowHistoryComplete = true;
+        break;
+      }
+    }
+    requireFact(workflowHistoryComplete,
+      `${repo}: protected workflow history exceeds ${maxWorkflowPages} pages; fail closed`);
+    requireFact(expectedRunCount === null || expectedRunCount === workflowRuns.length,
+      `${repo}: protected workflow history count incomplete`);
+    // Do not let an older green run override a newer failure or incomplete rerun.
+    // GitHub run ids advance as runs are created; run_attempt orders reruns
+    // of the same id. Inconsistent duplicate identities fail closed.
     for (const workflow of workflows) {
-      requireFact(response.workflow_runs.some(run => run.name === workflow && run.head_sha === consumer.exactSha &&
-          run.head_branch === branch && run.event === 'pull_request' && run.status === 'completed' &&
-          run.conclusion === 'success' && Number(run.run_attempt) >= 1),
-      `${repo}: protected workflow ${workflow} has no completed successful exact-head run`);
+      const history = workflowRuns.filter(run =>
+        run?.name === workflow && run.head_sha === consumer.exactSha &&
+        run.head_branch === branch && run.event === 'pull_request');
+      requireFact(history.length > 0 && history.every(run =>
+        Number.isSafeInteger(run.id) && run.id > 0 &&
+        Number.isSafeInteger(run.run_attempt) && run.run_attempt >= 1 &&
+        typeof run.status === 'string' && typeof run.conclusion === 'string'),
+        `${repo}: protected workflow ${workflow} exact-head history missing or malformed`);
+      const newest = history.reduce((winner, run) =>
+        run.id > winner.id || (run.id === winner.id && run.run_attempt > winner.run_attempt)
+          ? run : winner);
+      requireFact(history.every(run =>
+        run === newest || run.id !== newest.id || run.run_attempt !== newest.run_attempt ||
+        (run.status === newest.status && run.conclusion === newest.conclusion)),
+        `${repo}: conflicting protected workflow run records`);
+      requireFact(newest.status === 'completed' && newest.conclusion === 'success',
+        `${repo}: protected workflow ${workflow} latest exact-head run not successful`);
     }
     const last = await githubGet(`${base}/pulls/${consumer.pullRequest}`);
     requireFact(last.head?.sha === first.head.sha && last.head?.ref === first.head.ref &&
