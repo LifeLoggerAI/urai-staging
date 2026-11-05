@@ -194,11 +194,17 @@ export const getStagingSyntheticLifeGraph = functions.https.onCall(async (data: 
   const nodes = await db.runTransaction(async tx => {
     const consent = assertCurrentConsent((await tx.get(consentRef(uid))).data(), uid);
     const graph = await tx.get(db.collection('staging_synthetic_life_graph').doc(uid).collection('nodes'));
+    // Bound the disposable probe and require every relation target to be
+    // present in the same consent-checked graph snapshot.
+    if (graph.size > 128) deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
+    const graphIds = new Set(graph.docs.map(node => node.id));
     const memories = await Promise.all(graph.docs.map(x => tx.get(memoryRef(uid, x.id))));
     return graph.docs.map((node, i) => {
       const g = node.data(), memory = memories[i];
       const m = memory.data();
       const id = node.id;
+      if (g.relatesTo !== null && (typeof g.relatesTo !== 'string' ||
+        g.relatesTo === id || !graphIds.has(g.relatesTo))) deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
       const expectedBytes = fixedBytes(id);
       const expectedPath = 'staging_synthetic_memories/' + uid + '/' + id + '.bin';
       if (!memory.exists || !m || g.ownerUid !== uid || g.memoryId !== id ||

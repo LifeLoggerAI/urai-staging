@@ -237,6 +237,35 @@ try {
     finally { await source.update({ [field]: original }); }
   }
   assert.equal((await readGraph()).data.nodes.length, 2, 'restored graph remains usable');
+  // An active child must never point at a missing or self-referential
+  // parent, even when both the graph and memory row agree on the bad link.
+  const savedParentGraph = await syntheticGraph.get();
+  assert.ok(savedParentGraph.exists, 'original parent graph must exist');
+  await syntheticGraph.delete();
+  try { await assertDenied(readGraph(), 'dangling relationship to deleted parent graph must deny'); }
+  finally { await syntheticGraph.set(savedParentGraph.data()); }
+  await Promise.all([syntheticGraph.delete(), syntheticMemory.delete()]);
+  try { await assertDenied(readGraph(), 'dangling relationship to deleted parent source must deny'); }
+  finally {
+    await Promise.all([syntheticMemory.set(originalSource.data()), syntheticGraph.set(savedParentGraph.data())]);
+  }
+  const childGraph = localAdminDb.doc(`staging_synthetic_life_graph/${ua.user.uid}/nodes/${secondMemory.memoryId}`);
+  const childMemory = localAdminDb.doc(`staging_synthetic_memories/${ua.user.uid}/items/${secondMemory.memoryId}`);
+  const savedChildLink = (await childGraph.get()).get('relatesTo');
+  assert.equal(savedChildLink, firstMemory.memoryId);
+  for (const [label, invalidLink] of [
+    ['graph relationship to absent parent must deny', 'missing_parent_1234'],
+    ['graph self relationship must deny', secondMemory.memoryId],
+  ]) {
+    await Promise.all([childGraph.update({ relatesTo: invalidLink }),
+      childMemory.update({ relatedMemoryId: invalidLink })]);
+    try { await assertDenied(readGraph(), label); }
+    finally {
+      await Promise.all([childGraph.update({ relatesTo: savedChildLink }),
+        childMemory.update({ relatedMemoryId: savedChildLink })]);
+    }
+  }
+  assert.equal((await readGraph()).data.nodes.length, 2, 'restored relationships remain usable');
   record('memory-permissioned-retrieval-actual-storage-fixity');
 
   await mustDeny('memory-cross-user-retrieval-denied',
