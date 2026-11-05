@@ -45,7 +45,8 @@
     "test:r423:worker:deletion": "node --test scripts/test-r423-worker-deletion-source-contract.mjs",
     "test:r424:signed:rehearsal": "node --test scripts/test-r424-signed-rehearsal.mjs",
     "test:genesis:release:wiring": "node --test scripts/test-genesis-release-gate-wiring.mjs",
-    "test:r425:evidence:escrow": "node --test scripts/test-r425-evidence-source-contract.mjs"
+    "test:r425:evidence:escrow": "node --test scripts/test-r425-evidence-source-contract.mjs",
+    "test:r720:public:deletion-factory": "node --test scripts/test-r720-public-deletion-factory-denial.mjs"
   },
   "engines": {
     "node": "22"
