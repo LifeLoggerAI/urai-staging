@@ -1,12 +1,12 @@
 # One UrAi Genesis — R744 isolated owner-run acceptance lane (HOLD)
 
-This remains a documentation and **non-deploying** owner-run checkout/test lane descended from the R744 isolated `main` acceptance branch. It does not merge, rebase, modify, or approve existing security/owner PRs. The pinned target is review-only R768 child #158 (built on #157, #156, #154, #151 and #148): ES2020 compatibility, synthetic-memory source/graph integrity, acyclic relationships, direct Replay linked-parent checks before/after bytes, and strict TypeScript relation narrowing. These remain source review candidates, not releases. The upstream security, timing and historical-ledger corrections remain inherited unchanged. All remain unmerged; this is neither a production candidate nor an approved release.
+This remains a documentation and **non-deploying** owner-run checkout/test lane descended from the R744 isolated `main` acceptance branch. It does not merge, rebase, modify, or approve existing security/owner PRs. The pinned target is review-only R770 child #160 (built on #158, #157, #156, #154, #151 and #148): ES2020 compatibility, synthetic-memory source/graph integrity, acyclic relationships, direct Replay source-chain validation before/after bytes, and strict TypeScript relation narrowing. These remain source review candidates, not releases. The upstream security, timing and historical-ledger corrections remain inherited unchanged. All remain unmerged; this is neither a production candidate nor an approved release.
 
 ## Exactly pinned candidate
 
-- Staging review: [PR #158](https://github.com/LifeLoggerAI/urai-staging/pull/158) (R768 strict linked-parent TypeScript narrowing child, draft / unmerged)
-- Source commit: `f01eb015276761947d59eb3970f3b753f5510426`
-- Git tree: `8f22aba645848a39c7c3bba76be71a4996a8bbaf`
+- Staging review: [PR #160](https://github.com/LifeLoggerAI/urai-staging/pull/160) (R770 complete Replay ancestry fence, draft / unmerged)
+- Source commit: `1219d785d09f5303d1d4addc16c666777c428b60`
+- Git tree: `69aef7074a56dc1d46408ea9147faba2d6378d5e`
 - Expected tracked files: 239
 - Acceptance target: one disposable local checkout, Node 22, Java 17+, pinned original Functions npm lockfile, no paid provider, no real-user data.
 
@@ -18,7 +18,7 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 2. Real disposable Firebase Auth/Firestore/Storage/Functions emulator tests are not deployed Privacy–Jobs–Studio–Replay integration, cloud IAM attestation, provider deletion, or RuAi tenant isolation.
 3. A local pass cannot satisfy failed GitHub-hosted check runs, unprotected `main`, absent non-author review or missing authorized Privacy issuer/Jobs receiver.
 4. `scripts/validate-privacy-jobs-staging-admission.mjs` and `scripts/verify-privacy-jobs-protected-approval.mjs` must **deny** admission until genuine authority exists. A surprising success is a stop condition.
-5. Staging #134/#136 have overlapping verifier changes, reconciled on review-only child #138. Child #141 carries #140's stricter synthetic timing regressions without changing the verifier; child #143 restores the separately verified R745 historical ledger record. All remain unmerged. This pinned owner-run acceptance must run the original full-repository gates on #158's exact SHA; earlier #138/#140/#141/#143/#146/#154/#156/#157 source-only results do not transfer. Do not merge or approve based on this script.
+5. Staging #134/#136 have overlapping verifier changes, reconciled on review-only child #138. Child #141 carries #140's stricter synthetic timing regressions without changing the verifier; child #143 restores the separately verified R745 historical ledger record. All remain unmerged. This pinned owner-run acceptance must run the original full-repository gates on #160's exact SHA; earlier #138/#140/#141/#143/#146/#154/#156/#157 source-only results do not transfer. Do not merge or approve based on this script.
 
 ### Verified launch blockers
 
@@ -27,7 +27,14 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 - Privacy/Jobs staging consumers need **independent** code review and real bounded staging service identities. Never flip `state:active` merely to make a test pass.
 - Final device, visual, accessibility, 20+ locale, signed deletion, rollback, store/provider, RuAi isolation and founder acceptance are not certified.
 
-### R769 current exact-source owner acceptance pin (#158, REVIEW ONLY)
+### R771 current source pin (#160) — REVIEW ONLY, RELEASE HOLD
+
+- Source authority remains candidate-only: [#160](https://github.com/LifeLoggerAI/urai-staging/pull/160) exact `1219d785d09f5303d1d4addc16c666777c428b60`, full tracked tree `69aef7074a56dc1d46408ea9147faba2d6378d5e`, 239 files. Its predecessor #158 is retained below as **historical evidence**, not today's acceptance target.
+- #160 adds bounded, consent-bound **complete ancestor validation** to direct Replay reads and four additional synthetic Firebase-emulator regressions plus a valid three-generation case. An independent source-driven 27-case simulation matched the exact source blob and allowed both legitimate reads while denying 25 invalid states. Neither that probe nor the original 320 dependency-free native tests certifies real installed Functions/Firebase behavior.
+- The owner launcher has changed **only three immutable source references** (pull ref, commit and tree). It still requires frozen `npm ci`, original unchanged complete `npm run check`, tracked 30-entrypoint **322/322** native TAP, real R451 58-case four-emulator fixture, owner denial gates, immutable source check and production HOLD.
+- **Do not promote** on source-only evidence. GitHub-hosted execution, independent review, real Privacy issuer/Jobs receiver, Studio/Replay/RuAi authenticated revoke/delete, provider ACK and founder AAA+++ device/visual consent remain outstanding.
+
+### R769 historical exact-source owner acceptance pin (#158, HISTORICAL ONLY)
 
 - Target [#158](https://github.com/LifeLoggerAI/urai-staging/pull/158) at immutable commit `f01eb015276761947d59eb3970f3b753f5510426` and tree `8f22aba645848a39c7c3bba76be71a4996a8bbaf` (239 tracked files). This child adds a strict TypeScript narrowing correction to #157's direct linked-parent checks, preserving #156's acyclic graph guard and #154's relationship integrity.
 - The owner-runner changes exactly **three source identity literals**: commit SHA, Git tree and `refs/pull/158/head`. It retains the unmodified 30-entrypoint **322-case** native suite requirement, unchanged original full `npm run check`, frozen Functions `npm ci`, actual four-emulator tests, strict 58-case receipt, expected negative authorization decisions, `productionAuthorized=false` and no deployment actions.
@@ -50,7 +57,7 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 
 ### Owner-controlled next actions
 
-1. Run the pinned script against Staging #158 and retain sanitized evidence. If the PR moves, stop and request a fresh SHA-pinned review candidate rather than editing expected hashes.
+1. Run the pinned script against Staging #160 and retain sanitized evidence. If the PR moves, stop and request a fresh SHA-pinned review candidate rather than editing expected hashes.
 2. Resolve GitHub account recovery, Actions runner eligibility/billing and protected `main` settings via provider-supported owner workflow. No payment or 2FA bypass is authorized by this document.
 3. Obtain non-author source/security review after the active verifier branches converge; observe protected GitHub checks executing actual steps.
 4. Complete real authorized staging integration and Gold Master visual/device/accessibility acceptance before requesting a founder GO.
