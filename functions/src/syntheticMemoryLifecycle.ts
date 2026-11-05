@@ -203,6 +203,10 @@ export const getStagingSyntheticLifeGraph = functions.https.onCall(async (data: 
       const g = node.data(), memory = memories[i];
       const m = memory.data();
       const id = node.id;
+      // This disposable source is created with Firestore-generated ID tokens.
+      // Reject alternate Firestore document names even if someone forges a
+      // matching graph, memory row and synthetic SHA together.
+      if (!/^[A-Za-z0-9_-]{6,128}$/.test(id)) deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
       if (g.relatesTo !== null && (typeof g.relatesTo !== 'string' ||
         g.relatesTo === id || !graphIds.has(g.relatesTo))) deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
       const expectedBytes = fixedBytes(id);
@@ -222,6 +226,20 @@ export const getStagingSyntheticLifeGraph = functions.https.onCall(async (data: 
       return { memoryId: id, relatesTo: g.relatesTo, sourceSha256: g.sourceSha256 };
     });
   });
+  // Creation only permits links to an *already existing* memory. Cycles
+  // therefore cannot be produced by the legitimate creation endpoint.
+  // The graph is bounded to 128 nodes above, so this ancestry check is
+  // deterministic, bounded, and uses only the consent-bound snapshot.
+  const parents = new Map<string, string | null>(nodes.map(node => [node.memoryId, node.relatesTo]));
+  for (const start of parents.keys()) {
+    const seen = new Set<string>();
+    let current: string | null = start;
+    while (current !== null) {
+      if (seen.has(current)) deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
+      seen.add(current);
+      current = parents.get(current) ?? null;
+    }
+  }
   return { ownerUid: uid, synthetic: true, nodes };
 });
 
