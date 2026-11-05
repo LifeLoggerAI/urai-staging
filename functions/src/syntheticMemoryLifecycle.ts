@@ -188,17 +188,41 @@ export const getStagingSyntheticLifeGraph = functions.https.onCall(async (data: 
   const input = strict(data, ['ownerUid']);
   assertOwner(input, uid);
   const db = getFirestore();
-  const before = assertCurrentConsent((await consentRef(uid).get()).data(), uid);
-  const nodes = await db.collection('staging_synthetic_life_graph').doc(uid).collection('nodes').get();
-  const after = assertCurrentConsent((await consentRef(uid).get()).data(), uid);
-  if (before.decisionReceiptId !== after.decisionReceiptId) deny('SYNTHETIC_GRAPH_CONSENT_CHANGED');
-  const out = nodes.docs.map(x => x.data()).filter(x =>
-    x.ownerUid === uid && x.synthetic === true &&
-    x.state === 'ACTIVE' && x.decisionReceiptId === after.decisionReceiptId);
-  if (out.length !== nodes.size) deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
-  return { ownerUid: uid, synthetic: true, nodes: out.map(x => ({
-    memoryId: x.memoryId, relatesTo: x.relatesTo, sourceSha256: x.sourceSha256,
-  })) };
+  // Keep consent, graph nodes and their source memories in one read snapshot.
+  // A consent-only recheck cannot detect a deleted or revoked backing memory.
+  const nodes = await db.runTransaction(async tx => {
+    const consent = assertCurrentConsent((await tx.get(consentRef(uid))).data(), uid);
+    const graph = await tx.get(db.collection('staging_synthetic_life_graph').doc(uid).collection('nodes'));
+    // This is a bounded, disposable emulator probe, not a general graph export.
+    if (graph.size > 128) deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
+    const out: Array<{ memoryId: string; relatesTo: string | null; sourceSha256: string }> = [];
+    for (const node of graph.docs) {
+      const row = node.data();
+      const id = row.memoryId;
+      if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{6,128}$/.test(id) ||
+        id !== node.id || row.ownerUid !== uid || row.synthetic !== true ||
+        row.state !== 'ACTIVE' || row.decisionReceiptId !== consent.decisionReceiptId ||
+        typeof row.sourceSha256 !== 'string' || !/^[0-9a-f]{64}$/.test(row.sourceSha256)) {
+        deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
+      }
+      const source = await tx.get(memoryRef(uid, id));
+      if (!source.exists || source.get('ownerUid') !== uid ||
+        source.get('memoryId') !== id || source.get('synthetic') !== true ||
+        source.get('state') !== 'ACTIVE' ||
+        source.get('sourceEvidenceClass') !== 'SYNTHETIC_TEST_ONLY' ||
+        source.get('decisionReceiptId') !== consent.decisionReceiptId ||
+        source.get('sourceSha256') !== row.sourceSha256 ||
+        source.get('relatedMemoryId') !== row.relatesTo ||
+        source.get('storagePath') !== 'staging_synthetic_memories/' + uid + '/' + id + '.bin' ||
+        !Number.isSafeInteger(source.get('byteLength')) ||
+        source.get('byteLength') < 1 || source.get('byteLength') > 256) {
+        deny('SYNTHETIC_GRAPH_SOURCE_INVALID');
+      }
+      out.push({ memoryId: id, relatesTo: row.relatesTo, sourceSha256: row.sourceSha256 });
+    }
+    return out;
+  });
+  return { ownerUid: uid, synthetic: true, nodes };
 });
 
 export const revokeStagingSyntheticMemoryConsent = functions.https.onCall(async (data: unknown, context) => {

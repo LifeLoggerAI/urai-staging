@@ -213,6 +213,22 @@ try {
   await syntheticGraph.update({ state: 'REVOKED' });
   try { await assertDenied(privateRead(), 'inactive graph must deny memory read'); }
   finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
+  // An otherwise active graph node must never expose a revoked or orphaned
+  // backing memory. Keep the original fixed 40-check receipt unchanged.
+  const syntheticBackingMemory = localAdminDb.doc(
+    `staging_synthetic_memories/${ua.user.uid}/items/${firstMemory.memoryId}`);
+  const savedBackingMemory = await syntheticBackingMemory.get();
+  assert.ok(savedBackingMemory.exists, 'Synthetic backing memory fixture exists');
+  await syntheticBackingMemory.update({ state: 'REVOKED' });
+  try {
+    await assertDenied(call(a, 'getStagingSyntheticLifeGraph', { ownerUid: ua.user.uid }),
+      'revoked backing memory must deny graph listing');
+  } finally { await syntheticBackingMemory.set(savedBackingMemory.data()); }
+  await syntheticBackingMemory.delete();
+  try {
+    await assertDenied(call(a, 'getStagingSyntheticLifeGraph', { ownerUid: ua.user.uid }),
+      'orphaned graph node must deny graph listing');
+  } finally { await syntheticBackingMemory.set(savedBackingMemory.data()); }
   record('memory-permissioned-retrieval-actual-storage-fixity');
 
   await mustDeny('memory-cross-user-retrieval-denied',
