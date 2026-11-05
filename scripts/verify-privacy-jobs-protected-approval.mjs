@@ -119,11 +119,29 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
 
     const response = await githubGet(`${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=100`);
     requireFact(Array.isArray(response?.workflow_runs), `${repo}: protected workflow evidence unavailable`);
+    // Do not let an older green run override a newer failure or incomplete rerun.
+    // GitHub run ids advance as runs are created; run_attempt orders reruns
+    // of the same id. Inconsistent duplicate identities fail closed.
+    requireFact(response.workflow_runs.length <= 100,
+      `${repo}: malformed protected workflow history page`);
     for (const workflow of workflows) {
-      requireFact(response.workflow_runs.some(run => run.name === workflow && run.head_sha === consumer.exactSha &&
-          run.head_branch === branch && run.event === 'pull_request' && run.status === 'completed' &&
-          run.conclusion === 'success' && Number(run.run_attempt) >= 1),
-      `${repo}: protected workflow ${workflow} has no completed successful exact-head run`);
+      const history = response.workflow_runs.filter(run =>
+        run?.name === workflow && run.head_sha === consumer.exactSha &&
+        run.head_branch === branch && run.event === 'pull_request');
+      requireFact(history.length > 0 && history.every(run =>
+        Number.isSafeInteger(run.id) && run.id > 0 &&
+        Number.isSafeInteger(run.run_attempt) && run.run_attempt >= 1 &&
+        typeof run.status === 'string' && typeof run.conclusion === 'string'),
+        `${repo}: protected workflow ${workflow} exact-head history missing or malformed`);
+      const newest = history.reduce((winner, run) =>
+        run.id > winner.id || (run.id === winner.id && run.run_attempt > winner.run_attempt)
+          ? run : winner);
+      requireFact(history.every(run =>
+        run === newest || run.id !== newest.id || run.run_attempt !== newest.run_attempt ||
+        (run.status === newest.status && run.conclusion === newest.conclusion)),
+        `${repo}: conflicting protected workflow run records`);
+      requireFact(newest.status === 'completed' && newest.conclusion === 'success',
+        `${repo}: protected workflow ${workflow} latest exact-head run not successful`);
     }
     const last = await githubGet(`${base}/pulls/${consumer.pullRequest}`);
     requireFact(last.head?.sha === first.head.sha && last.head?.ref === first.head.ref &&

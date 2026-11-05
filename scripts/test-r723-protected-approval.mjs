@@ -188,3 +188,50 @@ test('R735 status-check capitalization drift fails closed',async()=>{
     if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks[0].context += '-shadow';
   }),/required source workflow job checks not pinned/);
 });
+
+
+test('R736 later failed exact-head workflow defeats stale green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'completed',conclusion:'failure'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 newer in-progress run defeats stale successful run',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'in_progress',conclusion:'neutral'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 later failed attempt of same workflow run rejects',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],run_attempt:2,conclusion:'failure'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 later success legitimately supersedes an earlier failed run',async()=>{
+  const r=await probe((route,v)=>{
+    if(route.includes('/actions/runs?')){
+      v.workflow_runs[0].status='completed';v.workflow_runs[0].conclusion='failure';
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,conclusion:'success'});
+    }
+  });
+  assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
+});
+test('R736 malformed exact-head run identity denies approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))v.workflow_runs[0].id='not-a-run-id';
+  }),/history missing or malformed/);
+});
+test('R736 same run attempt with contradictory outcomes fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],conclusion:'failure'});
+  }),/conflicting protected workflow run records/);
+});
+test('R736 unrelated failed workflow does not override required success',async()=>{
+  const r=await probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,name:'Unrelated check',conclusion:'failure'});
+  });
+  assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
+});
