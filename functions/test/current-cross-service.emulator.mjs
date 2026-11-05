@@ -9,6 +9,7 @@ import { getStorage, connectStorageEmulator, ref, uploadBytes, getMetadata, dele
 import { getFunctions, connectFunctionsEmulator, httpsCallable } from 'firebase/functions';
 import { initializeApp as initializeAdminApp, deleteApp as deleteAdminApp } from 'firebase-admin/app';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 const expectedProject = 'urai-staging-test';
 const requiredEmulators = [
@@ -185,6 +186,33 @@ try {
   const actual = Buffer.from(retrieval.mediaBase64, 'base64');
   assert.equal(actual.toString('utf8'), 'URAI_DISPOSABLE_SYNTHETIC_MEMORY:' + firstMemory.memoryId);
   assert.equal(retrieval.sourceSha256, firstMemory.sourceSha256);
+
+  // Poison only disposable emulator records through the Admin SDK, then
+  // restore them even when an assertion fails. This exercises the actual
+  // callable's owner/graph provenance refusals, without changing the fixed
+  // 40-check receipt contract used by existing CI.
+  const localAdminDb = getAdminFirestore(server);
+  const syntheticConsent = localAdminDb.doc(`staging_synthetic_memory_consents/${ua.user.uid}`);
+  const syntheticGraph = localAdminDb.doc(`staging_synthetic_life_graph/${ua.user.uid}/nodes/${firstMemory.memoryId}`);
+  const privateRead = () => call(a, 'retrieveStagingSyntheticMemory', {
+    ownerUid: ua.user.uid, memoryId: firstMemory.memoryId,
+  });
+  const assertDenied = (request, label) => assert.rejects(request, error => {
+    assert.match(String(error?.code ?? error), /permission-denied/, label);
+    return true;
+  }, label);
+  await syntheticConsent.update({ ownerUid: ub.user.uid });
+  try {
+    await assertDenied(privateRead(), 'mismatched consent owner must deny memory read');
+    await assertDenied(call(a, 'getStagingSyntheticLifeGraph', { ownerUid: ua.user.uid }),
+      'mismatched consent owner must deny graph read');
+  } finally { await syntheticConsent.update({ ownerUid: ua.user.uid }); }
+  await syntheticGraph.update({ ownerUid: ub.user.uid });
+  try { await assertDenied(privateRead(), 'mismatched graph owner must deny memory read'); }
+  finally { await syntheticGraph.update({ ownerUid: ua.user.uid }); }
+  await syntheticGraph.update({ state: 'REVOKED' });
+  try { await assertDenied(privateRead(), 'inactive graph must deny memory read'); }
+  finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
   record('memory-permissioned-retrieval-actual-storage-fixity');
 
   await mustDeny('memory-cross-user-retrieval-denied',
