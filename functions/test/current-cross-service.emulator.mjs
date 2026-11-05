@@ -213,6 +213,30 @@ try {
   await syntheticGraph.update({ state: 'REVOKED' });
   try { await assertDenied(privateRead(), 'inactive graph must deny memory read'); }
   finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
+
+  // A graph node by itself is not a valid source. These red/green cases must
+  // run against the actual Firestore/Functions emulator, not a mocked SDK.
+  const syntheticMemory = localAdminDb.doc(`staging_synthetic_memories/${ua.user.uid}/items/${firstMemory.memoryId}`);
+  const readGraph = () => call(a, 'getStagingSyntheticLifeGraph', { ownerUid: ua.user.uid });
+  const originalSource = await syntheticMemory.get();
+  assert.ok(originalSource.exists, 'original synthetic memory must exist');
+  await syntheticMemory.delete();
+  try { await assertDenied(readGraph(), 'orphan graph node must deny graph read'); }
+  finally { await syntheticMemory.set(originalSource.data()); }
+  const graphPoisonCases = [
+    [syntheticGraph, 'sourceSha256', 'f'.repeat(64), 'graph source digest mismatch must deny graph read'],
+    [syntheticGraph, 'memoryId', 'another_memory_1234', 'graph memory ID mismatch must deny graph read'],
+    [syntheticMemory, 'state', 'REVOKED', 'inactive memory must deny graph read'],
+    [syntheticMemory, 'synthetic', false, 'non-synthetic memory must deny graph read'],
+    [syntheticGraph, 'relatesTo', 'other_memory_5678', 'relation mismatch must deny graph read'],
+  ];
+  for (const [source, field, corruptValue, label] of graphPoisonCases) {
+    const original = (await source.get()).get(field);
+    await source.update({ [field]: corruptValue });
+    try { await assertDenied(readGraph(), label); }
+    finally { await source.update({ [field]: original }); }
+  }
+  assert.equal((await readGraph()).data.nodes.length, 2, 'restored graph remains usable');
   record('memory-permissioned-retrieval-actual-storage-fixity');
 
   await mustDeny('memory-cross-user-retrieval-denied',
