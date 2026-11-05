@@ -99,3 +99,40 @@ denied('shared service key',r=>({receipts:r,registry:{
 denied('legal hold',r=>({receipts:r,context:{...context,legalHold:true}}));
 denied('production-authorized context',r=>({receipts:r,context:{...context,productionAuthorized:true}}));
 denied('unsigned extra receipt field',r=>{r[0].payload.extra='not-signed';return r;});
+
+denied('two different Ed25519 service keys with the same signer ID',r=>({
+  receipts:r,
+  registry:{
+    ...trustedPublicKeys,
+    [R722_PENDING[1]]:{
+      ...trustedPublicKeys[R722_PENDING[1]],
+      keyId:trustedPublicKeys[R722_PENDING[0]].keyId
+    }
+  }
+}));
+denied('unsigned top-level production approval alongside valid signature',r=>{
+  r[0].productionAuthorized=true;
+  return r;
+});
+denied('unsigned top-level provider deletion acknowledgment',r=>{
+  r[0].providerDeletionAcknowledged=true;
+  return r;
+});
+denied('receipt wrapper missing its signature field',r=>{
+  delete r[0].signature;
+  return r;
+});
+test('R724 unique key IDs and strict envelope shape report explicit blockers',()=>{
+  const sharedRegistry={
+    ...trustedPublicKeys,
+    [R722_PENDING[1]]:{
+      ...trustedPublicKeys[R722_PENDING[1]],
+      keyId:trustedPublicKeys[R722_PENDING[0]].keyId
+    }
+  };
+  assert.ok(run(baseline(),context,sharedRegistry).blockers.includes(
+    'TRUSTED_KEY_INVALID_OR_SHARED'));
+  const forged=baseline();
+  forged[0].productionAuthorized=true;
+  assert.ok(run(forged).blockers.includes('SIGNED_ENVELOPE_INVALID'));
+});

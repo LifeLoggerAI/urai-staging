@@ -88,11 +88,14 @@ export function verifyR722SyntheticDeletionReceipts({
   const seenAdapters = new Set();
   const seenReceipts = new Set();
   const seenKeys = new Set();
+  const seenKeyIds = new Set();
   for (const adapterId of R722_PENDING) {
     const record = trustedPublicKeys[adapterId];
     try {
       if (!record || !TOKEN.test(record.keyId ?? '') ||
           typeof record.publicKey !== 'string') throw new Error('invalid identity');
+      if (seenKeyIds.has(record.keyId)) throw new Error('shared signer ID');
+      seenKeyIds.add(record.keyId);
       const key = createPublicKey(record.publicKey);
       if (key.asymmetricKeyType !== 'ed25519') throw new Error('invalid key type');
       const fingerprint = key.export({type:'spki',format:'der'}).toString('hex');
@@ -104,7 +107,18 @@ export function verifyR722SyntheticDeletionReceipts({
   }
   if (failures.length) return denied();
   for (const signed of receipts) {
-    const p = signed?.payload;
+    // The signature only covers the canonical payload. Reject additional
+    // unsigned envelope claims before any consumer could misread them as
+    // proof of deletion, release, or provider authority.
+    if (!signed || typeof signed !== 'object' || Array.isArray(signed) ||
+        Object.keys(signed).length !== 3 ||
+        !Object.hasOwn(signed, 'payload') ||
+        !Object.hasOwn(signed, 'keyId') ||
+        !Object.hasOwn(signed, 'signature')) {
+      failures.push('SIGNED_ENVELOPE_INVALID');
+      continue;
+    }
+    const p = signed.payload;
     const adapterId = p?.adapterId;
     if (seenAdapters.has(adapterId)) failures.push('DUPLICATE_CONTRIBUTOR');
     seenAdapters.add(adapterId);
