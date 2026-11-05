@@ -13,7 +13,9 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   const sha=jobs?b:a;
   let value;
   if(/\/pulls\/\d+$/.test(route))value={state:'open',draft:false,merged_at:null,head:{sha,ref:'reviewed',repo:{full_name:repo}},base:{ref:'main',repo:{full_name:repo}},user:{login:'OriginalAuthor',type:'User'},updated_at:'2026-11-05T10:00:00Z'};
-  else if(route.endsWith('/branches/main')) value={name:'main',protected:true,commit:{sha:'d'.repeat(40)},protection:{enabled:true,required_status_checks:{enforcement_level:'everyone',contexts:['CI','Release Verification'],checks:[]}}};
+  else if(route.endsWith('/branches/main')) value={name:'main',protected:true,commit:{sha:'d'.repeat(40)},protection:{enabled:true,required_status_checks:{enforcement_level:'everyone',
+    contexts:SOURCE_GATES.find(x=>x.repo===repo).requiredChecks,
+    checks:SOURCE_GATES.find(x=>x.repo===repo).requiredChecks.map(context=>({context,app_id:15368}))}}};
   else if(route.includes('/git/ref/')) value={object:{sha}};
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
@@ -64,7 +66,7 @@ test('R727 unprotected main branch rejected even if reviewer and CI passed',asyn
 });
 test('R727 missing mandatory status checks rejected',async()=>{
   await assert.rejects(probe((route,v)=>{
-    if(route.endsWith('/branches/main'))v.protection.required_status_checks.contexts=[];
+    if(route.endsWith('/branches/main')){v.protection.required_status_checks.contexts=[];v.protection.required_status_checks.checks=[];}
   }),/mandatory required status checks/);
 });
 test('R727 admin-bypassable policy rejected',async()=>{
@@ -155,4 +157,34 @@ test('R730 ambiguous same-second changes request outranks approval',async()=>{
       v.push({...v[0],id:409,user:{login:'OtherReviewer',type:'User'},state:'APPROVED',submitted_at:'2026-11-05T12:00:00Z'});
     }
   }),/unresolved changes-requested reviewer/);
+});
+
+
+test('R735 unrelated required checks cannot certify source workflows',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main')){
+      v.protection.required_status_checks.contexts=['UNRELATED_OPTIONAL_CHECK'];
+      v.protection.required_status_checks.checks=[{context:'UNRELATED_OPTIONAL_CHECK',app_id:15368}];
+    }
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 correct check names from unbound app cannot certify',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks.forEach(c=>{c.app_id=-1;});
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 one missing release-critical required job blocks source approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks.pop();
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 contexts alone without source app binding do not prove protection',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks=[];
+  }),/required source workflow job checks not pinned/);
+});
+test('R735 status-check capitalization drift fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.endsWith('/branches/main'))v.protection.required_status_checks.checks[0].context += '-shadow';
+  }),/required source workflow job checks not pinned/);
 });

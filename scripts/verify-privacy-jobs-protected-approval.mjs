@@ -5,8 +5,11 @@ import { privacyJobsStagingAdmissionProblems } from './validate-privacy-jobs-sta
 // This is independent source approval, not permission to deploy or claim live revocation.
 // Never accept caller-authored approval JSON; query GitHub on the protected runner.
 export const SOURCE_GATES = Object.freeze([
-  { repo: 'LifeLoggerAI/urai-privacy', workflows: ['URAI Privacy Release Verification', 'Release Verification'] },
-  { repo: 'LifeLoggerAI/urai-jobs', workflows: ['CI', 'URAI Jobs Final CI'] },
+  { repo: 'LifeLoggerAI/urai-privacy', workflows: ['URAI Privacy Release Verification', 'Release Verification'],
+    requiredChecks: ['release-verification', 'verify-release'] },
+  { repo: 'LifeLoggerAI/urai-jobs', workflows: ['CI', 'URAI Jobs Final CI'],
+    requiredChecks: ['build', 'Verify workspace and launch lock', 'Web typecheck and build',
+      'Functions build and tests', 'Firebase config smoke'] },
 ]);
 
 function requireFact(ok, description) {
@@ -17,7 +20,7 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
   const structure = privacyJobsStagingAdmissionProblems(authority);
   requireFact(structure.length === 0, `Source scope remains unapproved: ${structure.join('; ')}`);
   const accepted = [];
-  for (const { repo, workflows } of SOURCE_GATES) {
+  for (const { repo, workflows, requiredChecks } of SOURCE_GATES) {
     const consumer = authority.consumers.find(c => c.repository === repo);
     requireFact(consumer?.state === 'active', `${repo}: active reviewed consumer missing`);
     requireFact(Number.isSafeInteger(consumer.pullRequest) && consumer.pullRequest > 0, `${repo}: exact source PR is required`);
@@ -48,6 +51,14 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
       requiredStatus?.enforcement_level === 'everyone' &&
       requiredContexts.length > 0,
       `${repo}: main is not protected with mandatory required status checks for everyone`);
+    // GitHub protects named *job check contexts*, not arbitrary successful workflow runs.
+    // Bind every release-critical job to the GitHub Actions app (id 15368).
+    // A successful but unrequired workflow, or an unrelated required check,
+    // must never be mistaken for protected SOURCE verification.
+    requireFact(Array.isArray(requiredStatus?.checks) &&
+      requiredChecks.every(context => requiredStatus.checks.some(check =>
+        check?.context === context && check.app_id === 15368)),
+      `${repo}: required source workflow job checks not pinned to GitHub Actions app`);
     requireFact(first.user?.login && first.user?.type === 'User', `${repo}: missing human PR author`);
 
     const ref = await githubGet(`${base}/git/ref/heads/${branch}`);
