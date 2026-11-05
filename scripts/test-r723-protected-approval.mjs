@@ -18,7 +18,7 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
   else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10,check_suite_id:id+100}))};
-  else if(route.includes('/check-runs?')){const names=SOURCE_GATES.find(x=>x.repo===repo).requiredChecks;value={total_count:names.length,check_runs:names.map((name,id)=>({name,check_suite:{id:(jobs&&id>0?101:100+id)},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};}
+  else if(route.includes('/check-runs?')){const names=SOURCE_GATES.find(x=>x.repo===repo).requiredChecks;value={total_count:names.length,check_runs:names.map((name,id)=>({id:id+200,name,check_suite:{id:(jobs&&id>0?101:100+id)},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};}
   else throw Error('Unexpected GitHub request: '+route);
   const copy=structuredClone(value);mutate(route,copy);return copy;
 };
@@ -279,4 +279,76 @@ test('R736 a forged extra required Jobs job app cannot be used',async()=>{
   await assert.rejects(probe((route,v)=>{
     if(route.includes('urai-jobs')&&route.includes('/check-runs?'))v.check_runs[2].app.id=9999;
   }),/required source workflow job checks not green/);
+});
+
+// R737: newer sibling workflow-history security regressions.
+test('R736 later failed exact-head workflow defeats stale green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'completed',conclusion:'failure'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 newer in-progress run defeats stale successful run',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,status:'in_progress',conclusion:'neutral'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 later failed attempt of same workflow run rejects',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],run_attempt:2,conclusion:'failure'});
+  }),/latest exact-head run not successful/);
+});
+test('R736 later success legitimately supersedes an earlier failed run',async()=>{
+  const r=await probe((route,v)=>{
+    if(route.includes('/actions/runs?')){
+      v.workflow_runs[0].status='completed';v.workflow_runs[0].conclusion='failure';
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,conclusion:'success'});
+    }
+  });
+  assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
+});
+test('R736 malformed exact-head run identity denies approval',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))v.workflow_runs[0].id='not-a-run-id';
+  }),/history missing or malformed/);
+});
+test('R736 same run attempt with contradictory outcomes fails closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],conclusion:'failure'});
+  }),/conflicting protected workflow run records/);
+});
+test('R736 unrelated failed workflow does not override required success',async()=>{
+  const r=await probe((route,v)=>{
+    if(route.includes('/actions/runs?'))
+      v.workflow_runs.push({...v.workflow_runs[0],id:9001,name:'Unrelated check',conclusion:'failure'});
+  });
+  assert.equal(r.accepted.length,2);assert.equal(r.productionAuthorized,false);
+});
+
+
+test('R737 an older successful check cannot mask a newer failed required check',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs') && route.includes('/check-runs?')) {
+      const old=v.check_runs.find(x=>x.name==='Firebase config smoke');
+      v.check_runs.push({...old,id:9001,conclusion:'failure'});v.total_count++;
+    }
+  }),/required source workflow job checks not green/);
+});
+test('R737 incomplete check-run identity must fail closed',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy') && route.includes('/check-runs?')) delete v.check_runs[0].id;
+  }),/required source workflow job checks not green|malformed required source check/);
+});
+test('R737 a newer passing required check supersedes the earlier failure without production GO',async()=>{
+  const x=await probe((route,v)=>{
+    if(route.includes('urai-jobs') && route.includes('/check-runs?')) {
+      const old=v.check_runs.find(x=>x.name==='Firebase config smoke');
+      old.conclusion='failure';v.check_runs.push({...old,id:9001,conclusion:'success'});v.total_count++;
+    }
+  });
+  assert.equal(x.accepted.length,2);
+  assert.equal(x.productionAuthorized,false);
 });

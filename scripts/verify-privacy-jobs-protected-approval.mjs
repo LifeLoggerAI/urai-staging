@@ -140,26 +140,70 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     // A green parent workflow does not prove every required job actually
     // ran and passed. Require all named branch-protected release jobs on the
     // exact candidate SHA, not only one check per parent workflow.
-    requireFact(requiredChecks.every(context => checksResponse.check_runs.some(check =>
-      check?.name === context && check.head_sha === consumer.exactSha &&
-      check.status === 'completed' && check.conclusion === 'success' &&
-      enforceRequiredCheckApp(check))),
-      `${repo}: required source workflow job checks not green on exact reviewed SHA`);
+    const newestRequiredChecks = new Map();
+    for (const context of requiredChecks) {
+      const history = checksResponse.check_runs.filter(check =>
+        check?.name === context && check.head_sha === consumer.exactSha &&
+        enforceRequiredCheckApp(check));
+      requireFact(history.length > 0 && history.every(check =>
+        Number.isSafeInteger(check.id) && check.id > 0 &&
+        Number.isSafeInteger(check.check_suite?.id) && check.check_suite.id > 0 &&
+        typeof check.status === 'string' && typeof check.conclusion === 'string'),
+        `${repo}: required source workflow job checks not green on exact reviewed SHA`);
+      const byId = new Map();
+      for (const check of history) {
+        if (byId.has(check.id)) {
+          const previous = byId.get(check.id);
+          requireFact(previous.status === check.status && previous.conclusion === check.conclusion &&
+            previous.check_suite?.id === check.check_suite.id,
+            `${repo}: conflicting required source check records`);
+        }
+        byId.set(check.id, check);
+      }
+      const newest = history.reduce((winner, check) => check.id > winner.id ? check : winner);
+      requireFact(newest.status === 'completed' && newest.conclusion === 'success',
+        `${repo}: required source workflow job checks not green on exact reviewed SHA`);
+      newestRequiredChecks.set(context, newest);
+    }
+    // Do not permit a stale successful workflow to mask a later failed run or
+    // incomplete rerun on the very same exact reviewed commit. A full page is
+    // not proof of complete history: require another page or HOLD. This gate
+    // deliberately fails closed rather than treating unknown history as green.
+    requireFact(response.workflow_runs.length < 100,
+      `${repo}: protected workflow history page incomplete; fail closed`);
     for (const workflow of workflows) {
-      const successfulRuns = response.workflow_runs.filter(run =>
-        run.name === workflow && run.head_sha === consumer.exactSha &&
-        run.head_branch === branch && run.event === 'pull_request' &&
-        run.status === 'completed' && run.conclusion === 'success' &&
-        Number(run.run_attempt) >= 1 && Number.isSafeInteger(run.check_suite_id) &&
-        run.check_suite_id > 0);
-      requireFact(successfulRuns.length > 0,
+      const history = response.workflow_runs.filter(run =>
+        run?.name === workflow && run.head_sha === consumer.exactSha &&
+        run.head_branch === branch && run.event === 'pull_request');
+      requireFact(history.length > 0 && history.every(run =>
+        Number.isSafeInteger(run.id) && run.id > 0 &&
+        Number.isSafeInteger(run.run_attempt) && run.run_attempt > 0 &&
+        typeof run.status === 'string' && typeof run.conclusion === 'string'),
+        `${repo}: protected workflow ${workflow} exact-head history missing or malformed`);
+      const identity = new Map();
+      for (const run of history) {
+        const key = `${run.id}/${run.run_attempt}`;
+        if (identity.has(key)) {
+          const previous = identity.get(key);
+          requireFact(previous.status === run.status && previous.conclusion === run.conclusion &&
+            previous.check_suite_id === run.check_suite_id,
+            `${repo}: conflicting protected workflow run records`);
+        }
+        identity.set(key, run);
+      }
+      const newest = history.reduce((winner, run) =>
+        run.id > winner.id || (run.id === winner.id && run.run_attempt > winner.run_attempt)
+          ? run : winner);
+      requireFact(newest.status === 'completed' && newest.conclusion === 'success',
+        `${repo}: protected workflow ${workflow} latest exact-head run not successful`);
+      requireFact(Number.isSafeInteger(newest.check_suite_id) && newest.check_suite_id > 0,
         `${repo}: protected workflow ${workflow} has no completed successful exact-head run`);
-      requireFact(successfulRuns.some(run => checksResponse.check_runs.some(check =>
+      requireFact([...newestRequiredChecks.values()].some(check =>
         requiredContexts.includes(check.name) &&
-        check.check_suite?.id === run.check_suite_id &&
+        check.check_suite?.id === newest.check_suite_id &&
         check.head_sha === consumer.exactSha &&
         check.status === 'completed' && check.conclusion === 'success' &&
-        enforceRequiredCheckApp(check))),
+        enforceRequiredCheckApp(check)),
         `${repo}: protected workflow ${workflow} did not satisfy an enforced GitHub Actions check`);
     }
     const last = await githubGet(`${base}/pulls/${consumer.pullRequest}`);
