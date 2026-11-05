@@ -325,6 +325,57 @@ try {
   finally { await childMemory.update({ purpose: 'memory.storage' }); }
   assert.equal((await readChild()).data.sourceSha256, secondMemory.sourceSha256,
     'restored related child memory remains retrievable');
+  // A three-generation relation is supported, but direct child Replay must
+  // deny even if its grandparent is revoked or forged. Life Graph listing
+  // is not necessarily invoked before direct Replay reads.
+  const ancestorId = 'ancestorMEM_1234';
+  const ancestorBytes = Buffer.from('URAI_DISPOSABLE_SYNTHETIC_MEMORY:' + ancestorId);
+  const ancestorDigest = createHash('sha256').update(ancestorBytes).digest('hex');
+  const ancestorGraph = localAdminDb.doc(`staging_synthetic_life_graph/${ua.user.uid}/nodes/${ancestorId}`);
+  const ancestorMemory = localAdminDb.doc(`staging_synthetic_memories/${ua.user.uid}/items/${ancestorId}`);
+  await Promise.all([
+    ancestorGraph.set({ ...savedParentGraph.data(), memoryId: ancestorId,
+      relatesTo: null, sourceSha256: ancestorDigest }),
+    ancestorMemory.set({ ...originalSource.data(), memoryId: ancestorId,
+      relatedMemoryId: null, sourceSha256: ancestorDigest,
+      byteLength: ancestorBytes.length,
+      storagePath: `staging_synthetic_memories/${ua.user.uid}/${ancestorId}.bin` }),
+  ]);
+  try {
+    await Promise.all([
+      syntheticGraph.update({ relatesTo: ancestorId }),
+      syntheticMemory.update({ relatedMemoryId: ancestorId }),
+    ]);
+    assert.equal((await readChild()).data.sourceSha256, secondMemory.sourceSha256,
+      'valid three-generation child remains readable');
+    await ancestorMemory.update({ state: 'REVOKED' });
+    try { await assertDenied(readChild(), 'revoked grandparent must deny direct child Replay'); }
+    finally { await ancestorMemory.update({ state: 'ACTIVE' }); }
+    await ancestorGraph.delete();
+    try { await assertDenied(readChild(), 'missing grandparent graph must deny child Replay'); }
+    finally { await ancestorGraph.set({ ...savedParentGraph.data(), memoryId: ancestorId,
+      relatesTo: null, sourceSha256: ancestorDigest }); }
+    await ancestorMemory.update({ sourceSha256: 'f'.repeat(64) });
+    try { await assertDenied(readChild(), 'forged grandparent digest must deny child Replay'); }
+    finally { await ancestorMemory.update({ sourceSha256: ancestorDigest }); }
+    await Promise.all([
+      ancestorGraph.update({ relatesTo: secondMemory.memoryId }),
+      ancestorMemory.update({ relatedMemoryId: secondMemory.memoryId }),
+    ]);
+    try { await assertDenied(readChild(), 'three-generation ancestry cycle must deny child Replay'); }
+    finally { await Promise.all([
+      ancestorGraph.update({ relatesTo: null }),
+      ancestorMemory.update({ relatedMemoryId: null }),
+    ]); }
+  } finally {
+    await Promise.all([
+      syntheticGraph.update({ relatesTo: originalParentLink }),
+      syntheticMemory.update({ relatedMemoryId: originalParentLink }),
+      ancestorGraph.delete(), ancestorMemory.delete(),
+    ]);
+  }
+  assert.equal((await readChild()).data.sourceSha256, secondMemory.sourceSha256,
+    'restored direct child Replay remains readable');
   record('memory-permissioned-retrieval-actual-storage-fixity');
 
   await mustDeny('memory-cross-user-retrieval-denied',
