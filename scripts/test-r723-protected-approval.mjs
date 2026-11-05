@@ -17,7 +17,7 @@ const makeAPI=(mutate=()=>{})=>async route=>{
   else if(route.includes('/git/ref/')) value={object:{sha}};
   else if(route.includes('/reviews?'))value=[{id:200,state:'APPROVED',commit_id:sha,submitted_at:'2026-11-05T11:00:00Z',user:{login:'IndependentReviewer',type:'User'}}];
   else if(route.includes('/permission'))value={permission:'write'};
-  else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10,check_suite_id:id+100}))};
+  else if(route.includes('/actions/runs?'))value={workflow_runs:SOURCE_GATES.find(x=>x.repo===repo).workflows.map((name,id)=>({name,path:SOURCE_GATES.find(x=>x.repo===repo).workflowIdentity[name].path,workflow_id:SOURCE_GATES.find(x=>x.repo===repo).workflowIdentity[name].id,head_sha:sha,head_branch:'reviewed',event:'pull_request',status:'completed',conclusion:'success',run_attempt:1,id:id+10,check_suite_id:id+100}))};
   else if(route.includes('/check-runs?')){const names=SOURCE_GATES.find(x=>x.repo===repo).requiredChecks;value={total_count:names.length,check_runs:names.map((name,id)=>({id:1000+id,name,check_suite:{id:(jobs&&id>0?101:100+id)},head_sha:sha,status:'completed',conclusion:'success',app:{slug:'github-actions',id:15368}}))};}
   else throw Error('Unexpected GitHub request: '+route);
   const copy=structuredClone(value);mutate(route,copy);return copy;
@@ -348,4 +348,36 @@ test('R737 passing check history changed during verification rejects stale snaps
       v.check_runs.push({...v.check_runs[0],id:9000,conclusion:'failure'});v.total_count++;
     }
   }),/Actions evidence changed during verification/);
+});
+
+test('R742 reject same-name workflow from unrelated path even with completed green checks',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
+      v.workflow_runs[0].path='.github/workflows/release-verify.yml';
+  }),/exact-head history missing or malformed/);
+});
+test('R742 reject wrong GitHub workflow ID even if name path and check suite are green',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
+      v.workflow_runs[0].workflow_id=999999999;
+  }),/exact-head history missing or malformed/);
+});
+test('R742 reject missing provider workflow identity metadata',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-jobs')&&route.includes('/actions/runs?'))
+      delete v.workflow_runs[0].path;
+  }),/exact-head history missing or malformed/);
+});
+test('R742 reject old or renamed display identity despite legitimate path',async()=>{
+  await assert.rejects(probe((route,v)=>{
+    if(route.includes('urai-privacy')&&route.includes('/actions/runs?'))
+      v.workflow_runs[0].name='URAI Privacy Release Gates';
+  }),/protected workflow/);
+});
+test('R742 legitimate exact workflow identities still grant SOURCE only, never release',async()=>{
+  const verdict=await probe();
+  assert.equal(verdict.accepted.length,2);
+  assert.equal(verdict.productionAuthorized,false);
+  assert.equal(verdict.runtimeCertified,false);
+  assert.equal(verdict.providerDeletionAcknowledged,false);
 });
