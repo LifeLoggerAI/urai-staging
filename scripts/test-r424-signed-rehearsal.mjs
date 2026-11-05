@@ -51,6 +51,7 @@ test('R424 original Jobs Privacy Studio signed-identity rehearsal 18/18, render 
       'jobs/functions/src/privacy/lifeMovieConsentDecision.ts':'c1e05bf386bd47ff64bec20623cc50f29a9d1aa5',
       'privacy/functions/src/life-movie-scoped-receipt.ts':'a41f4cf9c2efb525115ec31359d936c8b2f66f6e',
       'privacy/functions/src/life-movie-render-authorization.ts':'a75e4f2297c331baa52b044f2842820adbdc7fc8',
+      'studio/apps/studio/lib/studio-life-movie-jobs-bridge.ts':'c995395da7f543659512dc633e3a2497ff4bb6ff',
     };
     for(const [file,previous] of Object.entries(legacyHash)){
       const expected=provenance.sha[file];
