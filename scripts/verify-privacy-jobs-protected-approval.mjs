@@ -120,47 +120,90 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     }
     requireFact(eligibleApproval?.reviewId > 0, `${repo}: no eligible current-head independent APPROVED review`);
 
-    const response = await githubGet(`${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=100`);
-    requireFact(Array.isArray(response?.workflow_runs), `${repo}: protected workflow evidence unavailable`);
-    // A successful workflow that is NOT required by branch protection is not
-    // protected CI evidence. Link each expected workflow's GitHub Actions
-    // check suite to at least one *enforced* successful check on this SHA.
-    const checksResponse = await githubGet(
-      `${base}/commits/${consumer.exactSha}/check-runs?per_page=100&filter=all`);
-    requireFact(Array.isArray(checksResponse?.check_runs) &&
-      Number.isSafeInteger(checksResponse.total_count) &&
-      checksResponse.total_count > 0 &&
-      checksResponse.total_count === checksResponse.check_runs.length,
-      `${repo}: complete exact-head check-run evidence unavailable`);
-    const enforceRequiredCheckApp = check => {
-      if (check?.app?.slug !== 'github-actions' || check.app.id !== 15368) return false;
-      return requiredStatus.checks.some(binding =>
-        binding?.context === check.name && binding.app_id === 15368);
+    // A green run from yesterday on the same SHA cannot override a newer failed
+    // attempt, nor can a stale green job check override its later failed rerun.
+    // Read bounded, complete history rather than assuming GitHub's first page
+    // contains every relevant attempt. Source verification only; never a GO.
+    const readWorkflowHistory = async () => {
+      const entries = [];
+      let complete = false;
+      for (let page = 1; page <= 10; page++) {
+        const response = await githubGet(
+          `${base}/actions/runs?head_sha=${consumer.exactSha}&event=pull_request&per_page=100&page=${page}`);
+        requireFact(Array.isArray(response?.workflow_runs) && response.workflow_runs.length <= 100,
+          `${repo}: protected workflow history page unavailable or malformed`);
+        entries.push(...response.workflow_runs);
+        if (response.workflow_runs.length < 100) { complete = true; break; }
+      }
+      requireFact(complete, `${repo}: protected workflow history incomplete; fail closed`);
+      return entries;
     };
-    // A green parent workflow does not prove every required job actually
-    // ran and passed. Require all named branch-protected release jobs on the
-    // exact candidate SHA, not only one check per parent workflow.
-    requireFact(requiredChecks.every(context => checksResponse.check_runs.some(check =>
-      check?.name === context && check.head_sha === consumer.exactSha &&
-      check.status === 'completed' && check.conclusion === 'success' &&
-      enforceRequiredCheckApp(check))),
-      `${repo}: required source workflow job checks not green on exact reviewed SHA`);
+    const workflowHistory = await readWorkflowHistory();
+    const originalWorkflowSnapshot = JSON.stringify(workflowHistory);
+    const latestRuns = new Map();
     for (const workflow of workflows) {
-      const successfulRuns = response.workflow_runs.filter(run =>
-        run.name === workflow && run.head_sha === consumer.exactSha &&
-        run.head_branch === branch && run.event === 'pull_request' &&
-        run.status === 'completed' && run.conclusion === 'success' &&
-        Number(run.run_attempt) >= 1 && Number.isSafeInteger(run.check_suite_id) &&
-        run.check_suite_id > 0);
-      requireFact(successfulRuns.length > 0,
-        `${repo}: protected workflow ${workflow} has no completed successful exact-head run`);
-      requireFact(successfulRuns.some(run => checksResponse.check_runs.some(check =>
-        requiredContexts.includes(check.name) &&
-        check.check_suite?.id === run.check_suite_id &&
-        check.head_sha === consumer.exactSha &&
-        check.status === 'completed' && check.conclusion === 'success' &&
-        enforceRequiredCheckApp(check))),
-        `${repo}: protected workflow ${workflow} did not satisfy an enforced GitHub Actions check`);
+      const history = workflowHistory.filter(run =>
+        run?.name === workflow && run.head_sha === consumer.exactSha &&
+        run.head_branch === branch && run.event === 'pull_request');
+      requireFact(history.length > 0 && history.every(run =>
+        Number.isSafeInteger(run.id) && run.id > 0 &&
+        Number.isSafeInteger(run.run_attempt) && run.run_attempt > 0 &&
+        typeof run.status === 'string' &&
+        (run.conclusion === null || typeof run.conclusion === 'string')),
+        `${repo}: protected workflow ${workflow} exact-head history missing or malformed`);
+      const seen = new Map();
+      for (const run of history) {
+        const key = `${run.id}:${run.run_attempt}`;
+        const state = JSON.stringify([run.status, run.conclusion, run.check_suite_id]);
+        requireFact(!seen.has(key) || seen.get(key) === state,
+          `${repo}: conflicting protected workflow run records`);
+        seen.set(key, state);
+      }
+      const newest = history.reduce((winner, run) =>
+        !winner || run.id > winner.id ||
+          (run.id === winner.id && run.run_attempt > winner.run_attempt) ? run : winner, null);
+      requireFact(newest.status === 'completed' && newest.conclusion === 'success',
+        `${repo}: protected workflow ${workflow} latest exact-head run not successful`);
+      requireFact(Number.isSafeInteger(newest.check_suite_id) && newest.check_suite_id > 0,
+        `${repo}: protected workflow ${workflow} has no completed successful exact-head run with check suite`);
+      latestRuns.set(workflow, newest);
+    }
+    const acceptedSuites = new Set([...latestRuns.values()].map(run => run.check_suite_id));
+    const readCheckRuns = async () => {
+      const response = await githubGet(
+        `${base}/commits/${consumer.exactSha}/check-runs?per_page=100&filter=all`);
+      requireFact(Array.isArray(response?.check_runs) &&
+        Number.isSafeInteger(response.total_count) && response.total_count > 0 &&
+        response.total_count === response.check_runs.length,
+        `${repo}: complete exact-head check-run evidence unavailable`);
+      return response.check_runs;
+    };
+    const checks = await readCheckRuns();
+    const originalCheckSnapshot = JSON.stringify(checks);
+    const enforceRequiredCheckApp = check =>
+      check?.app?.slug === 'github-actions' && check?.app?.id === 15368 &&
+      requiredStatus.checks.some(binding =>
+        binding?.context === check.name && binding.app_id === 15368);
+    for (const context of requiredChecks) {
+      const history = checks.filter(check => check?.name === context &&
+        check.head_sha === consumer.exactSha && enforceRequiredCheckApp(check));
+      requireFact(history.length > 0 && history.every(check =>
+        Number.isSafeInteger(check.id) && check.id > 0 &&
+        typeof check.status === 'string' &&
+        (check.conclusion == null || typeof check.conclusion === 'string')),
+        `${repo}: latest required source check not green on exact reviewed SHA`);
+      const byId = new Map();
+      for (const check of history) {
+        const state = JSON.stringify([check.status, check.conclusion, check.check_suite?.id]);
+        requireFact(!byId.has(check.id) || byId.get(check.id) === state,
+          `${repo}: conflicting required source check-run records`);
+        byId.set(check.id, state);
+      }
+      const newest = history.reduce((winner, check) =>
+        !winner || check.id > winner.id ? check : winner, null);
+      requireFact(newest.status === 'completed' && newest.conclusion === 'success' &&
+        acceptedSuites.has(newest.check_suite?.id),
+        `${repo}: latest required source check not green on exact reviewed SHA`);
     }
     const last = await githubGet(`${base}/pulls/${consumer.pullRequest}`);
     requireFact(last.head?.sha === first.head.sha && last.head?.ref === first.head.ref &&
@@ -179,6 +222,13 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     const currentReviews = await readReviewHistory();
     requireFact(JSON.stringify(currentReviews) === originalReviewSnapshot,
       `${repo}: review history changed during verification; retry required`);
+    // A fresh failure during review revalidation must also revoke the source
+    // decision, even when GitHub leaves the PR metadata timestamp unchanged.
+    const currentWorkflows = await readWorkflowHistory();
+    const currentChecks = await readCheckRuns();
+    requireFact(JSON.stringify(currentWorkflows) === originalWorkflowSnapshot &&
+      JSON.stringify(currentChecks) === originalCheckSnapshot,
+      `${repo}: Actions evidence changed during verification; retry required`);
     accepted.push({ repository: repo, exactSha: consumer.exactSha, reviewId: eligibleApproval.reviewId,
       reviewer: eligibleApproval.reviewer, requiredWorkflows: workflows });
   }
