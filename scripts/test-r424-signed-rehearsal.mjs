@@ -94,7 +94,7 @@ test('R710 current original Studio bridge caps long project idempotency, preserv
   assert.equal((transpiled.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
   const temp = mkdtempSync(join(tmpdir(),'urai-r710-studio-'));
   try {
-    writeFileSync(join(temp,'package.json'),'{"type":"module"}\\n');
+    writeFileSync(join(temp,'package.json'),'{"type":"module"}\n');
     const out = join(temp,'bridge.mjs');
     writeFileSync(out,transpiled.outputText);
     const {buildJobsLifeMovieEnvelope} = await import(pathToFileURL(out).href);
