@@ -26,9 +26,16 @@ test('staging launch evidence binds current Git HEAD and rejects stale/unverifia
     execFileSync('git', ['-C', root, 'add', 'README.md']);
     execFileSync('git', ['-C', root, 'commit', '-qm', 'synthetic fixture']);
     const head = execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-    const commands = stagingBootstrapCommandTexts.map(command => ({ command, status: 'passed', exitCode: 0 }));
+    // Bootstrap completion evidence requires a canonical, sequential timestamp
+    // window. This is synthetic fixture data, not a claim of hosted execution.
+    const at = seconds => new Date(Date.parse('2026-11-05T01:00:00.000Z') + seconds * 1000).toISOString();
+    const commands = stagingBootstrapCommandTexts.map((command, index) => ({
+      command, status: 'passed', exitCode: 0,
+      startedAt: at(index * 2), finishedAt: at(index * 2 + 1),
+    }));
     const report = {
       repo: 'LifeLoggerAI/urai-staging', kind: 'staging-bootstrap', sourceSha: head,
+      startedAt: at(0), finishedAt: at(commands.length * 2),
       projectId: 'urai-staging', environment: 'staging', productionAllowed: false,
       cloudDeploymentPerformed: false, liveSmokePerformed: false,
       providerMutationPerformed: false, activeConsumers: [], commands,
@@ -55,6 +62,25 @@ test('staging launch evidence binds current Git HEAD and rejects stale/unverifia
 
     const valid = run(root);
     assert.equal(valid.status, 0, valid.stderr);
+
+    // A well-formed command list with missing or overlapping timing cannot
+    // become a valid source-only launch receipt, even with exact Git HEAD.
+    const incompleteTiming = structuredClone(report);
+    delete incompleteTiming.commands[3].finishedAt;
+    put(root, 'artifacts/launch/staging-bootstrap-report.json', incompleteTiming);
+    const missingTimestamp = run(root);
+    assert.equal(missingTimestamp.status, 1);
+    assert.match(missingTimestamp.stderr, /Bootstrap command 4 has missing, reversed, overlapping or out-of-window timestamps/);
+
+    const overlappingTiming = structuredClone(report);
+    overlappingTiming.commands[3].startedAt = overlappingTiming.commands[2].startedAt;
+    put(root, 'artifacts/launch/staging-bootstrap-report.json', overlappingTiming);
+    const overlapping = run(root);
+    assert.equal(overlapping.status, 1);
+    assert.match(overlapping.stderr, /Bootstrap command 4 has missing, reversed, overlapping or out-of-window timestamps/);
+    put(root, 'artifacts/launch/staging-bootstrap-report.json', report);
+    assert.equal(run(root).status, 0, 'clean timestamped fixture must remain valid after negative tests');
+
     // Matching Git HEAD alone cannot authenticate a dirty source checkout.
     // Reject both unstaged and staged edits while retaining the original
     // clean-head, stale-report and missing-Git acceptance cases.
