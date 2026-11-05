@@ -151,9 +151,12 @@ export async function verifyProtectedSourceApprovals(authority, githubGet) {
     const latestRuns = new Map();
     for (const workflow of workflows) {
       const history = workflowHistory.filter(run =>
-        run?.name === workflow && run.head_sha === consumer.exactSha &&
+        (run?.name === workflow || run?.workflow_id === workflowIdentity[workflow].id ||
+          run?.path === workflowIdentity[workflow].path) &&
+        run.head_sha === consumer.exactSha &&
         run.head_branch === branch && run.event === 'pull_request');
       requireFact(history.length > 0 && history.every(run =>
+        run.name === workflow &&
         run.path === workflowIdentity[workflow].path &&
         run.workflow_id === workflowIdentity[workflow].id &&
         Number.isSafeInteger(run.id) && run.id > 0 &&
