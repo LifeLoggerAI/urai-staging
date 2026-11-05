@@ -213,6 +213,33 @@ try {
   await syntheticGraph.update({ state: 'REVOKED' });
   try { await assertDenied(privateRead(), 'inactive graph must deny memory read'); }
   finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
+
+  // Graph metadata must never outlive or contradict its backing private memory.
+  // Use only disposable emulator Admin records and restore every mutation.
+  const syntheticMemory = localAdminDb.doc(`staging_synthetic_memories/${ua.user.uid}/items/${firstMemory.memoryId}`);
+  const graphRead = () => call(a, 'getStagingSyntheticLifeGraph', { ownerUid: ua.user.uid });
+  const savedMemory = (await syntheticMemory.get()).data();
+  assert.ok(savedMemory, 'synthetic memory fixture must exist');
+  await syntheticMemory.delete();
+  try { await assertDenied(graphRead(), 'orphan graph must deny read'); }
+  finally { await syntheticMemory.set(savedMemory); }
+  await syntheticGraph.update({ memoryId: 'forgedMemoryId' });
+  try { await assertDenied(graphRead(), 'graph ID mismatch must deny read'); }
+  finally { await syntheticGraph.update({ memoryId: firstMemory.memoryId }); }
+  await syntheticGraph.update({ sourceSha256: 'b'.repeat(64) });
+  try { await assertDenied(graphRead(), 'graph digest mismatch must deny read'); }
+  finally { await syntheticGraph.update({ sourceSha256: firstMemory.sourceSha256 }); }
+  await syntheticMemory.update({ state: 'REVOKED' });
+  try { await assertDenied(graphRead(), 'revoked backing memory must deny graph'); }
+  finally { await syntheticMemory.update({ state: 'ACTIVE' }); }
+  await syntheticMemory.update({ decisionReceiptId: 'synthetic_receipt_forged123456' });
+  try { await assertDenied(graphRead(), 'forged memory receipt must deny graph'); }
+  finally { await syntheticMemory.update({ decisionReceiptId: savedMemory.decisionReceiptId }); }
+  await syntheticMemory.update({ storagePath: 'staging_synthetic_memories/forged/memory.bin' });
+  try { await assertDenied(graphRead(), 'wrong storage source must deny graph'); }
+  finally { await syntheticMemory.update({ storagePath: savedMemory.storagePath }); }
+  assert.ok((await graphRead()).data.nodes.some(n => n.memoryId === firstMemory.memoryId),
+    'restored legitimate graph must remain accessible');
   record('memory-permissioned-retrieval-actual-storage-fixity');
 
   await mustDeny('memory-cross-user-retrieval-denied',
