@@ -3,9 +3,9 @@
   "environment": "offline-synthetic-only",
   "productionAuthorized": false,
   "refs": {
-    "jobs": "ce85730f0ce51297b317c2d3f082f859ade4459a",
-    "privacy": "e6d71fd19f0f74d3d39e11b8716d5b868565d304",
-    "studio": "d1f30d2a8eca28b7474bcf43f0b8118d0f826a21"
+    "jobs": "ee548bc15d059ec98f2d8bddb004f5ec0df0a5b8",
+    "privacy": "a8f2cb06a81cea1db714c509170ae6416cb6bb3a",
+    "studio": "e0e3c9f6de652243f6dd0d34ce5e66c22d5ae1f7"
   },
   "sha": {
     "jobs/functions/src/privacy/lifeMovieConsentGate.ts": "53761ac0f5c0340563b13fdd9a12a90e75409d42",
@@ -27,6 +27,6 @@
     "privacy/functions/src/cross-user-authority.ts": "443097baa409c289b4189f98e4c56c7ab70aaa31",
     "studio/apps/studio/lib/studio-life-movie-jobs-client.ts": "0ca262e114b0439426d75cf7ac510e289ba315eb",
     "studio/apps/studio/lib/studio-life-movie-longform-contract.ts": "b61484f218a46b56fbe479dadec73595b8599b3f",
-    "studio/apps/studio/lib/studio-life-movie-jobs-bridge.ts": "c995395da7f543659512dc633e3a2497ff4bb6ff"
+    "studio/apps/studio/lib/studio-life-movie-jobs-bridge.ts": "afca955d63a6ce928d2a6b6aa456b508a6134893"
   }
 }
