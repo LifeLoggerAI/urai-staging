@@ -31,8 +31,8 @@ function consentRef(uid: string) { return getFirestore().doc('staging_synthetic_
 function memoryRef(uid: string, id: string) { return getFirestore().doc('staging_synthetic_memories/' + uid + '/items/' + id); }
 function graphRef(uid: string, id: string) { return getFirestore().doc('staging_synthetic_life_graph/' + uid + '/nodes/' + id); }
 function memoryBucket() { return getStorage().bucket(bucketName); }
-function assertCurrentConsent(row: FirebaseFirestore.DocumentData | undefined, now = Date.now()): FirebaseFirestore.DocumentData {
-  if (!row || row.ownerUid === undefined || row.purpose !== purpose ||
+function assertCurrentConsent(row: FirebaseFirestore.DocumentData | undefined, ownerUid: string, now = Date.now()): FirebaseFirestore.DocumentData {
+  if (!row || row.ownerUid !== ownerUid || row.purpose !== purpose ||
     row.policyVersion !== policyVersion || row.status !== 'granted' ||
     typeof row.decisionReceiptId !== 'string' || !/^synthetic_receipt_[A-Za-z0-9_-]{8,120}$/.test(row.decisionReceiptId) ||
     typeof row.expiresAtMillis !== 'number' || !Number.isSafeInteger(row.expiresAtMillis) ||
@@ -98,8 +98,8 @@ export const createStagingSyntheticMemory = functions.https.onCall(async (data: 
   } });
   try {
     await db.runTransaction(async tx => {
-      const consent = assertCurrentConsent((await tx.get(consentRef(uid))).data());
-      if (consent.ownerUid !== uid || consent.decisionReceiptId !== receipt) deny('SYNTHETIC_CONSENT_RECEIPT_MISMATCH');
+      const consent = assertCurrentConsent((await tx.get(consentRef(uid))).data(), uid);
+      if (consent.decisionReceiptId !== receipt) deny('SYNTHETIC_CONSENT_RECEIPT_MISMATCH');
       if (relation !== null) {
         const linked = await tx.get(memoryRef(uid, relation));
         if (!linked.exists || linked.get('state') !== 'ACTIVE' ||
@@ -136,13 +136,15 @@ export const retrieveStagingSyntheticMemory = functions.https.onCall(async (data
     const [c, m, g] = await Promise.all([
       tx.get(consentRef(uid)), tx.get(memoryRef(uid, id)), tx.get(graphRef(uid, id)),
     ]);
-    const consent = assertCurrentConsent(c.data());
+    const consent = assertCurrentConsent(c.data(), uid);
     const row = m.data();
     if (!row) throw new functions.https.HttpsError('permission-denied', 'SYNTHETIC_MEMORY_UNAVAILABLE');
-    if (!m.exists || !g.exists || row.ownerUid !== uid ||
+    if (!m.exists || !g.exists || row.ownerUid !== uid || row.memoryId !== id ||
       row.state !== 'ACTIVE' || row.synthetic !== true ||
       row.sourceEvidenceClass !== 'SYNTHETIC_TEST_ONLY' ||
       row.decisionReceiptId !== consent.decisionReceiptId ||
+      g.get('ownerUid') !== uid || g.get('memoryId') !== id ||
+      g.get('state') !== 'ACTIVE' || g.get('synthetic') !== true ||
       g.get('sourceSha256') !== row.sourceSha256 ||
       g.get('decisionReceiptId') !== consent.decisionReceiptId) deny('SYNTHETIC_MEMORY_UNAVAILABLE');
     return { sourceSha256: String(row.sourceSha256), storagePath: String(row.storagePath),
@@ -157,10 +159,23 @@ export const retrieveStagingSyntheticMemory = functions.https.onCall(async (data
   // Check state again after actual media access. Revocation is a server-side
   // consent fence; cached or previously returned bytes are NOT under our control.
   await db.runTransaction(async tx => {
-    const [c, m] = await Promise.all([tx.get(consentRef(uid)), tx.get(memoryRef(uid, id))]);
-    const consent = assertCurrentConsent(c.data());
-    if (consent.decisionReceiptId !== first.receipt || !m.exists ||
-      m.get('state') !== 'ACTIVE' || m.get('sourceSha256') !== first.sourceSha256) {
+    const [c, m, g] = await Promise.all([
+      tx.get(consentRef(uid)), tx.get(memoryRef(uid, id)), tx.get(graphRef(uid, id)),
+    ]);
+    const consent = assertCurrentConsent(c.data(), uid);
+    // Media bytes were fetched outside the transaction. Revalidate every
+    // owner/consent/source/graph identity before returning any bytes.
+    if (consent.decisionReceiptId !== first.receipt || !m.exists || !g.exists ||
+      m.get('ownerUid') !== uid || m.get('memoryId') !== id ||
+      m.get('state') !== 'ACTIVE' || m.get('synthetic') !== true ||
+      m.get('sourceEvidenceClass') !== 'SYNTHETIC_TEST_ONLY' ||
+      m.get('decisionReceiptId') !== first.receipt ||
+      m.get('sourceSha256') !== first.sourceSha256 ||
+      m.get('storagePath') !== expectedPath || m.get('byteLength') !== first.byteLength ||
+      g.get('ownerUid') !== uid || g.get('memoryId') !== id ||
+      g.get('state') !== 'ACTIVE' || g.get('synthetic') !== true ||
+      g.get('sourceSha256') !== first.sourceSha256 ||
+      g.get('decisionReceiptId') !== first.receipt) {
       deny('SYNTHETIC_MEMORY_REVOKED_DURING_READ');
     }
   });
@@ -173,9 +188,9 @@ export const getStagingSyntheticLifeGraph = functions.https.onCall(async (data: 
   const input = strict(data, ['ownerUid']);
   assertOwner(input, uid);
   const db = getFirestore();
-  const before = assertCurrentConsent((await consentRef(uid).get()).data());
+  const before = assertCurrentConsent((await consentRef(uid).get()).data(), uid);
   const nodes = await db.collection('staging_synthetic_life_graph').doc(uid).collection('nodes').get();
-  const after = assertCurrentConsent((await consentRef(uid).get()).data());
+  const after = assertCurrentConsent((await consentRef(uid).get()).data(), uid);
   if (before.decisionReceiptId !== after.decisionReceiptId) deny('SYNTHETIC_GRAPH_CONSENT_CHANGED');
   const out = nodes.docs.map(x => x.data()).filter(x =>
     x.ownerUid === uid && x.synthetic === true &&
