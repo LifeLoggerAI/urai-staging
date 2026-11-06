@@ -214,6 +214,20 @@ try {
   await syntheticGraph.update({ state: 'REVOKED' });
   try { await assertDenied(privateRead(), 'inactive graph must deny memory read'); }
   finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
+  // Child creation itself must refuse a forged or inactive parent graph.
+  // Previously only direct Replay reads enforced this provenance boundary.
+  const createLinkedChild = () => call(a, 'createStagingSyntheticMemory', {
+    decisionReceiptId: grantReceipt, relatedMemoryId: firstMemory.memoryId,
+  });
+  await syntheticGraph.update({ state: 'REVOKED' });
+  try { await assertDenied(createLinkedChild(), 'inactive parent graph must deny child admission'); }
+  finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
+  await syntheticGraph.update({ sourceSha256: 'f'.repeat(64) });
+  try { await assertDenied(createLinkedChild(), 'forged parent graph digest must deny child admission'); }
+  finally { await syntheticGraph.update({ sourceSha256: firstMemory.sourceSha256 }); }
+  await syntheticGraph.update({ ownerUid: ub.user.uid });
+  try { await assertDenied(createLinkedChild(), 'cross-owner parent graph must deny child admission'); }
+  finally { await syntheticGraph.update({ ownerUid: ua.user.uid }); }
 
   // A graph node by itself is not a valid source. These red/green cases must
   // run against the actual Firestore/Functions emulator, not a mocked SDK.
