@@ -389,12 +389,50 @@ try {
   await mustDeny('memory-direct-client-storage-denied',
     getMetadata(ref(a.storage, 'staging_synthetic_memories/' + ua.user.uid + '/' + firstMemory.memoryId + '.bin')));
 
+  // Regression for oversized but disposable synthetic inventories. Creation
+  // has no 128-item cap, and revoke must clear >250 source/graph pairs even
+  // though Life Graph listing correctly refuses an oversized inventory.
+  // Seed direct Admin SDK rows only in the local emulator, without user bytes.
+  // Two existing memories + 249 synthetic test rows = 251 memory pairs;
+  // their original unchunked cleanup needed 502 Firestore batch writes.
+  const overflowFixtures = 249;
+  let seedBatch = localAdminDb.batch();
+  let seedWrites = 0;
+  for (let index = 0; index < overflowFixtures; index++) {
+    const overflowId = 'overflowMEM_' + String(index).padStart(4, '0');
+    const overflowBytes = Buffer.from('URAI_DISPOSABLE_SYNTHETIC_MEMORY:' + overflowId);
+    const overflowDigest = createHash('sha256').update(overflowBytes).digest('hex');
+    const overflowPath = 'staging_synthetic_memories/' + ua.user.uid + '/' + overflowId + '.bin';
+    seedBatch.set(localAdminDb.doc(
+      `staging_synthetic_memories/${ua.user.uid}/items/${overflowId}`), {
+      ...originalSource.data(), memoryId: overflowId, relatedMemoryId: null,
+      sourceSha256: overflowDigest, byteLength: overflowBytes.length,
+      storagePath: overflowPath,
+    });
+    seedBatch.set(localAdminDb.doc(
+      `staging_synthetic_life_graph/${ua.user.uid}/nodes/${overflowId}`), {
+      ...savedParentGraph.data(), memoryId: overflowId, relatesTo: null,
+      sourceSha256: overflowDigest,
+    });
+    seedWrites += 2;
+    if (seedWrites >= 400) {
+      await seedBatch.commit();
+      seedBatch = localAdminDb.batch();
+      seedWrites = 0;
+    }
+  }
+  if (seedWrites) await seedBatch.commit();
+  await assertDenied(readGraph(), 'oversized synthetic graph remains denied');
   const revoked = (await call(a, 'revokeStagingSyntheticMemoryConsent', {
     decisionReceiptId: grantReceipt,
   })).data;
   assert.equal(revoked.status, 'revoked');
-  assert.equal(revoked.deletedMemoryCount, 2);
+  assert.equal(revoked.deletedMemoryCount, 251);
   assert.equal(revoked.graphCleared, true);
+  assert.equal((await localAdminDb.collection('staging_synthetic_memories')
+    .doc(ua.user.uid).collection('items').get()).empty, true, 'all 251 memory rows removed');
+  assert.equal((await localAdminDb.collection('staging_synthetic_life_graph')
+    .doc(ua.user.uid).collection('nodes').get()).empty, true, 'all 251 graph rows removed');
   record('memory-revocation-before-storage-deletion-and-graph-cleanup');
   await mustDeny('memory-retrieval-after-revocation-denied',
     call(a, 'retrieveStagingSyntheticMemory', {
