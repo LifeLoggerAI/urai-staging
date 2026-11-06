@@ -7,12 +7,24 @@ export type SyntheticStorageObject = {
 export type SyntheticStorageList = (prefix: string) => Promise<readonly SyntheticStorageObject[]>
 export type SyntheticStorageDeny = (code: string) => never
 
+// A Firebase Auth UID is authentication evidence, not proof that it is a
+// safe Firestore document segment or an owner-scoped Storage prefix.  Reject
+// separators, control characters and reserved dot names before any I/O.
+export function assertSyntheticOwnerUid(uid: string, deny: SyntheticStorageDeny): string {
+  if (typeof uid !== 'string' || uid.length === 0 || uid.length > 128 ||
+      uid === '.' || uid === '..' || !uid.trim() || /[\/\\\u0000-\u001f\u007f]/.test(uid)) {
+    return deny('SYNTHETIC_OWNER_UID_INVALID')
+  }
+  return uid
+}
+
 export async function sweepSyntheticStorageResidue(
   uid: string,
   list: SyntheticStorageList,
   deny: SyntheticStorageDeny,
 ): Promise<number> {
-  const prefix = 'staging_synthetic_memories/' + uid + '/'
+  const safeUid = assertSyntheticOwnerUid(uid, deny)
+  const prefix = 'staging_synthetic_memories/' + safeUid + '/'
   const files = await list(prefix)
   if (!Array.isArray(files)) return deny('SYNTHETIC_STORAGE_LIST_UNAVAILABLE')
 

@@ -6,7 +6,7 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 import { requireAuth } from './lib/auth';
 import { assertPlainObject, requiredString } from './lib/validation';
-import { sweepSyntheticStorageResidue } from './syntheticStorageResidue';
+import { assertSyntheticOwnerUid, sweepSyntheticStorageResidue } from './syntheticStorageResidue';
 
 const purpose = 'memory.storage';
 const policyVersion = 'urai-staging-synthetic-lifecycle-v1';
@@ -26,7 +26,7 @@ function ensureDisposableEmulator() {
 }
 function uidFrom(context: functions.https.CallableContext): string {
   ensureDisposableEmulator();
-  return requireAuth(context).uid;
+  return assertSyntheticOwnerUid(requireAuth(context).uid, deny);
 }
 function consentRef(uid: string) { return getFirestore().doc('staging_synthetic_memory_consents/' + uid); }
 function memoryRef(uid: string, id: string) { return getFirestore().doc('staging_synthetic_memories/' + uid + '/items/' + id); }

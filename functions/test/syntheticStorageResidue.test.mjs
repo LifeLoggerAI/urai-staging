@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFileSync } from 'node:fs'
 import { sweepSyntheticStorageResidue } from '../src/syntheticStorageResidue.ts'
 
 const uid = 'owner-synthetic-1'
@@ -84,6 +85,15 @@ test('missing second listing array denies successful result', async () => {
   const mock = fixture([prefix + 'orphanMEM_1234.bin'], {secondMalformed: true})
   await assert.rejects(sweepSyntheticStorageResidue(uid, mock.list, denied), /SYNTHETIC_STORAGE_LIST_UNAVAILABLE/)
 })
-test('missing first listing array denies successful result', async () => {
+test('malformed owner UIDs deny before listing and absent first listing also denies', async () => {
   await assert.rejects(sweepSyntheticStorageResidue(uid, async () => null, denied), /SYNTHETIC_STORAGE_LIST_UNAVAILABLE/)
+  const malformed = ['', '.', '..', 'owner/neighbor', 'owner\\neighbor', 'owner\nneighbor', 'x'.repeat(129)]
+  for (const owner of malformed) {
+    let listed = 0
+    await assert.rejects(sweepSyntheticStorageResidue(owner, async () => { listed++; return [] }, denied), /SYNTHETIC_OWNER_UID_INVALID/)
+    assert.equal(listed, 0, 'invalid owner UID must be rejected before Storage enumeration')
+  }
+  const lifecycle = readFileSync(new URL('../src/syntheticMemoryLifecycle.ts', import.meta.url), 'utf8')
+  assert.match(lifecycle, /return assertSyntheticOwnerUid\(requireAuth\(context\)\.uid, deny\)/,
+    'every callable must reject malformed authenticated UIDs before Firestore/Storage paths')
 })
