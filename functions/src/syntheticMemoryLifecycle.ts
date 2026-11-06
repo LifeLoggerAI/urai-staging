@@ -153,9 +153,30 @@ export const createStagingSyntheticMemory = functions.https.onCall(async (data: 
       const consent = assertCurrentConsent((await tx.get(consentRef(uid))).data(), uid);
       if (consent.decisionReceiptId !== receipt) deny('SYNTHETIC_CONSENT_RECEIPT_MISMATCH');
       if (relation !== null) {
-        const linked = await tx.get(memoryRef(uid, relation));
-        if (!linked.exists || linked.get('state') !== 'ACTIVE' ||
-          linked.get('decisionReceiptId') !== receipt) deny('SYNTHETIC_GRAPH_SOURCE_UNAVAILABLE');
+        // Admission must verify the same parent/graph identity used by Replay.
+        // Otherwise a stale or forged graph can create a child that is
+        // immediately unusable, despite having an apparently valid parent.
+        const [linked, linkedGraph] = await Promise.all([
+          tx.get(memoryRef(uid, relation)), tx.get(graphRef(uid, relation)),
+        ]);
+        const linkedBytes = fixedBytes(relation);
+        const linkedDigest = sha(linkedBytes);
+        if (!linked.exists || !linkedGraph.exists ||
+          linked.get('ownerUid') !== uid || linked.get('memoryId') !== relation ||
+          linked.get('state') !== 'ACTIVE' || linked.get('synthetic') !== true ||
+          linked.get('purpose') !== purpose || linked.get('policyVersion') !== policyVersion ||
+          linked.get('sourceEvidenceClass') !== 'SYNTHETIC_TEST_ONLY' ||
+          linked.get('decisionReceiptId') !== receipt ||
+          linked.get('sourceSha256') !== linkedDigest ||
+          linked.get('byteLength') !== linkedBytes.length ||
+          linked.get('storagePath') !== 'staging_synthetic_memories/' + uid + '/' + relation + '.bin' ||
+          linkedGraph.get('ownerUid') !== uid || linkedGraph.get('memoryId') !== relation ||
+          linkedGraph.get('state') !== 'ACTIVE' || linkedGraph.get('synthetic') !== true ||
+          linkedGraph.get('decisionReceiptId') !== receipt ||
+          linkedGraph.get('sourceSha256') !== linkedDigest ||
+          linkedGraph.get('relatesTo') !== linked.get('relatedMemoryId')) {
+          deny('SYNTHETIC_GRAPH_SOURCE_UNAVAILABLE');
+        }
       }
       tx.create(memoryRef(uid, id), {
         ownerUid: uid, memoryId: id, state: 'ACTIVE', synthetic: true,
