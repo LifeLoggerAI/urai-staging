@@ -214,6 +214,25 @@ try {
   await syntheticGraph.update({ state: 'REVOKED' });
   try { await assertDenied(privateRead(), 'inactive graph must deny memory read'); }
   finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
+  // Child creation itself must refuse a forged or inactive parent graph.
+  // Previously only direct Replay reads enforced this provenance boundary.
+  const createLinkedChild = () => call(a, 'createStagingSyntheticMemory', {
+    decisionReceiptId: grantReceipt, relatedMemoryId: firstMemory.memoryId,
+  });
+  await syntheticGraph.update({ state: 'REVOKED' });
+  try { await assertDenied(createLinkedChild(), 'inactive parent graph must deny child admission'); }
+  finally { await syntheticGraph.update({ state: 'ACTIVE' }); }
+  await syntheticGraph.update({ sourceSha256: 'f'.repeat(64) });
+  try { await assertDenied(createLinkedChild(), 'forged parent graph digest must deny child admission'); }
+  finally { await syntheticGraph.update({ sourceSha256: firstMemory.sourceSha256 }); }
+  await syntheticGraph.update({ ownerUid: ub.user.uid });
+  try { await assertDenied(createLinkedChild(), 'cross-owner parent graph must deny child admission'); }
+  finally { await syntheticGraph.update({ ownerUid: ua.user.uid }); }
+  const savedAdmissionParentGraph = (await syntheticGraph.get()).data();
+  assert.ok(savedAdmissionParentGraph, 'valid parent graph exists before missing-graph case');
+  await syntheticGraph.delete();
+  try { await assertDenied(createLinkedChild(), 'missing parent graph must deny child admission'); }
+  finally { await syntheticGraph.set(savedAdmissionParentGraph); }
 
   // A graph node by itself is not a valid source. These red/green cases must
   // run against the actual Firestore/Functions emulator, not a mocked SDK.
@@ -349,20 +368,32 @@ try {
     assert.equal((await readChild()).data.sourceSha256, secondMemory.sourceSha256,
       'valid three-generation child remains readable');
     await ancestorMemory.update({ state: 'REVOKED' });
-    try { await assertDenied(readChild(), 'revoked grandparent must deny direct child Replay'); }
+    try {
+      await assertDenied(readChild(), 'revoked grandparent must deny direct child Replay');
+      await assertDenied(createLinkedChild(), 'revoked grandparent must deny child admission');
+    }
     finally { await ancestorMemory.update({ state: 'ACTIVE' }); }
     await ancestorGraph.delete();
-    try { await assertDenied(readChild(), 'missing grandparent graph must deny child Replay'); }
+    try {
+      await assertDenied(readChild(), 'missing grandparent graph must deny child Replay');
+      await assertDenied(createLinkedChild(), 'missing grandparent graph must deny child admission');
+    }
     finally { await ancestorGraph.set({ ...savedParentGraph.data(), memoryId: ancestorId,
       relatesTo: null, sourceSha256: ancestorDigest }); }
     await ancestorMemory.update({ sourceSha256: 'f'.repeat(64) });
-    try { await assertDenied(readChild(), 'forged grandparent digest must deny child Replay'); }
+    try {
+      await assertDenied(readChild(), 'forged grandparent digest must deny child Replay');
+      await assertDenied(createLinkedChild(), 'forged grandparent digest must deny child admission');
+    }
     finally { await ancestorMemory.update({ sourceSha256: ancestorDigest }); }
     await Promise.all([
       ancestorGraph.update({ relatesTo: secondMemory.memoryId }),
       ancestorMemory.update({ relatedMemoryId: secondMemory.memoryId }),
     ]);
-    try { await assertDenied(readChild(), 'three-generation ancestry cycle must deny child Replay'); }
+    try {
+      await assertDenied(readChild(), 'three-generation ancestry cycle must deny child Replay');
+      await assertDenied(createLinkedChild(), 'ancestry cycle must deny child admission');
+    }
     finally { await Promise.all([
       ancestorGraph.update({ relatesTo: null }),
       ancestorMemory.update({ relatedMemoryId: null }),
