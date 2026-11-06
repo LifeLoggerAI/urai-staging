@@ -177,6 +177,11 @@ export const createStagingSyntheticMemory = functions.https.onCall(async (data: 
           linkedGraph.get('relatesTo') !== linked.get('relatedMemoryId')) {
           deny('SYNTHETIC_GRAPH_SOURCE_UNAVAILABLE');
         }
+        // A parent can itself be a linked child. Enforce its complete
+        // owner/consent-bound ancestry at admission, just as direct Replay
+        // does, so an invalid grandparent cannot authorize a new child.
+        await assertLinkedParent(tx, uid, relation, receipt,
+          linked.get('relatedMemoryId'), linkedGraph.get('relatesTo'));
       }
       tx.create(memoryRef(uid, id), {
         ownerUid: uid, memoryId: id, state: 'ACTIVE', synthetic: true,
