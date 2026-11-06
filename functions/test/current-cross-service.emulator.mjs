@@ -11,6 +11,7 @@ import { getFunctions, connectFunctionsEmulator, httpsCallable } from 'firebase/
 import { initializeApp as initializeAdminApp, deleteApp as deleteAdminApp } from 'firebase-admin/app';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
+import { getStorage as getAdminStorage } from 'firebase-admin/storage';
 
 const expectedProject = 'urai-staging-test';
 const requiredEmulators = [
@@ -146,8 +147,12 @@ try {
   // Real Firebase SDK -> Functions -> Firestore transaction -> Storage
   // lifecycle, using fixed synthetic bytes only. This is an isolated
   // emulator-only proof, not certified production Life Graph or provider work.
+  const syntheticBucket = getAdminStorage(server).bucket(projectConfig.storageBucket);
+  const syntheticPrefix = 'staging_synthetic_memories/' + ua.user.uid + '/';
   await mustDeny('memory-missing-consent-denied',
     call(a, 'createStagingSyntheticMemory', { decisionReceiptId: 'synthetic_receipt_invalid1234' }));
+  assert.equal((await syntheticBucket.getFiles({prefix: syntheticPrefix}))[0].length, 0,
+    'missing consent must not leave any synthetic Storage object');
   await mustDeny('memory-unauthenticated-consent-denied',
     call(guest, 'grantStagingSyntheticMemoryConsent', { purpose: 'memory.storage', confirmed: true }));
   await mustDeny('memory-explicit-consent-required',
@@ -165,6 +170,8 @@ try {
     call(a, 'createStagingSyntheticMemory', { decisionReceiptId: 'synthetic_receipt_invalid1234' }));
   await mustDeny('memory-second-grant-denied',
     call(a, 'grantStagingSyntheticMemoryConsent', { purpose: 'memory.storage', confirmed: true }));
+  assert.equal((await syntheticBucket.getFiles({prefix: syntheticPrefix}))[0].length, 0,
+    'forged receipt must not leave any synthetic Storage object');
 
   const firstMemory = (await call(a, 'createStagingSyntheticMemory', {
     decisionReceiptId: grantReceipt,
@@ -454,11 +461,27 @@ try {
   }
   if (seedWrites) await seedBatch.commit();
   await assertDenied(readGraph(), 'oversized synthetic graph remains denied');
+  // A crash between Storage upload and Firestore admission can leave a
+  // canonical synthetic Storage object with NO memory/graph row. Seed this
+  // exact crash residue only in the disposable emulator and prove revoke
+  // clears it before reporting cleanupComplete. Previous row-only cleanup
+  // would leave this object behind.
+  const orphanId = 'orphanMEM_1234';
+  const orphanPath = syntheticPrefix + orphanId + '.bin';
+  await syntheticBucket.file(orphanPath).save(
+    Buffer.from('URAI_DISPOSABLE_SYNTHETIC_MEMORY:' + orphanId), {resumable: false});
+  assert.equal((await syntheticBucket.getFiles({prefix: syntheticPrefix}))[0]
+    .some(file => file.name === orphanPath), true, 'orphan fixture persisted');
   const revoked = (await call(a, 'revokeStagingSyntheticMemoryConsent', {
     decisionReceiptId: grantReceipt,
   })).data;
   assert.equal(revoked.status, 'revoked');
   assert.equal(revoked.deletedMemoryCount, 251);
+  assert.equal(revoked.orphanStorageObjectCount, 1,
+    'the one untracked synthetic Storage object must be deleted');
+  assert.equal(revoked.storageCleared, true);
+  assert.equal((await syntheticBucket.getFiles({prefix: syntheticPrefix}))[0].length, 0,
+    'no synthetic object may remain after cleanupComplete');
   assert.equal(revoked.graphCleared, true);
   assert.equal((await localAdminDb.collection('staging_synthetic_memories')
     .doc(ua.user.uid).collection('items').get()).empty, true, 'all 251 memory rows removed');
