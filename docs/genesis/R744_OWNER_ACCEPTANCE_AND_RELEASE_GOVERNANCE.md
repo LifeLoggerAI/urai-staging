@@ -1,13 +1,13 @@
 # One UrAi Genesis — R744 isolated owner-run acceptance lane (HOLD)
 
-This remains a documentation and **non-deploying** owner-run checkout/test lane descended from the R744 isolated `main` acceptance branch. It does not merge, rebase, modify, or approve existing security/owner PRs. The pinned target is review-only R778 child #167 (built on #165, #164, #160, #158, #157, #156, #154, #151 and #148): ES2020 compatibility, synthetic-memory source/graph integrity, acyclic relationships, direct Replay source-chain validation before/after bytes, and strict TypeScript relation narrowing. These remain source review candidates, not releases. The upstream security, timing and historical-ledger corrections remain inherited unchanged. All remain unmerged; this is neither a production candidate nor an approved release.
+This remains a documentation and **non-deploying** owner-run checkout/test lane descended from the R744 isolated `main` acceptance branch. It does not merge, rebase, modify, or approve existing security/owner PRs. The pinned target is review-only R780 child #169 (built on #167, #165, #164, #160, #158, #157, #156, #154, #151 and #148): ES2020 compatibility, synthetic-memory source/graph integrity, acyclic relationships, direct Replay source-chain validation before/after bytes, and strict TypeScript relation narrowing. These remain source review candidates, not releases. The upstream security, timing and historical-ledger corrections remain inherited unchanged. All remain unmerged; this is neither a production candidate nor an approved release.
 
 ## Exactly pinned candidate
 
-- Staging review: [PR #167](https://github.com/LifeLoggerAI/urai-staging/pull/167) (R778 orphan synthetic Storage cleanup atop reviewed ancestry and bounded Firestore revocation, draft / unmerged)
-- Source commit: `734919606a8b01bca21a7c265c2b0d18947ab36c`
-- Git tree: `c19a43e1898782cb31275403e3f421ec752e8beb`
-- Expected tracked files: 239
+- Staging review: [PR #169](https://github.com/LifeLoggerAI/urai-staging/pull/169) (R780 isolated, genuinely tested synthetic Storage cleanup helper on the R778 security lineage, draft / unmerged)
+- Source commit: `c3d6c66604129ddd137db6a971751d0de4d81835`
+- Git tree: `703bf4b6912d04cefaa38dbef3582fe6d62ce646`
+- Expected tracked files: 241
 - Acceptance target: one disposable local checkout, Node 22, Java 17+, pinned original Functions npm lockfile, no paid provider, no real-user data.
 
 Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-controlled machine** with Git, Node 22, npm and Java 17+. The script refuses any mismatched SHA/tree, never deploys and records exit codes and SHA256 evidence locally. The script must run from this repository checkout and creates a separate local test directory. It is not a CI workflow and cannot be substituted for a protected GitHub check.
@@ -18,7 +18,7 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 2. Real disposable Firebase Auth/Firestore/Storage/Functions emulator tests are not deployed Privacy–Jobs–Studio–Replay integration, cloud IAM attestation, provider deletion, or RuAi tenant isolation.
 3. A local pass cannot satisfy failed GitHub-hosted check runs, unprotected `main`, absent non-author review or missing authorized Privacy issuer/Jobs receiver.
 4. `scripts/validate-privacy-jobs-staging-admission.mjs` and `scripts/verify-privacy-jobs-protected-approval.mjs` must **deny** admission until genuine authority exists. A surprising success is a stop condition.
-5. Staging #134/#136 have overlapping verifier changes, reconciled on review-only child #138. Child #141 carries #140's stricter synthetic timing regressions without changing the verifier; child #143 restores the separately verified R745 historical ledger record. All remain unmerged. This pinned owner-run acceptance must run the original full-repository gates on #167's exact SHA; earlier #138/#140/#141/#143/#146/#154/#156/#157 source-only results do not transfer. Do not merge or approve based on this script.
+5. Staging #134/#136 have overlapping verifier changes, reconciled on review-only child #138. Child #141 carries #140's stricter synthetic timing regressions without changing the verifier; child #143 restores the separately verified R745 historical ledger record. All remain unmerged. This pinned owner-run acceptance must run the original full-repository gates on #169's exact SHA; earlier #138/#140/#141/#143/#146/#154/#156/#157 source-only results do not transfer. Do not merge or approve based on this script.
 
 ### Verified launch blockers
 
@@ -27,13 +27,17 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 - Privacy/Jobs staging consumers need **independent** code review and real bounded staging service identities. Never flip `state:active` merely to make a test pass.
 - Final device, visual, accessibility, 20+ locale, signed deletion, rollback, store/provider, RuAi isolation and founder acceptance are not certified.
 
-### R779 current source pin (#167) — REVIEW ONLY, RELEASE HOLD
+### R781 current source pin (#169) — REVIEW ONLY, RELEASE HOLD
 
-- New candidate [Staging #167](https://github.com/LifeLoggerAI/urai-staging/pull/167) exact head `734919606a8b01bca21a7c265c2b0d18947ab36c`, Git tree `c19a43e1898782cb31275403e3f421ec752e8beb`, 239 tracked blobs, zero gitlinks. Original source-security [#165](https://github.com/LifeLoggerAI/urai-staging/pull/165) is an immutable parent, not an independently certified release.
-- #167 leaves #165's consent-bound full Replay ancestry checks and #164's 251+ Firestore batch revocation cleanup intact, and adds pre-upload consent/receipt validation, upload-error compensating deletion, and final owner-prefix synthetic Storage object enumeration to remove an orphan without a backing Firestore row before asserting cleanupComplete.
-- The original four-service emulator script gained **actual disposable SDK assertions** for absent/forged consent residual bytes and a seeded orphan object, requiring that the 251-row cleanup also removes one untracked source. Firebase Storage object LIST is documented as implemented by the emulator, but the exact pinned SDK/CLI version and this complete test have **NOT** been executed here. No SDK/native suite pass may be inferred.
-- The unchanged R744 owner-run acceptance still demands a frozen Functions `npm ci`, unchanged full `npm run check`, 30 tracked original native entrypoints and exactly `322/322` TAP, genuine four-emulator R451 receipt, expected fail-closed Privacy/Jobs release-authority denials, exact commit/tree/source match and `productionAuthorized=false`. The shell changes only three immutable references: PR head ref, source SHA, tree SHA; any moving source causes an abort.
-- No full original install, TypeScript/Functions build, complete 322-case test, genuine Auth/Firestore/Storage/Functions suite, protected CI/independent review, signed Privacy→Jobs→Studio→Spatial/RuAi receipt, provider deletion ack or founder device/creative approval exists for this source. **RELEASE HOLD / NO GO.**
+- Exact review source [Staging #169](https://github.com/LifeLoggerAI/urai-staging/pull/169) at `c3d6c66604129ddd137db6a971751d0de4d81835`, Git tree `703bf4b6912d04cefaa38dbef3582fe6d62ce646` (241 tracked blobs, zero gitlinks), based on immutable source security #167. #169 refactors the existing synthetic Storage orphan cleanup into a pure TypeScript helper, adds 13 standalone original native Node tests, and preserves the original consent and Firebase emulator lifecycle code.
+- **Actual local executed proof:** Node 22.16.0 ran `node --experimental-strip-types --test functions/test/syntheticStorageResidue.test.mjs` using source/test files with exact GitHub blob parity. **13/13 PASS, 0 failed/skipped**; TAP SHA256 `b84d36a5c0e303f4efc0c1588e19b26d5fc307b3a8690e0a67da87889d8dbbc4`. Isolated TypeScript 5.8.3 strict/noImplicitReturns/ES2020/commonjs helper+adapter checks passed locally. This is a test of the real helper code, **NOT** the full Firebase SDK, Functions build, hosted Actions or integration.
+- The R744 owner launcher now changes the immutable source references and exact **241-file** count, and adds a new dependency-free test command with strict 13/13 raw TAP assertions **before** frozen `npm ci`. It still requires unchanged original complete `npm run check`, the existing 30-entrypoint `322/322` native suite, the real R451 18+40 four-service emulator receipt, fail-closed Privacy/Jobs governance, source/tree parity and `productionAuthorized=false`. A moved PR source must abort.
+- Current Firebase Storage emulator documentation supports GCS object `list`, but actual pinned Functions/four-emulator behavior remains **unexecuted** on #169. No hosted protected CI success, independent nonauthor source review, full authenticated Privacy→Jobs→Studio→Spatial/RuAi lifecycle, provider deletion ACK or founder Gold Master acceptance has been obtained. **GENESIS HOLD.**
+
+### R779 prior source pin (#167) — HISTORICAL ONLY
+
+- Earlier [#167](https://github.com/LifeLoggerAI/urai-staging/pull/167) at `734919606a8b01bca21a7c265c2b0d18947ab36c`, remote tree `c19a43e1898782cb31275403e3f421ec752e8beb` (239 tracked files) remains the immediate security parent. Its emulator tests were written but not executed. Prior #165 and #164 source-derived/native results do not transfer to #169.
+- The earlier R779 owner-runner targeted #167 and did not include this new 13-case original helper test. The new runner adds this requirement without weakening or rewriting any existing check.
 
 ### R775 previous owner pin (#165) — HISTORICAL ONLY
 
@@ -68,7 +72,7 @@ Run `bash docs/genesis/r744-owner-pinned-acceptance.sh` **on a networked owner-c
 
 ### Owner-controlled next actions
 
-1. Run the pinned script against Staging #167 and retain sanitized evidence. If the PR moves, stop and request a fresh SHA-pinned review candidate rather than editing expected hashes.
+1. Run the pinned script against Staging #169 and retain sanitized evidence. If the PR moves, stop and request a fresh SHA-pinned review candidate rather than editing expected hashes.
 2. Resolve GitHub account recovery, Actions runner eligibility/billing and protected `main` settings via provider-supported owner workflow. No payment or 2FA bypass is authorized by this document.
 3. Obtain non-author source/security review after the active verifier branches converge; observe protected GitHub checks executing actual steps.
 4. Complete real authorized staging integration and Gold Master visual/device/accessibility acceptance before requesting a founder GO.

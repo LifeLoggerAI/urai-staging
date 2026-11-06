@@ -4,8 +4,8 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 bash "$SCRIPT_DIR/test-r744-denial-contract.sh" || { echo 'R744 security preflight failed; no checkout attempted' >&2; exit 2; }
 URL='https://github.com/LifeLoggerAI/urai-staging.git'
-SHA='734919606a8b01bca21a7c265c2b0d18947ab36c'
-TREE='c19a43e1898782cb31275403e3f421ec752e8beb'
+SHA='c3d6c66604129ddd137db6a971751d0de4d81835'
+TREE='703bf4b6912d04cefaa38dbef3582fe6d62ce646'
 RUN_DIR="$(mktemp -d /tmp/one-urai-r744.XXXXXX)"
 SRC="$RUN_DIR/source"; OUT="$RUN_DIR/evidence"; mkdir -p "$OUT" "$RUN_DIR/home"
 printf 'schema=one-urai.r744.owner-acceptance.v1\nsha=%s\ntree=%s\nproductionAuthorized=false\n' "$SHA" "$TREE" > "$OUT/RESULTS.txt"
@@ -25,13 +25,13 @@ for c in git node npm java sha256sum; do command -v "$c" >/dev/null || { echo "M
 java -version >"$OUT/java-version.log" 2>&1 || exit 2
 record git-init git init -q "$SRC"
 record git-remote git -C "$SRC" remote add origin "$URL"
-record git-fetch git -C "$SRC" fetch --no-tags --depth=1 origin refs/pull/167/head
+record git-fetch git -C "$SRC" fetch --no-tags --depth=1 origin refs/pull/169/head
 [[ "$(git -C "$SRC" rev-parse FETCH_HEAD)" == "$SHA" ]] || { echo 'PR head moved: stop' >&2; exit 3; }
 record git-checkout git -C "$SRC" -c core.autocrlf=false checkout -q --detach "$SHA"
 assert_source() {
   [[ "$(git -C "$SRC" rev-parse HEAD)" == "$SHA" ]] &&
   [[ "$(git -C "$SRC" rev-parse 'HEAD^{tree}')" == "$TREE" ]] &&
-  [[ "$(git -C "$SRC" ls-files | wc -l | tr -d ' ')" == 239 ]] &&
+  [[ "$(git -C "$SRC" ls-files | wc -l | tr -d ' ')" == 241 ]] &&
   [[ -z "$(git -C "$SRC" status --porcelain --untracked-files=no)" ]]
 }
 assert_source || { echo 'Exact Git source/tree failed' >&2; exit 3; }
@@ -52,11 +52,25 @@ expect_denial() {
   fi
   printf '[R744] verified expected denial: %s\n' "$label"
 }
+# The new cleanup helper must pass its original dependency-free Node test
+# before any npm install, while all previous frozen checks stay mandatory.
+for source_file in functions/src/syntheticStorageResidue.ts functions/test/syntheticStorageResidue.test.mjs; do
+  [[ -f "$source_file" && -n "$(git -C "$SRC" ls-files -- "$source_file")" ]] ||
+    { echo "Untracked/missing synthetic cleanup source: $source_file" >&2; exit 4; }
+done
+record synthetic-storage-residue-native node --experimental-strip-types --test functions/test/syntheticStorageResidue.test.mjs || exit 4
+if ! grep -Fxq '# tests 13' "$OUT/synthetic-storage-residue-native.log" ||
+   ! grep -Fxq '# pass 13' "$OUT/synthetic-storage-residue-native.log" ||
+   ! grep -Fxq '# fail 0' "$OUT/synthetic-storage-residue-native.log" ||
+   ! grep -Fxq '# skipped 0' "$OUT/synthetic-storage-residue-native.log"; then
+  echo 'Synthetic Storage cleanup native proof incomplete; HOLD' >&2
+  exit 4
+fi
 record frozen-functions-install npm --prefix functions ci --ignore-scripts --engine-strict --no-audit --no-fund || exit 4
 record original-root-check npm run check || failed=1
 # Pin the full reviewed 30-entrypoint native source regression inventory.
-# 29 source-only entrypoints passed on this exact tree; the thirtieth requires
-# the real frozen firebase-tools dependency graph and must never be skipped.
+# Original 30-entrypoint inventory is fixed; older source-only results are
+# historical and must not be transferred to this new exact Git source.
 native_tests=(
   scripts/test-*.mjs
   scripts/r454-specific-firebase-denial.test.mjs
