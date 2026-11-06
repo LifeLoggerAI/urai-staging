@@ -6,6 +6,7 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 import { requireAuth } from './lib/auth';
 import { assertPlainObject, requiredString } from './lib/validation';
+import { sweepSyntheticStorageResidue } from './syntheticStorageResidue';
 
 const purpose = 'memory.storage';
 const policyVersion = 'urai-staging-synthetic-lifecycle-v1';
@@ -378,20 +379,13 @@ export const revokeStagingSyntheticMemoryConsent = functions.https.onCall(async 
   // has no memory row and cannot be found in the inventory deleted above.
   // List ONLY this authenticated owner's disposable synthetic prefix; fail
   // closed if an unexpected object path appears instead of deleting it.
-  const syntheticPrefix = 'staging_synthetic_memories/' + uid + '/';
-  const [storageFiles] = await memoryBucket().getFiles({prefix: syntheticPrefix});
-  let orphanStorageObjectCount = 0;
-  for (const file of storageFiles) {
-    const suffix = file.name.startsWith(syntheticPrefix) ?
-      file.name.slice(syntheticPrefix.length) : '';
-    if (!/^[A-Za-z0-9_-]{6,128}\.bin$/.test(suffix)) deny('SYNTHETIC_CLEANUP_SOURCE_MISMATCH');
-    await file.delete({ignoreNotFound: true});
-    orphanStorageObjectCount += 1;
-  }
-  // The receipt must never claim cleanup while an untracked source exists.
-  // Lack of Storage list support is a hard error, not an assumed empty bucket.
-  const [remainingFiles] = await memoryBucket().getFiles({prefix: syntheticPrefix});
-  if (remainingFiles.length !== 0) deny('SYNTHETIC_STORAGE_CLEANUP_INCOMPLETE');
+  // Verify that ALL leftover synthetic Storage objects belong to this owner
+  // before removing any; never mark revocation clean on incomplete listing.
+  const orphanStorageObjectCount = await sweepSyntheticStorageResidue(
+    uid,
+    async prefix => (await memoryBucket().getFiles({prefix}))[0],
+    deny,
+  );
   const orphanGraph = await db.collection('staging_synthetic_life_graph').doc(uid).collection('nodes').get();
   if (!orphanGraph.empty) deny('SYNTHETIC_GRAPH_CLEANUP_INCOMPLETE');
   await ref.update({cleanupComplete: true});
