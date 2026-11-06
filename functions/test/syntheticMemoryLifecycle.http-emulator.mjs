@@ -12,6 +12,10 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 
 const project = 'urai-staging-test';
+const source = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+const sourceTree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim();
+assert.equal(execFileSync('git', ['status', '--porcelain', '--untracked-files=no'], { encoding: 'utf8' }), '',
+  'committed tracked source must be clean before lifecycle execution');
 assert.equal(process.env.GCLOUD_PROJECT, project);
 assert.equal(process.env.FIREBASE_AUTH_EMULATOR_HOST, '127.0.0.1:9099');
 assert.equal(process.env.FIRESTORE_EMULATOR_HOST, '127.0.0.1:8080');
@@ -138,8 +142,10 @@ try {
   const repeat = await call(a, names[4], { decisionReceiptId: consent.decisionReceiptId });
   assert.equal(repeat.deletedMemoryCount, 0); assert.equal(repeat.orphanStorageObjectCount, 0);
   record('repeated-revocation-idempotent');
+  assert.equal(checks.length, 21, 'supplemental lifecycle check inventory must remain complete');
+  assert.equal(new Set(checks).size, 21, 'duplicate check labels cannot inflate acceptance');
   const receipt = { schema: 'urai-synthetic-three-emulator-callable-http-v1',
-    source: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+    source, sourceTree,
     checksPassed: checks.length, checks,
     actualFirebaseEmulators: ['Authentication', 'Firestore', 'Storage'],
     actualCallableHttpWrappers: true, functionsEmulatorExecuted: false,

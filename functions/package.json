@@ -14,7 +14,7 @@
     "test:unit": "vitest run test/auth.test.ts test/validation.test.ts test/featureRegistry.test.ts test/stagingBoundaries.test.ts",
     "test:rules": "firebase emulators:exec --config ../firebase.json --only firestore,storage \"vitest run test/firestore.rules.test.ts test/storage.rules.test.ts\"",
     "test:storage-residue:emulator": "firebase emulators:exec --config ../firebase.json --project urai-staging-test --only storage \"node --experimental-strip-types --test test/syntheticStorageResidue.emulator.mjs\"",
-    "test:synthetic-lifecycle:http-emulator": "GCLOUD_PROJECT=urai-staging-test firebase emulators:exec --config ../firebase.json --project urai-staging-test --only auth,firestore,storage \"node test/syntheticMemoryLifecycle.http-emulator.mjs\"",
+    "test:synthetic-lifecycle:http-emulator": "npm run build && GCLOUD_PROJECT=urai-staging-test firebase emulators:exec --config ../firebase.json --project urai-staging-test --only auth,firestore,storage \"node test/syntheticMemoryLifecycle.http-emulator.mjs\"",
     "test:e2e": "npm run test:rules"
   },
   "dependencies": {
