@@ -143,12 +143,19 @@ export const createStagingSyntheticMemory = functions.https.onCall(async (data: 
   const content = fixedBytes(id);
   const digest = sha(content);
   const storage = memoryBucket().file(filePath);
-  // No caller-supplied bytes. An actual Storage emulator object is persisted.
-  await storage.save(content, { resumable: false, metadata: {
-    contentType: 'application/octet-stream',
-    metadata: { synthetic: 'true', ownerUid: uid, sourceSha256: digest },
-  } });
+  // Deny missing, expired or forged consent BEFORE issuing even a synthetic
+  // Storage write. The transaction below still rechecks consent after upload,
+  // closing ordinary revoke/expiry races at admission.
+  const preflightConsent = assertCurrentConsent((await consentRef(uid).get()).data(), uid);
+  if (preflightConsent.decisionReceiptId !== receipt) deny('SYNTHETIC_CONSENT_RECEIPT_MISMATCH');
   try {
+    // No caller-supplied bytes. This object is in a disposable Storage emulator.
+    // Catch reported upload errors as well: a failed API response can arrive
+    // after the emulator stored bytes, which still need best-effort cleanup.
+    await storage.save(content, { resumable: false, metadata: {
+      contentType: 'application/octet-stream',
+      metadata: { synthetic: 'true', ownerUid: uid, sourceSha256: digest },
+    } });
     await db.runTransaction(async tx => {
       const consent = assertCurrentConsent((await tx.get(consentRef(uid))).data(), uid);
       if (consent.decisionReceiptId !== receipt) deny('SYNTHETIC_CONSENT_RECEIPT_MISMATCH');
@@ -366,8 +373,28 @@ export const revokeStagingSyntheticMemoryConsent = functions.https.onCall(async 
     }
   }
   if (pendingWrites) await batch.commit();
+  // A process can fail after its synthetic Storage upload but before
+  // Firestore admission (or before the compensating delete). Such an object
+  // has no memory row and cannot be found in the inventory deleted above.
+  // List ONLY this authenticated owner's disposable synthetic prefix; fail
+  // closed if an unexpected object path appears instead of deleting it.
+  const syntheticPrefix = 'staging_synthetic_memories/' + uid + '/';
+  const [storageFiles] = await memoryBucket().getFiles({prefix: syntheticPrefix});
+  let orphanStorageObjectCount = 0;
+  for (const file of storageFiles) {
+    const suffix = file.name.startsWith(syntheticPrefix) ?
+      file.name.slice(syntheticPrefix.length) : '';
+    if (!/^[A-Za-z0-9_-]{6,128}\.bin$/.test(suffix)) deny('SYNTHETIC_CLEANUP_SOURCE_MISMATCH');
+    await file.delete({ignoreNotFound: true});
+    orphanStorageObjectCount += 1;
+  }
+  // The receipt must never claim cleanup while an untracked source exists.
+  // Lack of Storage list support is a hard error, not an assumed empty bucket.
+  const [remainingFiles] = await memoryBucket().getFiles({prefix: syntheticPrefix});
+  if (remainingFiles.length !== 0) deny('SYNTHETIC_STORAGE_CLEANUP_INCOMPLETE');
   const orphanGraph = await db.collection('staging_synthetic_life_graph').doc(uid).collection('nodes').get();
   if (!orphanGraph.empty) deny('SYNTHETIC_GRAPH_CLEANUP_INCOMPLETE');
   await ref.update({cleanupComplete: true});
-  return { status: 'revoked', ownerUid: uid, deletedMemoryCount: removed, graphCleared: true, synthetic: true };
+  return { status: 'revoked', ownerUid: uid, deletedMemoryCount: removed,
+    orphanStorageObjectCount, storageCleared: true, graphCleared: true, synthetic: true };
 });
