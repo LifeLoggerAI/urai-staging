@@ -152,6 +152,13 @@ export const createStagingSyntheticMemory = functions.https.onCall(async (data: 
     await db.runTransaction(async tx => {
       const consent = assertCurrentConsent((await tx.get(consentRef(uid))).data(), uid);
       if (consent.decisionReceiptId !== receipt) deny('SYNTHETIC_CONSENT_RECEIPT_MISMATCH');
+      // The Life Graph consumer is intentionally bounded to 128 nodes. Admit
+      // only while capacity remains, before writing an otherwise unreadable
+      // graph. All creators update the consent document in the same transaction
+      // to force conflicting concurrent writers to retry at the new count.
+      const graphNodes = await tx.get(db.collection('staging_synthetic_life_graph')
+        .doc(uid).collection('nodes').limit(128));
+      if (graphNodes.size >= 128) deny('SYNTHETIC_GRAPH_CAPACITY_EXCEEDED');
       if (relation !== null) {
         const linked = await tx.get(memoryRef(uid, relation));
         if (!linked.exists || linked.get('state') !== 'ACTIVE' ||
@@ -170,6 +177,9 @@ export const createStagingSyntheticMemory = functions.https.onCall(async (data: 
         sourceSha256: digest, decisionReceiptId: receipt,
         synthetic: true, state: 'ACTIVE',
       });
+      // Shared transaction write fence: concurrent additions cannot use the
+      // same previously observed graph capacity without a Firestore retry.
+      tx.update(consentRef(uid), { syntheticGraphNodeCount: graphNodes.size + 1 });
     });
   } catch (error) {
     await storage.delete({ignoreNotFound:true}).catch(() => {});
