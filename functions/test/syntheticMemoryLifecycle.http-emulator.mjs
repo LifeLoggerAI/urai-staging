@@ -124,6 +124,14 @@ try {
   }
   assert.equal((await memory(uid, first.memoryId).parent.get()).size, 251);
   assert.equal((await list(uid)).length, 254); record('real-251-record-and-252-orphan-fixture');
+  // With 251 actual Firestore graph nodes, the original HTTPS callable must
+  // deny another admission and erase its prewritten Storage object.
+  const beforeCapacity = (await list(uid)).map(file => file.name).sort();
+  await denied('callable-graph-capacity-overflow-denied',
+    call(a, names[1], { decisionReceiptId: consent.decisionReceiptId }));
+  assert.deepEqual((await list(uid)).map(file => file.name).sort(), beforeCapacity);
+  assert.equal((await memory(uid, first.memoryId).parent.get()).size, 251);
+  record('capacity-denial-does-not-leak-storage-or-memory');
   await denied('foreign-consent-receipt-cannot-revoke-owner', call(b, names[4], { decisionReceiptId: consent.decisionReceiptId }));
   const result = await call(a, names[4], { decisionReceiptId: consent.decisionReceiptId });
   assert.equal(result.deletedMemoryCount, 251); assert.equal(result.orphanStorageObjectCount, 252);
@@ -142,8 +150,8 @@ try {
   const repeat = await call(a, names[4], { decisionReceiptId: consent.decisionReceiptId });
   assert.equal(repeat.deletedMemoryCount, 0); assert.equal(repeat.orphanStorageObjectCount, 0);
   record('repeated-revocation-idempotent');
-  assert.equal(checks.length, 21, 'supplemental lifecycle check inventory must remain complete');
-  assert.equal(new Set(checks).size, 21, 'duplicate check labels cannot inflate acceptance');
+  assert.equal(checks.length, 23, 'supplemental lifecycle check inventory must remain complete');
+  assert.equal(new Set(checks).size, 23, 'duplicate check labels cannot inflate acceptance');
   const receipt = { schema: 'urai-synthetic-three-emulator-callable-http-v1',
     source, sourceTree,
     checksPassed: checks.length, checks,

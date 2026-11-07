@@ -160,6 +160,11 @@ export const createStagingSyntheticMemory = functions.https.onCall(async (data: 
     await db.runTransaction(async tx => {
       const consent = assertCurrentConsent((await tx.get(consentRef(uid))).data(), uid);
       if (consent.decisionReceiptId !== receipt) deny('SYNTHETIC_CONSENT_RECEIPT_MISMATCH');
+      // The Life Graph reader stops at 128. Deny overflow before admission.
+      // This query shares the transaction with the consent write below.
+      const graphNodes = await tx.get(db.collection('staging_synthetic_life_graph')
+        .doc(uid).collection('nodes').limit(128));
+      if (graphNodes.size >= 128) deny('SYNTHETIC_GRAPH_CAPACITY_EXCEEDED');
       if (relation !== null) {
         // Admission must verify the same parent/graph identity used by Replay.
         // Otherwise a stale or forged graph can create a child that is
@@ -204,6 +209,8 @@ export const createStagingSyntheticMemory = functions.https.onCall(async (data: 
         sourceSha256: digest, decisionReceiptId: receipt,
         synthetic: true, state: 'ACTIVE',
       });
+      // Competing creation transactions recheck capacity on conflict.
+      tx.update(consentRef(uid), { syntheticGraphNodeCount: graphNodes.size + 1 });
     });
   } catch (error) {
     await storage.delete({ignoreNotFound:true}).catch(() => {});
