@@ -6,6 +6,25 @@ import { test } from 'node:test';
 const require=createRequire(import.meta.url);
 const ts=require('typescript');
 const root=new URL('../src/syntheticMemoryLifecycle.ts',import.meta.url);
+// R840: R839 imported the real Storage-residue safety helper, but this small
+// VM adapter still rejected its import before any capacity assertion ran.
+// Compile/load the original helper instead of substituting a permissive stub.
+const residueModule={exports:{}};
+const residueSource=fs.readFileSync(new URL('../src/syntheticStorageResidue.ts',import.meta.url),'utf8');
+const residueCompiled=ts.transpileModule(residueSource,{
+ fileName:'syntheticStorageResidue.ts',
+ compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true},
+}).outputText;
+vm.runInNewContext(residueCompiled,{
+ module:residueModule,exports:residueModule.exports,Set,Array,Promise,Error,String,RegExp,
+},{timeout:3000});
+assert.equal(typeof residueModule.exports.assertSyntheticOwnerUid,'function');
+assert.equal(typeof residueModule.exports.sweepSyntheticStorageResidue,'function');
+// Guard against accidentally replacing real UID validation with an allow-all mock.
+assert.throws(
+ ()=>residueModule.exports.assertSyntheticOwnerUid('owner/foreign',code=>{throw new Error(code)}),
+ /SYNTHETIC_OWNER_UID_INVALID/,
+);
 const usedProcess={env:{GCLOUD_PROJECT:'urai-staging-test',FIREBASE_AUTH_EMULATOR_HOST:'127.0.0.1:9099',FIRESTORE_EMULATOR_HOST:'127.0.0.1:8080',FIREBASE_STORAGE_EMULATOR_HOST:'127.0.0.1:9199'}};
 function setup({nodes=0}={}){
  const uid='owner-synthetic',receipt='synthetic_receipt_1234567890ABCDEF';
@@ -41,6 +60,7 @@ function setup({nodes=0}={}){
   if(name==='firebase-admin/storage')return {getStorage};
   if(name==='./lib/auth')return {requireAuth:ctx=>({uid:ctx.auth.uid})};
   if(name==='./lib/validation')return {assertPlainObject:x=>x,requiredString:x=>String(x)};
+  if(name==='./syntheticStorageResidue')return residueModule.exports;
   throw Error('UNKNOWN_IMPORT '+name);
  }};
  vm.runInNewContext(compiled,context,{timeout:3000});
