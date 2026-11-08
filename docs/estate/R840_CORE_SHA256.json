@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "genesis-staging-exact-r840-core-source-hashes-1",
+  "repository": "LifeLoggerAI/urai-staging",
+  "commit_sha": "49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b",
+  "tree_sha": "27122b852350441f47c793c20b05ef970cf12687",
+  "method": "Read original UTF-8 GitHub fetch_blob response at each immutable blob SHA, compute SHA256 in isolated JavaScript (verified known SHA256 vector abc), compare bytes to GitHub tree size; Git SHA-1 matching not independently recomputed for each in this batch",
+  "byte_coverage": "11/244 R840 paths; all 11 expected sizes matched; no assertion of full-tree SHA256",
+  "files": [
+    {
+      "path": ".firebaserc",
+      "git_blob_sha1": "dc92cc63382c34e5bf1553f076b605ad44188fc7",
+      "declared_size_bytes": 117,
+      "retrieved_size_bytes": 117,
+      "sha256": "dc5d09c9f2bc989b45fd36182264249d1a20ebff7e0f5f89f4be00bbc23467a2",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "git_blob_sha1": "e89922ad593599d2bff1d57bbdcbc9c560d5e467",
+      "declared_size_bytes": 13383,
+      "retrieved_size_bytes": 13383,
+      "sha256": "2aba29ac420a8ebbf2d9a732bc5e3fc39f0f3b1eec8acd3e1c7a0eb3ee25ada3",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": ".github/workflows/staging-deploy.yml",
+      "git_blob_sha1": "3164460efe5c6e8e1e1b07b900f424b5bda05c7a",
+      "declared_size_bytes": 18765,
+      "retrieved_size_bytes": 18765,
+      "sha256": "d128499f25ddda9d7d618619bf7a94fbdc1348a3ceea95f673eb923da8f1baf3",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": "config/staging-consumers.json",
+      "git_blob_sha1": "775a14746682d088cc53b1250327d2289dd74de1",
+      "declared_size_bytes": 5723,
+      "retrieved_size_bytes": 5723,
+      "sha256": "a5ccb68df790bb949fac93a51fe2a7ff9021846f167518c0b5bf50b2d1ca31c0",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": "firebase.json",
+      "git_blob_sha1": "c1a1f7bd5f141d21fac5f4b13c3e0fd9416af121",
+      "declared_size_bytes": 2081,
+      "retrieved_size_bytes": 2081,
+      "sha256": "46dd555cbe9ab1c6438f2300ab541b98547e568f50afb2ac55d287599c2f32aa",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": "functions/package-lock.json",
+      "git_blob_sha1": "d04e6bc1daaf49a0a4dd8102c93caff37dbf0f76",
+      "declared_size_bytes": 333270,
+      "retrieved_size_bytes": 333270,
+      "sha256": "0eb87dde93fc8ab4e24c91f3aafec17fc762445d2d8d10cb42d4cecf41c283b1",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": "functions/package.json",
+      "git_blob_sha1": "94b1a58084bb79892a37290c1a53f181b2e1568b",
+      "declared_size_bytes": 1966,
+      "retrieved_size_bytes": 1966,
+      "sha256": "915128db369c20b35e9767773a37c6c8ccfdf4e26531d80e311194f24d3bfb9d",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": "functions/src/syntheticMemoryLifecycle.ts",
+      "git_blob_sha1": "4df1d9ca7c72910b2e24ef46c95019944abaf080",
+      "declared_size_bytes": 22966,
+      "retrieved_size_bytes": 22966,
+      "sha256": "c3e8a445c4f8828d25811f48d886d884c2586b8e5569bd5de146a6a1ca8611d0",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": "functions/src/syntheticStorageResidue.ts",
+      "git_blob_sha1": "08726882b08d7929c770479425995d2dd95730c4",
+      "declared_size_bytes": 2321,
+      "retrieved_size_bytes": 2321,
+      "sha256": "8f6f10a5ac271970f63824d58a8a5753359c83c0b2baabfb37c8bc2f2efd01b7",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": "functions/test/syntheticMemoryCapacity.test.mjs",
+      "git_blob_sha1": "dde5113dbe1a53ee3f5aeac9fff65b36f61f7fc4",
+      "declared_size_bytes": 6079,
+      "retrieved_size_bytes": 6079,
+      "sha256": "068e09aac44322a442f869c9fef4f6240551c93ef20eb54c00ff727ed4496ab8",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    },
+    {
+      "path": "functions/test/syntheticMemoryLifecycle.http-emulator.mjs",
+      "git_blob_sha1": "7615578a1e18e7712fd98e03cfab7773deb2f923",
+      "declared_size_bytes": 11567,
+      "retrieved_size_bytes": 11567,
+      "sha256": "60084a99481a256f2ee1f20fe740c78fbd4216f6e1deae9b0a2f0b0a55497230",
+      "source_bytes_retrieved": true,
+      "declared_size_matched": true
+    }
+  ],
+  "no_secrets_embedded": true,
+  "not_original_runner_or_cloud_certification": true
+}
