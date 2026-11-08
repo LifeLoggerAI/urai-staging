@@ -110,6 +110,9 @@ jobs:
           npm run test:unit
           npm run test:rules
           npm run test:e2e
+          node --test scripts/test-r887-release-acceptance-wiring.mjs
+          npm run test:r816:capacity
+          npm --prefix functions run test:synthetic-lifecycle:http-emulator
           node scripts/urai-staging-bootstrap.mjs
           node scripts/validate-launch-evidence.mjs
 
