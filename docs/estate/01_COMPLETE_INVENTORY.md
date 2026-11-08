@@ -1,0 +1,9 @@
+# 01 — Git Inventory and Byte Coverage
+Two non-truncated recursive GitHub API trees were enumerated at exact commits:
+| Ref | Commit | Actual Git tree SHA | Files | Declared Git blob bytes |
+|---|---|---|---:|---:|
+| main | `bda659ad23590b39e7f32de349f8a3723455ce02` | `0e5d9500bf376026c5bb8554cf655661a0b0f7ac` | 147 | 1,054,519 |
+| PR176 R840 | `49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b` | `27122b852350441f47c793c20b05ef970cf12687` | 244 | 1,715,705 |
+Every one of the 391 **ref/path** entries (overlapping paths intentionally repeated by revision) is in [MANIFEST.json](MANIFEST.json), with path, Git blob SHA-1, size and explicit SHA256 null because not independently calculated. Main top-level groups: `.github` 11/133,735B; `docs` 30/95,502B; `functions` 15/425,923B; `scripts` 49/265,557B; `config` 3/22,014B; `launch-proof` 6/18,019B. Candidate: `.github` 15/174,479B; `docs` 34/127,923B; `functions` 25/500,661B; `scripts` 127/772,372B; `config` 4/23,193B.
+Current branch heads are enumerated separately in [BRANCH_REFS.json](BRANCH_REFS.json). Historical commits across all refs not traversed. No complete Git-tag inventory: tag endpoint unavailable; releases endpoint returned zero entries. Actual LFS objects, binaries outside Git, CI artifact ZIPs, deployed cloud files, untracked and deleted objects not fetched; **no all-bytes claim**.
+Exact substantive selected files were read: `functions/package.json`, full parseable `functions/package-lock.json`, Functions synthetic lifecycle and residue guard, 23-case HTTP test, R840 unit harness, rules/deploy/CI workflow paths and selected canonical/historical docs. Functions package-lock v3: declared 2 prod and 6 dev dependencies match `functions/package.json` with 0 root mismatches. Locked versions firebase-admin 14.5.0; firebase-functions 7.4.0; firebase-tools 15.32.1; TypeScript 5.9.3; Vitest 4.1.11. This is **JSON consistency**, not frozen npm install, compile or security audit.

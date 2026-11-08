@@ -1,0 +1,16 @@
+# 03 — Staging architecture, release path, environment and exact source ledger
+`LifeLoggerAI/urai-staging` owns source for Firebase staging validation shell; `.firebaserc` only `default` and `staging` -> `urai-staging`, **no production alias**. Hosting site `urai-staging`, public dir `public/`, rewrites `/api/healthz`, `/api/buildinfo`, `/api/companion`, `/api/waitlist`; Functions Node22; Firestore rules/indexes, Storage rules; loopback emulators Auth9099, Firestore8080, Storage9199, Functions5001. Disposable synthetic test project **`urai-staging-test`**.
+CI `.github/workflows/ci.yml` checks exact PR head, installs/builds/tests and uploads source artifacts. Confined Workstream C job runs only on a named Workstream branch; native consumer browser only PR109. `current-cross-service.yml` is likewise PR109-scoped. `urai-production-verify.yml` is staging **source** verification despite its name, **not** a real production deploy.
+Only governed staging deploy: manual `.github/workflows/staging-deploy.yml` with exact unchanged `main`, distinct accepted ancestor rollback SHA, project confirmation, noncredentialed preflight, frozen Functions npm install/Java/Node22/unit/rules, source-bound prebuilt artifact, then optional `environment: staging` job. Protected job gets `id-token:write`, uses GitHub OIDC/WIF, verifies credential path, installed Firebase CLI 15.23.0 and billing, then lock script deploys existing Hosting site+Functions+Firestore rules/indexes+Storage; no auto-site-creation. `scripts/smoke-staging.sh` now requires authentic mutation receipt and performs **nonmutating** public/negative HTTP checks.
+**Source ledger**:
+| Role | Owner / exact source | State |
+|---|---|---|
+| Staging main | `bda659ad23590b39e7f32de349f8a3723455ce02` | source, deployed identity not read back |
+| Advanced staging lifecycle | Staging #176 `49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b` | source; exact native and CI HOLD |
+| Historical CI | Staging `9f5f5bd2d80ddc01e303803e3d9f08a21be2ebd9` | real hosted October successes, stale |
+| Scoped Twilio/SendGrid staging consumers | Communications main `40cd2f4b6d422734869486a49cddac9e103a58f1` | config source pin, actual current upstream and provider not verified |
+| Spatial static/source candidate | Spatial `b0318f4251f8f47ef5f232a54c6e52dc637116c7` | not admitted, no hosting mutation |
+| Consumer app | `urai-spatial/urai-tier1` -> `urai.app` | separate production owner, independent current SHA/deploy unverified |
+| Private consent/jobs/movie | Privacy -> Jobs -> Studio -> protected Replay | API/contract donor source; no live issuer-to-movie or replay |
+| Legacy/reference | `UrAi`, `UrAi-Dev`, `UrAiProd` | not staging UI deploy owner; no inferred live mapping |
+`config/staging-consumers.json` has two active bounded Communications consumer modes, synthetic-only, explicit Functions allowlists, no Hosting/rules/production; Admin#57 and older Spatial#1600 historic. Sensitive values not accessed: relevant names `GCP_WIF_PROVIDER`, `GCP_STAGING_DEPLOY_SERVICE_ACCOUNT`, `GCP_STAGING_FUNCTIONS_RUNTIME_SERVICE_ACCOUNT`, `URAI_CROSS_REPO_READ_TOKEN` or `URAI_CROSS_REPO_READ_SSH_KEY`; Twilio/SendGrid allowlist token/key names in configuration only. No actual IAM effective permissions verified.
