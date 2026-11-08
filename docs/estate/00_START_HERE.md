@@ -14,3 +14,9 @@ Read 01 inventory + MANIFEST.json + BRANCH_REFS.json; 02 source history; 03 arch
 - [11 original R840 core source bytes + SHA-256](R840_CORE_SHA256.json): 418,238 bytes verified against their GitHub declared sizes; other files not hashed
 
 This continuation confirms the October successful CI and R793 donor artifacts are genuine source-pinned historical evidence, while fresh read-only staging web checks are inconsistent with the documented staging shell and both current exact-head CI jobs lack executed steps. **Source tests, cloud deployment, device and production remain HOLD.**
+
+## R885 — live source fingerprint and provider read-only next steps
+
+- [R885 public staging content fingerprint, CI runner admission and safe owner-authorized Hosting release readback](12_R885_LIVE_STAGING_FINGERPRINT_CI_AND_READONLY_HOSTING_PROOF.md).
+- Public Firebase reserved init identifies `urai-staging`, but the current Home failure copy and robots policy match source in older `LifeLoggerAI/UrAi`, not `urai-staging`'s validation shell. **Exact deployed release/version and origin remain unverified; production/staging cloud mutation forbidden.**
+- Hosted Actions remain blocked before execution; existing GitHub support case #4889576 remains the owner-level coordination path. No new payment, CI dispatch or cloud/branch protection changes were made.
