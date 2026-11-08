@@ -1,0 +1,2766 @@
+{
+  "schema_version": "genesis-staging-tree-inventory-v1",
+  "repository": "LifeLoggerAI/urai-staging",
+  "date_local": "2026-11-07",
+  "method": "GitHub recursive tree Git object metadata",
+  "hash_note": "SHA256 null for all entries; raw bytes not read individually",
+  "scans": [
+    {
+      "label": "main",
+      "commit_sha": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "git_tree_sha1": "0e5d9500bf376026c5bb8554cf655661a0b0f7ac",
+      "truncated": false,
+      "file_count": 147,
+      "tracked_blob_bytes": 1054519,
+      "entries": [
+        {
+          "path": ".env.example",
+          "size_bytes": 1658,
+          "git_blob_sha1": "cf10fe017461b488036b4585081a0142a8d1553c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".firebaserc",
+          "size_bytes": 117,
+          "git_blob_sha1": "dc92cc63382c34e5bf1553f076b605ad44188fc7",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".firebaserc.example",
+          "size_bytes": 82,
+          "git_blob_sha1": "cfd452c25ed6c322c3a38f746cb7ec83fb920348",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/admin-pr57-runtime-deploy.yml",
+          "size_bytes": 20867,
+          "git_blob_sha1": "38ba00225b765fd6a449d35c0b011f8aafe56fd3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/admin-pr57-staging-consumer.yml",
+          "size_bytes": 10893,
+          "git_blob_sha1": "00ad23f15df0d459d82a4044f76f1d85b4668477",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "size_bytes": 7041,
+          "git_blob_sha1": "cad2108cccb7220fd9f3ff12abbf609f44af6dd0",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+          "size_bytes": 18032,
+          "git_blob_sha1": "a09f17baf697805459e3ef5aed86a38f9790b649",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+          "size_bytes": 20184,
+          "git_blob_sha1": "d253f16e9a616124a769c6184e5b87553d362f36",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/private-consumer-ref-verification.yml",
+          "size_bytes": 1373,
+          "git_blob_sha1": "15d3bb5d00186a4cde7f1ed730ed2eb7df48d227",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/spatial-pr1596-stripe-provider-probe.yml",
+          "size_bytes": 18131,
+          "git_blob_sha1": "e45d9aae7d04bda0135915eeb8e17221025e81be",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-deploy.yml",
+          "size_bytes": 18765,
+          "git_blob_sha1": "3164460efe5c6e8e1e1b07b900f424b5bda05c7a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-gcp-authority-readback.yml",
+          "size_bytes": 5459,
+          "git_blob_sha1": "e908f035ceb008dd8c28884472c306b1de59d396",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-wif-runtime-identity-probe.yml",
+          "size_bytes": 10529,
+          "git_blob_sha1": "8bcbddd0244626ad3c50579f0416c77bc6be73ec",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/urai-production-verify.yml",
+          "size_bytes": 2461,
+          "git_blob_sha1": "55f3d25ab97f52e96e66ea04e2ef680070610302",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".gitignore",
+          "size_bytes": 481,
+          "git_blob_sha1": "0c46ec478e95c754c78eb0acbe11c99583ed0f92",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".idx/dev.nix",
+          "size_bytes": 526,
+          "git_blob_sha1": "872b36ee0b749fea8069e858ddc171e95896f5ba",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "API_CONTRACT.md",
+          "size_bytes": 1815,
+          "git_blob_sha1": "787e8c372e44477a0496ae418c9424eebac3a43e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "CROSS_REPO_RELEASE_MAP.md",
+          "size_bytes": 986,
+          "git_blob_sha1": "c2622f8b3a6558374919f46a11d62889cbb0ddb0",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "DEPLOYMENT.md",
+          "size_bytes": 4033,
+          "git_blob_sha1": "4855091ad12cbc2f770c5d86aab30b1403b7f8b9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "DEPLOY_EVIDENCE_LOG.md",
+          "size_bytes": 1540,
+          "git_blob_sha1": "557686095ff31ccd686549a86c1fa2830b863ec5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "ENVIRONMENT.md",
+          "size_bytes": 3449,
+          "git_blob_sha1": "3811772021f08a7263a40e4bafe7f5e89dc4db02",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "ENVIRONMENT_AUTHORITY.md",
+          "size_bytes": 3998,
+          "git_blob_sha1": "102d4aaffecf1ce9c1abce86c0b1ef4a10212d9a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "README.md",
+          "size_bytes": 9189,
+          "git_blob_sha1": "6f79824cca0a42a7af10d9fbbd1641f3470e6bdb",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "RELEASE_HANDOFF.md",
+          "size_bytes": 1136,
+          "git_blob_sha1": "423b45afe2e415a5e7716674255bc1d6e019008c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "RELEASE_NOTES.md",
+          "size_bytes": 2342,
+          "git_blob_sha1": "2a61a9b05dce455a563cb98c6499fb93cd5eb75f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "SECURITY_STAGING.md",
+          "size_bytes": 2388,
+          "git_blob_sha1": "52b4c160cb0bac9d43818f151dcf11346394d69e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "SMOKE_CHECKLIST.md",
+          "size_bytes": 1128,
+          "git_blob_sha1": "f8cc15772589b3a716da12a8eca3d23ad810a2f5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "STATUS.md",
+          "size_bytes": 5456,
+          "git_blob_sha1": "1dec40840070239db89313657d885ec892b11147",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "SYSTEM_AUDIT.md",
+          "size_bytes": 5463,
+          "git_blob_sha1": "5b38d8555652ec470f2509f92ecde2d56a446481",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "TEST_REPORT.md",
+          "size_bytes": 2974,
+          "git_blob_sha1": "6e8cc12c1dee7bfedc9bb9c7122236f997140125",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_CANONICAL_APP.md",
+          "size_bytes": 1474,
+          "git_blob_sha1": "39db5c310688f9d9326ed81e7b75ae12fa95d9d5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_DEFINITION_OF_DONE.md",
+          "size_bytes": 5673,
+          "git_blob_sha1": "5885ed83600991e7c7de294be667e91af1f234b0",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_LAUNCH_BLOCKERS.md",
+          "size_bytes": 4401,
+          "git_blob_sha1": "65f5edcda5aa2e405780c7536b3474a33beb91ca",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_LOCK.md",
+          "size_bytes": 4526,
+          "git_blob_sha1": "0091ff5724808bcdd8991cc00b83704593e9cf41",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_LOCK_TEMPLATE.md",
+          "size_bytes": 1912,
+          "git_blob_sha1": "6c728a516329bdb1a66466025e02eb292f4265e9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_READINESS_MATRIX.md",
+          "size_bytes": 4079,
+          "git_blob_sha1": "f338ea0a7c7ef7ddb91b71fee59067af98c5243d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_XR_RELEASE_TRAIN_GATE.md",
+          "size_bytes": 2905,
+          "git_blob_sha1": "873cd307c7599e739a91c8d5fc9dcb8dd7c180db",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "config/provider-readiness-20261001.json",
+          "size_bytes": 5976,
+          "git_blob_sha1": "fbeffd1fe659a365f148b45f56f5da14e8f55a94",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "config/provider-registry-20260925.json",
+          "size_bytes": 10327,
+          "git_blob_sha1": "ac48fa29680e09fe0e2f7ef1d3b5608f017352da",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "config/staging-consumers.json",
+          "size_bytes": 5711,
+          "git_blob_sha1": "29865030be7208eff6cc3bcfb47798cebd4600f5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/AGENT_HANDOFF_CURRENT_STATE_2026-07-19.md",
+          "size_bytes": 5487,
+          "git_blob_sha1": "f6668188f211415b6c7451b2ab8708d0e2e75a45",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/AGENT_HANDOFF_CURRENT_STATE_2026-08-04.md",
+          "size_bytes": 10675,
+          "git_blob_sha1": "973c10d2f1c1d1305b0a87b843c82835b5abb75c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/BOOTSTRAP_EVIDENCE.md",
+          "size_bytes": 838,
+          "git_blob_sha1": "0d99c067e127c827b4c9b2e1e81595d704596775",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/COMMAND_EVIDENCE.md",
+          "size_bytes": 2651,
+          "git_blob_sha1": "8fb66d2f7c272657c0a5ea39a4111224373ed6fa",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
+          "size_bytes": 3903,
+          "git_blob_sha1": "27a387b29c77b7620d5270ce8633c0f52c6d1386",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/EVIDENCE_STATUS.md",
+          "size_bytes": 236,
+          "git_blob_sha1": "4e0410f288686f325b86f2d1dada6a354e52a508",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/JOBS_DEPENDENCY_AUDIT_BUNDLE_013.json",
+          "size_bytes": 2876,
+          "git_blob_sha1": "1ab0ef3bb1c9749b0b399d4df60682b1cb1378b5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/JOBS_DEPENDENCY_PREFLIGHT_FAILURE_A58CA1E.json",
+          "size_bytes": 1725,
+          "git_blob_sha1": "7349796f5269d38714d0b834a32c87c155d43045",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/JOBS_NARRATOR_BUILD_INPUT_CORRECTION_016.json",
+          "size_bytes": 1746,
+          "git_blob_sha1": "c7292404e00893ebc2dcf1b99ef57d1320ef23f6",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/REPO_MAP.md",
+          "size_bytes": 3247,
+          "git_blob_sha1": "dc0ce44b9fa21bdffa80ccc58dc7f2ee0f5a1588",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/RESUME_URAI_EXECUTION.md",
+          "size_bytes": 2838,
+          "git_blob_sha1": "45dbf58bd0f67c7ee2ad6903e5089a32d79a936c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/RUNTIME_OBSERVATION_2026-07-16.md",
+          "size_bytes": 3596,
+          "git_blob_sha1": "1885905aaa4c9bf308657a495c9bd0a4904a5d33",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md",
+          "size_bytes": 1852,
+          "git_blob_sha1": "f439b2b80bd3af19f4b84506c223f71df76b1c07",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI-STAGING_AUDIT.md",
+          "size_bytes": 5219,
+          "git_blob_sha1": "6404780346099fe4c8540e0c1f575cb920004bc7",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_CANONICAL_ROADMAP.md",
+          "size_bytes": 4186,
+          "git_blob_sha1": "bb3a0f89083b617a7680ac9fa5f6f3264bc14f78",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_COMPLETION_STATUS.md",
+          "size_bytes": 2511,
+          "git_blob_sha1": "c57a58472ae3f439b1f1c6fa099b58e7635d47ff",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_DEPLOYMENT_CHECKLIST.md",
+          "size_bytes": 2343,
+          "git_blob_sha1": "6241592a8251ae485c889ba7373c8648f513ed5b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_FIREBASE_SCHEMA.md",
+          "size_bytes": 4075,
+          "git_blob_sha1": "db510ae44fb57b88de7c7e5b23778831f968f8ef",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_GENESIS_STAGING_READINESS.md",
+          "size_bytes": 2070,
+          "git_blob_sha1": "45cf6910f319aafdd5a183cb91fb7fb8c62ad568",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_IMPLEMENTATION_LOG.md",
+          "size_bytes": 2420,
+          "git_blob_sha1": "7e19dfd36f72ce1adb19f25016080078de7955d1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_KNOWN_LIMITATIONS.md",
+          "size_bytes": 2676,
+          "git_blob_sha1": "1e0abb753726f327e5a396ac62d02cc9685e56ab",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_LEGACY_FUNCTION_AUDIT.md",
+          "size_bytes": 2848,
+          "git_blob_sha1": "6f5d62ae578eaf9018526a7914ceb9cd23c8d453",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_MASTER_FEATURE_MATRIX.md",
+          "size_bytes": 7715,
+          "git_blob_sha1": "01da219ef71dc92848989375d088d585e81c1d95",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_TESTING_CHECKLIST.md",
+          "size_bytes": 2519,
+          "git_blob_sha1": "796c5cbc5ed7fb3d76217c4e762d1fa82fe0a9ba",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/WORKSTREAM_C_CURRENT_CANDIDATES.md",
+          "size_bytes": 393,
+          "git_blob_sha1": "3338b81db2d47df9d33628e10121d14c77ece787",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/WORKSTREAM_C_MANUAL_VERIFICATION.md",
+          "size_bytes": 5469,
+          "git_blob_sha1": "8146d73dde2331735a7600b5bae41fb007988be3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/launch/HARDENING.md",
+          "size_bytes": 634,
+          "git_blob_sha1": "a3fbefed85bc6779fe75664b4186cff4ab8ba07d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/launch/WAVE5_STAGING_LAUNCH_LOCK_EVIDENCE.md",
+          "size_bytes": 2399,
+          "git_blob_sha1": "621090e1fbd9ec8e7fee4dd377ebe3ac6e5672b1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/receipts/URAI_API_PROVIDER_WORLD_AUDIT_20260925.md",
+          "size_bytes": 4450,
+          "git_blob_sha1": "ec58cc2cb56d22af962dc4f14cd13f84804df22e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/release-evidence/STAGING_AUTHORITY_RECONCILIATION_20260714.md",
+          "size_bytes": 1905,
+          "git_blob_sha1": "fef75b3f3a6acd5c5edd65591ff1c06793477efd",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "firebase.json",
+          "size_bytes": 1902,
+          "git_blob_sha1": "c903e045e8b51e534b995eb5f949a7ec8bb1e01f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "firestore.indexes.json",
+          "size_bytes": 5792,
+          "git_blob_sha1": "9a18e020c97f91769d658dc62b470440a31a787a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "firestore.rules",
+          "size_bytes": 3909,
+          "git_blob_sha1": "e6567561110ca0465441be319e906af622550417",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/package-lock.json",
+          "size_bytes": 377600,
+          "git_blob_sha1": "e390455942c13d61399af64328edd84878acbb39",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/package.json",
+          "size_bytes": 928,
+          "git_blob_sha1": "a99dd936b7d895937979910b9798174e5481a417",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/index.ts",
+          "size_bytes": 13981,
+          "git_blob_sha1": "6fb64f4cd65829a4bb9bdecb5be37e8a4f61437d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/auth.ts",
+          "size_bytes": 498,
+          "git_blob_sha1": "89771cc0521a8ee216ad1520fa7451fd7b8d06e9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/featureRegistry.ts",
+          "size_bytes": 10040,
+          "git_blob_sha1": "e2f41463b724c8237eccc60e557b355474b2c9dc",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/logger.ts",
+          "size_bytes": 259,
+          "git_blob_sha1": "1eb572c3ed594f0eac299f5f38e063ad1acbcea7",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/stagingBoundaries.ts",
+          "size_bytes": 4600,
+          "git_blob_sha1": "50b5fc7dd0796a1a560a59bbeb603966b5a9a396",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/validation.ts",
+          "size_bytes": 2246,
+          "git_blob_sha1": "2460b35d16449b74c27ca88f1de841914c6e36dc",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/auth.test.ts",
+          "size_bytes": 1184,
+          "git_blob_sha1": "e2fa9361957ce251f18b8e29a595e69eea617964",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/featureRegistry.test.ts",
+          "size_bytes": 1553,
+          "git_blob_sha1": "b5075bb5d811e756bcb6a3095897c971d429d114",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/firestore.rules.test.ts",
+          "size_bytes": 5553,
+          "git_blob_sha1": "29848d4ab9c4adca8f52ec9fecfd15b787b1dc94",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/stagingBoundaries.test.ts",
+          "size_bytes": 5451,
+          "git_blob_sha1": "73cea515da6897aef5c199a1e841b38a4024470a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/validation.test.ts",
+          "size_bytes": 1450,
+          "git_blob_sha1": "430f62297f34f2fced03b194642d53f6f096ae24",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/tsconfig.json",
+          "size_bytes": 415,
+          "git_blob_sha1": "289511713add8805a0f631e7d955f7cba1cee2ea",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/vitest.config.ts",
+          "size_bytes": 165,
+          "git_blob_sha1": "0df6100213ce68e15e59c3eaa31ced12b5d7922f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/README.md",
+          "size_bytes": 2745,
+          "git_blob_sha1": "e9e8a3e06e3006f3822c614985d707e429ace809",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/actions-hardening.md",
+          "size_bytes": 1995,
+          "git_blob_sha1": "c2f5fc49ec295d5df05a498895593b0750b5922c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/blockers.md",
+          "size_bytes": 3933,
+          "git_blob_sha1": "aea5f31bf0a876d4a007b045aa67b25600fdba6f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/build-test-deploy-proof.md",
+          "size_bytes": 3249,
+          "git_blob_sha1": "51f7abc56ac4cba2c5bee0b38ede76d0ce0d6d90",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/environment-map.md",
+          "size_bytes": 3167,
+          "git_blob_sha1": "529a1acf755463426f329e8efae177012c705196",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/last-mile-completion.md",
+          "size_bytes": 2930,
+          "git_blob_sha1": "dcc08b5613da7078b68cc390323abf39439f9edd",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "package.json",
+          "size_bytes": 2223,
+          "git_blob_sha1": "0dc10ef90193d2028fa9c3572199e7d49df9375b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "public/index.html",
+          "size_bytes": 5411,
+          "git_blob_sha1": "0935582e91a68f9b63a0383eb669ea67a9401527",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "public/robots.txt",
+          "size_bytes": 101,
+          "git_blob_sha1": "ba0e69a191f9469f94d2281116f36678abd2638c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/admin-pr57-staging-lock.sh",
+          "size_bytes": 19043,
+          "git_blob_sha1": "5a941a3e627387b4ea1c21e03485b32c5b6d071c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/assert-staging-billing-enabled.sh",
+          "size_bytes": 1091,
+          "git_blob_sha1": "3d9d4cf0fa625a1b9354bbf6460439a1a6652fd5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/bootstrap-staging-github-wif.sh",
+          "size_bytes": 6633,
+          "git_blob_sha1": "c7715dc20c73bbe07ad215d31c6a73e20db8c8f8",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/bootstrap-staging-sendgrid-proof-iam.sh",
+          "size_bytes": 9640,
+          "git_blob_sha1": "bbfd2c3f50889b9150d5eb875ee4b2e24d416839",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/bootstrap-staging-twilio-proof-iam.sh",
+          "size_bytes": 2854,
+          "git_blob_sha1": "e7611fb2af1747b34b640046334b897dde6861a3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/check-deploy-readiness-v2.mjs",
+          "size_bytes": 14561,
+          "git_blob_sha1": "c58dc39ccbcf8a83d85ed4a0944571de8d54a994",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/check-deploy-readiness.mjs",
+          "size_bytes": 16918,
+          "git_blob_sha1": "4690c3b51c9fdb0f8f18c28f1b912072a40ab435",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/check-lockfile.mjs",
+          "size_bytes": 1146,
+          "git_blob_sha1": "49b5a0a69874d0b4a6bb5f3e751769b1a80f4508",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/launch-p0.mjs",
+          "size_bytes": 1108,
+          "git_blob_sha1": "0798cce14d21186f3a14365ff8e8b9396c139894",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/promote-staging-twilio-function-deploy-iam.sh",
+          "size_bytes": 7683,
+          "git_blob_sha1": "1902685dfaf70c341603b4ff70e4b0458b737faf",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/repair-jobs-unused-error-reporting-core.sh",
+          "size_bytes": 16208,
+          "git_blob_sha1": "9dc1e5eee90aca52836637258b7aca5742c9cfd8",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/repair-jobs-unused-error-reporting.sh",
+          "size_bytes": 3786,
+          "git_blob_sha1": "f521578ca273ebb6118e10413cf31cec717b8e32",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/repo-doctor.mjs",
+          "size_bytes": 2054,
+          "git_blob_sha1": "03b427204e033b50cbaf6da1eb856650366721f4",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/resolve-workstream-c-root.mjs",
+          "size_bytes": 1172,
+          "git_blob_sha1": "f0676a4c3fc5555b2e5d17a10f4a9b7c641ba64c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-with-java.sh",
+          "size_bytes": 610,
+          "git_blob_sha1": "94da8585e559fa6ea8ed90c4df279cf1bbe5d439",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-workstream-c-cloud-shell-core.sh",
+          "size_bytes": 4272,
+          "git_blob_sha1": "aee3dd998218d662c4804bbece1187852985ba26",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-workstream-c-cloud-shell.sh",
+          "size_bytes": 815,
+          "git_blob_sha1": "1f9c70b24820abe3ac6be7d42563eb7ea257da37",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-workstream-c-manual-verification-core.sh",
+          "size_bytes": 12812,
+          "git_blob_sha1": "6cbc983f096b045505b748bb784ffab58b22b2ac",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-workstream-c-manual-verification.sh",
+          "size_bytes": 805,
+          "git_blob_sha1": "af6daf0e32ca932e7427e368108527055c339f45",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/smoke-staging.sh",
+          "size_bytes": 8001,
+          "git_blob_sha1": "e24d258ecda2e7242d94a2cad1519e1d0fb5f2fb",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/staging-prebuilt-manifest.mjs",
+          "size_bytes": 9393,
+          "git_blob_sha1": "fff413e9c9fd18c82f94081186bd645ca1e66352",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-sendgrid-staging-approval.mjs",
+          "size_bytes": 5787,
+          "git_blob_sha1": "ac9deaf7f16df822f6023ffbd5cee6c6dedacb87",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-workstream-c-confinement.mjs",
+          "size_bytes": 9857,
+          "git_blob_sha1": "aa1a3029217b8a107de178c9496831b16a9e08de",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-workstream-c-root-resolver.mjs",
+          "size_bytes": 2011,
+          "git_blob_sha1": "2eaaf69a28f7616ea4f6bee823bd8bab93973aa9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/urai-production-verify.mjs",
+          "size_bytes": 959,
+          "git_blob_sha1": "b6465c820dd37f5bb4b146149dc6c0bbd1b88987",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/urai-staging-bootstrap.mjs",
+          "size_bytes": 9277,
+          "git_blob_sha1": "4791a498bd74cde5b9dcfb3351b98e20f9b42494",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/urai-staging-lock.sh",
+          "size_bytes": 10157,
+          "git_blob_sha1": "bf20e1b020668fb9eea6f8c28b76ab141c8da2d2",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-active-consumer-refs.mjs",
+          "size_bytes": 2040,
+          "git_blob_sha1": "ecfb970adff5e24523caf70c23c7234473eb1d8a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-admin-pr57-provider-probe.mjs",
+          "size_bytes": 3196,
+          "git_blob_sha1": "5db0dba8f6bebe189c04c9dd045fea14252bd711",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-admin-pr57-runtime-deploy.mjs",
+          "size_bytes": 6272,
+          "git_blob_sha1": "7cf794bf25ac12399ce0ea7b4f1e6bb299e5d095",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-admin-pr57-staging-consumer.mjs",
+          "size_bytes": 2025,
+          "git_blob_sha1": "26573bbd8139ca6fff46fe97ec503f6ddc48ba03",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+          "size_bytes": 3385,
+          "git_blob_sha1": "8e17b584bbbee732b9ee3847f4c6b3d218bcdf80",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+          "size_bytes": 5186,
+          "git_blob_sha1": "b61128965a3d9cbe81416a57c4f5ed550e3dfd19",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-jobs-narrator-build-input.mjs",
+          "size_bytes": 3053,
+          "git_blob_sha1": "5940eca4e53828c5717693692cd2841162127084",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-launch-evidence.mjs",
+          "size_bytes": 5352,
+          "git_blob_sha1": "87a4f943555a69241318cfdd832ca86c64fa974c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-private-consumer-ref-workflow.mjs",
+          "size_bytes": 6739,
+          "git_blob_sha1": "9e6137abfc19f73ae1e42f2c78c0d82ad6ff5aef",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-provider-readiness-20261001.mjs",
+          "size_bytes": 5852,
+          "git_blob_sha1": "e46f52baf09840b6e51b6b8c76aa2423e65ec01d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-spatial-pr1596-stripe-provider-probe.mjs",
+          "size_bytes": 3548,
+          "git_blob_sha1": "1ef017272b8bcf3c90f7ca6a21fba4361da8c1bc",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-billing-guard.mjs",
+          "size_bytes": 2620,
+          "git_blob_sha1": "2c9daa2f1f343433a049f18cf1ea1f5984201cab",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-consumers.mjs",
+          "size_bytes": 10544,
+          "git_blob_sha1": "7e894abc2fbf68a97c48acb14faf4dbe4895d36c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-deploy-workflow.mjs",
+          "size_bytes": 2244,
+          "git_blob_sha1": "3e437be2192de16306e2a828f015631c3451e11b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-twilio-function-deploy-iam.mjs",
+          "size_bytes": 3281,
+          "git_blob_sha1": "f266f7b6ab7dda0d87ae3f73bb2a650cbb91d310",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-twilio-proof-iam.mjs",
+          "size_bytes": 2059,
+          "git_blob_sha1": "6a914f08a3db0762d07f3868e56fecf1b60b0cd7",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-wif-bootstrap.mjs",
+          "size_bytes": 2297,
+          "git_blob_sha1": "5b91285072b38f46e66a9a3880415f2e1f847597",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-wif-runtime-identity-probe.mjs",
+          "size_bytes": 1759,
+          "git_blob_sha1": "4004a063af99af5404c23740661ca4fec36b1722",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-private-consumer-refs.mjs",
+          "size_bytes": 7532,
+          "git_blob_sha1": "b2f4297caee101ac2613411e533b5fe974d05d64",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-sendgrid-staging-approval.mjs",
+          "size_bytes": 5424,
+          "git_blob_sha1": "dad68588d45214fe36545c21fd61d5c47a4e3dce",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/workstream-c-current-candidates.env",
+          "size_bytes": 160,
+          "git_blob_sha1": "fad0c9b64cf332b9ce47b62cebaa925b3bc9369f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/write-launch-summary.mjs",
+          "size_bytes": 2336,
+          "git_blob_sha1": "44db398b87c01ba466a829f98e919f657b3917d3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "storage.rules",
+          "size_bytes": 700,
+          "git_blob_sha1": "312e43ffd409a6e6232ca22604d770df267e531e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        }
+      ]
+    },
+    {
+      "label": "pr176-r840",
+      "commit_sha": "49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b",
+      "git_tree_sha1": "27122b852350441f47c793c20b05ef970cf12687",
+      "truncated": false,
+      "file_count": 244,
+      "tracked_blob_bytes": 1715705,
+      "entries": [
+        {
+          "path": ".env.example",
+          "size_bytes": 1658,
+          "git_blob_sha1": "cf10fe017461b488036b4585081a0142a8d1553c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".firebaserc",
+          "size_bytes": 117,
+          "git_blob_sha1": "dc92cc63382c34e5bf1553f076b605ad44188fc7",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".firebaserc.example",
+          "size_bytes": 82,
+          "git_blob_sha1": "cfd452c25ed6c322c3a38f746cb7ec83fb920348",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/admin-pr57-runtime-deploy.yml",
+          "size_bytes": 20867,
+          "git_blob_sha1": "38ba00225b765fd6a449d35c0b011f8aafe56fd3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/admin-pr57-staging-consumer.yml",
+          "size_bytes": 10893,
+          "git_blob_sha1": "00ad23f15df0d459d82a4044f76f1d85b4668477",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "size_bytes": 13383,
+          "git_blob_sha1": "e89922ad593599d2bff1d57bbdcbc9c560d5e467",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+          "size_bytes": 22934,
+          "git_blob_sha1": "e9a660314db5bebf1df13a9faa243b0c054f4028",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+          "size_bytes": 17350,
+          "git_blob_sha1": "e3ddc9da0d3680a63b8d885dec70d717ef5232c3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/current-cross-service.yml",
+          "size_bytes": 13891,
+          "git_blob_sha1": "c176d61edcf58437632a2fcb8bb572a22aaa141b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/private-consumer-ref-verification.yml",
+          "size_bytes": 1373,
+          "git_blob_sha1": "15d3bb5d00186a4cde7f1ed730ed2eb7df48d227",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/spatial-pr1596-stripe-provider-probe.yml",
+          "size_bytes": 18131,
+          "git_blob_sha1": "e45d9aae7d04bda0135915eeb8e17221025e81be",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-deploy.yml",
+          "size_bytes": 18765,
+          "git_blob_sha1": "3164460efe5c6e8e1e1b07b900f424b5bda05c7a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-gcp-authority-readback.yml",
+          "size_bytes": 5459,
+          "git_blob_sha1": "e908f035ceb008dd8c28884472c306b1de59d396",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-pr118-authenticated-emulator.yml",
+          "size_bytes": 5522,
+          "git_blob_sha1": "933d426e2c176581a9b97e570cb38e5d861c134a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-pr120-federated-emulator.yml",
+          "size_bytes": 6233,
+          "git_blob_sha1": "edab1f9a57f3ed06fcf47ffc37fa0830d334cafc",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-pr121-r451-four-emulator.yml",
+          "size_bytes": 6597,
+          "git_blob_sha1": "ada369eacf75a388f93fc8ce3490901699de7ec8",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/staging-wif-runtime-identity-probe.yml",
+          "size_bytes": 10529,
+          "git_blob_sha1": "8bcbddd0244626ad3c50579f0416c77bc6be73ec",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".github/workflows/urai-production-verify.yml",
+          "size_bytes": 2552,
+          "git_blob_sha1": "4f2ab9778f275a94e295197f84ac818400c7bc94",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".gitignore",
+          "size_bytes": 481,
+          "git_blob_sha1": "0c46ec478e95c754c78eb0acbe11c99583ed0f92",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": ".idx/dev.nix",
+          "size_bytes": 526,
+          "git_blob_sha1": "872b36ee0b749fea8069e858ddc171e95896f5ba",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "API_CONTRACT.md",
+          "size_bytes": 1815,
+          "git_blob_sha1": "787e8c372e44477a0496ae418c9424eebac3a43e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "CROSS_REPO_RELEASE_MAP.md",
+          "size_bytes": 3532,
+          "git_blob_sha1": "57a30f88ac0d62dbccc3367854a995ebd045e523",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "DEPLOYMENT.md",
+          "size_bytes": 4033,
+          "git_blob_sha1": "4855091ad12cbc2f770c5d86aab30b1403b7f8b9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "DEPLOY_EVIDENCE_LOG.md",
+          "size_bytes": 1540,
+          "git_blob_sha1": "557686095ff31ccd686549a86c1fa2830b863ec5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "ENVIRONMENT.md",
+          "size_bytes": 3449,
+          "git_blob_sha1": "3811772021f08a7263a40e4bafe7f5e89dc4db02",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "ENVIRONMENT_AUTHORITY.md",
+          "size_bytes": 3998,
+          "git_blob_sha1": "102d4aaffecf1ce9c1abce86c0b1ef4a10212d9a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "README.md",
+          "size_bytes": 9189,
+          "git_blob_sha1": "6f79824cca0a42a7af10d9fbbd1641f3470e6bdb",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "RELEASE_HANDOFF.md",
+          "size_bytes": 1136,
+          "git_blob_sha1": "423b45afe2e415a5e7716674255bc1d6e019008c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "RELEASE_NOTES.md",
+          "size_bytes": 2342,
+          "git_blob_sha1": "2a61a9b05dce455a563cb98c6499fb93cd5eb75f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "SECURITY_STAGING.md",
+          "size_bytes": 2388,
+          "git_blob_sha1": "52b4c160cb0bac9d43818f151dcf11346394d69e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "SMOKE_CHECKLIST.md",
+          "size_bytes": 1128,
+          "git_blob_sha1": "f8cc15772589b3a716da12a8eca3d23ad810a2f5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "STATUS.md",
+          "size_bytes": 5456,
+          "git_blob_sha1": "1dec40840070239db89313657d885ec892b11147",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "SYSTEM_AUDIT.md",
+          "size_bytes": 5463,
+          "git_blob_sha1": "5b38d8555652ec470f2509f92ecde2d56a446481",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "TEST_REPORT.md",
+          "size_bytes": 2974,
+          "git_blob_sha1": "6e8cc12c1dee7bfedc9bb9c7122236f997140125",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_CANONICAL_APP.md",
+          "size_bytes": 1474,
+          "git_blob_sha1": "39db5c310688f9d9326ed81e7b75ae12fa95d9d5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_DEFINITION_OF_DONE.md",
+          "size_bytes": 5673,
+          "git_blob_sha1": "5885ed83600991e7c7de294be667e91af1f234b0",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_LAUNCH_BLOCKERS.md",
+          "size_bytes": 4401,
+          "git_blob_sha1": "65f5edcda5aa2e405780c7536b3474a33beb91ca",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_LOCK.md",
+          "size_bytes": 4526,
+          "git_blob_sha1": "0091ff5724808bcdd8991cc00b83704593e9cf41",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_LOCK_TEMPLATE.md",
+          "size_bytes": 1912,
+          "git_blob_sha1": "6c728a516329bdb1a66466025e02eb292f4265e9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_STAGING_READINESS_MATRIX.md",
+          "size_bytes": 4079,
+          "git_blob_sha1": "f338ea0a7c7ef7ddb91b71fee59067af98c5243d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "URAI_XR_RELEASE_TRAIN_GATE.md",
+          "size_bytes": 2905,
+          "git_blob_sha1": "873cd307c7599e739a91c8d5fc9dcb8dd7c180db",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "config/provider-readiness-20261001.json",
+          "size_bytes": 5976,
+          "git_blob_sha1": "d78ef4128c1a6445329fef911eb9067c3ab46c24",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "config/provider-registry-20260925.json",
+          "size_bytes": 10327,
+          "git_blob_sha1": "ac48fa29680e09fe0e2f7ef1d3b5608f017352da",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "config/spatial-consumer-candidate.json",
+          "size_bytes": 1167,
+          "git_blob_sha1": "55ce6d569b92830c776df153fae2e0d53f45ab60",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "config/staging-consumers.json",
+          "size_bytes": 5723,
+          "git_blob_sha1": "775a14746682d088cc53b1250327d2289dd74de1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/AGENT_HANDOFF_CURRENT_STATE_2026-07-19.md",
+          "size_bytes": 5487,
+          "git_blob_sha1": "f6668188f211415b6c7451b2ab8708d0e2e75a45",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/AGENT_HANDOFF_CURRENT_STATE_2026-08-04.md",
+          "size_bytes": 10675,
+          "git_blob_sha1": "973c10d2f1c1d1305b0a87b843c82835b5abb75c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/BOOTSTRAP_EVIDENCE.md",
+          "size_bytes": 838,
+          "git_blob_sha1": "0d99c067e127c827b4c9b2e1e81595d704596775",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/COMMAND_EVIDENCE.md",
+          "size_bytes": 2651,
+          "git_blob_sha1": "8fb66d2f7c272657c0a5ea39a4111224373ed6fa",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
+          "size_bytes": 3905,
+          "git_blob_sha1": "819f857d0817c2691f4f1e759e69d2ca69731c6c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/EVIDENCE_STATUS.md",
+          "size_bytes": 236,
+          "git_blob_sha1": "4e0410f288686f325b86f2d1dada6a354e52a508",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/JOBS_DEPENDENCY_AUDIT_BUNDLE_013.json",
+          "size_bytes": 2876,
+          "git_blob_sha1": "1ab0ef3bb1c9749b0b399d4df60682b1cb1378b5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/JOBS_DEPENDENCY_PREFLIGHT_FAILURE_A58CA1E.json",
+          "size_bytes": 1725,
+          "git_blob_sha1": "7349796f5269d38714d0b834a32c87c155d43045",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/JOBS_NARRATOR_BUILD_INPUT_CORRECTION_016.json",
+          "size_bytes": 1746,
+          "git_blob_sha1": "c7292404e00893ebc2dcf1b99ef57d1320ef23f6",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/REPO_MAP.md",
+          "size_bytes": 3247,
+          "git_blob_sha1": "dc0ce44b9fa21bdffa80ccc58dc7f2ee0f5a1588",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/RESUME_URAI_EXECUTION.md",
+          "size_bytes": 2838,
+          "git_blob_sha1": "45dbf58bd0f67c7ee2ad6903e5089a32d79a936c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/RUNTIME_OBSERVATION_2026-07-16.md",
+          "size_bytes": 3596,
+          "git_blob_sha1": "1885905aaa4c9bf308657a495c9bd0a4904a5d33",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md",
+          "size_bytes": 4134,
+          "git_blob_sha1": "7307540d7a18e34116bda281849f82d9a6b98f6f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI-STAGING_AUDIT.md",
+          "size_bytes": 5219,
+          "git_blob_sha1": "6404780346099fe4c8540e0c1f575cb920004bc7",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_CANONICAL_ROADMAP.md",
+          "size_bytes": 4186,
+          "git_blob_sha1": "bb3a0f89083b617a7680ac9fa5f6f3264bc14f78",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_COMPLETION_STATUS.md",
+          "size_bytes": 2511,
+          "git_blob_sha1": "c57a58472ae3f439b1f1c6fa099b58e7635d47ff",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_DEPLOYMENT_CHECKLIST.md",
+          "size_bytes": 2343,
+          "git_blob_sha1": "6241592a8251ae485c889ba7373c8648f513ed5b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_FIREBASE_SCHEMA.md",
+          "size_bytes": 4075,
+          "git_blob_sha1": "db510ae44fb57b88de7c7e5b23778831f968f8ef",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_GENESIS_STAGING_READINESS.md",
+          "size_bytes": 2070,
+          "git_blob_sha1": "45cf6910f319aafdd5a183cb91fb7fb8c62ad568",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_IMPLEMENTATION_LOG.md",
+          "size_bytes": 2420,
+          "git_blob_sha1": "7e19dfd36f72ce1adb19f25016080078de7955d1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_KNOWN_LIMITATIONS.md",
+          "size_bytes": 2676,
+          "git_blob_sha1": "1e0abb753726f327e5a396ac62d02cc9685e56ab",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_LEGACY_FUNCTION_AUDIT.md",
+          "size_bytes": 2848,
+          "git_blob_sha1": "6f5d62ae578eaf9018526a7914ceb9cd23c8d453",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_MASTER_FEATURE_MATRIX.md",
+          "size_bytes": 7715,
+          "git_blob_sha1": "01da219ef71dc92848989375d088d585e81c1d95",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/URAI_TESTING_CHECKLIST.md",
+          "size_bytes": 2519,
+          "git_blob_sha1": "796c5cbc5ed7fb3d76217c4e762d1fa82fe0a9ba",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/WORKSTREAM_C_CURRENT_CANDIDATES.md",
+          "size_bytes": 393,
+          "git_blob_sha1": "3338b81db2d47df9d33628e10121d14c77ece787",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/WORKSTREAM_C_MANUAL_VERIFICATION.md",
+          "size_bytes": 5469,
+          "git_blob_sha1": "8146d73dde2331735a7600b5bae41fb007988be3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/launch/HARDENING.md",
+          "size_bytes": 634,
+          "git_blob_sha1": "a3fbefed85bc6779fe75664b4186cff4ab8ba07d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/launch/WAVE5_STAGING_LAUNCH_LOCK_EVIDENCE.md",
+          "size_bytes": 2399,
+          "git_blob_sha1": "621090e1fbd9ec8e7fee4dd377ebe3ac6e5672b1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/receipts/URAI_API_PROVIDER_WORLD_AUDIT_20260925.md",
+          "size_bytes": 4450,
+          "git_blob_sha1": "ec58cc2cb56d22af962dc4f14cd13f84804df22e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/release-evidence/STAGING_AUTHORITY_RECONCILIATION_20260714.md",
+          "size_bytes": 1905,
+          "git_blob_sha1": "fef75b3f3a6acd5c5edd65591ff1c06793477efd",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/release-evidence/r317-20261102-system-of-systems.json",
+          "size_bytes": 7196,
+          "git_blob_sha1": "655606dd2c7525263dd03fe561dff968bfaa5a33",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/release-evidence/r349-20261102-system-of-systems.json",
+          "size_bytes": 11463,
+          "git_blob_sha1": "72621fb7a02830b42077a83427e343649bcaee67",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/release-evidence/r398-omega-release-ledger.json",
+          "size_bytes": 5465,
+          "git_blob_sha1": "141331cefe8ca9c89d0705d8f21e3482486f31bf",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "docs/release-evidence/test-r398-omega-ledger.mjs",
+          "size_bytes": 6013,
+          "git_blob_sha1": "84a2a91f65b825dd390f52118888ff9339b77d69",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "firebase.json",
+          "size_bytes": 2081,
+          "git_blob_sha1": "c1a1f7bd5f141d21fac5f4b13c3e0fd9416af121",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "firestore.indexes.json",
+          "size_bytes": 5792,
+          "git_blob_sha1": "9a18e020c97f91769d658dc62b470440a31a787a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "firestore.rules",
+          "size_bytes": 3909,
+          "git_blob_sha1": "e6567561110ca0465441be319e906af622550417",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/package-lock.json",
+          "size_bytes": 333270,
+          "git_blob_sha1": "d04e6bc1daaf49a0a4dd8102c93caff37dbf0f76",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/package.json",
+          "size_bytes": 1966,
+          "git_blob_sha1": "94b1a58084bb79892a37290c1a53f181b2e1568b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/index.ts",
+          "size_bytes": 14355,
+          "git_blob_sha1": "f43f9bd5cd01dcd80f6d7e0856b68c94fe5e275d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/auth.ts",
+          "size_bytes": 501,
+          "git_blob_sha1": "c75ef09130f78375ba4d6b0022ca5897a59394fc",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/featureRegistry.ts",
+          "size_bytes": 10040,
+          "git_blob_sha1": "e2f41463b724c8237eccc60e557b355474b2c9dc",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/logger.ts",
+          "size_bytes": 259,
+          "git_blob_sha1": "1eb572c3ed594f0eac299f5f38e063ad1acbcea7",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/stagingBoundaries.ts",
+          "size_bytes": 4599,
+          "git_blob_sha1": "d760bf404f8737faf2d9e25100a5fccf20872cc2",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/lib/validation.ts",
+          "size_bytes": 2249,
+          "git_blob_sha1": "ca80de24143b6dd937c7acea037063ec8daa84ca",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/syntheticMemoryLifecycle.ts",
+          "size_bytes": 22966,
+          "git_blob_sha1": "4df1d9ca7c72910b2e24ef46c95019944abaf080",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/src/syntheticStorageResidue.ts",
+          "size_bytes": 2321,
+          "git_blob_sha1": "08726882b08d7929c770479425995d2dd95730c4",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/auth.test.ts",
+          "size_bytes": 1184,
+          "git_blob_sha1": "e2fa9361957ce251f18b8e29a595e69eea617964",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/current-cross-service.emulator.mjs",
+          "size_bytes": 30130,
+          "git_blob_sha1": "e1866009e19d9192bbe9242dd11788c002e8239d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/featureRegistry.test.ts",
+          "size_bytes": 1553,
+          "git_blob_sha1": "b5075bb5d811e756bcb6a3095897c971d429d114",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/firestore.rules.test.ts",
+          "size_bytes": 5553,
+          "git_blob_sha1": "29848d4ab9c4adca8f52ec9fecfd15b787b1dc94",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/r439-original-jobs-privacy-auth.emulator.mjs",
+          "size_bytes": 17640,
+          "git_blob_sha1": "6ef681b23aa3dfd33320fbf5cb56d22ccd55097c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/r450-original-auth-emulator-boundary.mjs",
+          "size_bytes": 12273,
+          "git_blob_sha1": "8de4dd0015c7532423a90142b829ce3341b8b52a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/stagingBoundaries.test.ts",
+          "size_bytes": 5451,
+          "git_blob_sha1": "73cea515da6897aef5c199a1e841b38a4024470a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/storage.rules.test.ts",
+          "size_bytes": 5185,
+          "git_blob_sha1": "d56ee9956842ad69e4afbf650a3fdd34fd8786df",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/syntheticMemoryCapacity.test.mjs",
+          "size_bytes": 6079,
+          "git_blob_sha1": "dde5113dbe1a53ee3f5aeac9fff65b36f61f7fc4",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/syntheticMemoryLifecycle.http-emulator.mjs",
+          "size_bytes": 11567,
+          "git_blob_sha1": "7615578a1e18e7712fd98e03cfab7773deb2f923",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/syntheticStorageResidue.emulator.mjs",
+          "size_bytes": 3949,
+          "git_blob_sha1": "827bf9dc809d36deedfcc3f48933cf54e38376e0",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/syntheticStorageResidue.test.mjs",
+          "size_bytes": 5541,
+          "git_blob_sha1": "c084a6493aa2be0ae438ba0b94581ec51289ce0e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/test/validation.test.ts",
+          "size_bytes": 1450,
+          "git_blob_sha1": "430f62297f34f2fced03b194642d53f6f096ae24",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/tsconfig.json",
+          "size_bytes": 415,
+          "git_blob_sha1": "289511713add8805a0f631e7d955f7cba1cee2ea",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "functions/vitest.config.ts",
+          "size_bytes": 165,
+          "git_blob_sha1": "0df6100213ce68e15e59c3eaa31ced12b5d7922f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/README.md",
+          "size_bytes": 2745,
+          "git_blob_sha1": "e9e8a3e06e3006f3822c614985d707e429ace809",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/actions-hardening.md",
+          "size_bytes": 1995,
+          "git_blob_sha1": "c2f5fc49ec295d5df05a498895593b0750b5922c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/blockers.md",
+          "size_bytes": 3933,
+          "git_blob_sha1": "aea5f31bf0a876d4a007b045aa67b25600fdba6f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/build-test-deploy-proof.md",
+          "size_bytes": 3249,
+          "git_blob_sha1": "51f7abc56ac4cba2c5bee0b38ede76d0ce0d6d90",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/environment-map.md",
+          "size_bytes": 3167,
+          "git_blob_sha1": "529a1acf755463426f329e8efae177012c705196",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/last-mile-completion.md",
+          "size_bytes": 2930,
+          "git_blob_sha1": "dcc08b5613da7078b68cc390323abf39439f9edd",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "package.json",
+          "size_bytes": 4776,
+          "git_blob_sha1": "f00a67ff5d638820d240d427ac635ffe3bfe7fe0",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "public/index.html",
+          "size_bytes": 5411,
+          "git_blob_sha1": "0935582e91a68f9b63a0383eb669ea67a9401527",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "public/robots.txt",
+          "size_bytes": 101,
+          "git_blob_sha1": "ba0e69a191f9469f94d2281116f36678abd2638c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/admin-pr57-staging-lock.sh",
+          "size_bytes": 19043,
+          "git_blob_sha1": "5a941a3e627387b4ea1c21e03485b32c5b6d071c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/assert-current-communications-source.sh",
+          "size_bytes": 2805,
+          "git_blob_sha1": "8d5b38a7adfcf04c4e1cd1227be7e63920754f45",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/assert-staging-billing-enabled.sh",
+          "size_bytes": 1091,
+          "git_blob_sha1": "3d9d4cf0fa625a1b9354bbf6460439a1a6652fd5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/bootstrap-staging-github-wif.sh",
+          "size_bytes": 6633,
+          "git_blob_sha1": "c7715dc20c73bbe07ad215d31c6a73e20db8c8f8",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/bootstrap-staging-sendgrid-proof-iam.sh",
+          "size_bytes": 9640,
+          "git_blob_sha1": "bbfd2c3f50889b9150d5eb875ee4b2e24d416839",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/bootstrap-staging-twilio-proof-iam.sh",
+          "size_bytes": 2854,
+          "git_blob_sha1": "e7611fb2af1747b34b640046334b897dde6861a3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/check-deploy-readiness-v2.mjs",
+          "size_bytes": 14561,
+          "git_blob_sha1": "c58dc39ccbcf8a83d85ed4a0944571de8d54a994",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/check-deploy-readiness.mjs",
+          "size_bytes": 16918,
+          "git_blob_sha1": "4690c3b51c9fdb0f8f18c28f1b912072a40ab435",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/check-installed-security.mjs",
+          "size_bytes": 4054,
+          "git_blob_sha1": "d263b8c09c8cbe77b5a4511ba6db288be481011e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/check-lockfile.mjs",
+          "size_bytes": 1146,
+          "git_blob_sha1": "49b5a0a69874d0b4a6bb5f3e751769b1a80f4508",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r422-federated/gate.ts",
+          "size_bytes": 932,
+          "git_blob_sha1": "53761ac0f5c0340563b13fdd9a12a90e75409d42",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r422-federated/jobs.ts",
+          "size_bytes": 3946,
+          "git_blob_sha1": "8bd86161687402ebb610cc30f6677f88521c2c1c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r422-federated/manifest.json",
+          "size_bytes": 1749,
+          "git_blob_sha1": "ca11fb5878de8f2de415dedb8aabc44a805796c3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r422-federated/order.ts",
+          "size_bytes": 1996,
+          "git_blob_sha1": "33c71b71a7a505d17f8b5b51189573a954873593",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r422-federated/privacy.ts",
+          "size_bytes": 10586,
+          "git_blob_sha1": "6cca2b9456319927cf22511c7d51c1f16ddf051c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r422-federated/spatial.ts",
+          "size_bytes": 2128,
+          "git_blob_sha1": "5ba1491f694873582cf3a37a371dbbce7758d48f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r422-federated/studio.ts",
+          "size_bytes": 7056,
+          "git_blob_sha1": "0ca262e114b0439426d75cf7ac510e289ba315eb",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r423-worker/functions/src/privacy/ownerDeletionFence.ts",
+          "size_bytes": 1599,
+          "git_blob_sha1": "3501db8b6a5cbc4ddcf038fcf00e0a7a8574eb33",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r423-worker/manifest.json",
+          "size_bytes": 637,
+          "git_blob_sha1": "cbf149f767b868c5705b024076b6f138b65b1846",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r423-worker/scripts/life-movies-worker-owner-deletion-fence.test.mjs",
+          "size_bytes": 5977,
+          "git_blob_sha1": "3fa1127e0aba6928b9045dd9eaca87d30160fc80",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r423-worker/workers/studio-worker/index.js",
+          "size_bytes": 52343,
+          "git_blob_sha1": "e37d15b79fc986554943efd9aedd2edd814f88e9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/package.json",
+          "size_bytes": 836,
+          "git_blob_sha1": "3a1fbbe23bf1098701f2c6aea4db2e4a844faaea",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/src/jobs/studioLifeMovieContract.ts",
+          "size_bytes": 11446,
+          "git_blob_sha1": "5f944e906de7243d7415ac479cf92356b09c84c9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieAdmissionPreflight.ts",
+          "size_bytes": 12401,
+          "git_blob_sha1": "ed9d6289d3443aa634748649a2df19c64016c02f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieBoundedResponse.ts",
+          "size_bytes": 2126,
+          "git_blob_sha1": "88b5c3117b9c8d5d8d903efc015b58bc17590b0d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentDecision.ts",
+          "size_bytes": 7919,
+          "git_blob_sha1": "67d0ed28abdbfd33e537b45b262bf4ce4509c2e3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentGate.ts",
+          "size_bytes": 932,
+          "git_blob_sha1": "53761ac0f5c0340563b13fdd9a12a90e75409d42",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentTransport.ts",
+          "size_bytes": 9015,
+          "git_blob_sha1": "c1bdbb0f196f2f678bdf2d377d1aa0eea0cc56ae",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieJobsPrivacyClient.ts",
+          "size_bytes": 1130,
+          "git_blob_sha1": "73d65b003f4141cd471db1e6a0edff9d7a1c747f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieJobsTokenProvider.ts",
+          "size_bytes": 4216,
+          "git_blob_sha1": "648225708e055592ee697e0dc342bfcf1bc144e4",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/scripts/integration/r421-run-synthetic-cross-service.mjs",
+          "size_bytes": 5612,
+          "git_blob_sha1": "a0a32e1d2be5dbb4905b41c31172a6e28a7085f2",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/jobs/scripts/integration/r421-synthetic-cross-service.test.mjs",
+          "size_bytes": 17182,
+          "git_blob_sha1": "00a99f38f5d537b576dd0cfb05c6874104b7f562",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/manifest.json",
+          "size_bytes": 2419,
+          "git_blob_sha1": "419d6205c2e1d9c5e38c8fa8b6af48bb597d7d65",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/privacy/functions/src/consent-decision.ts",
+          "size_bytes": 8145,
+          "git_blob_sha1": "35c699bd225c687bab8f1fd8e7315facc16c8148",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/privacy/functions/src/cross-user-authority.ts",
+          "size_bytes": 1255,
+          "git_blob_sha1": "443097baa409c289b4189f98e4c56c7ab70aaa31",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-deletion-fence.ts",
+          "size_bytes": 1732,
+          "git_blob_sha1": "e08751e59846b06e366d93d1d8bdac7afeaf3b6e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-jobs-identity.ts",
+          "size_bytes": 3053,
+          "git_blob_sha1": "78f3cfe4b22fd39500ce3d94de55c9c5f46c7970",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-render-authorization.ts",
+          "size_bytes": 3944,
+          "git_blob_sha1": "e09564bffe1124c9a96bb54904680b606aff35c1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-scoped-receipt.ts",
+          "size_bytes": 6076,
+          "git_blob_sha1": "b22ce33d498262e7348a66cfe038e2490d295c12",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-jobs-bridge.ts",
+          "size_bytes": 14585,
+          "git_blob_sha1": "afca955d63a6ce928d2a6b6aa456b508a6134893",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-jobs-client.ts",
+          "size_bytes": 7056,
+          "git_blob_sha1": "0ca262e114b0439426d75cf7ac510e289ba315eb",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-longform-contract.ts",
+          "size_bytes": 16056,
+          "git_blob_sha1": "b61484f218a46b56fbe479dadec73595b8599b3f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r425-evidence/manifest.json",
+          "size_bytes": 574,
+          "git_blob_sha1": "798c5dcac7004920527b797abbce33388cba1f56",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r425-evidence/scripts/r426-original-source-evidence.mjs",
+          "size_bytes": 7390,
+          "git_blob_sha1": "1ad836d9f04d34c29ecc26cb7c83b07d971705e0",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r425-evidence/scripts/r426-original-source-evidence.test.mjs",
+          "size_bytes": 4348,
+          "git_blob_sha1": "4c01dd0e115a4cf4dbd419da83b667c795e8fc51",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r425-evidence/scripts/r427-evidence-escrow.mjs",
+          "size_bytes": 5270,
+          "git_blob_sha1": "5192840d093546ed1f2c4a8ab04f8c2773272d57",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r425-evidence/scripts/r427-evidence-escrow.test.mjs",
+          "size_bytes": 7494,
+          "git_blob_sha1": "c95a4fc9124e1d903532cdfa9cfe1dda3c6fffe1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/fixtures/r720-privacy/deletion-contract.ts",
+          "size_bytes": 8134,
+          "git_blob_sha1": "1a9ffd566bd6be8257b598a216cf254228971447",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/installed-advisory-match.mjs",
+          "size_bytes": 5231,
+          "git_blob_sha1": "523b3aefb4ebf9d18ba2a2e2230061e3c7cfa9c6",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/launch-p0.mjs",
+          "size_bytes": 1108,
+          "git_blob_sha1": "0798cce14d21186f3a14365ff8e8b9396c139894",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/lib/r722-deletion-receipt-proof.mjs",
+          "size_bytes": 7462,
+          "git_blob_sha1": "ec6be6af94c88287dcd7232dcc8da3cf52206efe",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/prepare-consumer-staging-bundle.mjs",
+          "size_bytes": 13750,
+          "git_blob_sha1": "86b3b44774d0cd8044f6c6274400cf0fbc3171ed",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/promote-staging-twilio-function-deploy-iam.sh",
+          "size_bytes": 7683,
+          "git_blob_sha1": "1902685dfaf70c341603b4ff70e4b0458b737faf",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/r451-combined-emulator-acceptance.mjs",
+          "size_bytes": 6712,
+          "git_blob_sha1": "a55abfa748e8a73e0249dbf44cca788f0c87f324",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/r454-specific-firebase-denial.mjs",
+          "size_bytes": 1486,
+          "git_blob_sha1": "f67af14d1948a851a2bd2398d4d954ac33ab9b08",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/r454-specific-firebase-denial.test.mjs",
+          "size_bytes": 2729,
+          "git_blob_sha1": "59e4a422191b549a497167ca1bc60fe9028f87f8",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/repair-jobs-unused-error-reporting-core.sh",
+          "size_bytes": 16208,
+          "git_blob_sha1": "9dc1e5eee90aca52836637258b7aca5742c9cfd8",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/repair-jobs-unused-error-reporting.sh",
+          "size_bytes": 3786,
+          "git_blob_sha1": "f521578ca273ebb6118e10413cf31cec717b8e32",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/repo-doctor.mjs",
+          "size_bytes": 2102,
+          "git_blob_sha1": "0336b34987b80a5135d586b5581a1eedd8a6bc44",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/resolve-workstream-c-root.mjs",
+          "size_bytes": 1172,
+          "git_blob_sha1": "f0676a4c3fc5555b2e5d17a10f4a9b7c641ba64c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-with-java.sh",
+          "size_bytes": 610,
+          "git_blob_sha1": "94da8585e559fa6ea8ed90c4df279cf1bbe5d439",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-workstream-c-cloud-shell-core.sh",
+          "size_bytes": 4272,
+          "git_blob_sha1": "aee3dd998218d662c4804bbece1187852985ba26",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-workstream-c-cloud-shell.sh",
+          "size_bytes": 815,
+          "git_blob_sha1": "1f9c70b24820abe3ac6be7d42563eb7ea257da37",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-workstream-c-manual-verification-core.sh",
+          "size_bytes": 12812,
+          "git_blob_sha1": "6cbc983f096b045505b748bb784ffab58b22b2ac",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/run-workstream-c-manual-verification.sh",
+          "size_bytes": 805,
+          "git_blob_sha1": "af6daf0e32ca932e7427e368108527055c339f45",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/smoke-staging.sh",
+          "size_bytes": 8001,
+          "git_blob_sha1": "e24d258ecda2e7242d94a2cad1519e1d0fb5f2fb",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/staging-bootstrap-command-environment.mjs",
+          "size_bytes": 453,
+          "git_blob_sha1": "a2bd7f1c7009bdd321e833660adb722e0f562cb5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/staging-bootstrap-command-manifest.mjs",
+          "size_bytes": 1535,
+          "git_blob_sha1": "2ab27cbbc0d07daa5be79b28b23d210b592af5aa",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/staging-evidence-timing.mjs",
+          "size_bytes": 1520,
+          "git_blob_sha1": "538c106f4d0d1c892186940903b7289bc6858296",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/staging-prebuilt-manifest.mjs",
+          "size_bytes": 9393,
+          "git_blob_sha1": "fff413e9c9fd18c82f94081186bd645ca1e66352",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-consumer-staging-bundle.mjs",
+          "size_bytes": 9470,
+          "git_blob_sha1": "15e0d62ea9670def7df9caa0f4d87f141884fe8c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-cross-repo-release-ownership.mjs",
+          "size_bytes": 7756,
+          "git_blob_sha1": "7ea1a57a2cffcb2530450359525b63deedd99c62",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-genesis-release-gate-wiring.mjs",
+          "size_bytes": 3535,
+          "git_blob_sha1": "bb7a54864c23d168f4274ed62c8bb221920e3d1c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-launch-evidence-command-inventory.mjs",
+          "size_bytes": 2080,
+          "git_blob_sha1": "2f8cd2bf3d3bd63f3adbc3ad8756af50e4ae47a1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-launch-evidence-source-pin.mjs",
+          "size_bytes": 8543,
+          "git_blob_sha1": "185b116a59e42dc41a863448d7b58b5885b7ea33",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-privacy-jobs-staging-admission.mjs",
+          "size_bytes": 2959,
+          "git_blob_sha1": "6fcb12c2ceea4a3e7d24c4bda4902baa7ad07051",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r317-release-ledger.mjs",
+          "size_bytes": 2332,
+          "git_blob_sha1": "031c821195f0d430c431abc9f7db984e0ead410d",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r349-release-ledger.mjs",
+          "size_bytes": 5724,
+          "git_blob_sha1": "009d682beabcc1ace340e36fd8fae98e377f0a4a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r422-federated-source-contract.mjs",
+          "size_bytes": 7745,
+          "git_blob_sha1": "06a45f8e4221d3d0b1d84fd08b22a2905bc4129b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r423-worker-deletion-source-contract.mjs",
+          "size_bytes": 2597,
+          "git_blob_sha1": "f4b73393ef8f5547f8ca46fb3aa7baa7375ce826",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r424-signed-rehearsal.mjs",
+          "size_bytes": 8353,
+          "git_blob_sha1": "421c19bb9bb0ac237a56d8ad32726e2c144ecff4",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r425-evidence-source-contract.mjs",
+          "size_bytes": 2356,
+          "git_blob_sha1": "33c65bf6cdee31de52c5ab81c921443ec50f9ec1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r720-privacy-deletion-contract.mjs",
+          "size_bytes": 4198,
+          "git_blob_sha1": "e4aea099820e278f67e294ec6837e8bedba35cc8",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r722-signed-deletion-receipts.mjs",
+          "size_bytes": 7470,
+          "git_blob_sha1": "fa72f7917027f88aed0f8d3a1799a7184125ccd1",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-r723-protected-approval.mjs",
+          "size_bytes": 29755,
+          "git_blob_sha1": "85bf6eb5fe78870b0c83e4a87ee23aaca372904e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-security-dependency-compatibility.mjs",
+          "size_bytes": 3156,
+          "git_blob_sha1": "068750f6b6ee87ab681e23bda205ed40475d929f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-sendgrid-staging-approval.mjs",
+          "size_bytes": 5792,
+          "git_blob_sha1": "3a83c282ab037ab59c8da6c38106af0132c04212",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-sendgrid-staging-budget.mjs",
+          "size_bytes": 3393,
+          "git_blob_sha1": "c6d98090504445a1c7ad0a3d4e88b62e207c9021",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-sendgrid-staging-callback.mjs",
+          "size_bytes": 6527,
+          "git_blob_sha1": "f73061926dda671f1f9e90dcf6eb336e905c14e9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-staging-bootstrap-command-environment.mjs",
+          "size_bytes": 1390,
+          "git_blob_sha1": "64e140037503539443c68cde04ef2cd2104578d0",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-staging-evidence-timing.mjs",
+          "size_bytes": 2115,
+          "git_blob_sha1": "d1a2bd8e8135e70de8c1b8f512b725fe41deb55b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-staging-verification-binding.mjs",
+          "size_bytes": 6778,
+          "git_blob_sha1": "0106035294cdfa41d993d745998f0db1ac01a252",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-twilio-trial-sender.mjs",
+          "size_bytes": 3457,
+          "git_blob_sha1": "c1b47187b0f26e2374502497865a0905a668b5f5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-workstream-c-confinement.mjs",
+          "size_bytes": 9857,
+          "git_blob_sha1": "aa1a3029217b8a107de178c9496831b16a9e08de",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/test-workstream-c-root-resolver.mjs",
+          "size_bytes": 2011,
+          "git_blob_sha1": "2eaaf69a28f7616ea4f6bee823bd8bab93973aa9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/urai-production-verify.mjs",
+          "size_bytes": 1066,
+          "git_blob_sha1": "a10f406ccca16e5ffe53d1c4cfb8780301c10893",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/urai-staging-bootstrap.mjs",
+          "size_bytes": 9343,
+          "git_blob_sha1": "81588af19650e4575983381cd15fb40d2479f399",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/urai-staging-lock.sh",
+          "size_bytes": 10157,
+          "git_blob_sha1": "bf20e1b020668fb9eea6f8c28b76ab141c8da2d2",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-active-consumer-refs.mjs",
+          "size_bytes": 2040,
+          "git_blob_sha1": "ecfb970adff5e24523caf70c23c7234473eb1d8a",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-admin-pr57-provider-probe.mjs",
+          "size_bytes": 3196,
+          "git_blob_sha1": "5db0dba8f6bebe189c04c9dd045fea14252bd711",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-admin-pr57-runtime-deploy.mjs",
+          "size_bytes": 6272,
+          "git_blob_sha1": "7cf794bf25ac12399ce0ea7b4f1e6bb299e5d095",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-admin-pr57-staging-consumer.mjs",
+          "size_bytes": 2025,
+          "git_blob_sha1": "26573bbd8139ca6fff46fe97ec503f6ddc48ba03",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+          "size_bytes": 6871,
+          "git_blob_sha1": "671c5aad44efbee09b5b764a3e100517ca8a541c",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+          "size_bytes": 6278,
+          "git_blob_sha1": "d6350db73301e53cc6d60cd1871c1aa23fe40f7e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-jobs-narrator-build-input.mjs",
+          "size_bytes": 3053,
+          "git_blob_sha1": "5940eca4e53828c5717693692cd2841162127084",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-launch-evidence.mjs",
+          "size_bytes": 9014,
+          "git_blob_sha1": "d63b3104257524fe8f7d7fc941e90adb70121a56",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-privacy-jobs-staging-admission.mjs",
+          "size_bytes": 3308,
+          "git_blob_sha1": "78007731114bc7d0b191074a55227ef538f13159",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-private-consumer-ref-workflow.mjs",
+          "size_bytes": 8863,
+          "git_blob_sha1": "3e421d094dfcba57e3a4e52c3e3a476595903614",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-provider-readiness-20261001.mjs",
+          "size_bytes": 5857,
+          "git_blob_sha1": "78098b7586724af8bb71c295546bdb505da4f97f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-spatial-pr1596-stripe-provider-probe.mjs",
+          "size_bytes": 3548,
+          "git_blob_sha1": "1ef017272b8bcf3c90f7ca6a21fba4361da8c1bc",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-billing-guard.mjs",
+          "size_bytes": 2620,
+          "git_blob_sha1": "2c9daa2f1f343433a049f18cf1ea1f5984201cab",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-consumers.mjs",
+          "size_bytes": 10556,
+          "git_blob_sha1": "a5d7baa365a08355062222926b58610c6900cc94",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-deploy-workflow.mjs",
+          "size_bytes": 2244,
+          "git_blob_sha1": "3e437be2192de16306e2a828f015631c3451e11b",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-twilio-function-deploy-iam.mjs",
+          "size_bytes": 3281,
+          "git_blob_sha1": "f266f7b6ab7dda0d87ae3f73bb2a650cbb91d310",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-twilio-proof-iam.mjs",
+          "size_bytes": 2059,
+          "git_blob_sha1": "6a914f08a3db0762d07f3868e56fecf1b60b0cd7",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-wif-bootstrap.mjs",
+          "size_bytes": 2297,
+          "git_blob_sha1": "5b91285072b38f46e66a9a3880415f2e1f847597",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/validate-staging-wif-runtime-identity-probe.mjs",
+          "size_bytes": 1759,
+          "git_blob_sha1": "4004a063af99af5404c23740661ca4fec36b1722",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-native-consumer-browser.mjs",
+          "size_bytes": 11613,
+          "git_blob_sha1": "db1332f58bae9927395018bfa4bc3cd7eb91cdde",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-privacy-jobs-protected-approval.mjs",
+          "size_bytes": 17754,
+          "git_blob_sha1": "4a23da714fc069f151da2cb390fefec7e185d1ea",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-private-consumer-refs.mjs",
+          "size_bytes": 8808,
+          "git_blob_sha1": "d87cbed92edbe579e7e2afcc02f4ed5d27e243df",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-sendgrid-staging-approval.mjs",
+          "size_bytes": 5514,
+          "git_blob_sha1": "0b49b490863f82308ae81462782b6784f64b4fb9",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-sendgrid-staging-callback.mjs",
+          "size_bytes": 3767,
+          "git_blob_sha1": "0c723b3cd9fb89f4dbc709979b1fad5f1d86c1bd",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-spatial-export-artifact.py",
+          "size_bytes": 7971,
+          "git_blob_sha1": "edae38d039165f62cbef8ad851a190d9a8ac5bfe",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-staging-verification-binding.mjs",
+          "size_bytes": 9097,
+          "git_blob_sha1": "3f745aa117020ce35e7e4d9707ba4dce2a2a4d0e",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/verify-twilio-trial-sender.mjs",
+          "size_bytes": 2611,
+          "git_blob_sha1": "84e5f8c8d9d1401da05bc7af9066ce3661d2e9b5",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/workstream-c-current-candidates.env",
+          "size_bytes": 160,
+          "git_blob_sha1": "fad0c9b64cf332b9ce47b62cebaa925b3bc9369f",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "scripts/write-launch-summary.mjs",
+          "size_bytes": 2336,
+          "git_blob_sha1": "44db398b87c01ba466a829f98e919f657b3917d3",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        },
+        {
+          "path": "storage.rules",
+          "size_bytes": 711,
+          "git_blob_sha1": "3b142c27088112410c4fb8502b7bfe5be0b0d911",
+          "sha256": null,
+          "coverage": "git_tree_metadata_only"
+        }
+      ]
+    }
+  ]
+}

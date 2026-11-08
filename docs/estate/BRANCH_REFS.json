@@ -1,0 +1,905 @@
+{
+  "schema_version": "genesis-staging-current-branch-heads-v1",
+  "repository": "LifeLoggerAI/urai-staging",
+  "date_local": "2026-11-07",
+  "method": "GitHub branch API current branch heads only",
+  "count": 179,
+  "notes": "Not all historical refs, deleted refs, tags, or per-branch all-byte history",
+  "branches": [
+    {
+      "name": "admin-pr57-consumer-authority-20260905",
+      "sha": "016e1f86d5eda262420557a6d6aa39698c25e796",
+      "protected_reported": false
+    },
+    {
+      "name": "admin-pr57-effective-iam-proof-20260905",
+      "sha": "04efcb207048e9954e34c589a4f4a40301942655",
+      "protected_reported": false
+    },
+    {
+      "name": "admin-pr57-provider-probe-20260905",
+      "sha": "7f43443569582ecf02020feba0f1f0253d2e4656",
+      "protected_reported": false
+    },
+    {
+      "name": "admin-pr57-runtime-controller-20260905",
+      "sha": "b81dae55e55b913745e5bfb44a48e641bbc6b6da",
+      "protected_reported": false
+    },
+    {
+      "name": "agent/probe-shared-wif",
+      "sha": "cc105389dd1da306417f640e1e1f39e3e630c632",
+      "protected_reported": false
+    },
+    {
+      "name": "audit/release-evidence-hardening-20260706",
+      "sha": "21524efab9e966473cd8aaf75a9bd04929cea113",
+      "protected_reported": false
+    },
+    {
+      "name": "audit-completion/staging-command-aliases",
+      "sha": "6c074dff444589c3815687955fb14ee7f0c74dd2",
+      "protected_reported": false
+    },
+    {
+      "name": "bootstrap-staging-wif-20260905",
+      "sha": "f733efdf5529534a3521bd60a078adcd28595d91",
+      "protected_reported": false
+    },
+    {
+      "name": "canon/current-authority-20260925",
+      "sha": "d78a9b62a57b03d29c7f8901e6f1cbe70ca1104f",
+      "protected_reported": false
+    },
+    {
+      "name": "canon/upstream-authority-20260924",
+      "sha": "5c041e34bce29a6a782846c6e37babad6fa535f2",
+      "protected_reported": false
+    },
+    {
+      "name": "chatgpt/urai-product-polish-20260812",
+      "sha": "3183c117b5d80e8eb533cca50e5980483348beba",
+      "protected_reported": false
+    },
+    {
+      "name": "chore/actions-node24-current-staging-main-20261005",
+      "sha": "2b7171450a6b32c5eeccfe53c164d47b6ed6b523",
+      "protected_reported": false
+    },
+    {
+      "name": "chore/complete-staging-foundation",
+      "sha": "5d94ed2659ab609c11afa21c333aacafcda3f13e",
+      "protected_reported": false
+    },
+    {
+      "name": "cold-vault-2026-08-16",
+      "sha": "dbb52bd041a6979d548f2c711f32a33749282058",
+      "protected_reported": false
+    },
+    {
+      "name": "communications/twilio-trial-e2e-20260924",
+      "sha": "b99cf6509672e7d4c35e5214dc9de1fc4966212e",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/current-provider-consumers-20261003",
+      "sha": "777756f2e88507e49d34fe9e7489b1177be43a17",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/final-spatial-consumer-20261004",
+      "sha": "0153df921b3d7dac53566e8727c35df5c01921e1",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/production-spatial-consumer-20261004",
+      "sha": "5cec679343869030a1135794affad5f4f9c4d569",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/provider-consumers-node22-ref-verifier-20261004",
+      "sha": "97049b0deb0aae40fe650898d13321aea71f6267",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/sendgrid-pr58-6c99e6c-20260929",
+      "sha": "df715f2008505521c0cdacfa34671086948d7cdb",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/spatial1598-head-782a5a0-20261005",
+      "sha": "a5c964293246a206d94ee62148e24f9e8ec124cc",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/spatial-1598-099470-final-bind",
+      "sha": "c74273bd4f7d5453f9db6b3fc08b0cb225812af5",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/spatial-pr1462-current-head-20260929",
+      "sha": "ad852c67dc83d07af49eaa29aa723e4c1f666315",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/spatial-pr1598-current-head-20261005",
+      "sha": "a89a452b63c6e59ecf94302847f2132017d5ac95",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/spatial-pr1598-provider-readiness-20261005",
+      "sha": "60584395a3854ccdf7751d2cec22f9c144d210e4",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/staging-final-1591-communications-main-20261004",
+      "sha": "c69f408ec5d53d7086b95f2168a99561e747273f",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/staging-main-authority-20261003",
+      "sha": "16fdf29357de606670c1e40850a1cdf713e9a32a",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/staging-provider-terminal-1591-20261004",
+      "sha": "c7f5479f8a5aef6c4833ae7ad4d6dc1d19a4642a",
+      "protected_reported": false
+    },
+    {
+      "name": "converge/system-of-systems-review-20260929",
+      "sha": "08e27ace49504a4a0ed8b74f7e506359e1fb9174",
+      "protected_reported": false
+    },
+    {
+      "name": "converge-staging-control-plane-20260924",
+      "sha": "9b1e85c0b417ebaf99224d6a96bf4961e7c9449f",
+      "protected_reported": false
+    },
+    {
+      "name": "diagnostics/staging-readonly-r215-20261028",
+      "sha": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "protected_reported": false
+    },
+    {
+      "name": "docs/agent-handoff-recovery-20260719",
+      "sha": "7029d91a3cf7d9ae18ef5ac47241311b90614de0",
+      "protected_reported": false
+    },
+    {
+      "name": "docs/chalk-staging-source-release-audit-20261107",
+      "sha": "5c0259971eed5d49cd330d0fd4d840074f71f0cf",
+      "protected_reported": false
+    },
+    {
+      "name": "docs/genesis-estate-handoff-20261106",
+      "sha": "d1202c5f69006b3fadcfef1773f214c60a900a58",
+      "protected_reported": false
+    },
+    {
+      "name": "docs/reconcile-staging-http-boundaries-20261005",
+      "sha": "ceca4d716a839401215db2fe63c840eab73b5e7f",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/align-feature-flag-schema",
+      "sha": "44eccc0192f1e74d053aaca48a855ac93980be72",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/audit-billing-validator-pr58-20260926",
+      "sha": "224bc8f7f0803fe5d4f0512b92909768aa33674f",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/bind-spatial-pr1576-20261004",
+      "sha": "78ba7a71e423c0f8c887e285776b543bce4ad343",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/bind-spatial-pr1576-mainline-20261004",
+      "sha": "f7f3183b240689965bc7ef645c0eb552482fe5ce",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/environment-authority-20260706",
+      "sha": "9568e09ad536f0fd936b316a5f4deb84fe1ff70d",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/generic-staging-wif-probe-20261004",
+      "sha": "6ab648ad9b2dd039d2e2df4ccafb9cac3b9db3c9",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/genesis-staging-command-inventory-20261102",
+      "sha": "d25d94d5b57e483674740f385a2454792de68250",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/genesis-staging-evidence-source-pin-20261102",
+      "sha": "c1cce429bfba9619c414f8ae61fec3d494cb9f90",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/network-verifier-functions-bootstrap-20261005",
+      "sha": "01bb63a402bd164f5191c7fb4bf44e619ea0c183",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/private-consumer-readonly-ssh-fallback-20261005",
+      "sha": "6055c27a0e859bca4d3c6d54f8e368beb26563e5",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/protected-consumer-branch-verification-20261005",
+      "sha": "435b41e2edb88a05eab85bc6a733d5745b84ef6c",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/protected-consumer-ref-coverage-20261004",
+      "sha": "96e1caeee6cbc01767012e7b8b21e37e982d6fbc",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/rebind-communications-main-20261004",
+      "sha": "cf5ffbcda029fde1272fdca675b317e5d2058218",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/rebind-spatial-6a21b441-20261004",
+      "sha": "70e4d78c06e2ba07c0287ce572fb95535c1d058e",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/rebind-spatial-1591-0d612665-20261004",
+      "sha": "846dafb5f5ba248f14c3bb4532f57330e8dc67d1",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/rebind-spatial-1596-20261005",
+      "sha": "ff9b0ba5ec5d87e49a6f0bdedb12db83faf3c24b",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/rebind-spatial-1596-head-0d9ec-20261005",
+      "sha": "80ab9f640e7c9ca30d971fa2fdedf077faa63aa7",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/rebind-staging-spatial-1581-20261004",
+      "sha": "2759b2ec01d9f87489aad8e15e414f1737d23124",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/repin-spatial-pr1582-20261004",
+      "sha": "495785028d662e800cf151525bbc374939387249",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/retain-private-ref-failure-evidence-20261006",
+      "sha": "739555c26e07a006a39e8d32e4f8a76fb8603be1",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/sendgrid-cleanup-yaml-20261007",
+      "sha": "56ba3d397a7545300331032232cedb3e7635e72e",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/sendgrid-current-review-authority-20261004",
+      "sha": "d4ac978d3c49a7980bf177750fc1028505bed5b8",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/spatial-1577-consumer-binding-20261004-0586",
+      "sha": "293fdc385144954c3fdce0f25a6890a7a8deb381",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/spatial-1581-main-bound-binding-20261004",
+      "sha": "96e1caeee6cbc01767012e7b8b21e37e982d6fbc",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/spatial-94581-consumer-binding-20261004",
+      "sha": "d5401b57092d61916a30accd420aa1b79d80e16c",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/staging-admitted-communications-source-20261007",
+      "sha": "4abd517e87bc25265504c87fd7eb7b40326291f5",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/staging-authority-readme-20260830",
+      "sha": "4c416a25818c939a59ec67ce4defa236d62ad548",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/staging-effective-iam-project-name-20261004",
+      "sha": "18b1e9c44867baaefe4f3d48b4428ebaccee82b9",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/staging-private-ref-node22-20261004",
+      "sha": "8c144b482d1f6659853fb061ec9591ebf0ca08c5",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/staging-runtime-truth-20260716",
+      "sha": "c72461a00ac9fdd42292459827467a3ef2cb4e81",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/staging-smoke-and-public-boundary-20261003",
+      "sha": "c673fd24825a6b4d340af0f8b908dfdb3a5de397",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/stripe-pr1591-current-contract-convergence-20261005",
+      "sha": "e290bb1d6d0d28bf3126b90fed12cfd138eaa747",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/stripe-pr1591-runtime-mode-source-check-20261004",
+      "sha": "dfa2483f4d9fc20e52ed0545f471197d5d674721",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/stripe-pr1591-source-contract-20261005",
+      "sha": "b09113b9da5f4ef739c0d8e3a39efc0c444acd36",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/twilio-private-ref-auth-fallback-20261004",
+      "sha": "72ddfb49b00b91350540197d8b166bdcfe66f59e",
+      "protected_reported": false
+    },
+    {
+      "name": "fix/twilio-rollback-heredoc-20261007",
+      "sha": "36b226f5ca7bffcd00e0d8cce65a2416f58a2c68",
+      "protected_reported": false
+    },
+    {
+      "name": "freeze/terminal-233662d0-20260929",
+      "sha": "233662d0d7fd58b6627c5b01ede39b9ef641c359",
+      "protected_reported": false
+    },
+    {
+      "name": "freeze/terminal-dea35598-20260929",
+      "sha": "dea35598f3332c502476a469ab059fd19bad2308",
+      "protected_reported": false
+    },
+    {
+      "name": "govern/sendgrid-independent-review-limbernutz0-20260929",
+      "sha": "60514bc1fb697624c9ca50818d8c39f1f6b1f63e",
+      "protected_reported": false
+    },
+    {
+      "name": "govern/sendgrid-independent-review-limbernutz0-current-20260929",
+      "sha": "6405ed5205dfc864b6d8a791857f358a62e75940",
+      "protected_reported": false
+    },
+    {
+      "name": "governance/provider-readiness-20261001",
+      "sha": "561b44438613dd1c9c684da2ebaf913ab124b485",
+      "protected_reported": false
+    },
+    {
+      "name": "governance/retire-spatial-1600-refresh-communications-20261005",
+      "sha": "3089b28d75d21e16dc3ae4f0b55bf57e0e6b1a40",
+      "protected_reported": false
+    },
+    {
+      "name": "governance/sendgrid-current-review-20261006",
+      "sha": "f12005f09cae3d9d4f4ae58a36a34afb95bc369d",
+      "protected_reported": false
+    },
+    {
+      "name": "main",
+      "sha": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "protected_reported": false
+    },
+    {
+      "name": "maintenance/communications-main-pin-sync-20261018",
+      "sha": "3d3672c733c75d4df16389cc47d5a3401f6329a9",
+      "protected_reported": false
+    },
+    {
+      "name": "ops/owner-trigger-stripe-pr1591-read-20261004",
+      "sha": "a7b08dd980aa4ed72e450de4b0d13ad89e854157",
+      "protected_reported": false
+    },
+    {
+      "name": "ops/owner-trigger-twilio-trial-e2e-20261004",
+      "sha": "29fad4645fcc1856e471b3b13e57cce906908443",
+      "protected_reported": false
+    },
+    {
+      "name": "ops/twilio-staging-secret-readback-20261004",
+      "sha": "2e2a9681d4aebfc8b6026e687be09275e6037434",
+      "protected_reported": false
+    },
+    {
+      "name": "probe/gcp-authority-20260929",
+      "sha": "4c1fca6686b683d57dcfb6d73bb9da47cdcfca09",
+      "protected_reported": false
+    },
+    {
+      "name": "probe/gcp-authority-comment-trigger-20260929",
+      "sha": "11121b7d8c60226aa7888ea14a6b54342c408f2d",
+      "protected_reported": false
+    },
+    {
+      "name": "probe/gcp-authority-trigger-20260929",
+      "sha": "32d3aeacb5e0eaebe604c363191c6b76ca6b1073",
+      "protected_reported": false
+    },
+    {
+      "name": "public-staging-note",
+      "sha": "c9f5d362ad4131c4163b3d58ee593e62a5a2d628",
+      "protected_reported": false
+    },
+    {
+      "name": "rebind/spatial-1600-final-machine-green-20261005",
+      "sha": "42a3a9b1fbfcf85aca79d096c91042774f95ec63",
+      "protected_reported": false
+    },
+    {
+      "name": "reconcile/asset-factory-readiness-20260925",
+      "sha": "34c569fdaa6e48abcb2bbffc07826f04562aba64",
+      "protected_reported": false
+    },
+    {
+      "name": "reconcile/staging-authority-current-main-20260714",
+      "sha": "7f3a46e8df884b694a2cbefa4e60a74da18d5745",
+      "protected_reported": false
+    },
+    {
+      "name": "reconcile/staging-current-main-controls-truth-20260811",
+      "sha": "dd7b6663151a1421f565e2d42c9ee8a2291a7f1e",
+      "protected_reported": false
+    },
+    {
+      "name": "reconcile/staging-current-main-genesis-20260811",
+      "sha": "f776e0e3419474466b02e0f11bc6d195416da214",
+      "protected_reported": false
+    },
+    {
+      "name": "reconcile/staging-post-wif-runtime-boundary-20260830",
+      "sha": "848f124008595ee9c4320b8f65d02744583eb2de",
+      "protected_reported": false
+    },
+    {
+      "name": "reconcile/staging-wif-main-20260811",
+      "sha": "44ba3f261543adc1160c7e9bb124505df314b8f5",
+      "protected_reported": false
+    },
+    {
+      "name": "reconcile/staging-wif-main-20260817",
+      "sha": "dbb52bd041a6979d548f2c711f32a33749282058",
+      "protected_reported": false
+    },
+    {
+      "name": "reconcile/staging-wif-main-strict-20260817",
+      "sha": "99d9ac7df4ed7ceea41ccfcc0e630f2c24403c6f",
+      "protected_reported": false
+    },
+    {
+      "name": "release/ci-deploy-readiness-hardening",
+      "sha": "328719767e3f6ba05c531342abf36cbf17b8d4e1",
+      "protected_reported": false
+    },
+    {
+      "name": "release/urai-staging-v1-integration-audit",
+      "sha": "5eaeaf9c35e3041c31787cb9bb9fbacc2206c7ab",
+      "protected_reported": false
+    },
+    {
+      "name": "remove-production-alias-20260703",
+      "sha": "11cfe122b2eddd4ae8cae86180223ef63d802bb3",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/admin-pr57-provider-exact-head-trigger",
+      "sha": "677e09e88b318b600591328d10e1faee2737f500",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/admin-pr57-runtime-runner-context",
+      "sha": "6999e5b8ad383418bd57d14a015126e7e8fb6cef",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/canon-provenance-reconciliation-20261007",
+      "sha": "568731ad7eb72e1bfc4fc3d2ed8df49056db4b1a",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/communications-consumer-current-20260927",
+      "sha": "c38c9bc9fc9f3d9c074bbe72a13402eefb2a1bbf",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/current-verifier-provider-readback-20261001",
+      "sha": "52467b05beafa3b18b86e7459bbf980f11cbee88",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/staging-provider-harness-converged-20261007",
+      "sha": "d5ac7323d6ab3c157965442be29c2b3b92811846",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/staging-web-noindex-20261007",
+      "sha": "ce7602ae17827fb1fa414511067f581cb99f7985",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/staging-workflow-context-20260901",
+      "sha": "4c043c7b6a29d5f2acc6ea1d222a6846c1a512e2",
+      "protected_reported": false
+    },
+    {
+      "name": "repair/twilio-owned-trial-sender-20261007",
+      "sha": "c1cc2e4f291327833e43b4c7b5108a6b5e104e69",
+      "protected_reported": false
+    },
+    {
+      "name": "repin/current-core-candidates-20260715",
+      "sha": "64fa9c3e41bb262ab97554447083566127874e68",
+      "protected_reported": false
+    },
+    {
+      "name": "repin/current-six-core-candidates-20260715",
+      "sha": "7467983ddaf3db1365eca58dafc6a83a170c13cd",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-independent-revocation-batch-safety-20261105",
+      "sha": "f4e76e18ec0b4f2c32b2b997d52585a251aa839e",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r754-es2020-email-domain-20261105",
+      "sha": "b400b694482ac26bb88adebc8216ef198fe83e60",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r755-synthetic-memory-read-provenance-fence-20261105",
+      "sha": "09c08cc2c9d5e4f987b7051664ba2a0e45333646",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r758-synthetic-life-graph-source-transaction-20261105",
+      "sha": "eb92bd454776d6278a7b4cbc1490edc2a157fa26",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r762-graph-backing-memory-transaction-20261105",
+      "sha": "9184700e65b87feebbc6c1ca7f874b38bd282782",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r764-replay-linked-parent-fence-20261105",
+      "sha": "687623d3b4831cb97a57f4aafb6a527317127b98",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r765-acyclic-canonical-synthetic-life-graph-hold-20261105",
+      "sha": "083ab3d87c432a2ad9c599fe6dfaf194c150c38e",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r765-pin-owner-acceptance-to-r763-graph-source-20261105",
+      "sha": "d9bb847050da5f8c72dde6666adb480635ceccae",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r766-pin-strict-owner-acceptance-to-r765-156-20261105",
+      "sha": "d9bb847050da5f8c72dde6666adb480635ceccae",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r768-linked-parent-typescript-narrowing-20261105",
+      "sha": "f01eb015276761947d59eb3970f3b753f5510426",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r769-pin-owner-acceptance-pr158-20261105",
+      "sha": "62581c5f0e1ff16c11436f8978c0dc2d715a0e5f",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r769-synthetic-replay-ancestry-fence-hold-20261105",
+      "sha": "ddc50e002cba7f289c3f0915a6853d50460f99fd",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r771-pin-owner-acceptance-to-r770-ancestry-hold-20261105",
+      "sha": "c679d1f9f44b36fdb1587626e0cf73ab34b74d58",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r772-ancestry-revocation-source-convergence-hold-20261105",
+      "sha": "9b8fe580849dcb97d21a272dfc2ae3bf08b72798",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r772-converge-replay-ancestry-and-bounded-revocation-20261105",
+      "sha": "12c4b5d6177c2bc66d0cf43800406f7033f58789",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r773-parent-admission-graph-integrity-20261105",
+      "sha": "383c390c821e404b7dc24318647074ca2db2d288",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r775-exact-genesis-owner-acceptance-pin-20261105",
+      "sha": "70e41446d356d3c53c458207a39e054d686d8b58",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r778-staging-orphan-synthetic-storage-cleanup-20261105",
+      "sha": "734919606a8b01bca21a7c265c2b0d18947ab36c",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r779-strict-owner-pin-to-r778-storage-cleanup-20261105",
+      "sha": "5700956123d5cd2ab4abc30ac6d4481448db0d38",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r780-isolated-synthetic-storage-cleanup-tests-20261105",
+      "sha": "c3d6c66604129ddd137db6a971751d0de4d81835",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r781-strict-owner-pin-and-native-cleanup-proof-20261105",
+      "sha": "0d6bb00cd308bdb7d2d2b9361f9d334d9334ab13",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r786-staging-synthetic-uid-boundary-20261105",
+      "sha": "79fc5dc96026cadfdfb5a7ae81fd9207d62cc620",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r787-owner-pin-r786-uid-boundary-20261105",
+      "sha": "41ce98f61a7dd7a051ab5a02acaf9b39d037deb3",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r816-synthetic-graph-capacity-fence-hold-20261106",
+      "sha": "1e9b8c7f0044450c0a9f0750d33ab36d2324c851",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-r839-staging-http-capacity-convergence-20261106",
+      "sha": "49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-storage-sdk-emulator-20261105",
+      "sha": "cd671a23018789cc5f54a087b504d7d93089edb9",
+      "protected_reported": false
+    },
+    {
+      "name": "review/chalk-three-emulator-callable-lifecycle-20261106",
+      "sha": "f2d8130406fe5a65a5863efa2337eca5b8521121",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r476-current-auth-consent-source-20261103",
+      "sha": "01fd60436dc2164c3a3bd8be8e8f1a696b7674f3",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r710-current-signed-lifecycle-staging-20261105",
+      "sha": "f2efb65cb268379f1125edbeeb16f683b0580a33",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r720-privacy221-current-deletion-contract-20261105",
+      "sha": "0a223ce1fac96d007d242d6de5b4ef33649d8c85",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r720-privacy-factory-cross-system-denial-20261105",
+      "sha": "3626f7adf80de6120c4d89210e3fe3d40627a7af",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r722-signed-downstream-deletion-receipt-preflight-hold-20261105",
+      "sha": "746f3b34014e3fa23606a7a2acdc810e1f66fe0b",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r724-signer-key-id-and-signed-envelope-20261105",
+      "sha": "13fca2ad447ed462a40490c45005f94e2cb1b870",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r725-converge-source-approval-with-signed-deletion-hold-20261105",
+      "sha": "c81a86a656df889b33efb83552b459f17a59bb00",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r727-ensure-protected-main-required-checks-hold-20261105",
+      "sha": "97785103fff714052949cb86f98891ebc6382cc6",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r728-protected-review-history-pagination-failclosed-20261105",
+      "sha": "c81a86a656df889b33efb83552b459f17a59bb00",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r729-bind-required-checks-to-actions-suites-hold-20261105",
+      "sha": "2e98aaac5f74247361d778fde9b6e2a231b38ae2",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r729-converge-protected-main-review-history-20261105",
+      "sha": "3e45c01e057f73944bda08c5cb1d2342c4ebf024",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r731-paginated-independent-review-hold-20261105",
+      "sha": "2e98aaac5f74247361d778fde9b6e2a231b38ae2",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r732-converge-review-history-and-required-actions-suites-hold-20261105",
+      "sha": "6feabf4df689aff954ff460f65f6eea115fffad7",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r737-converged-source-authority-20261105-chalk",
+      "sha": "9bbc20983542256a0d78972455d0bec2c36b4b0d",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r742-bind-exact-privacy-workflow-paths-hold-20261105",
+      "sha": "05b8252e0371e4fa65b03d6941a73aa07f62b789",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r744-genesis-owner-acceptance-kit-hold-20261105",
+      "sha": "9bd262418074024ba02cece9977596bab4449649",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r744-launch-evidence-timing-fixture-20261105",
+      "sha": "6f5aef9d07de29634a9efad85b69109b1ee37409",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r745-reject-renamed-stale-actions-history-20261105",
+      "sha": "1755bcb559f3c37143c226f9b53756e2737b025d",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r748-r740-r745-complete-protected-workflow-history-20261105",
+      "sha": "2925d83ec60624c7efd2f3bc5740ccad8930392d",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r749-retarget-owner-acceptance-to-converged-r748-hold-20261105",
+      "sha": "6d93bd4949279d4d365a7fa77f5eeecbcb5b1d84",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r750-converge-r748-security-and-r744-timing-tests-20261105",
+      "sha": "e0503dab67ff5991e6248f364093a89413f7d40a",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r751-pin-owner-full-acceptance-to-r750-staging-141-20261105",
+      "sha": "29df40e05eaaf0a2b133bd59beaf570d454d6acd",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r752-r750-r745-historical-ledger-repair-20261105-chalk",
+      "sha": "34643afb814ff9b4fe926d6d1866dcf4b311e579",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r753-pin-owner-acceptance-to-r752-staging-143-20261105-chalk",
+      "sha": "4ddd781575fd0a66fca5a25bb206378fec041247",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r756-expand-pinned-owner-native-test-coverage-20261105-chalk",
+      "sha": "f1b1011cfffd45af6ad0c4783280d2d66a4518b6",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r757-pin-expanded-owner-acceptance-to-es2020-verified-pr146-hold-20261105",
+      "sha": "0d94470ca19cb67c487e03b71a163baf59732c39",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r758-graph-backing-memory-consistency-fence-hold-20261105",
+      "sha": "7e0d4d3e06bfd2a11dd8f599b7db372899e1ef41",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r759-pin-full-acceptance-to-r754-es2020-source-20261105-chalk",
+      "sha": "709145e0127107f4366ca7d794c9dfabbb7ecba6",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r761-pin-owner-322-acceptance-to-r755-security-source-20261105-chalk",
+      "sha": "895cfaca64475a18cc91125e1eb21980e891ca92",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r763-graph-relation-consistency-converged-20261105-chalk",
+      "sha": "15b035fe506d9548e57243fc57b6e8eab931b196",
+      "protected_reported": false
+    },
+    {
+      "name": "review/r770-replay-ancestor-integrity-fail-closed-20261105-chalk",
+      "sha": "1219d785d09f5303d1d4addc16c666777c428b60",
+      "protected_reported": false
+    },
+    {
+      "name": "security/wif-only-staging-deploy-2026-08-11",
+      "sha": "5cbaf55bc25812d6a5fb3edff9b10315ec6b158a",
+      "protected_reported": false
+    },
+    {
+      "name": "sendgrid/governance-certification-6c99e6c6-20260929",
+      "sha": "77a6ea4f37f2ed5cf82ad8f903581dc360bee933",
+      "protected_reported": false
+    },
+    {
+      "name": "sendgrid/pre-signature-staging-e2e-20260929",
+      "sha": "233662d0d7fd58b6627c5b01ede39b9ef641c359",
+      "protected_reported": false
+    },
+    {
+      "name": "sendgrid/readonly-deploy-key-fallback-20260929",
+      "sha": "70135c30a44c1e9547b9c8855164836ecd43c94e",
+      "protected_reported": false
+    },
+    {
+      "name": "sendgrid/repin-limbernutz-6c99e6c6-20260929",
+      "sha": "bd1b5ebe56a767dd5c667263087f3480c1eb7452",
+      "protected_reported": false
+    },
+    {
+      "name": "stripe/spatial-pr1182-test-runtime",
+      "sha": "94d999eb1284b267636c3032a64210fc0421f035",
+      "protected_reported": false
+    },
+    {
+      "name": "system-of-systems-contract-20260917",
+      "sha": "650f9ec9755727605681a109947209b668e8539e",
+      "protected_reported": false
+    },
+    {
+      "name": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
+      "sha": "d32328963fdff86f2d4dab742d32c870a049c284",
+      "protected_reported": false
+    },
+    {
+      "name": "test/r439-firebase-jobs-privacy-auth-emulator-20261103",
+      "sha": "4faf78a5fd5a2640150373b7883ef67ef493ee8c",
+      "protected_reported": false
+    },
+    {
+      "name": "twilio/api-key-control-plane-20260927",
+      "sha": "92af9063fa11f8f04f97c1bdc312ef6ae971ad12",
+      "protected_reported": false
+    },
+    {
+      "name": "workstream-c-manual-verification-20260711",
+      "sha": "aa77765f3fa9fd87821363042e8cc5951dcc2602",
+      "protected_reported": false
+    }
+  ]
+}
