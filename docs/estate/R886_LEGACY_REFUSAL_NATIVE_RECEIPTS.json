@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "one-urai-genesis-r886-exact-blob-legacy-entrypoint-native-refusal-1",
+  "observedAtUTC": "2026-11-08T04:17:49Z",
+  "method": "Original GitHub fetch_file source reconstructed locally byte-for-byte, verified using git hash-object (SHA1 blob) against immutable original source blob, then invoked on locally installed bash/Node 22 without cloud credentials or network; refusal expected.",
+  "gitVersion": "2.47.3",
+  "nodeVersion": "v22.16.0",
+  "noDeploy": true,
+  "noCloudCredentialsUsed": true,
+  "noCIJobDispatched": true,
+  "noBillingChange": true,
+  "scope": "Only the three named entrypoint scripts; does not imply every legacy CLI path or historical deployment is blocked.",
+  "tests": [
+    {
+      "repository": "LifeLoggerAI/UrAi",
+      "exactSourceCommit": "8cac3ba513830c11261d57bc2b5dd7ad8b83e85a",
+      "originalSourcePath": "scripts/deploy-urai-firebase.sh",
+      "gitBlobSha1": "ecca01a1939a740a0db2ac16a5737d1417e26ba0",
+      "computedSha256": "c71540943c31b5def3f5cadc1accdf7fd8c90286e2ddc70e3161c843b185241c",
+      "gitBlobMatch": true,
+      "commandTested": "bash scripts/deploy-urai-firebase.sh",
+      "exitCode": 1,
+      "expectedRefusalStringSeen": "Legacy deployment is disabled in this repository.",
+      "refusalPass": true
+    },
+    {
+      "repository": "LifeLoggerAI/UrAi-Dev",
+      "exactSourceCommit": "08257158e2ffee8bbeb183ae89185f1677bad1da",
+      "originalSourcePath": "scripts/refuse-legacy-staging-deploy.mjs",
+      "gitBlobSha1": "05d95ae05a250e17ebafaea92b8162c3567f95b3",
+      "computedSha256": "a45f2bd3d2ac62c19dcfb6628d157e920bf46f5e9ad4599fe8840f00d2b4d92d",
+      "gitBlobMatch": true,
+      "commandTested": "node scripts/refuse-legacy-staging-deploy.mjs apps/urai-staging:deploy:staging",
+      "exitCode": 1,
+      "expectedRefusalStringSeen": "LifeLoggerAI/UrAi-Dev is a quarantined reference repository.",
+      "refusalPass": true
+    },
+    {
+      "repository": "LifeLoggerAI/UrAiProd",
+      "exactSourceCommit": "d3d7ce6e607a5ee1be2c9f9ede6eecf1cfb393b9",
+      "originalSourcePath": "scripts/deny-production-deploy.mjs",
+      "gitBlobSha1": "361aa72dc678d770b65c63ec609b8accfc93ba07",
+      "computedSha256": "cbaeac993b8a8102668b97700b251a7b25af72907c1e0a521ed4caa4b0613093",
+      "gitBlobMatch": true,
+      "commandTested": "node scripts/deny-production-deploy.mjs",
+      "exitCode": 1,
+      "expectedRefusalStringSeen": "Production deployment denied in LifeLoggerAI/UrAiProd.",
+      "refusalPass": true
+    }
+  ]
+}
