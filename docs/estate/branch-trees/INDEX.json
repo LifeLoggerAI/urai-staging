@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "genesis-staging-all-branch-trees-index-1",
+  "capturedAt": "2026-11-08 UTC",
+  "repo": "LifeLoggerAI/urai-staging",
+  "method": "GitHub recursive Git-tree API at immutable head SHA per branch",
+  "branchHeads": 180,
+  "branchPathEntries": 28540,
+  "branchReferencedDeclaredBytes": 201390308,
+  "distinctPaths": 299,
+  "distinctBlobSha1": 826,
+  "distinctTreeSha1": 173,
+  "truncated": [],
+  "errors": [],
+  "largeBranchSamples": [
+    {
+      "name": "review/chalk-r839-staging-http-capacity-convergence-20261106",
+      "count": 244,
+      "bytes": 1715705
+    },
+    {
+      "name": "review/chalk-three-emulator-callable-lifecycle-20261106",
+      "count": 243,
+      "bytes": 1708176
+    },
+    {
+      "name": "review/chalk-storage-sdk-emulator-20261105",
+      "count": 242,
+      "bytes": 1696919
+    },
+    {
+      "name": "review/chalk-r786-staging-synthetic-uid-boundary-20261105",
+      "count": 241,
+      "bytes": 1692752
+    },
+    {
+      "name": "review/chalk-r780-isolated-synthetic-storage-cleanup-tests-20261105",
+      "count": 241,
+      "bytes": 1691332
+    },
+    {
+      "name": "review/chalk-r778-staging-orphan-synthetic-storage-cleanup-20261105",
+      "count": 239,
+      "bytes": 1685285
+    },
+    {
+      "name": "review/chalk-r773-parent-admission-graph-integrity-20261105",
+      "count": 239,
+      "bytes": 1681869
+    },
+    {
+      "name": "review/chalk-r816-synthetic-graph-capacity-fence-hold-20261106",
+      "count": 240,
+      "bytes": 1681847
+    }
+  ],
+  "rootBase": "Staging #178 at bc98673cb198d60335238db0fcf78d8279dd8b33",
+  "segments": [
+    {
+      "path": "docs/estate/branch-trees/TREES_00_15.json",
+      "blobSha1": "61e62ddcf8fc9042a342e014c8dff7e62ded83ff"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_16_31.json",
+      "blobSha1": "2f640173896f0250b2eaf75e6265405a7a3b54fb"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_32_47.json",
+      "blobSha1": "b247fbc481be63a6da44b39a87d0b6e9c9cbbeb2"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_48_63.json",
+      "blobSha1": "d9ae463c2f160034c505a23cef20e6ac49613a49"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_64_79.json",
+      "blobSha1": "39c51555b0440c5ac9d723f21ecce0b5e0b2ada2"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_80_95.json",
+      "blobSha1": "8609f1ec34811aecc41b2f111fa58ea5c89b3b25"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_96_111.json",
+      "blobSha1": "0b9259d74b35cc7ec2408dcd91395cb066b30060"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_112_127.json",
+      "blobSha1": "62b82bbb3a2ca1d96f4a4efd8e630aadab9d8c89"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_128_143.json",
+      "blobSha1": "46368ade320c044a44e6ab2866dabdf4e960a7e4"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_144_159.json",
+      "blobSha1": "d78515bcd139374f6e77aec2689de6e9bc84be35"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_160_175.json",
+      "blobSha1": "9b2f1e0d3fd0bc9668a78987b91494fce2f939fb"
+    },
+    {
+      "path": "docs/estate/branch-trees/TREES_176_179plus.json",
+      "blobSha1": "ddcde10f135710c2adc63b07dccc10bd6f8563f7"
+    }
+  ],
+  "limitations": [
+    "Branch heads only, not every commit/ref in Git history",
+    "Git tree metadata not full blob byte SHA256",
+    "LFS pointers, binaries, deleted refs, workflow artifact histories, cloud provider states uninspected"
+  ],
+  "status": "GIT_TREE_HEADS_COMPLETE_NOT_ALL_BYTES"
+}
