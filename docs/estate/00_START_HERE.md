@@ -26,3 +26,9 @@ This continuation confirms the October successful CI and R793 donor artifacts ar
 - [R886 exact original SHA verified and 3/3 executable legacy refusal cases](13_R886_LEGACY_RELEASE_ENTRYPOINTS_AND_ROLLBACK_CONFLICT.md)
 - [Machine readable native refusal receipt](R886_LEGACY_REFUSAL_NATIVE_RECEIPTS.json)
 - Legacy UrAi/UrAi-Dev/UrAiProd default-branch deployment entrypoints were invoked locally after original Git object byte verification, and each refused without cloud authentication. Historical staging instructions and the same-channel-to-same-channel rollback template **must not** be followed. The origin of current stale-looking live Hosting content remains unproved by these tests.
+
+## R888 — next Chalk handoff ready for Staging
+
+- [Exact source, historical byte/CI, R887 repair, 19-worker cross-dependency references and next safe commands](15_R888_NEXT_CHAWK_STAGING_HANDOFF_20261107.md).
+- Source fix is separate unmerged [Staging #180](https://github.com/LifeLoggerAI/urai-staging/pull/180), descendant of R840 #176; **this audit documentation does not deploy or merge it**.
+- Production HOLD; 23-case native and four-emulator current-head acceptance pending, live Hosting release unknown, GitHub Actions fail before test steps, physical devices unverified.
