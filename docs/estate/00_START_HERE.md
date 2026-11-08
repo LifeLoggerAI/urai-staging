@@ -20,3 +20,9 @@ This continuation confirms the October successful CI and R793 donor artifacts ar
 - [R885 public staging content fingerprint, CI runner admission and safe owner-authorized Hosting release readback](12_R885_LIVE_STAGING_FINGERPRINT_CI_AND_READONLY_HOSTING_PROOF.md).
 - Public Firebase reserved init identifies `urai-staging`, but the current Home failure copy and robots policy match source in older `LifeLoggerAI/UrAi`, not `urai-staging`'s validation shell. **Exact deployed release/version and origin remain unverified; production/staging cloud mutation forbidden.**
 - Hosted Actions remain blocked before execution; existing GitHub support case #4889576 remains the owner-level coordination path. No new payment, CI dispatch or cloud/branch protection changes were made.
+
+## R886 — Native legacy deployment refusal acceptance
+
+- [R886 exact original SHA verified and 3/3 executable legacy refusal cases](13_R886_LEGACY_RELEASE_ENTRYPOINTS_AND_ROLLBACK_CONFLICT.md)
+- [Machine readable native refusal receipt](R886_LEGACY_REFUSAL_NATIVE_RECEIPTS.json)
+- Legacy UrAi/UrAi-Dev/UrAiProd default-branch deployment entrypoints were invoked locally after original Git object byte verification, and each refused without cloud authentication. Historical staging instructions and the same-channel-to-same-channel rollback template **must not** be followed. The origin of current stale-looking live Hosting content remains unproved by these tests.
