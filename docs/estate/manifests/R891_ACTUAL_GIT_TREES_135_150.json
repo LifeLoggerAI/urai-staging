@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    135,
+    150
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "review/chalk-storage-sdk-emulator-20261105",
+      "commit": "cd671a23018789cc5f54a087b504d7d93089edb9",
+      "actual_tree_sha": "7ca94ff6b68e83bdffdacc572b3bb67841f85395",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-three-emulator-callable-lifecycle-20261106",
+      "commit": "f2d8130406fe5a65a5863efa2337eca5b8521121",
+      "actual_tree_sha": "05d8820aec8b1da32a237199610b68e492ee511f",
+      "corrected": true
+    },
+    {
+      "branch": "review/r476-current-auth-consent-source-20261103",
+      "commit": "01fd60436dc2164c3a3bd8be8e8f1a696b7674f3",
+      "actual_tree_sha": "6cf31d5df0fcc34b94d52cd5623577c1908c56ee",
+      "corrected": true
+    },
+    {
+      "branch": "review/r710-current-signed-lifecycle-staging-20261105",
+      "commit": "f2efb65cb268379f1125edbeeb16f683b0580a33",
+      "actual_tree_sha": "e5ea19051bab682faf54e4ecf374bc7606a39693",
+      "corrected": true
+    },
+    {
+      "branch": "review/r720-privacy221-current-deletion-contract-20261105",
+      "commit": "0a223ce1fac96d007d242d6de5b4ef33649d8c85",
+      "actual_tree_sha": "5c41b59c42818b15b4d7733c0214a29e6fd63030",
+      "corrected": true
+    },
+    {
+      "branch": "review/r720-privacy-factory-cross-system-denial-20261105",
+      "commit": "3626f7adf80de6120c4d89210e3fe3d40627a7af",
+      "actual_tree_sha": "19a16efba503249e67efd8ae3b10e4a626494261",
+      "corrected": true
+    },
+    {
+      "branch": "review/r722-signed-downstream-deletion-receipt-preflight-hold-20261105",
+      "commit": "746f3b34014e3fa23606a7a2acdc810e1f66fe0b",
+      "actual_tree_sha": "77b65eb8e3b52c9710e0a76d89511b6ed38b6d40",
+      "corrected": true
+    },
+    {
+      "branch": "review/r724-signer-key-id-and-signed-envelope-20261105",
+      "commit": "13fca2ad447ed462a40490c45005f94e2cb1b870",
+      "actual_tree_sha": "9999c1781bbca0779500bf1fb3fc79d03c8a93c2",
+      "corrected": true
+    },
+    {
+      "branch": "review/r725-converge-source-approval-with-signed-deletion-hold-20261105",
+      "commit": "c81a86a656df889b33efb83552b459f17a59bb00",
+      "actual_tree_sha": "305f08510c09e7b4f6a1db362fcfa702d2a8cea6",
+      "corrected": true
+    },
+    {
+      "branch": "review/r727-ensure-protected-main-required-checks-hold-20261105",
+      "commit": "97785103fff714052949cb86f98891ebc6382cc6",
+      "actual_tree_sha": "72594e47e7aae6ba6a953356556ffe9452232ff5",
+      "corrected": true
+    },
+    {
+      "branch": "review/r728-protected-review-history-pagination-failclosed-20261105",
+      "commit": "c81a86a656df889b33efb83552b459f17a59bb00",
+      "actual_tree_sha": "305f08510c09e7b4f6a1db362fcfa702d2a8cea6",
+      "corrected": true
+    },
+    {
+      "branch": "review/r729-bind-required-checks-to-actions-suites-hold-20261105",
+      "commit": "2e98aaac5f74247361d778fde9b6e2a231b38ae2",
+      "actual_tree_sha": "8c45d5bfb69730493a60e66384d59d2608ca9479",
+      "corrected": true
+    },
+    {
+      "branch": "review/r729-converge-protected-main-review-history-20261105",
+      "commit": "3e45c01e057f73944bda08c5cb1d2342c4ebf024",
+      "actual_tree_sha": "c7e0cf65260c7f1fe95c245cd6eff62c2d063e8d",
+      "corrected": true
+    },
+    {
+      "branch": "review/r731-paginated-independent-review-hold-20261105",
+      "commit": "2e98aaac5f74247361d778fde9b6e2a231b38ae2",
+      "actual_tree_sha": "8c45d5bfb69730493a60e66384d59d2608ca9479",
+      "corrected": true
+    },
+    {
+      "branch": "review/r732-converge-review-history-and-required-actions-suites-hold-20261105",
+      "commit": "6feabf4df689aff954ff460f65f6eea115fffad7",
+      "actual_tree_sha": "8f346ad3b73a99ea1fc5b921265f65e393059c7d",
+      "corrected": true
+    }
+  ]
+}
