@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    96,
+    112
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/build-test-deploy-proof.md",
+      "blob_sha": "51f7abc56ac4cba2c5bee0b38ede76d0ce0d6d90",
+      "declared_bytes": 3249,
+      "observed_bytes": 3249,
+      "sha256": "6433e665e6376ad282b2784364022ccb71236634ad4529f67558e4d2095a09a7",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/environment-map.md",
+      "blob_sha": "529a1acf755463426f329e8efae177012c705196",
+      "declared_bytes": 3167,
+      "observed_bytes": 3167,
+      "sha256": "11fa321429f43485207921e9c8f09f6ba14418fc3006fb86a08c876986ab5be6",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/last-mile-completion.md",
+      "blob_sha": "dcc08b5613da7078b68cc390323abf39439f9edd",
+      "declared_bytes": 2930,
+      "observed_bytes": 2930,
+      "sha256": "6bd95d71374280528f6a87b5394b36fa597a6d1ccf8c9465578eb21013ceab7f",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/README.md",
+      "blob_sha": "e9e8a3e06e3006f3822c614985d707e429ace809",
+      "declared_bytes": 2745,
+      "observed_bytes": 2745,
+      "sha256": "5ecb6cb8dd9fe3e4752b818adcdd79706679176852e415f29c7ecaa96c743d26",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "package.json",
+      "blob_sha": "f00a67ff5d638820d240d427ac635ffe3bfe7fe0",
+      "declared_bytes": 4776,
+      "observed_bytes": 4776,
+      "sha256": "09c0ffb6154c147753d4d40dfbe79b345fbd7e0950f6dea7f1d8b0ba6948d3ca",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "public/index.html",
+      "blob_sha": "0935582e91a68f9b63a0383eb669ea67a9401527",
+      "declared_bytes": 5411,
+      "observed_bytes": 5411,
+      "sha256": "41e3a39e89ec18d131f725fdfe3624a3c9864db0a3e9566660300958bcc9cadb",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "public/robots.txt",
+      "blob_sha": "ba0e69a191f9469f94d2281116f36678abd2638c",
+      "declared_bytes": 101,
+      "observed_bytes": 101,
+      "sha256": "b2cd7a2debe19405ea332a3e541fe5403004da5d855294a46dc723c9876b76be",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "README.md",
+      "blob_sha": "6f79824cca0a42a7af10d9fbbd1641f3470e6bdb",
+      "declared_bytes": 9189,
+      "observed_bytes": 9189,
+      "sha256": "b03ecd7ef47c0954833e2c9e3a68e14dbe9a415eba8464276df95fc4da00cac5",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "RELEASE_HANDOFF.md",
+      "blob_sha": "423b45afe2e415a5e7716674255bc1d6e019008c",
+      "declared_bytes": 1136,
+      "observed_bytes": 1136,
+      "sha256": "0f68e65dfbdcbd30471e6911c6f3017d200cd1916a3cf1736a07045dfe77a1cd",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "RELEASE_NOTES.md",
+      "blob_sha": "2a61a9b05dce455a563cb98c6499fb93cd5eb75f",
+      "declared_bytes": 2342,
+      "observed_bytes": 2342,
+      "sha256": "b0613d22fa334e2fd603798cb30ba84d37e03a74ae8844ee03def3a0611598ac",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/admin-pr57-staging-lock.sh",
+      "blob_sha": "5a941a3e627387b4ea1c21e03485b32c5b6d071c",
+      "declared_bytes": 19043,
+      "observed_bytes": 19043,
+      "sha256": "330fb3106eb619c097e5b5805179c6c8348e461c995035d65c618aef432cb06c",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/assert-current-communications-source.sh",
+      "blob_sha": "8d5b38a7adfcf04c4e1cd1227be7e63920754f45",
+      "declared_bytes": 2805,
+      "observed_bytes": 2805,
+      "sha256": "78084e26795642badfd71f9a2bb9c743f1c23894d3111751e85ea48e0a0bdeaf",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/assert-staging-billing-enabled.sh",
+      "blob_sha": "3d9d4cf0fa625a1b9354bbf6460439a1a6652fd5",
+      "declared_bytes": 1091,
+      "observed_bytes": 1091,
+      "sha256": "123fcb3936d8dfe682f339c98d8f5355b6b0b497847a7b677652b16b336d5090",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/bootstrap-staging-github-wif.sh",
+      "blob_sha": "c7715dc20c73bbe07ad215d31c6a73e20db8c8f8",
+      "declared_bytes": 6633,
+      "observed_bytes": 6633,
+      "sha256": "dcc5c9ac2ba56402d3f24f3a7b66481afbe1745ebdcd8f704a05c489daf94a05",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/bootstrap-staging-sendgrid-proof-iam.sh",
+      "blob_sha": "bbfd2c3f50889b9150d5eb875ee4b2e24d416839",
+      "declared_bytes": 9640,
+      "observed_bytes": 9640,
+      "sha256": "5b60aca31cb4602188c7d266555f8a2a0cd3f6638d652ca186fd5e0c74085a9d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/bootstrap-staging-twilio-proof-iam.sh",
+      "blob_sha": "e7611fb2af1747b34b640046334b897dde6861a3",
+      "declared_bytes": 2854,
+      "observed_bytes": 2854,
+      "sha256": "6b556d1729b8396a4c8532510107efb0070c2044e5d4a9956c27f2b91d8ba846",
+      "state": "hashed_bytes"
+    }
+  ]
+}
