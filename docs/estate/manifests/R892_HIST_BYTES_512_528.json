@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    512,
+    528
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "db50e87f0ef2080f2522a533a9a40f6395a4fc0f",
+      "declared_size": 22844,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-r778-staging-orphan-synthetic-storage-cleanup-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 22844,
+      "sha256": "57959126449e59ae366d7139a8ecdace152443dfa81261aee5f947d63ee8c115",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "dbad6bdfe340ab5b7f5b070166350f87698aea5c",
+      "declared_size": 3776,
+      "example_path": ".github/workflows/private-consumer-ref-verification.yml",
+      "first_branch": "repair/current-verifier-provider-readback-20261001",
+      "pathRefs": 1,
+      "observed_bytes": 3776,
+      "sha256": "d92d2edbd9c8deddc4c10d7d83d019db1f451a8be2d2577dc534834f5730e275",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "dbcf7939d586d06d6ef1921941fa5e2bdefa862d",
+      "declared_size": 5644,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "bootstrap-staging-wif-20260905",
+      "pathRefs": 1,
+      "observed_bytes": 5644,
+      "sha256": "ce325ccebf9c59749cb2ac21acfa7528bf07585d1671f985e29b7506d8c85509",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "dcadd8f5be69b91ca6d089fb95d9a52070573572",
+      "declared_size": 1584,
+      "example_path": "URAI_STAGING_LOCK.md",
+      "first_branch": "release/ci-deploy-readiness-hardening",
+      "pathRefs": 2,
+      "observed_bytes": 1584,
+      "sha256": "5483c7b9430182ba554e1990d026096834909c915003c19849713ebdfddbd772",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "de7676a179f414b696538a40cd1ae6a87ebd015b",
+      "declared_size": 6819,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 3,
+      "observed_bytes": 6819,
+      "sha256": "51fbddaa8eaa8bb14f9556a4b7e6f7d2c25d2440907dea7fc794b2c5cc7552d8",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "dee7bbe612ac0c3d5711a7b0149f15bda7deeb5a",
+      "declared_size": 3325,
+      "example_path": "scripts/test-genesis-release-gate-wiring.mjs",
+      "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
+      "pathRefs": 34,
+      "observed_bytes": 3325,
+      "sha256": "4976c253a813df7f6f63eb52ae5eefbb6fd428af20a29f0bfc77ce3fe66149f6",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "df01486ed8b45fd29a7477331e7a3d22e9576664",
+      "declared_size": 4783,
+      "example_path": "functions/test/syntheticStorageResidue.test.mjs",
+      "first_branch": "review/chalk-r780-isolated-synthetic-storage-cleanup-tests-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 4783,
+      "sha256": "7f24aa15b1de3bd936b9284bfea7e36f24d248a440c0b84fdabaf6002481b385",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "df110ede5a0f087043229b52097e9777d7aae13d",
+      "declared_size": 5052,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "fix/bind-spatial-pr1576-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 5052,
+      "sha256": "0a976a31bbb2e51fce624ac1b221b85ab7c6d1605f8fc927fb928175d9e7e5bf",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "df5050e42e9d3d90b45905907a01ade125165f6e",
+      "declared_size": 746,
+      "example_path": ".github/workflows/urai-production-verify.yml",
+      "first_branch": "remove-production-alias-20260703",
+      "pathRefs": 1,
+      "observed_bytes": 746,
+      "sha256": "8373f7d641b158ba0917635cc11e172c2af3d9996f7c83a17f220c4126b53084",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "e01a01b29ea91d14cb8427396ce2141d3bb85238",
+      "declared_size": 10525,
+      "example_path": ".github/workflows/staging-wif-runtime-identity-probe.yml",
+      "first_branch": "fix/generic-staging-wif-probe-20261004",
+      "pathRefs": 6,
+      "observed_bytes": 10525,
+      "sha256": "6ac64ad312e89a1fcc0408c7c010f025460e3384f221f222aabb4042a3d212fa",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "e07651b6ccb21fedf0a37387c905b1817da66740",
+      "declared_size": 9387,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "fix/bind-spatial-pr1576-mainline-20261004",
+      "pathRefs": 2,
+      "observed_bytes": 9387,
+      "sha256": "46a99e1170a01f1960dd48590c0ecee50d4892b8565c4b6099d1d56c649e0ebc",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "e0e12b3e767203ed62cb4bccf8e5319654371705",
+      "declared_size": 5628,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/r761-pin-owner-322-acceptance-to-r755-security-source-20261105-chalk",
+      "pathRefs": 1,
+      "observed_bytes": 5628,
+      "sha256": "2c4f4b9099393ed54e606081c62c5f63f78ad9658c0584fecf57b5059b6e8563",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "e1279b2f08b92354dc6f122f3df701b3e7260e5d",
+      "declared_size": 9097,
+      "example_path": "scripts/verify-staging-verification-binding.mjs",
+      "first_branch": "repair/twilio-owned-trial-sender-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 9097,
+      "sha256": "ba7e5dfab34c8f6df642e5678c617b164ab905812d7eae82874b2a354fee7fe4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "e12c3971c15a8a0cacf9257a45a72ab4436ee9d6",
+      "declared_size": 9488,
+      "example_path": "scripts/check-deploy-readiness.mjs",
+      "first_branch": "fix/environment-authority-20260706",
+      "pathRefs": 1,
+      "observed_bytes": 9488,
+      "sha256": "3f62d7939fd53886c42412f91751865531c7e57d3bbfb95cb917eb188ab27157",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "e14a2a891b5bd3745ce5cea4a2030f33189a1a9f",
+      "declared_size": 4452,
+      "example_path": "package.json",
+      "first_branch": "review/r720-privacy221-current-deletion-contract-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 4452,
+      "sha256": "3250c6cc11ee7688ef9ecf60c4a034d23de02b93aef88875ee57cbdbb2d405f5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "e1f8a0cd0c846751dde527e7e05133f6308622e5",
+      "declared_size": 7041,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "fix/protected-consumer-ref-coverage-20261004",
+      "pathRefs": 4,
+      "observed_bytes": 7041,
+      "sha256": "22060faca9947e1b08bfaeb489bfad768ef25bf0309b7cf29d1a8f181959b164",
+      "state": "verified"
+    }
+  ]
+}
