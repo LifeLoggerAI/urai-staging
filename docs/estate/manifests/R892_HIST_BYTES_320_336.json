@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    320,
+    336
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "89c50c96dcddb3c3c229cb6952c6f39ab0324a9e",
+      "declared_size": 17882,
+      "example_path": ".github/workflows/spatial-pr1591-stripe-provider-probe.yml",
+      "first_branch": "fix/rebind-spatial-1591-0d612665-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 17882,
+      "sha256": "699a6b4304f94cc6b9dff119b87db36ed10056b562451c14c0b9fb473bb09630",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8aaad703b2ea650759bc5e8f586362e86347aebe",
+      "declared_size": 398,
+      "example_path": ".gitignore",
+      "first_branch": "audit/release-evidence-hardening-20260706",
+      "pathRefs": 13,
+      "observed_bytes": 398,
+      "sha256": "5dc4009393272c81764e49e43c3fc7717d03e988b154a06dd04c2de237192996",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8b281218a3afa0d8073551fcafa72cb76297f0a2",
+      "declared_size": 1715,
+      "example_path": "functions/src/syntheticStorageResidue.ts",
+      "first_branch": "review/chalk-r780-isolated-synthetic-storage-cleanup-tests-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 1715,
+      "sha256": "1f67baad7a6f0c58cf9496571039a6304f18d46995e3dc737ec7e4369e4c6676",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8b72f22ec457ce7efa8eb9bd58cdd5d05656e068",
+      "declared_size": 1958,
+      "example_path": "scripts/test-genesis-release-gate-wiring.mjs",
+      "first_branch": "review/r476-current-auth-consent-source-20261103",
+      "pathRefs": 5,
+      "observed_bytes": 1958,
+      "sha256": "d53af56f4ea2bcd4b55ea2f52c9fa99062e9b1d4b1d7f8e5f95833aa7a4baf45",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8b7a37e69618ca3511aaa5423da8b76c23aad972",
+      "declared_size": 22741,
+      "example_path": "functions/test/current-cross-service.emulator.mjs",
+      "first_branch": "review/chalk-r769-synthetic-replay-ancestry-fence-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 22741,
+      "sha256": "90a87e3c4b571089432c657b8ff45c4fd9f94900b5b4307186f80e6c0bee2e26",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8c0a84d5b1c1515fbfb8f3886d4c1d8d41c7d3a1",
+      "declared_size": 9362,
+      "example_path": "README.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 12,
+      "observed_bytes": 9362,
+      "sha256": "0b1aa3309c204298b1b5d91e5e9e691ce9fd0b50eb093083c9385e8488ffd79e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8c75497accdede8b97388a7caded1551de9ce7c4",
+      "declared_size": 15346,
+      "example_path": ".github/workflows/staging-deploy.yml",
+      "first_branch": "fix/environment-authority-20260706",
+      "pathRefs": 1,
+      "observed_bytes": 15346,
+      "sha256": "2c5ec6ac1e387a05747c75ff16139b8ec7505a9bb129b281630e8a9b37a5089a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8df588e9a90e25a190474ae16dee1b4743aace89",
+      "declared_size": 17974,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-r768-linked-parent-typescript-narrowing-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 17974,
+      "sha256": "b6da096c0f61802c0b1a5ba65334e9ff567e0ac1116e5fb4bb591c625d462b78",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8e17b584bbbee732b9ee3847f4c6b3d218bcdf80",
+      "declared_size": 3385,
+      "example_path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 47,
+      "observed_bytes": 3385,
+      "sha256": "2fc55d5d75464df9daea3b70b85591ff0dc31dade0b01f61fb8f5309b9b2e15e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8e520d57a0d60e7b551ac0943bcd2ad44c4db9c2",
+      "declared_size": 992,
+      "example_path": "scripts/validate-private-consumer-ref-workflow.mjs",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 53,
+      "observed_bytes": 992,
+      "sha256": "b996c7370804b1166e0b5a60a082f83f88c6bb0acf9a0e58ce6ea44570a66dd0",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8f138f796d82d384a9e5f2008db63e50a37150b0",
+      "declared_size": 18673,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-r769-synthetic-replay-ancestry-fence-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 18673,
+      "sha256": "e232968c7e8f44faa72ee37548f6f850947e5c7ef16a9df739d12bc84303d6ce",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8f1a4ce3ab71575d32cda6aa9bb91408c4a89bfb",
+      "declared_size": 5528,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "admin-pr57-provider-probe-20260905",
+      "pathRefs": 1,
+      "observed_bytes": 5528,
+      "sha256": "6437cec32c6334839f75e73c7db8fe1f9da8b5176b682dd1b4c706c1d6811ec9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "90eb635b7866bae4303e373d84f49b807c8dafb4",
+      "declared_size": 18368,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 18368,
+      "sha256": "f461450a6943c278195244e9dd29672901c91a6396c11a1c4d95c11d41bbdf7a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "911aab7c41022f610fc72d496ae77c9bb3a47fc7",
+      "declared_size": 696,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "chore/complete-staging-foundation",
+      "pathRefs": 3,
+      "observed_bytes": 696,
+      "sha256": "0a1bf4dff14cf536c02a0e40856e73309c88f8f6128b77939f5570f2d28c29c5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9125620abfe094877a89f4f114cfc23a45f47d0a",
+      "declared_size": 18741,
+      "example_path": "scripts/check-deploy-readiness.mjs",
+      "first_branch": "reconcile/staging-authority-current-main-20260714",
+      "pathRefs": 2,
+      "observed_bytes": 18741,
+      "sha256": "1c4c03951fc028af510b3ef322bb87e4c49d0fe7671325ff571c7a55601a087e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9197ab6a2d8691c7ce03379a642bbc2ba2ab3613",
+      "declared_size": 5178,
+      "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+      "first_branch": "converge/staging-provider-terminal-1591-20261004",
+      "pathRefs": 4,
+      "observed_bytes": 5178,
+      "sha256": "e12811989b93345303d9294dc86d70d61f4a079184739e0ba0778ede11c9827c",
+      "state": "verified"
+    }
+  ]
+}
