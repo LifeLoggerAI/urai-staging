@@ -1,0 +1,115 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    0,
+    15
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha (not git/trees/{commitSha} echo)",
+  "rows": [
+    {
+      "branch": "admin-pr57-consumer-authority-20260905",
+      "commit": "016e1f86d5eda262420557a6d6aa39698c25e796",
+      "actual_tree_sha": "40c7915f0f2c0903800ac4d615d458e80e776c8e",
+      "commit_reported_sha": "016e1f86d5eda262420557a6d6aa39698c25e796",
+      "corrected": true
+    },
+    {
+      "branch": "admin-pr57-effective-iam-proof-20260905",
+      "commit": "04efcb207048e9954e34c589a4f4a40301942655",
+      "actual_tree_sha": "03ad2307255df074e91503f1c0a31aec8706764a",
+      "commit_reported_sha": "04efcb207048e9954e34c589a4f4a40301942655",
+      "corrected": true
+    },
+    {
+      "branch": "admin-pr57-provider-probe-20260905",
+      "commit": "7f43443569582ecf02020feba0f1f0253d2e4656",
+      "actual_tree_sha": "1e5c5dd97cee3870584a62e635e9910522bcab48",
+      "commit_reported_sha": "7f43443569582ecf02020feba0f1f0253d2e4656",
+      "corrected": true
+    },
+    {
+      "branch": "admin-pr57-runtime-controller-20260905",
+      "commit": "b81dae55e55b913745e5bfb44a48e641bbc6b6da",
+      "actual_tree_sha": "530c1ad9b822c1dca991fb198a76c51da9d4d3b1",
+      "commit_reported_sha": "b81dae55e55b913745e5bfb44a48e641bbc6b6da",
+      "corrected": true
+    },
+    {
+      "branch": "agent/probe-shared-wif",
+      "commit": "cc105389dd1da306417f640e1e1f39e3e630c632",
+      "actual_tree_sha": "d48be3fd3bdfff9b163d70d219d816f75e9492cc",
+      "commit_reported_sha": "cc105389dd1da306417f640e1e1f39e3e630c632",
+      "corrected": true
+    },
+    {
+      "branch": "audit/release-evidence-hardening-20260706",
+      "commit": "21524efab9e966473cd8aaf75a9bd04929cea113",
+      "actual_tree_sha": "b9e345747ae43609884342b2295c3665b3dd94fd",
+      "commit_reported_sha": "21524efab9e966473cd8aaf75a9bd04929cea113",
+      "corrected": true
+    },
+    {
+      "branch": "audit-completion/staging-command-aliases",
+      "commit": "6c074dff444589c3815687955fb14ee7f0c74dd2",
+      "actual_tree_sha": "773741fb8e36c3d8789e74281ebbb7d5e5cc690f",
+      "commit_reported_sha": "6c074dff444589c3815687955fb14ee7f0c74dd2",
+      "corrected": true
+    },
+    {
+      "branch": "bootstrap-staging-wif-20260905",
+      "commit": "f733efdf5529534a3521bd60a078adcd28595d91",
+      "actual_tree_sha": "06ddf0b08aa8e759ba8cff4b05b5d6894bdbfb60",
+      "commit_reported_sha": "f733efdf5529534a3521bd60a078adcd28595d91",
+      "corrected": true
+    },
+    {
+      "branch": "canon/current-authority-20260925",
+      "commit": "d78a9b62a57b03d29c7f8901e6f1cbe70ca1104f",
+      "actual_tree_sha": "cc538df696c6f65fa264b5372453978cca26756d",
+      "commit_reported_sha": "d78a9b62a57b03d29c7f8901e6f1cbe70ca1104f",
+      "corrected": true
+    },
+    {
+      "branch": "canon/upstream-authority-20260924",
+      "commit": "5c041e34bce29a6a782846c6e37babad6fa535f2",
+      "actual_tree_sha": "3f61e79aa040f3dc00f158b27e95a38a34c32a26",
+      "commit_reported_sha": "5c041e34bce29a6a782846c6e37babad6fa535f2",
+      "corrected": true
+    },
+    {
+      "branch": "chatgpt/urai-product-polish-20260812",
+      "commit": "3183c117b5d80e8eb533cca50e5980483348beba",
+      "actual_tree_sha": "46edffd3b2a29cf6801b8b962b6e66e1b33e20ea",
+      "commit_reported_sha": "3183c117b5d80e8eb533cca50e5980483348beba",
+      "corrected": true
+    },
+    {
+      "branch": "chore/actions-node24-current-staging-main-20261005",
+      "commit": "2b7171450a6b32c5eeccfe53c164d47b6ed6b523",
+      "actual_tree_sha": "611b6452049cb8984639688e7eb9b13f1a490c78",
+      "commit_reported_sha": "2b7171450a6b32c5eeccfe53c164d47b6ed6b523",
+      "corrected": true
+    },
+    {
+      "branch": "chore/complete-staging-foundation",
+      "commit": "5d94ed2659ab609c11afa21c333aacafcda3f13e",
+      "actual_tree_sha": "e66d93167ccd534d0670b449b278162f5b23e8b0",
+      "commit_reported_sha": "5d94ed2659ab609c11afa21c333aacafcda3f13e",
+      "corrected": true
+    },
+    {
+      "branch": "cold-vault-2026-08-16",
+      "commit": "dbb52bd041a6979d548f2c711f32a33749282058",
+      "actual_tree_sha": "46edffd3b2a29cf6801b8b962b6e66e1b33e20ea",
+      "commit_reported_sha": "dbb52bd041a6979d548f2c711f32a33749282058",
+      "corrected": true
+    },
+    {
+      "branch": "communications/twilio-trial-e2e-20260924",
+      "commit": "b99cf6509672e7d4c35e5214dc9de1fc4966212e",
+      "actual_tree_sha": "5f3780017e4f642e07299f9dd10cbf2f39b65735",
+      "commit_reported_sha": "b99cf6509672e7d4c35e5214dc9de1fc4966212e",
+      "corrected": true
+    }
+  ]
+}
