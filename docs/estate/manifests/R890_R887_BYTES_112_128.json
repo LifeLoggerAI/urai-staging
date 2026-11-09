@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    112,
+    128
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "scripts/check-deploy-readiness-v2.mjs",
+      "blob_sha": "c58dc39ccbcf8a83d85ed4a0944571de8d54a994",
+      "declared_bytes": 14561,
+      "observed_bytes": 14561,
+      "sha256": "58b61d0eb2ad79a156ec99fe22bfa36e44b6dd992a65880beabd294c103d6997",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/check-deploy-readiness.mjs",
+      "blob_sha": "4690c3b51c9fdb0f8f18c28f1b912072a40ab435",
+      "declared_bytes": 16918,
+      "observed_bytes": 16918,
+      "sha256": "121cd2551c102bacfc313a0e5af9a251a44d99f476ddd74c8e1c88c784bc6cf6",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/check-installed-security.mjs",
+      "blob_sha": "d263b8c09c8cbe77b5a4511ba6db288be481011e",
+      "declared_bytes": 4054,
+      "observed_bytes": 4054,
+      "sha256": "e10a6f1244cce5ec01ee434b1725db73aa922e9c95c44ea8b35a8eae34d73a83",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/check-lockfile.mjs",
+      "blob_sha": "49b5a0a69874d0b4a6bb5f3e751769b1a80f4508",
+      "declared_bytes": 1146,
+      "observed_bytes": 1146,
+      "sha256": "545460fc9dc8ab815250ea44e4c2c124cc310f8846ef17131899a6f6204ccdb3",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r422-federated/gate.ts",
+      "blob_sha": "53761ac0f5c0340563b13fdd9a12a90e75409d42",
+      "declared_bytes": 932,
+      "observed_bytes": 932,
+      "sha256": "cc7b677f35e38583bb851f6396cea76afa928b3449d23ef15900599472c76072",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r422-federated/jobs.ts",
+      "blob_sha": "8bd86161687402ebb610cc30f6677f88521c2c1c",
+      "declared_bytes": 3946,
+      "observed_bytes": 3946,
+      "sha256": "a2b84c8b91d1d7782fe857109171843ccf7aef7f59cd9b1d0c793c160cfc83ae",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r422-federated/manifest.json",
+      "blob_sha": "ca11fb5878de8f2de415dedb8aabc44a805796c3",
+      "declared_bytes": 1749,
+      "observed_bytes": 1749,
+      "sha256": "d074dff47b1443d5ce7ae8bd6693b591fb946cde47c2ccc0c6ddaea3adf4a33a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r422-federated/order.ts",
+      "blob_sha": "33c71b71a7a505d17f8b5b51189573a954873593",
+      "declared_bytes": 1996,
+      "observed_bytes": 1996,
+      "sha256": "a3f9dfb011025e9b58ddf1277656d9da696edab605ccc947dcbdd67c01106452",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r422-federated/privacy.ts",
+      "blob_sha": "6cca2b9456319927cf22511c7d51c1f16ddf051c",
+      "declared_bytes": 10586,
+      "observed_bytes": 10586,
+      "sha256": "3fc73414dbc84be84894585a13fcfd79cb7391861a1380f3161e0d44f6bcee79",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r422-federated/spatial.ts",
+      "blob_sha": "5ba1491f694873582cf3a37a371dbbce7758d48f",
+      "declared_bytes": 2128,
+      "observed_bytes": 2128,
+      "sha256": "4f03a94e639e476dc4b1fc8eefc641e6e95dc10b3a2301640d9f96d8727a2c76",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r422-federated/studio.ts",
+      "blob_sha": "0ca262e114b0439426d75cf7ac510e289ba315eb",
+      "declared_bytes": 7056,
+      "observed_bytes": 7056,
+      "sha256": "8fad1e0e2bc8b7225f0a3c25acd13cd6eee5cce9e8c1404c6e54f04bcf5c2af9",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r423-worker/functions/src/privacy/ownerDeletionFence.ts",
+      "blob_sha": "3501db8b6a5cbc4ddcf038fcf00e0a7a8574eb33",
+      "declared_bytes": 1599,
+      "observed_bytes": 1599,
+      "sha256": "b11d57f3a350f9638e63df117ea9d3835dd990d0b6b84fd6c026fad4f3b3b610",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r423-worker/manifest.json",
+      "blob_sha": "cbf149f767b868c5705b024076b6f138b65b1846",
+      "declared_bytes": 637,
+      "observed_bytes": 637,
+      "sha256": "8815b461fd0ef512edf21cfd75a8cd24af2e19356c09e099f5ca0a1361e7152f",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r423-worker/scripts/life-movies-worker-owner-deletion-fence.test.mjs",
+      "blob_sha": "3fa1127e0aba6928b9045dd9eaca87d30160fc80",
+      "declared_bytes": 5977,
+      "observed_bytes": 5977,
+      "sha256": "1a69f8dd1880aad32f0691e30c5cede603522236eb35d47ec11d21bd94582fe8",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r423-worker/workers/studio-worker/index.js",
+      "blob_sha": "e37d15b79fc986554943efd9aedd2edd814f88e9",
+      "declared_bytes": 52343,
+      "observed_bytes": 52343,
+      "sha256": "48e8d3359a2014752bf777f1190ef711d3b1fe9501c2dd9e3643ceca53a4ca3a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/package.json",
+      "blob_sha": "3a1fbbe23bf1098701f2c6aea4db2e4a844faaea",
+      "declared_bytes": 836,
+      "observed_bytes": 836,
+      "sha256": "e3d53e8de315626c893d841328e3cd02b7730fdf132a00fb22dea610dc41820a",
+      "state": "hashed_bytes"
+    }
+  ]
+}
