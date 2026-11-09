@@ -1,0 +1,52 @@
+{
+  "schema": "one-urai-genesis-staging-r892-raw-historical-byte-coverage-checkpoint-v1",
+  "priorR891HistoricalUniqueBlobs": 826,
+  "priorR891HistoricalUniqueBytes": 6984576,
+  "priorR890SharedHistoricalVerifiedBlobs": 239,
+  "priorR890SharedHistoricalVerifiedBytes": 1673017,
+  "historicalOnlyWorklistCount": 587,
+  "historicalOnlyWorklistBytes": 5311559,
+  "r892AdditionalOriginalVerified": 80,
+  "r892AdditionalVerifiedBytes": 1001649,
+  "currentSnapshotHistoricalVerifiedBlobs": 319,
+  "currentSnapshotHistoricalVerifiedBytes": 2674666,
+  "remainingUnverifiedHistoricalObjects": 507,
+  "remainingUnverifiedHistoricalBytes": 4309910,
+  "verifiedThroughWorklistOffset": 80,
+  "verifiedScope": "Historical R884 180 branch heads only, not all git history",
+  "segments": [
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_000_016.json",
+      "gitBlobSHA": "8b91ede6f8654579c3b4db40fcffff1e6db1c0d1",
+      "rows": 16
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_016_032.json",
+      "gitBlobSHA": "6c5a1d83ae2f9a447fd88aa9cc6156fac8be88fa",
+      "rows": 16
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_032_048.json",
+      "gitBlobSHA": "5da541955d294a93fcdb68c20945e5570fa72498",
+      "rows": 16
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_048_064.json",
+      "gitBlobSHA": "503acedfdbc962dae7beafe8ea434935d7d9d425",
+      "rows": 16
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_064_080.json",
+      "gitBlobSHA": "62ca36ef8b0831cdb40d1e06b47c721ce9c5b306",
+      "rows": 16
+    }
+  ],
+  "identityOrSizeMismatches": [],
+  "segmentReadErrors": [],
+  "limitations": [
+    "No historical source text disclosed in the manifest, only paths and checksums",
+    "R890 and R892 source bytes are not a native build or emulator test",
+    "Staging and production deployment/runtime/physical device not certified",
+    "507 historical unique blobs remain for a later source-byte verification batch"
+  ]
+}
