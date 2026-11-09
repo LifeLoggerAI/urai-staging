@@ -1,0 +1,1171 @@
+{
+  "schema": "urai-staging-r891-corrected-180-head-actual-git-tree-object-ledger-v1",
+  "source": "Actual git commit object's tree.sha from GET git/commits/{commitSha}, NOT the legacy git/trees/{commitSha} alias echo",
+  "branchHeads": 180,
+  "originalR884LegacyTreeFieldEqualsCommitCount": 180,
+  "verifiedActualTreeShaCount": 180,
+  "distinctActualTreeSha": 167,
+  "errors": [],
+  "segmentSources": [
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_000_015.json",
+      "gitBlobSha": "1cb5d151da8ba9608ad03a7a9365b8381af3f7e6",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_015_030.json",
+      "gitBlobSha": "f08e174422517f0ff8f3fff0d940dabcc9e411ea",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_030_045.json",
+      "gitBlobSha": "e44fadac64aca53935726ba6152a7effdf6bc66d",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_045_060.json",
+      "gitBlobSha": "fa42f97dea89523dadce75e9c46356fce8ea3fdb",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_060_075.json",
+      "gitBlobSha": "76932fcc94b588cb94521eaf38734095890e12f9",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_075_090.json",
+      "gitBlobSha": "6334eeac09402b3a46bd5ecd44fd60a1a6decf24",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_090_105.json",
+      "gitBlobSha": "8001a5b2f3121076619befbba1334cbfea5a2e0f",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_105_120.json",
+      "gitBlobSha": "a39dd040dd7f497ae5936aa200a1000e60fa51b8",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_120_135.json",
+      "gitBlobSha": "a45ad448dd1d002a78d636ce486ea727835438bf",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_135_150.json",
+      "gitBlobSha": "58d75f3afcfd85be710ec53bbd0a874044773bba",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_150_165.json",
+      "gitBlobSha": "3fd48598b7789a6e43ca7de7b7d412958cf25863",
+      "entries": 15
+    },
+    {
+      "path": "docs/estate/manifests/R891_ACTUAL_GIT_TREES_165_180.json",
+      "gitBlobSha": "59e74421544ba23d22bcb27e8fef9ca606f18cc1",
+      "entries": 15
+    }
+  ],
+  "currentR887SourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "currentR887ActualTreeSha": "95a120a86fe35aa4f7a1f7e4030b0fdff02fe825",
+  "allBranchTreeMappings": [
+    {
+      "branch": "admin-pr57-consumer-authority-20260905",
+      "commit": "016e1f86d5eda262420557a6d6aa39698c25e796",
+      "actual_tree_sha": "40c7915f0f2c0903800ac4d615d458e80e776c8e",
+      "commit_reported_sha": "016e1f86d5eda262420557a6d6aa39698c25e796",
+      "corrected": true
+    },
+    {
+      "branch": "admin-pr57-effective-iam-proof-20260905",
+      "commit": "04efcb207048e9954e34c589a4f4a40301942655",
+      "actual_tree_sha": "03ad2307255df074e91503f1c0a31aec8706764a",
+      "commit_reported_sha": "04efcb207048e9954e34c589a4f4a40301942655",
+      "corrected": true
+    },
+    {
+      "branch": "admin-pr57-provider-probe-20260905",
+      "commit": "7f43443569582ecf02020feba0f1f0253d2e4656",
+      "actual_tree_sha": "1e5c5dd97cee3870584a62e635e9910522bcab48",
+      "commit_reported_sha": "7f43443569582ecf02020feba0f1f0253d2e4656",
+      "corrected": true
+    },
+    {
+      "branch": "admin-pr57-runtime-controller-20260905",
+      "commit": "b81dae55e55b913745e5bfb44a48e641bbc6b6da",
+      "actual_tree_sha": "530c1ad9b822c1dca991fb198a76c51da9d4d3b1",
+      "commit_reported_sha": "b81dae55e55b913745e5bfb44a48e641bbc6b6da",
+      "corrected": true
+    },
+    {
+      "branch": "agent/probe-shared-wif",
+      "commit": "cc105389dd1da306417f640e1e1f39e3e630c632",
+      "actual_tree_sha": "d48be3fd3bdfff9b163d70d219d816f75e9492cc",
+      "commit_reported_sha": "cc105389dd1da306417f640e1e1f39e3e630c632",
+      "corrected": true
+    },
+    {
+      "branch": "audit/release-evidence-hardening-20260706",
+      "commit": "21524efab9e966473cd8aaf75a9bd04929cea113",
+      "actual_tree_sha": "b9e345747ae43609884342b2295c3665b3dd94fd",
+      "commit_reported_sha": "21524efab9e966473cd8aaf75a9bd04929cea113",
+      "corrected": true
+    },
+    {
+      "branch": "audit-completion/staging-command-aliases",
+      "commit": "6c074dff444589c3815687955fb14ee7f0c74dd2",
+      "actual_tree_sha": "773741fb8e36c3d8789e74281ebbb7d5e5cc690f",
+      "commit_reported_sha": "6c074dff444589c3815687955fb14ee7f0c74dd2",
+      "corrected": true
+    },
+    {
+      "branch": "bootstrap-staging-wif-20260905",
+      "commit": "f733efdf5529534a3521bd60a078adcd28595d91",
+      "actual_tree_sha": "06ddf0b08aa8e759ba8cff4b05b5d6894bdbfb60",
+      "commit_reported_sha": "f733efdf5529534a3521bd60a078adcd28595d91",
+      "corrected": true
+    },
+    {
+      "branch": "canon/current-authority-20260925",
+      "commit": "d78a9b62a57b03d29c7f8901e6f1cbe70ca1104f",
+      "actual_tree_sha": "cc538df696c6f65fa264b5372453978cca26756d",
+      "commit_reported_sha": "d78a9b62a57b03d29c7f8901e6f1cbe70ca1104f",
+      "corrected": true
+    },
+    {
+      "branch": "canon/upstream-authority-20260924",
+      "commit": "5c041e34bce29a6a782846c6e37babad6fa535f2",
+      "actual_tree_sha": "3f61e79aa040f3dc00f158b27e95a38a34c32a26",
+      "commit_reported_sha": "5c041e34bce29a6a782846c6e37babad6fa535f2",
+      "corrected": true
+    },
+    {
+      "branch": "chatgpt/urai-product-polish-20260812",
+      "commit": "3183c117b5d80e8eb533cca50e5980483348beba",
+      "actual_tree_sha": "46edffd3b2a29cf6801b8b962b6e66e1b33e20ea",
+      "commit_reported_sha": "3183c117b5d80e8eb533cca50e5980483348beba",
+      "corrected": true
+    },
+    {
+      "branch": "chore/actions-node24-current-staging-main-20261005",
+      "commit": "2b7171450a6b32c5eeccfe53c164d47b6ed6b523",
+      "actual_tree_sha": "611b6452049cb8984639688e7eb9b13f1a490c78",
+      "commit_reported_sha": "2b7171450a6b32c5eeccfe53c164d47b6ed6b523",
+      "corrected": true
+    },
+    {
+      "branch": "chore/complete-staging-foundation",
+      "commit": "5d94ed2659ab609c11afa21c333aacafcda3f13e",
+      "actual_tree_sha": "e66d93167ccd534d0670b449b278162f5b23e8b0",
+      "commit_reported_sha": "5d94ed2659ab609c11afa21c333aacafcda3f13e",
+      "corrected": true
+    },
+    {
+      "branch": "cold-vault-2026-08-16",
+      "commit": "dbb52bd041a6979d548f2c711f32a33749282058",
+      "actual_tree_sha": "46edffd3b2a29cf6801b8b962b6e66e1b33e20ea",
+      "commit_reported_sha": "dbb52bd041a6979d548f2c711f32a33749282058",
+      "corrected": true
+    },
+    {
+      "branch": "communications/twilio-trial-e2e-20260924",
+      "commit": "b99cf6509672e7d4c35e5214dc9de1fc4966212e",
+      "actual_tree_sha": "5f3780017e4f642e07299f9dd10cbf2f39b65735",
+      "commit_reported_sha": "b99cf6509672e7d4c35e5214dc9de1fc4966212e",
+      "corrected": true
+    },
+    {
+      "branch": "converge/current-provider-consumers-20261003",
+      "commit": "777756f2e88507e49d34fe9e7489b1177be43a17",
+      "actual_tree_sha": "7be92df9d7bcdbf1d5857d7231f8abcd39dcdc88",
+      "corrected": true
+    },
+    {
+      "branch": "converge/final-spatial-consumer-20261004",
+      "commit": "0153df921b3d7dac53566e8727c35df5c01921e1",
+      "actual_tree_sha": "7dae9466cf8f25251d545a172e35374919d035af",
+      "corrected": true
+    },
+    {
+      "branch": "converge/production-spatial-consumer-20261004",
+      "commit": "5cec679343869030a1135794affad5f4f9c4d569",
+      "actual_tree_sha": "0e9076c253062cd1878b552b9d2d0f07dceac09e",
+      "corrected": true
+    },
+    {
+      "branch": "converge/provider-consumers-node22-ref-verifier-20261004",
+      "commit": "97049b0deb0aae40fe650898d13321aea71f6267",
+      "actual_tree_sha": "0b70451bb3012167ec79031723ac05d4f52792d2",
+      "corrected": true
+    },
+    {
+      "branch": "converge/sendgrid-pr58-6c99e6c-20260929",
+      "commit": "df715f2008505521c0cdacfa34671086948d7cdb",
+      "actual_tree_sha": "1fdc7cf4a39a11c9b26943dc79208bdeff746d00",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial1598-head-782a5a0-20261005",
+      "commit": "a5c964293246a206d94ee62148e24f9e8ec124cc",
+      "actual_tree_sha": "46d0296571005cdf2884099e7660f4ec2d7bb315",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial-1598-099470-final-bind",
+      "commit": "c74273bd4f7d5453f9db6b3fc08b0cb225812af5",
+      "actual_tree_sha": "41f11ad9f4f4f2dae1d329bd7111f71b30df5c77",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial-pr1462-current-head-20260929",
+      "commit": "ad852c67dc83d07af49eaa29aa723e4c1f666315",
+      "actual_tree_sha": "2a86e212360cd7b3cd6d0ebdc7279e248a5ba265",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial-pr1598-current-head-20261005",
+      "commit": "a89a452b63c6e59ecf94302847f2132017d5ac95",
+      "actual_tree_sha": "1f74861636e0392178d516d69194515d6b18b562",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial-pr1598-provider-readiness-20261005",
+      "commit": "60584395a3854ccdf7751d2cec22f9c144d210e4",
+      "actual_tree_sha": "03d4908f537621e55707d858df93cd1341ce7f4a",
+      "corrected": true
+    },
+    {
+      "branch": "converge/staging-final-1591-communications-main-20261004",
+      "commit": "c69f408ec5d53d7086b95f2168a99561e747273f",
+      "actual_tree_sha": "498aff08a7f27386c05208a1e12d5319bc209bc6",
+      "corrected": true
+    },
+    {
+      "branch": "converge/staging-main-authority-20261003",
+      "commit": "16fdf29357de606670c1e40850a1cdf713e9a32a",
+      "actual_tree_sha": "7a4a524a3fdd912c4b43bd5f11a0eaf82d5d905d",
+      "corrected": true
+    },
+    {
+      "branch": "converge/staging-provider-terminal-1591-20261004",
+      "commit": "c7f5479f8a5aef6c4833ae7ad4d6dc1d19a4642a",
+      "actual_tree_sha": "6fcecf311b4517fc5176c85e9e30f909a2e52faa",
+      "corrected": true
+    },
+    {
+      "branch": "converge/system-of-systems-review-20260929",
+      "commit": "08e27ace49504a4a0ed8b74f7e506359e1fb9174",
+      "actual_tree_sha": "049ddf22b006ad36bb30ea5ce44e6e2fb4394f40",
+      "corrected": true
+    },
+    {
+      "branch": "converge-staging-control-plane-20260924",
+      "commit": "9b1e85c0b417ebaf99224d6a96bf4961e7c9449f",
+      "actual_tree_sha": "3e44a915d045f6c112bd7ba3b7aa73afb3826873",
+      "corrected": true
+    },
+    {
+      "branch": "diagnostics/staging-readonly-r215-20261028",
+      "commit": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "actual_tree_sha": "0e5d9500bf376026c5bb8554cf655661a0b0f7ac",
+      "corrected": true
+    },
+    {
+      "branch": "docs/agent-handoff-recovery-20260719",
+      "commit": "7029d91a3cf7d9ae18ef5ac47241311b90614de0",
+      "actual_tree_sha": "6aa83fddf3c6dc87448e91320b48f3c5c93dd1ef",
+      "corrected": true
+    },
+    {
+      "branch": "docs/chalk-staging-source-release-audit-20261107",
+      "commit": "5c0259971eed5d49cd330d0fd4d840074f71f0cf",
+      "actual_tree_sha": "76d1358db5f2b6cc2cf96012626563ecaa8c3fb2",
+      "corrected": true
+    },
+    {
+      "branch": "docs/genesis-estate-handoff-20261106",
+      "commit": "d1202c5f69006b3fadcfef1773f214c60a900a58",
+      "actual_tree_sha": "4fdf0766fd63f6c74a548a5f217dbcd99e849ea3",
+      "corrected": true
+    },
+    {
+      "branch": "docs/reconcile-staging-http-boundaries-20261005",
+      "commit": "ceca4d716a839401215db2fe63c840eab73b5e7f",
+      "actual_tree_sha": "e81964819295f6b6b8f2aa7bac417789fd70069f",
+      "corrected": true
+    },
+    {
+      "branch": "fix/align-feature-flag-schema",
+      "commit": "44eccc0192f1e74d053aaca48a855ac93980be72",
+      "actual_tree_sha": "1daa5f66f147de97fc85a840abfe229a43902eca",
+      "corrected": true
+    },
+    {
+      "branch": "fix/audit-billing-validator-pr58-20260926",
+      "commit": "224bc8f7f0803fe5d4f0512b92909768aa33674f",
+      "actual_tree_sha": "a4a230c3d36c27c8cffeaac6f78e0ccd9d82bcae",
+      "corrected": true
+    },
+    {
+      "branch": "fix/bind-spatial-pr1576-20261004",
+      "commit": "78ba7a71e423c0f8c887e285776b543bce4ad343",
+      "actual_tree_sha": "fd23fc901b4361fcbc3740e668a6041303cea93a",
+      "corrected": true
+    },
+    {
+      "branch": "fix/bind-spatial-pr1576-mainline-20261004",
+      "commit": "f7f3183b240689965bc7ef645c0eb552482fe5ce",
+      "actual_tree_sha": "3e37978eeacb1ffcce907d982a89db4e7e4dc414",
+      "corrected": true
+    },
+    {
+      "branch": "fix/environment-authority-20260706",
+      "commit": "9568e09ad536f0fd936b316a5f4deb84fe1ff70d",
+      "actual_tree_sha": "63ebe4d08a06a0763802bfb058bff7e36348b6da",
+      "corrected": true
+    },
+    {
+      "branch": "fix/generic-staging-wif-probe-20261004",
+      "commit": "6ab648ad9b2dd039d2e2df4ccafb9cac3b9db3c9",
+      "actual_tree_sha": "d3c7de2772e9b410f3325268d40944d32c696fee",
+      "corrected": true
+    },
+    {
+      "branch": "fix/genesis-staging-command-inventory-20261102",
+      "commit": "d25d94d5b57e483674740f385a2454792de68250",
+      "actual_tree_sha": "ca48e281785dd71ba26181dc88d1b90ca013649e",
+      "corrected": true
+    },
+    {
+      "branch": "fix/genesis-staging-evidence-source-pin-20261102",
+      "commit": "c1cce429bfba9619c414f8ae61fec3d494cb9f90",
+      "actual_tree_sha": "8e24c0cb6d3f69c9cc420ac82c5edcfd37c37642",
+      "corrected": true
+    },
+    {
+      "branch": "fix/network-verifier-functions-bootstrap-20261005",
+      "commit": "01bb63a402bd164f5191c7fb4bf44e619ea0c183",
+      "actual_tree_sha": "843f0fb644de56e425fa7bdb9e4f06314c264088",
+      "corrected": true
+    },
+    {
+      "branch": "fix/private-consumer-readonly-ssh-fallback-20261005",
+      "commit": "6055c27a0e859bca4d3c6d54f8e368beb26563e5",
+      "actual_tree_sha": "ff0274e4c9d6229c5a6ebf663abafe6f9efe56b1",
+      "corrected": true
+    },
+    {
+      "branch": "fix/protected-consumer-branch-verification-20261005",
+      "commit": "435b41e2edb88a05eab85bc6a733d5745b84ef6c",
+      "actual_tree_sha": "458f77a0e53761611f0f7ad38208c2754295ab85",
+      "corrected": true
+    },
+    {
+      "branch": "fix/protected-consumer-ref-coverage-20261004",
+      "commit": "96e1caeee6cbc01767012e7b8b21e37e982d6fbc",
+      "actual_tree_sha": "98f6d731dd54c059a67b6c08b1087605a5184617",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-communications-main-20261004",
+      "commit": "cf5ffbcda029fde1272fdca675b317e5d2058218",
+      "actual_tree_sha": "5918e6ce37f055652f089ef7c9bbbc0b7f98162f",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-spatial-6a21b441-20261004",
+      "commit": "70e4d78c06e2ba07c0287ce572fb95535c1d058e",
+      "actual_tree_sha": "82447ac69156c8f280867abb14b9cf8fb0fad618",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-spatial-1591-0d612665-20261004",
+      "commit": "846dafb5f5ba248f14c3bb4532f57330e8dc67d1",
+      "actual_tree_sha": "247a851dbc21647a657075607834496df7a434c1",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-spatial-1596-20261005",
+      "commit": "ff9b0ba5ec5d87e49a6f0bdedb12db83faf3c24b",
+      "actual_tree_sha": "4bb6c269ed933ed0ec8bfe5f521a2ed5f75da753",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-spatial-1596-head-0d9ec-20261005",
+      "commit": "80ab9f640e7c9ca30d971fa2fdedf077faa63aa7",
+      "actual_tree_sha": "4500eca598cd96fe7beda39ea1381cf5ea233f73",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-staging-spatial-1581-20261004",
+      "commit": "2759b2ec01d9f87489aad8e15e414f1737d23124",
+      "actual_tree_sha": "ebbba06d0956e9b4701bb497ba7de4732587459f",
+      "corrected": true
+    },
+    {
+      "branch": "fix/repin-spatial-pr1582-20261004",
+      "commit": "495785028d662e800cf151525bbc374939387249",
+      "actual_tree_sha": "a86d46085cc0bbbd35ac5447548baf77226724f5",
+      "corrected": true
+    },
+    {
+      "branch": "fix/retain-private-ref-failure-evidence-20261006",
+      "commit": "739555c26e07a006a39e8d32e4f8a76fb8603be1",
+      "actual_tree_sha": "2f22731c69f515d4a8538b4dcf14f9928140499b",
+      "corrected": true
+    },
+    {
+      "branch": "fix/sendgrid-cleanup-yaml-20261007",
+      "commit": "56ba3d397a7545300331032232cedb3e7635e72e",
+      "actual_tree_sha": "52ee82800ac1794287790d3eb1f1e3b137988e5d",
+      "corrected": true
+    },
+    {
+      "branch": "fix/sendgrid-current-review-authority-20261004",
+      "commit": "d4ac978d3c49a7980bf177750fc1028505bed5b8",
+      "actual_tree_sha": "229627c7677b267cb5716aa99a9f1608ed0c5a2f",
+      "corrected": true
+    },
+    {
+      "branch": "fix/spatial-1577-consumer-binding-20261004-0586",
+      "commit": "293fdc385144954c3fdce0f25a6890a7a8deb381",
+      "actual_tree_sha": "aa4041837df8c17a1d10cbed89e7ce32ca05edf8",
+      "corrected": true
+    },
+    {
+      "branch": "fix/spatial-1581-main-bound-binding-20261004",
+      "commit": "96e1caeee6cbc01767012e7b8b21e37e982d6fbc",
+      "actual_tree_sha": "98f6d731dd54c059a67b6c08b1087605a5184617",
+      "corrected": true
+    },
+    {
+      "branch": "fix/spatial-94581-consumer-binding-20261004",
+      "commit": "d5401b57092d61916a30accd420aa1b79d80e16c",
+      "actual_tree_sha": "83e0ca91f77690b9626d905b364953b872286876",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-admitted-communications-source-20261007",
+      "commit": "4abd517e87bc25265504c87fd7eb7b40326291f5",
+      "actual_tree_sha": "c150ac96d025870009f04ef55172fa6b909ee8b4",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-authority-readme-20260830",
+      "commit": "4c416a25818c939a59ec67ce4defa236d62ad548",
+      "actual_tree_sha": "a6ca890546026d81603698eae5a3dabaafa9a64e",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-effective-iam-project-name-20261004",
+      "commit": "18b1e9c44867baaefe4f3d48b4428ebaccee82b9",
+      "actual_tree_sha": "4331e0cdce276f396c2386e5f3dcf5b6d86adc7c",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-private-ref-node22-20261004",
+      "commit": "8c144b482d1f6659853fb061ec9591ebf0ca08c5",
+      "actual_tree_sha": "f4e2e1fa6110a6641f24e24ace80936e1baad970",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-runtime-truth-20260716",
+      "commit": "c72461a00ac9fdd42292459827467a3ef2cb4e81",
+      "actual_tree_sha": "48d30a3f106a94cc7d926f989a7bfd282270ca72",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-smoke-and-public-boundary-20261003",
+      "commit": "c673fd24825a6b4d340af0f8b908dfdb3a5de397",
+      "actual_tree_sha": "651f5e07dc4683c25351b5a0aff76ffd8628f815",
+      "corrected": true
+    },
+    {
+      "branch": "fix/stripe-pr1591-current-contract-convergence-20261005",
+      "commit": "e290bb1d6d0d28bf3126b90fed12cfd138eaa747",
+      "actual_tree_sha": "d9decba4a7ce03d9712a2a4f6d5876a424c40e8a",
+      "corrected": true
+    },
+    {
+      "branch": "fix/stripe-pr1591-runtime-mode-source-check-20261004",
+      "commit": "dfa2483f4d9fc20e52ed0545f471197d5d674721",
+      "actual_tree_sha": "005273bb39b653f99c51dd47421dea2abb2f3493",
+      "corrected": true
+    },
+    {
+      "branch": "fix/stripe-pr1591-source-contract-20261005",
+      "commit": "b09113b9da5f4ef739c0d8e3a39efc0c444acd36",
+      "actual_tree_sha": "136ed45ee026d0951ebfe1c7aa226639636b361e",
+      "corrected": true
+    },
+    {
+      "branch": "fix/twilio-private-ref-auth-fallback-20261004",
+      "commit": "72ddfb49b00b91350540197d8b166bdcfe66f59e",
+      "actual_tree_sha": "84ba562d3cf0f7559598d2791f3479f61c06a129",
+      "corrected": true
+    },
+    {
+      "branch": "fix/twilio-rollback-heredoc-20261007",
+      "commit": "36b226f5ca7bffcd00e0d8cce65a2416f58a2c68",
+      "actual_tree_sha": "86a663e2a1da6ea4ff9da703a080e3b6e924024d",
+      "corrected": true
+    },
+    {
+      "branch": "freeze/terminal-233662d0-20260929",
+      "commit": "233662d0d7fd58b6627c5b01ede39b9ef641c359",
+      "actual_tree_sha": "37a026e168e8eb97ed4bf9a3b0ff4aad813f31ff",
+      "corrected": true
+    },
+    {
+      "branch": "freeze/terminal-dea35598-20260929",
+      "commit": "dea35598f3332c502476a469ab059fd19bad2308",
+      "actual_tree_sha": "e26fc95dc438ecb7c8d2edd858fced61fb6fa729",
+      "corrected": true
+    },
+    {
+      "branch": "govern/sendgrid-independent-review-limbernutz0-20260929",
+      "commit": "60514bc1fb697624c9ca50818d8c39f1f6b1f63e",
+      "actual_tree_sha": "81534b5f889ba646838aa36c6b417ffdac7f132a",
+      "corrected": true
+    },
+    {
+      "branch": "govern/sendgrid-independent-review-limbernutz0-current-20260929",
+      "commit": "6405ed5205dfc864b6d8a791857f358a62e75940",
+      "actual_tree_sha": "7a6c60eec1673b91ebb83e7880edb63079f65e1c",
+      "corrected": true
+    },
+    {
+      "branch": "governance/provider-readiness-20261001",
+      "commit": "561b44438613dd1c9c684da2ebaf913ab124b485",
+      "actual_tree_sha": "b3d47324ad618e9a997f431c8cc80faa37dcce73",
+      "corrected": true
+    },
+    {
+      "branch": "governance/retire-spatial-1600-refresh-communications-20261005",
+      "commit": "3089b28d75d21e16dc3ae4f0b55bf57e0e6b1a40",
+      "actual_tree_sha": "d83b176976ec50e998e1072690a2a125cd526c83",
+      "corrected": true
+    },
+    {
+      "branch": "governance/sendgrid-current-review-20261006",
+      "commit": "f12005f09cae3d9d4f4ae58a36a34afb95bc369d",
+      "actual_tree_sha": "405d921135feca1bb38f2f7ff85f376f26af93c3",
+      "corrected": true
+    },
+    {
+      "branch": "main",
+      "commit": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "actual_tree_sha": "0e5d9500bf376026c5bb8554cf655661a0b0f7ac",
+      "corrected": true
+    },
+    {
+      "branch": "maintenance/communications-main-pin-sync-20261018",
+      "commit": "3d3672c733c75d4df16389cc47d5a3401f6329a9",
+      "actual_tree_sha": "2e4d02020491f276aa4d77ac6a5dff15468a6767",
+      "corrected": true
+    },
+    {
+      "branch": "ops/owner-trigger-stripe-pr1591-read-20261004",
+      "commit": "a7b08dd980aa4ed72e450de4b0d13ad89e854157",
+      "actual_tree_sha": "3d3771944a3ffa65a6e127de904694718ba4b9bb",
+      "corrected": true
+    },
+    {
+      "branch": "ops/owner-trigger-twilio-trial-e2e-20261004",
+      "commit": "29fad4645fcc1856e471b3b13e57cce906908443",
+      "actual_tree_sha": "73f2e2eaacc9b6b2d7a0114cee4dd605c840251d",
+      "corrected": true
+    },
+    {
+      "branch": "ops/twilio-staging-secret-readback-20261004",
+      "commit": "2e2a9681d4aebfc8b6026e687be09275e6037434",
+      "actual_tree_sha": "594955c078eee9952e2428a7be9bb98ca629e8f4",
+      "corrected": true
+    },
+    {
+      "branch": "probe/gcp-authority-20260929",
+      "commit": "4c1fca6686b683d57dcfb6d73bb9da47cdcfca09",
+      "actual_tree_sha": "f725238a7f84d3dab94e464eb12ac6ecdf8ce1fa",
+      "corrected": true
+    },
+    {
+      "branch": "probe/gcp-authority-comment-trigger-20260929",
+      "commit": "11121b7d8c60226aa7888ea14a6b54342c408f2d",
+      "actual_tree_sha": "589ab2f1147eb6ef6fa3e474729a10144d00f68e",
+      "corrected": true
+    },
+    {
+      "branch": "probe/gcp-authority-trigger-20260929",
+      "commit": "32d3aeacb5e0eaebe604c363191c6b76ca6b1073",
+      "actual_tree_sha": "4cd89fd4df2bff0138a8eb52265b576b7ef1f3dc",
+      "corrected": true
+    },
+    {
+      "branch": "public-staging-note",
+      "commit": "c9f5d362ad4131c4163b3d58ee593e62a5a2d628",
+      "actual_tree_sha": "7e330e20c0042a8154fc3e75e436241bbdfd4c3b",
+      "corrected": true
+    },
+    {
+      "branch": "rebind/spatial-1600-final-machine-green-20261005",
+      "commit": "42a3a9b1fbfcf85aca79d096c91042774f95ec63",
+      "actual_tree_sha": "a6b273c1959ecabd2d204d7c67c331d7d02dca25",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/asset-factory-readiness-20260925",
+      "commit": "34c569fdaa6e48abcb2bbffc07826f04562aba64",
+      "actual_tree_sha": "51dcd09e8d4a81f7b69babc284d9e1de5f96835b",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-authority-current-main-20260714",
+      "commit": "7f3a46e8df884b694a2cbefa4e60a74da18d5745",
+      "actual_tree_sha": "6ab3c7da0af46d34eb519c5b188dd4e122d9f7c1",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-current-main-controls-truth-20260811",
+      "commit": "dd7b6663151a1421f565e2d42c9ee8a2291a7f1e",
+      "actual_tree_sha": "4d63d9a069f9b62a6693d861db17081b9e9349cb",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-current-main-genesis-20260811",
+      "commit": "f776e0e3419474466b02e0f11bc6d195416da214",
+      "actual_tree_sha": "6e938dd698a3bbc5eef7e759dfd3469f8f0c6a71",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-post-wif-runtime-boundary-20260830",
+      "commit": "848f124008595ee9c4320b8f65d02744583eb2de",
+      "actual_tree_sha": "fce2b3477140fc82bf0583af5b78faee36141e3f",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-wif-main-20260811",
+      "commit": "44ba3f261543adc1160c7e9bb124505df314b8f5",
+      "actual_tree_sha": "be15146d709ef2347f53958ae3b127de98f9dcf0",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-wif-main-20260817",
+      "commit": "dbb52bd041a6979d548f2c711f32a33749282058",
+      "actual_tree_sha": "46edffd3b2a29cf6801b8b962b6e66e1b33e20ea",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-wif-main-strict-20260817",
+      "commit": "99d9ac7df4ed7ceea41ccfcc0e630f2c24403c6f",
+      "actual_tree_sha": "fce2b3477140fc82bf0583af5b78faee36141e3f",
+      "corrected": true
+    },
+    {
+      "branch": "release/ci-deploy-readiness-hardening",
+      "commit": "328719767e3f6ba05c531342abf36cbf17b8d4e1",
+      "actual_tree_sha": "4503fe33dd3798175c85d9238b3442343b4de683",
+      "corrected": true
+    },
+    {
+      "branch": "release/urai-staging-v1-integration-audit",
+      "commit": "5eaeaf9c35e3041c31787cb9bb9fbacc2206c7ab",
+      "actual_tree_sha": "e3aa14de0e9e1ebde362e9b528f04493e52418a0",
+      "corrected": true
+    },
+    {
+      "branch": "remove-production-alias-20260703",
+      "commit": "11cfe122b2eddd4ae8cae86180223ef63d802bb3",
+      "actual_tree_sha": "893ac45bf67a98445da0c6bd97a645d16880c3cc",
+      "corrected": true
+    },
+    {
+      "branch": "repair/admin-pr57-provider-exact-head-trigger",
+      "commit": "677e09e88b318b600591328d10e1faee2737f500",
+      "actual_tree_sha": "408137b77ac88d744a28f1d154f36e8caa936b71",
+      "corrected": true
+    },
+    {
+      "branch": "repair/admin-pr57-runtime-runner-context",
+      "commit": "6999e5b8ad383418bd57d14a015126e7e8fb6cef",
+      "actual_tree_sha": "db3ca2b004339183fe856bdfa6fd46cdb02f9398",
+      "corrected": true
+    },
+    {
+      "branch": "repair/canon-provenance-reconciliation-20261007",
+      "commit": "568731ad7eb72e1bfc4fc3d2ed8df49056db4b1a",
+      "actual_tree_sha": "0e5d9500bf376026c5bb8554cf655661a0b0f7ac",
+      "corrected": true
+    },
+    {
+      "branch": "repair/communications-consumer-current-20260927",
+      "commit": "c38c9bc9fc9f3d9c074bbe72a13402eefb2a1bbf",
+      "actual_tree_sha": "70c2b4b0eb4e680884c601ec4a9749829f9fb6ba",
+      "corrected": true
+    },
+    {
+      "branch": "repair/current-verifier-provider-readback-20261001",
+      "commit": "52467b05beafa3b18b86e7459bbf980f11cbee88",
+      "actual_tree_sha": "1d2168f08fb994f051f9969e6bec9327a6ef90dd",
+      "corrected": true
+    },
+    {
+      "branch": "repair/staging-provider-harness-converged-20261007",
+      "commit": "d5ac7323d6ab3c157965442be29c2b3b92811846",
+      "actual_tree_sha": "754b065e4b899b92041ec02a66ba37708c420f8a",
+      "corrected": true
+    },
+    {
+      "branch": "repair/staging-web-noindex-20261007",
+      "commit": "ce7602ae17827fb1fa414511067f581cb99f7985",
+      "actual_tree_sha": "cb8abdbcb6c2148d9964cd763187a7d91e0ac1f6",
+      "corrected": true
+    },
+    {
+      "branch": "repair/staging-workflow-context-20260901",
+      "commit": "4c043c7b6a29d5f2acc6ea1d222a6846c1a512e2",
+      "actual_tree_sha": "3a43a9fe6c332e0354cced59aa6bfb6c5329265a",
+      "corrected": true
+    },
+    {
+      "branch": "repair/twilio-owned-trial-sender-20261007",
+      "commit": "c1cc2e4f291327833e43b4c7b5108a6b5e104e69",
+      "actual_tree_sha": "b41c35edbde2cb0d0406ac66abf023ec47b0dfb8",
+      "corrected": true
+    },
+    {
+      "branch": "repin/current-core-candidates-20260715",
+      "commit": "64fa9c3e41bb262ab97554447083566127874e68",
+      "actual_tree_sha": "935197d4208bb4ac6f874dd40915a5cb27960550",
+      "corrected": true
+    },
+    {
+      "branch": "repin/current-six-core-candidates-20260715",
+      "commit": "7467983ddaf3db1365eca58dafc6a83a170c13cd",
+      "actual_tree_sha": "dbf03187afd27ebfc63e32d9b3fa26b870114109",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-independent-revocation-batch-safety-20261105",
+      "commit": "f4e76e18ec0b4f2c32b2b997d52585a251aa839e",
+      "actual_tree_sha": "29f89ebe3c4521c2e6eed5bba71edf6c77691ec5",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r754-es2020-email-domain-20261105",
+      "commit": "b400b694482ac26bb88adebc8216ef198fe83e60",
+      "actual_tree_sha": "ed7beb947e5cfe9dff35e40d3791df0cbe353c5b",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r755-synthetic-memory-read-provenance-fence-20261105",
+      "commit": "09c08cc2c9d5e4f987b7051664ba2a0e45333646",
+      "actual_tree_sha": "0688f4fbde627b03424d55b94f921307a119c7f4",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r758-synthetic-life-graph-source-transaction-20261105",
+      "commit": "eb92bd454776d6278a7b4cbc1490edc2a157fa26",
+      "actual_tree_sha": "3ea831a7618bea51d3371d28b56027c350db91d5",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r762-graph-backing-memory-transaction-20261105",
+      "commit": "9184700e65b87feebbc6c1ca7f874b38bd282782",
+      "actual_tree_sha": "c66059730bf89c14735e592087871a2ddd764765",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r764-replay-linked-parent-fence-20261105",
+      "commit": "687623d3b4831cb97a57f4aafb6a527317127b98",
+      "actual_tree_sha": "65835518411cac766f22c4f9fd11a3b49cf300a0",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r765-acyclic-canonical-synthetic-life-graph-hold-20261105",
+      "commit": "083ab3d87c432a2ad9c599fe6dfaf194c150c38e",
+      "actual_tree_sha": "cbb176889dbd8195a4480e869c926d747523f84b",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r765-pin-owner-acceptance-to-r763-graph-source-20261105",
+      "commit": "d9bb847050da5f8c72dde6666adb480635ceccae",
+      "actual_tree_sha": "d5ee7735fe5e2db79f649e189ae8711a5bd17baa",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r766-pin-strict-owner-acceptance-to-r765-156-20261105",
+      "commit": "d9bb847050da5f8c72dde6666adb480635ceccae",
+      "actual_tree_sha": "d5ee7735fe5e2db79f649e189ae8711a5bd17baa",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r768-linked-parent-typescript-narrowing-20261105",
+      "commit": "f01eb015276761947d59eb3970f3b753f5510426",
+      "actual_tree_sha": "8f22aba645848a39c7c3bba76be71a4996a8bbaf",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r769-pin-owner-acceptance-pr158-20261105",
+      "commit": "62581c5f0e1ff16c11436f8978c0dc2d715a0e5f",
+      "actual_tree_sha": "95633812791d08f85c29f9b24069b5de67a9327c",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r769-synthetic-replay-ancestry-fence-hold-20261105",
+      "commit": "ddc50e002cba7f289c3f0915a6853d50460f99fd",
+      "actual_tree_sha": "426add6d92785af6cb3c0d6d384a1f6427f581a9",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r771-pin-owner-acceptance-to-r770-ancestry-hold-20261105",
+      "commit": "c679d1f9f44b36fdb1587626e0cf73ab34b74d58",
+      "actual_tree_sha": "b827db2d9ccf0e6f8958645f6dcca60d65d08833",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r772-ancestry-revocation-source-convergence-hold-20261105",
+      "commit": "9b8fe580849dcb97d21a272dfc2ae3bf08b72798",
+      "actual_tree_sha": "5b97728ce434909d7ea63b633d519f4f1226db1b",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r772-converge-replay-ancestry-and-bounded-revocation-20261105",
+      "commit": "12c4b5d6177c2bc66d0cf43800406f7033f58789",
+      "actual_tree_sha": "5b97728ce434909d7ea63b633d519f4f1226db1b",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r773-parent-admission-graph-integrity-20261105",
+      "commit": "383c390c821e404b7dc24318647074ca2db2d288",
+      "actual_tree_sha": "c4c9815127ee8a821b3a4aeb2c03d13db6dac899",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r775-exact-genesis-owner-acceptance-pin-20261105",
+      "commit": "70e41446d356d3c53c458207a39e054d686d8b58",
+      "actual_tree_sha": "bb4acd5a946d68a19a12cb995fb7af6887bb5894",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r778-staging-orphan-synthetic-storage-cleanup-20261105",
+      "commit": "734919606a8b01bca21a7c265c2b0d18947ab36c",
+      "actual_tree_sha": "c19a43e1898782cb31275403e3f421ec752e8beb",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r779-strict-owner-pin-to-r778-storage-cleanup-20261105",
+      "commit": "5700956123d5cd2ab4abc30ac6d4481448db0d38",
+      "actual_tree_sha": "ac121f9b8af36cb0b27ac54015c2948f416e1136",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r780-isolated-synthetic-storage-cleanup-tests-20261105",
+      "commit": "c3d6c66604129ddd137db6a971751d0de4d81835",
+      "actual_tree_sha": "703bf4b6912d04cefaa38dbef3582fe6d62ce646",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r781-strict-owner-pin-and-native-cleanup-proof-20261105",
+      "commit": "0d6bb00cd308bdb7d2d2b9361f9d334d9334ab13",
+      "actual_tree_sha": "45fc0667bc7147946329fbdd8e015433c81709e7",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r786-staging-synthetic-uid-boundary-20261105",
+      "commit": "79fc5dc96026cadfdfb5a7ae81fd9207d62cc620",
+      "actual_tree_sha": "eb26ebf1612153db0ea053068cfc8c5ccc802851",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r787-owner-pin-r786-uid-boundary-20261105",
+      "commit": "41ce98f61a7dd7a051ab5a02acaf9b39d037deb3",
+      "actual_tree_sha": "b9b31b59b7d33579951c3b6feb621c62a8a0a0ee",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r816-synthetic-graph-capacity-fence-hold-20261106",
+      "commit": "1e9b8c7f0044450c0a9f0750d33ab36d2324c851",
+      "actual_tree_sha": "19fda4d14a560c1307d020222a86af74fc94652e",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r839-staging-http-capacity-convergence-20261106",
+      "commit": "49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b",
+      "actual_tree_sha": "27122b852350441f47c793c20b05ef970cf12687",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-storage-sdk-emulator-20261105",
+      "commit": "cd671a23018789cc5f54a087b504d7d93089edb9",
+      "actual_tree_sha": "7ca94ff6b68e83bdffdacc572b3bb67841f85395",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-three-emulator-callable-lifecycle-20261106",
+      "commit": "f2d8130406fe5a65a5863efa2337eca5b8521121",
+      "actual_tree_sha": "05d8820aec8b1da32a237199610b68e492ee511f",
+      "corrected": true
+    },
+    {
+      "branch": "review/r476-current-auth-consent-source-20261103",
+      "commit": "01fd60436dc2164c3a3bd8be8e8f1a696b7674f3",
+      "actual_tree_sha": "6cf31d5df0fcc34b94d52cd5623577c1908c56ee",
+      "corrected": true
+    },
+    {
+      "branch": "review/r710-current-signed-lifecycle-staging-20261105",
+      "commit": "f2efb65cb268379f1125edbeeb16f683b0580a33",
+      "actual_tree_sha": "e5ea19051bab682faf54e4ecf374bc7606a39693",
+      "corrected": true
+    },
+    {
+      "branch": "review/r720-privacy221-current-deletion-contract-20261105",
+      "commit": "0a223ce1fac96d007d242d6de5b4ef33649d8c85",
+      "actual_tree_sha": "5c41b59c42818b15b4d7733c0214a29e6fd63030",
+      "corrected": true
+    },
+    {
+      "branch": "review/r720-privacy-factory-cross-system-denial-20261105",
+      "commit": "3626f7adf80de6120c4d89210e3fe3d40627a7af",
+      "actual_tree_sha": "19a16efba503249e67efd8ae3b10e4a626494261",
+      "corrected": true
+    },
+    {
+      "branch": "review/r722-signed-downstream-deletion-receipt-preflight-hold-20261105",
+      "commit": "746f3b34014e3fa23606a7a2acdc810e1f66fe0b",
+      "actual_tree_sha": "77b65eb8e3b52c9710e0a76d89511b6ed38b6d40",
+      "corrected": true
+    },
+    {
+      "branch": "review/r724-signer-key-id-and-signed-envelope-20261105",
+      "commit": "13fca2ad447ed462a40490c45005f94e2cb1b870",
+      "actual_tree_sha": "9999c1781bbca0779500bf1fb3fc79d03c8a93c2",
+      "corrected": true
+    },
+    {
+      "branch": "review/r725-converge-source-approval-with-signed-deletion-hold-20261105",
+      "commit": "c81a86a656df889b33efb83552b459f17a59bb00",
+      "actual_tree_sha": "305f08510c09e7b4f6a1db362fcfa702d2a8cea6",
+      "corrected": true
+    },
+    {
+      "branch": "review/r727-ensure-protected-main-required-checks-hold-20261105",
+      "commit": "97785103fff714052949cb86f98891ebc6382cc6",
+      "actual_tree_sha": "72594e47e7aae6ba6a953356556ffe9452232ff5",
+      "corrected": true
+    },
+    {
+      "branch": "review/r728-protected-review-history-pagination-failclosed-20261105",
+      "commit": "c81a86a656df889b33efb83552b459f17a59bb00",
+      "actual_tree_sha": "305f08510c09e7b4f6a1db362fcfa702d2a8cea6",
+      "corrected": true
+    },
+    {
+      "branch": "review/r729-bind-required-checks-to-actions-suites-hold-20261105",
+      "commit": "2e98aaac5f74247361d778fde9b6e2a231b38ae2",
+      "actual_tree_sha": "8c45d5bfb69730493a60e66384d59d2608ca9479",
+      "corrected": true
+    },
+    {
+      "branch": "review/r729-converge-protected-main-review-history-20261105",
+      "commit": "3e45c01e057f73944bda08c5cb1d2342c4ebf024",
+      "actual_tree_sha": "c7e0cf65260c7f1fe95c245cd6eff62c2d063e8d",
+      "corrected": true
+    },
+    {
+      "branch": "review/r731-paginated-independent-review-hold-20261105",
+      "commit": "2e98aaac5f74247361d778fde9b6e2a231b38ae2",
+      "actual_tree_sha": "8c45d5bfb69730493a60e66384d59d2608ca9479",
+      "corrected": true
+    },
+    {
+      "branch": "review/r732-converge-review-history-and-required-actions-suites-hold-20261105",
+      "commit": "6feabf4df689aff954ff460f65f6eea115fffad7",
+      "actual_tree_sha": "8f346ad3b73a99ea1fc5b921265f65e393059c7d",
+      "corrected": true
+    },
+    {
+      "branch": "review/r737-converged-source-authority-20261105-chalk",
+      "commit": "9bbc20983542256a0d78972455d0bec2c36b4b0d",
+      "actual_tree_sha": "a55ac4a5986b8001aaf9adcdd8dbfb3533c0efb5",
+      "corrected": true
+    },
+    {
+      "branch": "review/r742-bind-exact-privacy-workflow-paths-hold-20261105",
+      "commit": "05b8252e0371e4fa65b03d6941a73aa07f62b789",
+      "actual_tree_sha": "78a19ae49cdbe0ca9afcfab7adaa6fba4c08c6f4",
+      "corrected": true
+    },
+    {
+      "branch": "review/r744-genesis-owner-acceptance-kit-hold-20261105",
+      "commit": "9bd262418074024ba02cece9977596bab4449649",
+      "actual_tree_sha": "776c1b113a68d571f7efd3d75dd548922e522094",
+      "corrected": true
+    },
+    {
+      "branch": "review/r744-launch-evidence-timing-fixture-20261105",
+      "commit": "6f5aef9d07de29634a9efad85b69109b1ee37409",
+      "actual_tree_sha": "b9a640942548f0a20e93394524fd592e21199cca",
+      "corrected": true
+    },
+    {
+      "branch": "review/r745-reject-renamed-stale-actions-history-20261105",
+      "commit": "1755bcb559f3c37143c226f9b53756e2737b025d",
+      "actual_tree_sha": "1e5ac8bd3cf59d9607503ff7bb4331fb9bfc5a9c",
+      "corrected": true
+    },
+    {
+      "branch": "review/r748-r740-r745-complete-protected-workflow-history-20261105",
+      "commit": "2925d83ec60624c7efd2f3bc5740ccad8930392d",
+      "actual_tree_sha": "ff1d214354db9c13f0843f97b855dff63aa05424",
+      "corrected": true
+    },
+    {
+      "branch": "review/r749-retarget-owner-acceptance-to-converged-r748-hold-20261105",
+      "commit": "6d93bd4949279d4d365a7fa77f5eeecbcb5b1d84",
+      "actual_tree_sha": "08f0cbc83bf74e3768e5c7b0b5971a3a908c73cb",
+      "corrected": true
+    },
+    {
+      "branch": "review/r750-converge-r748-security-and-r744-timing-tests-20261105",
+      "commit": "e0503dab67ff5991e6248f364093a89413f7d40a",
+      "actual_tree_sha": "f25ac3caed9ffa5b13718816ff2be1e19d59e655",
+      "corrected": true
+    },
+    {
+      "branch": "review/r751-pin-owner-full-acceptance-to-r750-staging-141-20261105",
+      "commit": "29df40e05eaaf0a2b133bd59beaf570d454d6acd",
+      "actual_tree_sha": "b3c189f53c76070abb83cfadb90f21451710ebd6",
+      "corrected": true
+    },
+    {
+      "branch": "review/r752-r750-r745-historical-ledger-repair-20261105-chalk",
+      "commit": "34643afb814ff9b4fe926d6d1866dcf4b311e579",
+      "actual_tree_sha": "98c24b1d31bb1250c1bef644b476a23cdc408426",
+      "corrected": true
+    },
+    {
+      "branch": "review/r753-pin-owner-acceptance-to-r752-staging-143-20261105-chalk",
+      "commit": "4ddd781575fd0a66fca5a25bb206378fec041247",
+      "actual_tree_sha": "c474aa3ea0e32a7519125a1fd14836e283a2927b",
+      "corrected": true
+    },
+    {
+      "branch": "review/r756-expand-pinned-owner-native-test-coverage-20261105-chalk",
+      "commit": "f1b1011cfffd45af6ad0c4783280d2d66a4518b6",
+      "actual_tree_sha": "399497d8139cc105a0e0db12e6c30725a5c97ebe",
+      "corrected": true
+    },
+    {
+      "branch": "review/r757-pin-expanded-owner-acceptance-to-es2020-verified-pr146-hold-20261105",
+      "commit": "0d94470ca19cb67c487e03b71a163baf59732c39",
+      "actual_tree_sha": "6daebe5c26c499359c751283b45602de7ae1c13f",
+      "corrected": true
+    },
+    {
+      "branch": "review/r758-graph-backing-memory-consistency-fence-hold-20261105",
+      "commit": "7e0d4d3e06bfd2a11dd8f599b7db372899e1ef41",
+      "actual_tree_sha": "5d86d7b84705e0d8a1ed1fb98faba462e9c3242a",
+      "corrected": true
+    },
+    {
+      "branch": "review/r759-pin-full-acceptance-to-r754-es2020-source-20261105-chalk",
+      "commit": "709145e0127107f4366ca7d794c9dfabbb7ecba6",
+      "actual_tree_sha": "1ebd69ad7ad66f223bb56073388b7ccfec653eb3",
+      "corrected": true
+    },
+    {
+      "branch": "review/r761-pin-owner-322-acceptance-to-r755-security-source-20261105-chalk",
+      "commit": "895cfaca64475a18cc91125e1eb21980e891ca92",
+      "actual_tree_sha": "ae2e11436a03f1788dc4bd226082fb7e56a0b4d1",
+      "corrected": true
+    },
+    {
+      "branch": "review/r763-graph-relation-consistency-converged-20261105-chalk",
+      "commit": "15b035fe506d9548e57243fc57b6e8eab931b196",
+      "actual_tree_sha": "f95afcb2d58841c00e00f347f1e62cd586c58607",
+      "corrected": true
+    },
+    {
+      "branch": "review/r770-replay-ancestor-integrity-fail-closed-20261105-chalk",
+      "commit": "1219d785d09f5303d1d4addc16c666777c428b60",
+      "actual_tree_sha": "69aef7074a56dc1d46408ea9147faba2d6378d5e",
+      "corrected": true
+    },
+    {
+      "branch": "security/wif-only-staging-deploy-2026-08-11",
+      "commit": "5cbaf55bc25812d6a5fb3edff9b10315ec6b158a",
+      "actual_tree_sha": "d48be3fd3bdfff9b163d70d219d816f75e9492cc",
+      "corrected": true
+    },
+    {
+      "branch": "sendgrid/governance-certification-6c99e6c6-20260929",
+      "commit": "77a6ea4f37f2ed5cf82ad8f903581dc360bee933",
+      "actual_tree_sha": "59fc895c19795f0d787901dc3ccea234c5fa1e0d",
+      "corrected": true
+    },
+    {
+      "branch": "sendgrid/pre-signature-staging-e2e-20260929",
+      "commit": "233662d0d7fd58b6627c5b01ede39b9ef641c359",
+      "actual_tree_sha": "37a026e168e8eb97ed4bf9a3b0ff4aad813f31ff",
+      "corrected": true
+    },
+    {
+      "branch": "sendgrid/readonly-deploy-key-fallback-20260929",
+      "commit": "70135c30a44c1e9547b9c8855164836ecd43c94e",
+      "actual_tree_sha": "03300c27710c9c01672d23e28eb8ee32d8c91585",
+      "corrected": true
+    },
+    {
+      "branch": "sendgrid/repin-limbernutz-6c99e6c6-20260929",
+      "commit": "bd1b5ebe56a767dd5c667263087f3480c1eb7452",
+      "actual_tree_sha": "ec24d1685bcc5430b7e7f4d9d1d4a82e3fc2baf5",
+      "corrected": true
+    },
+    {
+      "branch": "stripe/spatial-pr1182-test-runtime",
+      "commit": "94d999eb1284b267636c3032a64210fc0421f035",
+      "actual_tree_sha": "ef02eeecee8bfa7ef09b274833b592f072f03cd9",
+      "corrected": true
+    },
+    {
+      "branch": "system-of-systems-contract-20260917",
+      "commit": "650f9ec9755727605681a109947209b668e8539e",
+      "actual_tree_sha": "408137b77ac88d744a28f1d154f36e8caa936b71",
+      "corrected": true
+    },
+    {
+      "branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
+      "commit": "d32328963fdff86f2d4dab742d32c870a049c284",
+      "actual_tree_sha": "32a462c195156bc7ac711b3a54cdd5fc18e53b7e",
+      "corrected": true
+    },
+    {
+      "branch": "test/r439-firebase-jobs-privacy-auth-emulator-20261103",
+      "commit": "4faf78a5fd5a2640150373b7883ef67ef493ee8c",
+      "actual_tree_sha": "d4f5b88b02710d92f83eaa670c0c34288cf1b7e1",
+      "corrected": true
+    },
+    {
+      "branch": "twilio/api-key-control-plane-20260927",
+      "commit": "92af9063fa11f8f04f97c1bdc312ef6ae971ad12",
+      "actual_tree_sha": "42044fdd89265049eb0f99e6693d5604ad1bd44f",
+      "corrected": true
+    },
+    {
+      "branch": "workstream-c-manual-verification-20260711",
+      "commit": "aa77765f3fa9fd87821363042e8cc5951dcc2602",
+      "actual_tree_sha": "06295e2004d8ac62d63ff3f795ebdd9f67fb5f8a",
+      "corrected": true
+    },
+    {
+      "branch": "docs/chalk-staging-historical-artifact-and-byte-proof-20261107",
+      "commit": "bc98673cb198d60335238db0fcf78d8279dd8b33",
+      "actual_tree_sha": "06d4b2ffb3b164074f0a4fb5d07d66de33afb84f",
+      "corrected": true
+    }
+  ],
+  "scope": "180 branch heads captured in original R884; newer branches, deleted refs and old commits not covered"
+}
