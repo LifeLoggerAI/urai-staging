@@ -1,0 +1,200 @@
+{
+  "schema": "one-urai-genesis-staging-r890-r887-full-byte-coverage-index-v1",
+  "repository": "LifeLoggerAI/urai-staging",
+  "immutableSourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "gitTreeResponseSha": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "treeTruncated": false,
+  "treeEntries": 293,
+  "gitBlobPaths": 247,
+  "gitDeclaredBlobBytes": 1726287,
+  "byteVerifiedFileCount": 247,
+  "byteVerifiedBytes": 1726287,
+  "sourcePathCoverage": "247/247",
+  "sizeAndIdentityMismatches": [],
+  "segmentReadErrors": [],
+  "segments": [
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_000_016.json",
+      "gitBlobSha": "9d30296b30813ba991cd33a8d8baffdbf597ca8f",
+      "range": [
+        0,
+        16
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 163862
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_016_032.json",
+      "gitBlobSha": "f63084108033261a87a1a477d47f11e3d48c403f",
+      "range": [
+        16,
+        32
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 68276
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_032_048.json",
+      "gitBlobSha": "5eaae3334516a45707177bedaa57040a6b158f43",
+      "range": [
+        32,
+        48
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 59557
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_048_064.json",
+      "gitBlobSha": "54f0157d4dcba3efcc17379ed427b8e1bfb36b15",
+      "range": [
+        48,
+        64
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 55012
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_064_080.json",
+      "gitBlobSha": "efd222a1729e34a5e79e50a7c58b4e2dcb5380de",
+      "range": [
+        64,
+        80
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 412939
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_080_096.json",
+      "gitBlobSha": "9a64ee5f92f6732be9f872defe0bbac44c039bd0",
+      "range": [
+        80,
+        96
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 112879
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_096_112.json",
+      "gitBlobSha": "964aff27d689f99121f92cf576bb0ebf9f585f04",
+      "range": [
+        96,
+        112
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 77112
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_112_128.json",
+      "gitBlobSha": "32384e4fd32f43411f8d8137ed1f74be8f860655",
+      "range": [
+        112,
+        128
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 126464
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_128_144.json",
+      "gitBlobSha": "1286b2411d0885b708564e16884de27dc634c66a",
+      "range": [
+        128,
+        144
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 92527
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_144_160.json",
+      "gitBlobSha": "75ef1c426a52e2ecb582e098457521e8d34e77ee",
+      "range": [
+        144,
+        160
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 118929
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_160_176.json",
+      "gitBlobSha": "8bda7ba5bce3aa84a2e06278b5198c1cd024ec23",
+      "range": [
+        160,
+        176
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 67699
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_176_192.json",
+      "gitBlobSha": "bf62dd77c6ef4bd8903333e6a19eef981c2879af",
+      "range": [
+        176,
+        192
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 108127
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_192_208.json",
+      "gitBlobSha": "9fe5d8ae2c9a47786457c7ec6fee0935bc359a58",
+      "range": [
+        192,
+        208
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 76550
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_208_224.json",
+      "gitBlobSha": "dd14414f343759d4cd025bdcc4c1d5fa6e9976db",
+      "range": [
+        208,
+        224
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 73633
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_224_240.json",
+      "gitBlobSha": "ed7efdfe3e3de9b71baa96e4ecaf25ffab49fb28",
+      "range": [
+        224,
+        240
+      ],
+      "rows": 16,
+      "hashed": 16,
+      "observedBytes": 87751
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_BYTES_240_247.json",
+      "gitBlobSha": "f8ee888cee531358879c8cb29c2b573563da6331",
+      "range": [
+        240,
+        247
+      ],
+      "rows": 7,
+      "hashed": 7,
+      "observedBytes": 24970
+    }
+  ],
+  "limitations": [
+    "One immutable R887 candidate Git tree only; not 182+ other branch heads, tags, unreachable commits or complete Git history",
+    "This is a byte coverage/hash ledger, not semantic correctness, npm build/test, emulator, staging live Hosting version/IAM/Rules, production or physical device certification",
+    "The 247 files were accessed as UTF-8 GitHub blob content; this source tree had no known binary-format file extension in its inventoried paths",
+    "Original historical R884 180-branch metadata and October/November independently hashed ZIP evidence remain separate"
+  ],
+  "state": "all_current_source_tree_blobs_read_and_hashed"
+}
