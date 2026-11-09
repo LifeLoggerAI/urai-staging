@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    160,
+    176
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "3e94c0e43462e91b7b45d5e374f579c4a65b324e",
+      "declared_size": 26327,
+      "example_path": "scripts/test-r723-protected-approval.mjs",
+      "first_branch": "review/r737-converged-source-authority-20261105-chalk",
+      "pathRefs": 2,
+      "observed_bytes": 26327,
+      "sha256": "23d46d8f32334ef81dc80459b0807a0a525d5078dfbd7d0dbe561afd69408de8",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3f0a6158937ba992e014144edf9810081e31b628",
+      "declared_size": 21739,
+      "example_path": "functions/test/current-cross-service.emulator.mjs",
+      "first_branch": "review/chalk-r764-replay-linked-parent-fence-20261105",
+      "pathRefs": 2,
+      "observed_bytes": 21739,
+      "sha256": "baad9aab0b79072dcb98f857ce4f5e0bc99eabbbd7ad49e577eee1bfab3b7e96",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3f489128a33ad12051f074e0e4fc5eaa85d45109",
+      "declared_size": 9417,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "governance/provider-readiness-20261001",
+      "pathRefs": 2,
+      "observed_bytes": 9417,
+      "sha256": "f7881255ce218485ddd4282c143db9ae60703ee8f510484ee34db2fc7c2646ad",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3f54ac9eeba648e1e8699654fc6502a2fbfe1bbb",
+      "declared_size": 4019,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/r751-pin-owner-full-acceptance-to-r750-staging-141-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 4019,
+      "sha256": "e1aa732585753da5cab00815c8300d6772e1537c784b4c637ef7c128c7c06308",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3fd621f92b66b66d24f717e41aec4e16465e3d2e",
+      "declared_size": 1173,
+      "example_path": "package.json",
+      "first_branch": "release/ci-deploy-readiness-hardening",
+      "pathRefs": 2,
+      "observed_bytes": 1173,
+      "sha256": "14fb2ee45d016009a65a87a647b6109f2748e2ee9e804a1f72c04b6b475e840d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "403dfb516a95bfadb62823bde79bcaf28a646dc1",
+      "declared_size": 1714,
+      "example_path": "SECURITY_STAGING.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 59,
+      "observed_bytes": 1714,
+      "sha256": "c969f781c9f5b0bccdd4f4119a1c8cc0904fb4a20a8cbfe73e15e12d3bb30fa1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "40429b18d1d55103d48338a6cae5d795bc39b9e9",
+      "declared_size": 14599,
+      "example_path": "functions/test/current-cross-service.emulator.mjs",
+      "first_branch": "review/chalk-r755-synthetic-memory-read-provenance-fence-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 14599,
+      "sha256": "c3d4afc59ba9f2d24910fc1e2a807ca8e9d066985a23b588385247e75525863f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "4127fc950308799d706c35344fb46910834a54bb",
+      "declared_size": 23836,
+      "example_path": "functions/test/current-cross-service.emulator.mjs",
+      "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 23836,
+      "sha256": "aee78799cdb20946a3eee79076700518e4a69ef7e6cf352facee956ce11c71dc",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "415027e5ddaf944819977c1d5e9aaf49e835093f",
+      "declared_size": 44,
+      "example_path": "firestore.indexes.json",
+      "first_branch": "chore/complete-staging-foundation",
+      "pathRefs": 2,
+      "observed_bytes": 44,
+      "sha256": "6742255415c36daf631b52f233039190af819205cc41fa58d07dd7d9e180c2b9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "42e6142c1877a5c58fa05f9e1102f2cb407c65ed",
+      "declared_size": 9970,
+      "example_path": "scripts/urai-staging-lock.sh",
+      "first_branch": "reconcile/staging-authority-current-main-20260714",
+      "pathRefs": 2,
+      "observed_bytes": 9970,
+      "sha256": "1d9cd8318d1be2036e745362db291a9929d49c85049e9824841cfdfa93e070d1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "43dcb78653cc584fd6d6a407b61497c683dfe84a",
+      "declared_size": 1875,
+      "example_path": "firebase.json",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 20,
+      "observed_bytes": 1875,
+      "sha256": "99f05784529c8ccb665d2f0c2034a548aaba53619d5e550cce918762e04bb699",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "446ce9acc67d45987dd6c32cd04bf2fd9a89eff7",
+      "declared_size": 1885,
+      "example_path": "scripts/validate-staging-wif-bootstrap.mjs",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 3,
+      "observed_bytes": 1885,
+      "sha256": "4a9c38ea50c4f155735fa582a06d27ce2de5c42257385b96910bfb3053628bee",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "4608df8748a9f712c242685235e7ccccceb3f6ae",
+      "declared_size": 6487,
+      "example_path": "public/index.html",
+      "first_branch": "audit-completion/staging-command-aliases",
+      "pathRefs": 2,
+      "observed_bytes": 6487,
+      "sha256": "131f9037a773fd5ee4a85b29b9cbc1f3d0779f6b7d57d1aa140e1770eda38aed",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "463508fddbe991013fab41e25bad6be40acd2cf7",
+      "declared_size": 10993,
+      "example_path": "functions/test/syntheticMemoryLifecycle.http-emulator.mjs",
+      "first_branch": "review/chalk-three-emulator-callable-lifecycle-20261106",
+      "pathRefs": 1,
+      "observed_bytes": 10993,
+      "sha256": "85ceb88372600eec4c5358ce6a84a280676d0c42136a89e8e6f433584b2f199a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "4690f79dd59924a63365959065c0a1eeebf89273",
+      "declared_size": 928,
+      "example_path": "functions/package.json",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 20,
+      "observed_bytes": 928,
+      "sha256": "e8746ac820d50aec058b374470a4769c43a6cd81d5133cbef26f841117358c8e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "47054d6da4f5ac31124ee5a343e9c40812b20fa8",
+      "declared_size": 12500,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "fix/genesis-staging-evidence-source-pin-20261102",
+      "pathRefs": 1,
+      "observed_bytes": 12500,
+      "sha256": "4c3d22a654a280a7b37c63be9b926f4790345657d37ccc555ea6610951e70a31",
+      "state": "verified"
+    }
+  ]
+}
