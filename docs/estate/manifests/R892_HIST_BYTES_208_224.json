@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    208,
+    224
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "58b67dd770fcda280383791159f94ebc41cd838a",
+      "declared_size": 9609,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "ops/twilio-staging-secret-readback-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 9609,
+      "sha256": "36e6aed5708b634ec106de237cd278537c8e8e158a56708f486462ab7ff7b3b7",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "59131bba10454ffc7fb3cf7b6a2fe68825c3f4d1",
+      "declared_size": 5723,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "repair/twilio-owned-trial-sender-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 5723,
+      "sha256": "423595feca5b55a31253a784f07c0507406637646359cba67ae716395bb033d0",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "59a2a404551661c7ca9c64e6580df9b7e07814cd",
+      "declared_size": 18765,
+      "example_path": ".github/workflows/staging-deploy.yml",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 55,
+      "observed_bytes": 18765,
+      "sha256": "8d47f61752495f1d5d630170660a1de3501b8a395e4f82445fcaac7c447a9018",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "59aeea334a086d7936d558a5bafc3e962e1f393e",
+      "declared_size": 897,
+      "example_path": "functions/package.json",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 16,
+      "observed_bytes": 897,
+      "sha256": "224396dd9f846feb8830eb7e338b551bbbbf240f1515ef799528e4f837399a55",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "59fe8ef8c5bc282c90004f579a3942baa3c10562",
+      "declared_size": 1670,
+      "example_path": "scripts/validate-launch-evidence.mjs",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 16,
+      "observed_bytes": 1670,
+      "sha256": "66689fdc44a00f3781566c460d7a6d9f72a298700e5ec3aaa2dc672be7b239fa",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5a1bf20f5ed9555565ce18a08a75b54b9d6b2394",
+      "declared_size": 1146,
+      "example_path": "scripts/check-lockfile.mjs",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 35,
+      "observed_bytes": 1146,
+      "sha256": "7ca2a56c999328983861d17e3d4b707a7e5ca9ae06e7e22a517557f9792c9d33",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5a48542cc29954d2c70de6e19e6d8e1906c673d8",
+      "declared_size": 5358,
+      "example_path": "scripts/test-sendgrid-staging-approval.mjs",
+      "first_branch": "converge/staging-main-authority-20261003",
+      "pathRefs": 5,
+      "observed_bytes": 5358,
+      "sha256": "8f031e7af0606f46fbc9b32f5ca676f18f41cd7d700636e8b22f94854cf7319f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5aecd337e0bec9479cda543e921692efbf0d4b00",
+      "declared_size": 18131,
+      "example_path": ".github/workflows/spatial-pr1591-stripe-provider-probe.yml",
+      "first_branch": "fix/stripe-pr1591-runtime-mode-source-check-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 18131,
+      "sha256": "44879fe1e06bc7d655a570cfb15075c5367ac9319bc135110a2e6f1e573f8494",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5b0a8601f5682553ab8d0523b78fd97ec3289fd9",
+      "declared_size": 9417,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 1,
+      "observed_bytes": 9417,
+      "sha256": "89a7fd428ec57e33f60f3fe22a0afd4ecae5b837cedf7aa95868729d1b364502",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5bcb0f43622d6ece549e13b3be863593373911ba",
+      "declared_size": 795,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "audit-completion/staging-command-aliases",
+      "pathRefs": 2,
+      "observed_bytes": 795,
+      "sha256": "0c162d35a58528cfb39f255f5a09e0ee854c43f9dc3e60b951ed2c69eac85d52",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5bcfbafb9716ce9a997e3af7f8ea9bbaf2cd9c8b",
+      "declared_size": 1600,
+      "example_path": ".env.example",
+      "first_branch": "audit/release-evidence-hardening-20260706",
+      "pathRefs": 3,
+      "observed_bytes": 1600,
+      "sha256": "03875a64dde36181ad9b5602670e1f6283bd143c9a91712c347d9cf8acffd053",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5bd93b2d8980cb56f3d4a9b476e0b39e27eca2c6",
+      "declared_size": 17187,
+      "example_path": ".github/workflows/spatial-pr1576-stripe-provider-probe.yml",
+      "first_branch": "fix/bind-spatial-pr1576-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 17187,
+      "sha256": "8d7654dcfd60f804fc9143283fd3dcfc67b37f71d0306efc035b698adecb6eb3",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5cbfa67f1358caa3ac5647aab3f8efe84ce286c0",
+      "declared_size": 16422,
+      "example_path": "scripts/verify-privacy-jobs-protected-approval.mjs",
+      "first_branch": "review/r745-reject-renamed-stale-actions-history-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 16422,
+      "sha256": "30a8b7bb255f63d87bef2829c2bc94493ad8b37445798f26d144b5d836f81d67",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5cf06b3857b0a2e55dbd04f418a0eb34892ae5c3",
+      "declared_size": 3200,
+      "example_path": "scripts/validate-spatial-pr1296-stripe-provider-probe.mjs",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 15,
+      "observed_bytes": 3200,
+      "sha256": "fdf9a0f418023b971cdebf9e81bcaf03437ca0b1c34d5cd487570b99e559b2e7",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5d6d4923f7dce261d8a41c99066fb5805b4647f7",
+      "declared_size": 18032,
+      "example_path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+      "first_branch": "converge/staging-final-1591-communications-main-20261004",
+      "pathRefs": 10,
+      "observed_bytes": 18032,
+      "sha256": "add0132769468bf9c38e362d54d3f6c7c6bc77e3124b997e35061f7cd2750568",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5d9c47c7c702224254977f642d5e41430c54c06c",
+      "declared_size": 5402,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "repair/staging-workflow-context-20260901",
+      "pathRefs": 1,
+      "observed_bytes": 5402,
+      "sha256": "38a82435d5628ad68a2b0311eca0d7cc3093d98becb46b6c514c23f312ec4e37",
+      "state": "verified"
+    }
+  ]
+}
