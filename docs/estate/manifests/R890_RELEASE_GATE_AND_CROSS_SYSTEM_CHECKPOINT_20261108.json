@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "one-urai-genesis-staging-r890-release-gate-matrix-v1",
+  "asOf": "2026-11-08 America/Chicago / 2026-11-09 UTC",
+  "repo": "LifeLoggerAI/urai-staging",
+  "sourceAuthority": {
+    "main": "bda659ad23590b39e7f32de349f8a3723455ce02",
+    "latestConverged": "49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b",
+    "latestWorkflowReview": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+    "priorDocs": "cb59f1c006636537becb3e8aaee1901e19911ed1"
+  },
+  "candidateByteCoverage": {
+    "status": "verified_complete_exact_tree_only",
+    "files": 247,
+    "bytes": 1726287,
+    "segments": 16,
+    "index": "docs/estate/manifests/R890_R887_COMPLETE_BYTE_COVERAGE_INDEX_20261108.json",
+    "notCertified": [
+      "all historical commits/branches",
+      "CI build",
+      "deployed version",
+      "cloud IAM/Rules",
+      "production",
+      "physical devices"
+    ]
+  },
+  "historicalGenuineReceipts": [
+    {
+      "scope": "oct17_hosted_CI_crossService_verify",
+      "sha": "9f5f5bd2d80ddc01e303803e3d9f08a21be2ebd9",
+      "runIds": [
+        39058851765,
+        39058851767,
+        39058851791
+      ],
+      "status": "PASS_HISTORICAL_ONLY"
+    },
+    {
+      "scope": "R793_donor_three_emulator",
+      "sha": "f2d8130406fe5a65a5863efa2337eca5b8521121",
+      "checks": "21/21",
+      "status": "PASS_HISTORICAL_ONLY"
+    },
+    {
+      "scope": "R816_donor_in_memory_capacity",
+      "sha": "1e9b8c7f0044450c0a9f0750d33ab36d2324c851",
+      "checks": "3/3",
+      "status": "PASS_HISTORICAL_ONLY"
+    }
+  ],
+  "gates": [
+    {
+      "id": "S01",
+      "label": "Immutable R887 tracked source file bytes and SHA256",
+      "state": "PASS_EXACT_SOURCE_ONLY",
+      "evidence": "247/247; 1,726,287 actual bytes, 16 immutable segments"
+    },
+    {
+      "id": "S02",
+      "label": "R887 three-workflow enrollment/order",
+      "state": "PASS_SOURCE_ASSERTIONS_ONLY",
+      "evidence": "3/3 source-string checks, original Node self-test NOT RUN"
+    },
+    {
+      "id": "S03",
+      "label": "Node22/Java21 frozen npm ci/build/full native tests",
+      "state": "NOT_RUN",
+      "next": "approved isolated no-cost runner; exact unmodified candidate SHA"
+    },
+    {
+      "id": "S04",
+      "label": "R887 128-node capacity and 23 actual three-emulator callable",
+      "state": "NOT_RUN",
+      "next": "full actual 23/23 with original harness under disposable urai-staging-test"
+    },
+    {
+      "id": "S05",
+      "label": "R887 genuine four-emulator Functions and 40-check R451",
+      "state": "NOT_RUN",
+      "next": "same source and emulators, original identity receipt, IPC compatibility"
+    },
+    {
+      "id": "S06",
+      "label": "GitHub Actions required CI source-bound success",
+      "state": "BLOCKED",
+      "evidence": "CI 42447439250, verify 42447439206 zero reported executed job steps"
+    },
+    {
+      "id": "S07",
+      "label": "Main branch protection, required checks and independent approval",
+      "state": "BLOCKED",
+      "evidence": "API main protected:false; rulesets [] observed; detailed protection endpoint unavailable"
+    },
+    {
+      "id": "S08",
+      "label": "Active Communications consumer exact source pin",
+      "state": "MISMATCH",
+      "evidence": "Staging pinned 759f664... vs Communications main 40cd2f4...; 22 commits ahead",
+      "next": "coordinated reviewed config+validator+protected ref remediation"
+    },
+    {
+      "id": "S09",
+      "label": "Current Firebase Hosting live release and source-to-build identity",
+      "state": "UNKNOWN",
+      "evidence": "historic Nov7/8 public source mismatch; no authenticated release/version readback"
+    },
+    {
+      "id": "S10",
+      "label": "Current effective IAM/WIF/Auth/Functions/Firestore/Storage/Rules and billing",
+      "state": "UNKNOWN",
+      "evidence": "Nov1 owner Cloud Shell is historical snapshot; no current provider readback"
+    },
+    {
+      "id": "S11",
+      "label": "Shared Rules/Functions namespace ownership and safe publish scope",
+      "state": "BLOCKED",
+      "evidence": "Labs #261 ownership conflict; cannot infer cross-repo authority"
+    },
+    {
+      "id": "S12",
+      "label": "Source-bound staging publish, smoke and real rollback",
+      "state": "NOT_AUTHORIZED",
+      "evidence": "workflow exists; no current mutation/deployer/roll-back receipt"
+    },
+    {
+      "id": "S13",
+      "label": "Actual real owner signed consent -> Privacy -> Jobs -> Studio -> protected Replay -> revocation/deletion",
+      "state": "NOT_CERTIFIED",
+      "evidence": "donor synthetic tests only, incomplete source/Cloud provider admission"
+    },
+    {
+      "id": "S14",
+      "label": "Real browser+physical Windows iOS Android XR accessibility visuals and AAA+++",
+      "state": "NOT_CERTIFIED",
+      "evidence": "historic isolated browser ≠ physical/device/live app"
+    },
+    {
+      "id": "S15",
+      "label": "Independent separately authorized production release",
+      "state": "HOLD",
+      "evidence": "No current integrated source/cloud/device or owner GO"
+    }
+  ],
+  "crossServiceReviewHeads": {
+    "spatial2073": "df19b28c9a75b5201d06ee859de89b3b3bebc967",
+    "privacy238": "351268923365bbc7ffe4eebb4469fbb02b7a6195",
+    "jobs368": "ebdf5f62338822f99b7293bdd5b9a0cda4917dd9",
+    "jobs369": "e2f22162fe0ff03b4da3ba85cca4d466f31a704e",
+    "studio197": "e974ce3254130e2fa5d1cf2d0fcebf13153e3261",
+    "admin113": "22197620054dbaa20a60944466bbdc7ae319527b",
+    "communications102": "5820a07bf0cccbef9cce6ee32e87a34e0b1a3330",
+    "b2b78": "7f9f737ecd2fc5d7d3f7577e5b09c0f1fb7dcba5",
+    "labs261": "2980ca804fe04c37256a00af6e291a79a05004e4"
+  },
+  "limitations": [
+    "The absence of provider access must not be reported as zero cloud resources",
+    "The candidate complete byte hash does not establish all-history or cloud source-to-deployment",
+    "A staging PASS does not certify production or physical device behavior",
+    "No paid compute, CI dispatch, deployment, IAM/billing/secret or real private-data operation authorized"
+  ],
+  "noActionReceipt": {
+    "productionMutation": false,
+    "stagingMutation": false,
+    "githubWorkflowDispatched": false,
+    "prMerged": false,
+    "billingChanged": false,
+    "paidCompute": false,
+    "privateMediaAccess": false,
+    "firebaseGcpProviderCalls": false
+  }
+}
