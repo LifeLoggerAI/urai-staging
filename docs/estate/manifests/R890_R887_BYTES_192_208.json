@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    192,
+    208
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "scripts/test-security-dependency-compatibility.mjs",
+      "blob_sha": "068750f6b6ee87ab681e23bda205ed40475d929f",
+      "declared_bytes": 3156,
+      "observed_bytes": 3156,
+      "sha256": "890cb7a28bc463afe4e856decb299143810374ce7f1ee1d13a1da7c5d3adb00b",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-sendgrid-staging-approval.mjs",
+      "blob_sha": "3a83c282ab037ab59c8da6c38106af0132c04212",
+      "declared_bytes": 5792,
+      "observed_bytes": 5792,
+      "sha256": "c39e8724178124a0944136cb31ce10efe03c2adcba161113fa32a1e4d78d94ea",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-sendgrid-staging-budget.mjs",
+      "blob_sha": "c6d98090504445a1c7ad0a3d4e88b62e207c9021",
+      "declared_bytes": 3393,
+      "observed_bytes": 3393,
+      "sha256": "4e293302dc1ed8f4f113a0a9912a589b4a96b41b3d7e518229ffa243f143345a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-sendgrid-staging-callback.mjs",
+      "blob_sha": "f73061926dda671f1f9e90dcf6eb336e905c14e9",
+      "declared_bytes": 6527,
+      "observed_bytes": 6527,
+      "sha256": "e2570fff9d0dd17b00d50f48ce76a24bb4e84e7b72db35be16d3e16482546141",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-staging-bootstrap-command-environment.mjs",
+      "blob_sha": "64e140037503539443c68cde04ef2cd2104578d0",
+      "declared_bytes": 1390,
+      "observed_bytes": 1390,
+      "sha256": "e8b0231d35a150d622f18c68555a49fb627aa4706a27f13174ddfef5898b56da",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-staging-evidence-timing.mjs",
+      "blob_sha": "d1a2bd8e8135e70de8c1b8f512b725fe41deb55b",
+      "declared_bytes": 2115,
+      "observed_bytes": 2115,
+      "sha256": "377538faf689233edc8e43a06d6334a90c64f5398620800a0a5da4251c3fd852",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-staging-verification-binding.mjs",
+      "blob_sha": "0106035294cdfa41d993d745998f0db1ac01a252",
+      "declared_bytes": 6778,
+      "observed_bytes": 6778,
+      "sha256": "b292bccc2ce174581070e4df11f8b99970f725c6836cf2239c70f64fcb903e89",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-twilio-trial-sender.mjs",
+      "blob_sha": "c1b47187b0f26e2374502497865a0905a668b5f5",
+      "declared_bytes": 3457,
+      "observed_bytes": 3457,
+      "sha256": "130c732acb0e12a43d6d90b6d4a73d029f65f276c438ed58b9eecb6a7ed5fb9f",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-workstream-c-confinement.mjs",
+      "blob_sha": "aa1a3029217b8a107de178c9496831b16a9e08de",
+      "declared_bytes": 9857,
+      "observed_bytes": 9857,
+      "sha256": "eaf8d6d87313e0cbf88d2d8bb2c045424750c73a53e2d0ae9f738f220620dd98",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-workstream-c-root-resolver.mjs",
+      "blob_sha": "2eaaf69a28f7616ea4f6bee823bd8bab93973aa9",
+      "declared_bytes": 2011,
+      "observed_bytes": 2011,
+      "sha256": "c763344807a0b63a9d5dbac01249c33c6c9127c1d25c567a6223e03164161d41",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/urai-production-verify.mjs",
+      "blob_sha": "a10f406ccca16e5ffe53d1c4cfb8780301c10893",
+      "declared_bytes": 1066,
+      "observed_bytes": 1066,
+      "sha256": "abd95f8e4894d1b71c04b5e5b3ab12aa3645a378c44b7fb7c596bbd439a9c458",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/urai-staging-bootstrap.mjs",
+      "blob_sha": "81588af19650e4575983381cd15fb40d2479f399",
+      "declared_bytes": 9343,
+      "observed_bytes": 9343,
+      "sha256": "f03fdb9430492e24530c6a80dcde66f5787de5f7e6915932184cb0ce06013fa0",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/urai-staging-lock.sh",
+      "blob_sha": "bf20e1b020668fb9eea6f8c28b76ab141c8da2d2",
+      "declared_bytes": 10157,
+      "observed_bytes": 10157,
+      "sha256": "a24c6eadceb36900edb70ffdc0a1dad0c9802803f483addaaea3aad207dab9f7",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-active-consumer-refs.mjs",
+      "blob_sha": "ecfb970adff5e24523caf70c23c7234473eb1d8a",
+      "declared_bytes": 2040,
+      "observed_bytes": 2040,
+      "sha256": "680c6eb58675c145c7b41d8233de77ae7714db3741ff46be93aa21c103fbdc94",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-admin-pr57-provider-probe.mjs",
+      "blob_sha": "5db0dba8f6bebe189c04c9dd045fea14252bd711",
+      "declared_bytes": 3196,
+      "observed_bytes": 3196,
+      "sha256": "6296cc31e4e8a3f20c4ca0a960408fd791961830d3ff7f1626165e0e9ce2f2cc",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-admin-pr57-runtime-deploy.mjs",
+      "blob_sha": "7cf794bf25ac12399ce0ea7b4f1e6bb299e5d095",
+      "declared_bytes": 6272,
+      "observed_bytes": 6272,
+      "sha256": "33e5f2229c59ea85c4b01c2c51e1f719ae26a1d4856fc590ec030045ea55e114",
+      "state": "hashed_bytes"
+    }
+  ]
+}

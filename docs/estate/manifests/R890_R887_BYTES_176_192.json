@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    176,
+    192
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "scripts/test-consumer-staging-bundle.mjs",
+      "blob_sha": "15e0d62ea9670def7df9caa0f4d87f141884fe8c",
+      "declared_bytes": 9470,
+      "observed_bytes": 9470,
+      "sha256": "5465cdac1afae59c48e286dd554063400e6b1bab5b042a89328c28ced70f8b80",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-cross-repo-release-ownership.mjs",
+      "blob_sha": "7ea1a57a2cffcb2530450359525b63deedd99c62",
+      "declared_bytes": 7756,
+      "observed_bytes": 7756,
+      "sha256": "cd92ebe5592c02de1230933fb67427cbdd598109c578c6f2b8764a51a7947b67",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-genesis-release-gate-wiring.mjs",
+      "blob_sha": "bb7a54864c23d168f4274ed62c8bb221920e3d1c",
+      "declared_bytes": 3535,
+      "observed_bytes": 3535,
+      "sha256": "74150168f87a27ca4d45c5ab783934f495d8bcd7e267cc64eee1f619213d3b40",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-launch-evidence-command-inventory.mjs",
+      "blob_sha": "2f8cd2bf3d3bd63f3adbc3ad8756af50e4ae47a1",
+      "declared_bytes": 2080,
+      "observed_bytes": 2080,
+      "sha256": "72f5678ab79f1a070b97001ec2e58590e3aea352a3a1d9aaf307434d6aca8213",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-launch-evidence-source-pin.mjs",
+      "blob_sha": "185b116a59e42dc41a863448d7b58b5885b7ea33",
+      "declared_bytes": 8543,
+      "observed_bytes": 8543,
+      "sha256": "0a5b4b12573ca57983fa2cf1706207c6a23f424c0d9828c0ee365ee8d8f99c7e",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-privacy-jobs-staging-admission.mjs",
+      "blob_sha": "6fcb12c2ceea4a3e7d24c4bda4902baa7ad07051",
+      "declared_bytes": 2959,
+      "observed_bytes": 2959,
+      "sha256": "e3ae5fd3128fbd9ca47a69fdac638b9570245d541218226f93c4f1a4f5cf46c0",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r317-release-ledger.mjs",
+      "blob_sha": "031c821195f0d430c431abc9f7db984e0ead410d",
+      "declared_bytes": 2332,
+      "observed_bytes": 2332,
+      "sha256": "c2c19c8db1ac9cf4e52ed1d4aa9ab6cd38312d91d8d8d3cae6adb39ffd789324",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r349-release-ledger.mjs",
+      "blob_sha": "009d682beabcc1ace340e36fd8fae98e377f0a4a",
+      "declared_bytes": 5724,
+      "observed_bytes": 5724,
+      "sha256": "d4d361f06c7b929403ed2535ae6866f5dcf7812f3cb9e0fb7261959596d096b9",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r422-federated-source-contract.mjs",
+      "blob_sha": "06a45f8e4221d3d0b1d84fd08b22a2905bc4129b",
+      "declared_bytes": 7745,
+      "observed_bytes": 7745,
+      "sha256": "0f274d43669a34442d37f7bd204ccaae1d90033da1abaea9a677d5249778fda3",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r423-worker-deletion-source-contract.mjs",
+      "blob_sha": "f4b73393ef8f5547f8ca46fb3aa7baa7375ce826",
+      "declared_bytes": 2597,
+      "observed_bytes": 2597,
+      "sha256": "c7380078c8193b11d2266fc18c4bc6d5728d2cc7622262d26894e3a04b5e99ab",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r424-signed-rehearsal.mjs",
+      "blob_sha": "421c19bb9bb0ac237a56d8ad32726e2c144ecff4",
+      "declared_bytes": 8353,
+      "observed_bytes": 8353,
+      "sha256": "74fb9c1fa6708f73c16bef09feed7360d0bbd4d9bdfae6462faf3a0c2d867948",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r425-evidence-source-contract.mjs",
+      "blob_sha": "33c65bf6cdee31de52c5ab81c921443ec50f9ec1",
+      "declared_bytes": 2356,
+      "observed_bytes": 2356,
+      "sha256": "2d8fe1f6b9e7519a04c7f21c0428a4df3f5ce7c5649d2087a18b629b43ffa485",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r720-privacy-deletion-contract.mjs",
+      "blob_sha": "e4aea099820e278f67e294ec6837e8bedba35cc8",
+      "declared_bytes": 4198,
+      "observed_bytes": 4198,
+      "sha256": "9c0e51d181424b0a1e9c02f390015579d1647fa0b61ecda6a0948929d71a477c",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r722-signed-deletion-receipts.mjs",
+      "blob_sha": "fa72f7917027f88aed0f8d3a1799a7184125ccd1",
+      "declared_bytes": 7470,
+      "observed_bytes": 7470,
+      "sha256": "0d1a489cdcbd3e8107ca8154b9623c9e7692f63f62c1afa51e7d7bbc197f731a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r723-protected-approval.mjs",
+      "blob_sha": "85bf6eb5fe78870b0c83e4a87ee23aaca372904e",
+      "declared_bytes": 29755,
+      "observed_bytes": 29755,
+      "sha256": "f90d74d99570af860866dd3178f76ce045ee4b13d18ea2536f76b445df162557",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/test-r887-release-acceptance-wiring.mjs",
+      "blob_sha": "0c46ede422700bc779a7dc60d4467bb863d5162c",
+      "declared_bytes": 3254,
+      "observed_bytes": 3254,
+      "sha256": "bec403ed615274d38cc61da783cfaf43bfcf0344a9a2410a43bfed01afe17624",
+      "state": "hashed_bytes"
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    80,
+    96
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "functions/test/current-cross-service.emulator.mjs",
+      "blob_sha": "e1866009e19d9192bbe9242dd11788c002e8239d",
+      "declared_bytes": 30130,
+      "observed_bytes": 30130,
+      "sha256": "bf284dcda9553b32c901a3e642406b400bd93970e20e91a4a82624fe61bbcb81",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/featureRegistry.test.ts",
+      "blob_sha": "b5075bb5d811e756bcb6a3095897c971d429d114",
+      "declared_bytes": 1553,
+      "observed_bytes": 1553,
+      "sha256": "3ba024de807c9e65c047f02f8c8f704ce29da9d9ce43bf8b5b18338c0775c671",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/firestore.rules.test.ts",
+      "blob_sha": "29848d4ab9c4adca8f52ec9fecfd15b787b1dc94",
+      "declared_bytes": 5553,
+      "observed_bytes": 5553,
+      "sha256": "03f9f3bc24cd5b6ab1e756a677067791a5dda11c3bf2e65b0413386e11f5464d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/r439-original-jobs-privacy-auth.emulator.mjs",
+      "blob_sha": "6ef681b23aa3dfd33320fbf5cb56d22ccd55097c",
+      "declared_bytes": 17640,
+      "observed_bytes": 17640,
+      "sha256": "4852fa5925972dadb5f882b757b83059b1cb18c6e751d2ebb24cb44e8ec253f1",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/r450-original-auth-emulator-boundary.mjs",
+      "blob_sha": "8de4dd0015c7532423a90142b829ce3341b8b52a",
+      "declared_bytes": 12273,
+      "observed_bytes": 12273,
+      "sha256": "e4c9d1dc2b6b81d95ea708d92401cbe30f2d9c29d6692a0d568432989cedbaf8",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/stagingBoundaries.test.ts",
+      "blob_sha": "73cea515da6897aef5c199a1e841b38a4024470a",
+      "declared_bytes": 5451,
+      "observed_bytes": 5451,
+      "sha256": "d60bdc8a215aa782b48c0b92739bcef24d3b96f32c524618ebef0347e5cdef0d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/storage.rules.test.ts",
+      "blob_sha": "d56ee9956842ad69e4afbf650a3fdd34fd8786df",
+      "declared_bytes": 5185,
+      "observed_bytes": 5185,
+      "sha256": "37196e36daf37c591f105a91c72311361d35a2b6cb98dfe2c6616af7c874cb7d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/syntheticMemoryCapacity.test.mjs",
+      "blob_sha": "dde5113dbe1a53ee3f5aeac9fff65b36f61f7fc4",
+      "declared_bytes": 6079,
+      "observed_bytes": 6079,
+      "sha256": "068e09aac44322a442f869c9fef4f6240551c93ef20eb54c00ff727ed4496ab8",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/syntheticMemoryLifecycle.http-emulator.mjs",
+      "blob_sha": "7615578a1e18e7712fd98e03cfab7773deb2f923",
+      "declared_bytes": 11567,
+      "observed_bytes": 11567,
+      "sha256": "60084a99481a256f2ee1f20fe740c78fbd4216f6e1deae9b0a2f0b0a55497230",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/syntheticStorageResidue.emulator.mjs",
+      "blob_sha": "827bf9dc809d36deedfcc3f48933cf54e38376e0",
+      "declared_bytes": 3949,
+      "observed_bytes": 3949,
+      "sha256": "108c32c2cfd7c4af056cea2bf9efba8b9dc4517b5b6522be1dc7a09c472d3d67",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/syntheticStorageResidue.test.mjs",
+      "blob_sha": "c084a6493aa2be0ae438ba0b94581ec51289ce0e",
+      "declared_bytes": 5541,
+      "observed_bytes": 5541,
+      "sha256": "619b1c2e83187d87e287b1e5a0942198c51301cf65dc01eda0fc4ea4bc309a36",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/validation.test.ts",
+      "blob_sha": "430f62297f34f2fced03b194642d53f6f096ae24",
+      "declared_bytes": 1450,
+      "observed_bytes": 1450,
+      "sha256": "9fcac715f1493dac388de78e4b3fbee0a9b229808889193672b95d7bdf5fc231",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/tsconfig.json",
+      "blob_sha": "289511713add8805a0f631e7d955f7cba1cee2ea",
+      "declared_bytes": 415,
+      "observed_bytes": 415,
+      "sha256": "2a942480d88a7095df6ce01a9f424c9cf9493ebab426483fe1433d9937137d22",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/vitest.config.ts",
+      "blob_sha": "0df6100213ce68e15e59c3eaa31ced12b5d7922f",
+      "declared_bytes": 165,
+      "observed_bytes": 165,
+      "sha256": "66763d8a409d5ec3516bba5eb79b109ff76911e39de328af269cfeefb76c2c7d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/actions-hardening.md",
+      "blob_sha": "c2f5fc49ec295d5df05a498895593b0750b5922c",
+      "declared_bytes": 1995,
+      "observed_bytes": 1995,
+      "sha256": "c6705c185b8a4a6f12e0e3a6bfef3924bb2ed768a76ed257cff0c1751d3ca261",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/blockers.md",
+      "blob_sha": "aea5f31bf0a876d4a007b045aa67b25600fdba6f",
+      "declared_bytes": 3933,
+      "observed_bytes": 3933,
+      "sha256": "27c48e3e4a477bcb4fd5a26429cdd45634dd69efb05af7f5666eeaf2a90a47e2",
+      "state": "hashed_bytes"
+    }
+  ]
+}

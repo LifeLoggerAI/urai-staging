@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    32,
+    48
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
+      "blob_sha": "819f857d0817c2691f4f1e759e69d2ca69731c6c",
+      "declared_bytes": 3905,
+      "observed_bytes": 3905,
+      "sha256": "ddf8a4365aeb094db734e079736f9c311e58b2d7f5fb97aacee6c16a82dc2523",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/estate/14_R887_SOURCE_RELEASE_GATE_REPAIR.md",
+      "blob_sha": "6eae159b4760686e74d1b161c25a80f0832cfaf8",
+      "declared_bytes": 4101,
+      "observed_bytes": 4101,
+      "sha256": "2f720fefe021975aa8fc0ae6e6bf92a6540b4e9f50f40d974733d8b9db2e2948",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/estate/R887_LOCAL_NATIVE_WIRING_RECEIPT.json",
+      "blob_sha": "39712a9d43553d03c715cf35fcfd69348d3a0ff6",
+      "declared_bytes": 2196,
+      "observed_bytes": 2196,
+      "sha256": "130d69d0fdf5ebb531e5ea44cefbc402140a3627a1e759d7aefb166ac96b2c16",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/EVIDENCE_STATUS.md",
+      "blob_sha": "4e0410f288686f325b86f2d1dada6a354e52a508",
+      "declared_bytes": 236,
+      "observed_bytes": 236,
+      "sha256": "c2e89b39fe78c4fb48a9c359b820e42af0a7a4e436c0b827c2eb96f7574fd8aa",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/JOBS_DEPENDENCY_AUDIT_BUNDLE_013.json",
+      "blob_sha": "1ab0ef3bb1c9749b0b399d4df60682b1cb1378b5",
+      "declared_bytes": 2876,
+      "observed_bytes": 2876,
+      "sha256": "d89a8afb75392edb7b610b0764cefba01b2f4266f554c136701b0ed2c83d8340",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/JOBS_DEPENDENCY_PREFLIGHT_FAILURE_A58CA1E.json",
+      "blob_sha": "7349796f5269d38714d0b834a32c87c155d43045",
+      "declared_bytes": 1725,
+      "observed_bytes": 1725,
+      "sha256": "983a556b99be09da8a05e0a47648ee82e99af53384a103e86b0122f4f4aea4d1",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/JOBS_NARRATOR_BUILD_INPUT_CORRECTION_016.json",
+      "blob_sha": "c7292404e00893ebc2dcf1b99ef57d1320ef23f6",
+      "declared_bytes": 1746,
+      "observed_bytes": 1746,
+      "sha256": "8081d43d241c1965e400a39777b1719c9ba4a7afdd87e27e24c117ad3dd1d01c",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/launch/HARDENING.md",
+      "blob_sha": "a3fbefed85bc6779fe75664b4186cff4ab8ba07d",
+      "declared_bytes": 634,
+      "observed_bytes": 634,
+      "sha256": "52cdf89ac2e443732c050e019b2715103237d8f67478db49f6a32034df3c9937",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/launch/WAVE5_STAGING_LAUNCH_LOCK_EVIDENCE.md",
+      "blob_sha": "621090e1fbd9ec8e7fee4dd377ebe3ac6e5672b1",
+      "declared_bytes": 2399,
+      "observed_bytes": 2399,
+      "sha256": "2bf42621aa3bcb3e11a97c379f8968a2573c13fad33c338c8332fbc1b176795f",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/receipts/URAI_API_PROVIDER_WORLD_AUDIT_20260925.md",
+      "blob_sha": "ec58cc2cb56d22af962dc4f14cd13f84804df22e",
+      "declared_bytes": 4450,
+      "observed_bytes": 4450,
+      "sha256": "f82671f9e92d6eda38cf15e0f1b2fbd4a523f2c4f3a1059e9984f74a86e321a1",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/release-evidence/r317-20261102-system-of-systems.json",
+      "blob_sha": "655606dd2c7525263dd03fe561dff968bfaa5a33",
+      "declared_bytes": 7196,
+      "observed_bytes": 7196,
+      "sha256": "9de7f783a143936ec52babc72f9f49cd178300fdef697c3227731ea81ae1943f",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/release-evidence/r349-20261102-system-of-systems.json",
+      "blob_sha": "72621fb7a02830b42077a83427e343649bcaee67",
+      "declared_bytes": 11463,
+      "observed_bytes": 11463,
+      "sha256": "84697086595ba92d8559aa28c6d54986cc14236bad1092a1e98ded8e9e147f2f",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/release-evidence/r398-omega-release-ledger.json",
+      "blob_sha": "141331cefe8ca9c89d0705d8f21e3482486f31bf",
+      "declared_bytes": 5465,
+      "observed_bytes": 5465,
+      "sha256": "a7b0fbdb1862be6c824f68c083997f9d1f8448b6305ab2a725b9149323906ed9",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/release-evidence/STAGING_AUTHORITY_RECONCILIATION_20260714.md",
+      "blob_sha": "fef75b3f3a6acd5c5edd65591ff1c06793477efd",
+      "declared_bytes": 1905,
+      "observed_bytes": 1905,
+      "sha256": "daaf430d5350ae7c9880bc85fe7929538f19f5f85b14d0d3150f9bce26ea405c",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/release-evidence/test-r398-omega-ledger.mjs",
+      "blob_sha": "84a2a91f65b825dd390f52118888ff9339b77d69",
+      "declared_bytes": 6013,
+      "observed_bytes": 6013,
+      "sha256": "cc048ba33a399fb38880c5665cd802a92ebc8e5238e8dc2de96da83b2417d575",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/REPO_MAP.md",
+      "blob_sha": "dc0ce44b9fa21bdffa80ccc58dc7f2ee0f5a1588",
+      "declared_bytes": 3247,
+      "observed_bytes": 3247,
+      "sha256": "4337a3a59534477a166da77c9a6f24f5238f2f73888a04f5937a87643da99636",
+      "state": "hashed_bytes"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    240,
+    247
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "URAI_STAGING_CANONICAL_APP.md",
+      "blob_sha": "39db5c310688f9d9326ed81e7b75ae12fa95d9d5",
+      "declared_bytes": 1474,
+      "observed_bytes": 1474,
+      "sha256": "4f82d74172dabc5c99b9ce3c0991969cf70fb5310854f50d5947ece7073e90aa",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "URAI_STAGING_DEFINITION_OF_DONE.md",
+      "blob_sha": "5885ed83600991e7c7de294be667e91af1f234b0",
+      "declared_bytes": 5673,
+      "observed_bytes": 5673,
+      "sha256": "44bef34bd8ded85aa30c0796e63c5464295294a9700d9d5fcea1dce7571c1b15",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "URAI_STAGING_LAUNCH_BLOCKERS.md",
+      "blob_sha": "65f5edcda5aa2e405780c7536b3474a33beb91ca",
+      "declared_bytes": 4401,
+      "observed_bytes": 4401,
+      "sha256": "e6c1e1a85f41d3add92bc4abb5f9d81924d95e5c60db15854ddddb5d7430e9fc",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "URAI_STAGING_LOCK_TEMPLATE.md",
+      "blob_sha": "6c728a516329bdb1a66466025e02eb292f4265e9",
+      "declared_bytes": 1912,
+      "observed_bytes": 1912,
+      "sha256": "100db6e9e1c7d971f11403d3e0ef51ff4da2be0a04725992019c862c62ad37ac",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "URAI_STAGING_LOCK.md",
+      "blob_sha": "0091ff5724808bcdd8991cc00b83704593e9cf41",
+      "declared_bytes": 4526,
+      "observed_bytes": 4526,
+      "sha256": "89d01a9aec7d6d86dd6a2f421c2d946185fd18df1f88da664f4a3ed1a05e381d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "URAI_STAGING_READINESS_MATRIX.md",
+      "blob_sha": "f338ea0a7c7ef7ddb91b71fee59067af98c5243d",
+      "declared_bytes": 4079,
+      "observed_bytes": 4079,
+      "sha256": "c6c39f51f1a4240ca5687efc03fa29866893985344b3ddda21d8e0d0812993b4",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "URAI_XR_RELEASE_TRAIN_GATE.md",
+      "blob_sha": "873cd307c7599e739a91c8d5fc9dcb8dd7c180db",
+      "declared_bytes": 2905,
+      "observed_bytes": 2905,
+      "sha256": "1ecbbf49e16e236ba44b44c018a8237df1b9cbc2a2a860edafdff45fbe28151c",
+      "state": "hashed_bytes"
+    }
+  ]
+}
