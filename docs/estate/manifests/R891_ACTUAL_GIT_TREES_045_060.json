@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    45,
+    60
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "fix/protected-consumer-branch-verification-20261005",
+      "commit": "435b41e2edb88a05eab85bc6a733d5745b84ef6c",
+      "actual_tree_sha": "458f77a0e53761611f0f7ad38208c2754295ab85",
+      "corrected": true
+    },
+    {
+      "branch": "fix/protected-consumer-ref-coverage-20261004",
+      "commit": "96e1caeee6cbc01767012e7b8b21e37e982d6fbc",
+      "actual_tree_sha": "98f6d731dd54c059a67b6c08b1087605a5184617",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-communications-main-20261004",
+      "commit": "cf5ffbcda029fde1272fdca675b317e5d2058218",
+      "actual_tree_sha": "5918e6ce37f055652f089ef7c9bbbc0b7f98162f",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-spatial-6a21b441-20261004",
+      "commit": "70e4d78c06e2ba07c0287ce572fb95535c1d058e",
+      "actual_tree_sha": "82447ac69156c8f280867abb14b9cf8fb0fad618",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-spatial-1591-0d612665-20261004",
+      "commit": "846dafb5f5ba248f14c3bb4532f57330e8dc67d1",
+      "actual_tree_sha": "247a851dbc21647a657075607834496df7a434c1",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-spatial-1596-20261005",
+      "commit": "ff9b0ba5ec5d87e49a6f0bdedb12db83faf3c24b",
+      "actual_tree_sha": "4bb6c269ed933ed0ec8bfe5f521a2ed5f75da753",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-spatial-1596-head-0d9ec-20261005",
+      "commit": "80ab9f640e7c9ca30d971fa2fdedf077faa63aa7",
+      "actual_tree_sha": "4500eca598cd96fe7beda39ea1381cf5ea233f73",
+      "corrected": true
+    },
+    {
+      "branch": "fix/rebind-staging-spatial-1581-20261004",
+      "commit": "2759b2ec01d9f87489aad8e15e414f1737d23124",
+      "actual_tree_sha": "ebbba06d0956e9b4701bb497ba7de4732587459f",
+      "corrected": true
+    },
+    {
+      "branch": "fix/repin-spatial-pr1582-20261004",
+      "commit": "495785028d662e800cf151525bbc374939387249",
+      "actual_tree_sha": "a86d46085cc0bbbd35ac5447548baf77226724f5",
+      "corrected": true
+    },
+    {
+      "branch": "fix/retain-private-ref-failure-evidence-20261006",
+      "commit": "739555c26e07a006a39e8d32e4f8a76fb8603be1",
+      "actual_tree_sha": "2f22731c69f515d4a8538b4dcf14f9928140499b",
+      "corrected": true
+    },
+    {
+      "branch": "fix/sendgrid-cleanup-yaml-20261007",
+      "commit": "56ba3d397a7545300331032232cedb3e7635e72e",
+      "actual_tree_sha": "52ee82800ac1794287790d3eb1f1e3b137988e5d",
+      "corrected": true
+    },
+    {
+      "branch": "fix/sendgrid-current-review-authority-20261004",
+      "commit": "d4ac978d3c49a7980bf177750fc1028505bed5b8",
+      "actual_tree_sha": "229627c7677b267cb5716aa99a9f1608ed0c5a2f",
+      "corrected": true
+    },
+    {
+      "branch": "fix/spatial-1577-consumer-binding-20261004-0586",
+      "commit": "293fdc385144954c3fdce0f25a6890a7a8deb381",
+      "actual_tree_sha": "aa4041837df8c17a1d10cbed89e7ce32ca05edf8",
+      "corrected": true
+    },
+    {
+      "branch": "fix/spatial-1581-main-bound-binding-20261004",
+      "commit": "96e1caeee6cbc01767012e7b8b21e37e982d6fbc",
+      "actual_tree_sha": "98f6d731dd54c059a67b6c08b1087605a5184617",
+      "corrected": true
+    },
+    {
+      "branch": "fix/spatial-94581-consumer-binding-20261004",
+      "commit": "d5401b57092d61916a30accd420aa1b79d80e16c",
+      "actual_tree_sha": "83e0ca91f77690b9626d905b364953b872286876",
+      "corrected": true
+    }
+  ]
+}
