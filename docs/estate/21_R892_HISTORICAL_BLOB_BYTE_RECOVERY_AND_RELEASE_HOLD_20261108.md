@@ -1,3 +1,5 @@
+> **HISTORICAL INTERMEDIATE CHECKPOINT — superseded for byte coverage:** This chapter recorded worklist offsets 0–80. R892 has now independently verified **all 587/587 historical-only blobs**, and the total captured 180-head corpus is **826/826 blobs / 6,984,576/6,984,576 bytes**. Read [final chapter 23](23_R892_FINAL_826_SOURCE_BLOB_RECONCILIATION_AND_RELEASE_HOLD_20261108.md), [final next-Chalk chapter 24](24_R892_FINAL_START_NEXT_CHALK_SOURCE_COMPLETE_RELEASE_HOLD_20261108.md) and the [final machine index](manifests/R892_COMPLETE_826_HISTORICAL_BLOB_BYTE_PROOF_20261108.json). This prior status remains retained for historical provenance only. **Release HOLD unchanged.**
+
 # ONE URAI GENESIS — R892 historical source-byte recovery and release handoff
 
 **As-of:** November 8, 2026 Central / November 9 UTC. **STAGING LIVE HOLD / PRODUCTION NO-GO / PHYSICAL DEVICES NOT CERTIFIED.** This is a documentation-only independent continuation of R891 #184, stacked on the earlier full audit R890 #183. This is NOT a source merge, deployment, or authorization for paid compute.
