@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    384,
+    400
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "a6ef550c4ee99e0198011f5c0fcb783ea9b0dd83",
+      "declared_size": 2919,
+      "example_path": "scripts/test-genesis-release-gate-wiring.mjs",
+      "first_branch": "review/r720-privacy221-current-deletion-contract-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 2919,
+      "sha256": "3d5b7e7cc663b9668b60913e20a766692b496e1e5a59b66577b945ad5aa69adc",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a75e4f2297c331baa52b044f2842820adbdc7fc8",
+      "declared_size": 3334,
+      "example_path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-render-authorization.ts",
+      "first_branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
+      "pathRefs": 2,
+      "observed_bytes": 3334,
+      "sha256": "ec188d62d0494bc99b2cb93fe31002ee83b9f789fff60b841da61d5b7b9a8c28",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a77bec323f549051575df52f1aa02c025fb0f079",
+      "declared_size": 1073,
+      "example_path": "functions/test/featureRegistry.test.ts",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 37,
+      "observed_bytes": 1073,
+      "sha256": "1de344c34a39c65da0f9d717710f9c7ef45f37a6e201a4c260904d6705d1b37c",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a81aa373d2c9757c79ed05b5b33a58c38c62d0b1",
+      "declared_size": 6791,
+      "example_path": "scripts/test-launch-evidence-source-pin.mjs",
+      "first_branch": "fix/genesis-staging-evidence-source-pin-20261102",
+      "pathRefs": 1,
+      "observed_bytes": 6791,
+      "sha256": "a48f20aa255b51b379209f5a73d3daab1a4f0272b60226c4ec70f6efe53ac96d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a823bc6f9e579df134a1e1b8536abb37fdf05b36",
+      "declared_size": 6908,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "converge/production-spatial-consumer-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 6908,
+      "sha256": "57b3e2f4c330df642ed7627460535dddbb7b9a54b8cf9405e2efde099fdc39c5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a82ca882be1d8df0f28c118220434dba8ebd8141",
+      "declared_size": 5669,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "fix/network-verifier-functions-bootstrap-20261005",
+      "pathRefs": 5,
+      "observed_bytes": 5669,
+      "sha256": "887f672862298a7c9e94a6521ca66ab8285abe6d20d111a565fdcce65b3617a2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a8428cc3fd350166487aa3a2b1b960526acc8a39",
+      "declared_size": 4025,
+      "example_path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md",
+      "first_branch": "repair/twilio-owned-trial-sender-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 4025,
+      "sha256": "83a72511b731691bf52091c8fdc466fccd518276e6f227cc2410b38c804a6e4d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a86f884c754fdb5f367290107dfd8b90141e6ce0",
+      "declared_size": 19299,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-r772-ancestry-revocation-source-convergence-hold-20261105",
+      "pathRefs": 2,
+      "observed_bytes": 19299,
+      "sha256": "79166e2e6b981f49d88f7fcc24a44ecf0d510053084647bdf070d5144e43aa0e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a99dd936b7d895937979910b9798174e5481a417",
+      "declared_size": 928,
+      "example_path": "functions/package.json",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 94,
+      "observed_bytes": 928,
+      "sha256": "83d4432ee97531905dedf5e169557751484ca47bb3901692bc845b797a838539",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a9be1b78fe41ceb74dadee1c8a1ccb4eb486ab75",
+      "declared_size": 6864,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "twilio/api-key-control-plane-20260927",
+      "pathRefs": 1,
+      "observed_bytes": 6864,
+      "sha256": "da5c3d7e44798a42d0b898737ef4e24ac614ce87d6b7f44c4bfbcf658d4b7998",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "aa08fd0ada73f6c3c0f3ce1b26cc56f2bf2684d8",
+      "declared_size": 2810,
+      "example_path": "scripts/validate-spatial-pr1296-stripe-provider-probe.mjs",
+      "first_branch": "stripe/spatial-pr1182-test-runtime",
+      "pathRefs": 1,
+      "observed_bytes": 2810,
+      "sha256": "e8fbc350e62f806be097c248c8eb0aba65ef44ac53623cf56e4a1bcd5caf2ec4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "aa17f3a0cf0c5f7329b74f51dcd031d43882897d",
+      "declared_size": 6871,
+      "example_path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+      "first_branch": "repair/twilio-owned-trial-sender-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 6871,
+      "sha256": "c42779e867b2146b8b2c955e4941844d8361d0e613e61733dff64004ffe1c853",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ab469c66282323399735c2324b6825dbbaa39321",
+      "declared_size": 6908,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "converge/final-spatial-consumer-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 6908,
+      "sha256": "cdba0ff0b84fb1b402127eb3cdfc364a54d6aaa0e3fcacc47910c84ec61f805a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ac69da52e7466ab56c9f51fdaf8a548b709f4a31",
+      "declared_size": 18212,
+      "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "first_branch": "ops/owner-trigger-twilio-trial-e2e-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 18212,
+      "sha256": "76f28f9bb1336d110ca2ee568df5b05e0a2098df42360f8d10d440c4509ecbf5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ac9deaf7f16df822f6023ffbd5cee6c6dedacb87",
+      "declared_size": 5787,
+      "example_path": "scripts/test-sendgrid-staging-approval.mjs",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 45,
+      "observed_bytes": 5787,
+      "sha256": "fc26f628eb2efe02c82d889b9397b55ee121512bc233688a75046aaa85c13121",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ad099d1b4e00141782ba7431d64fd68fb3be92e6",
+      "declared_size": 4909,
+      "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+      "first_branch": "ops/owner-trigger-twilio-trial-e2e-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 4909,
+      "sha256": "794ca7f46edd4fedd41eac9f08d16246265831325d8fc359c2d41b517ca14e81",
+      "state": "verified"
+    }
+  ]
+}
