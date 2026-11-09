@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    0,
+    16
+  ],
+  "method": "Exact Git tree blob SHA fetch, UTF8 byte length and SHA256 (abc test vector validated), no cloud/CI",
+  "rows": [
+    {
+      "path": ".env.example",
+      "blob_sha": "cf10fe017461b488036b4585081a0142a8d1553c",
+      "declared_bytes": 1658,
+      "observed_bytes": 1658,
+      "sha256": "67a4c707afd2af3c23943060922ac0ccbf3c5713c88c8704bdd97c56347db141",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".firebaserc",
+      "blob_sha": "dc92cc63382c34e5bf1553f076b605ad44188fc7",
+      "declared_bytes": 117,
+      "observed_bytes": 117,
+      "sha256": "dc5d09c9f2bc989b45fd36182264249d1a20ebff7e0f5f89f4be00bbc23467a2",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".firebaserc.example",
+      "blob_sha": "cfd452c25ed6c322c3a38f746cb7ec83fb920348",
+      "declared_bytes": 82,
+      "observed_bytes": 82,
+      "sha256": "bb81b91e9820728f3efe06d8fe1834d3eb2d3c662a62572d0c8dfbbb33c5b23c",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/admin-pr57-runtime-deploy.yml",
+      "blob_sha": "38ba00225b765fd6a449d35c0b011f8aafe56fd3",
+      "declared_bytes": 20867,
+      "observed_bytes": 20867,
+      "sha256": "0010a02bd28a22b68f67ea1596a8f66bc95d82dbab8477d68e0b2159dd350987",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/admin-pr57-staging-consumer.yml",
+      "blob_sha": "00ad23f15df0d459d82a4044f76f1d85b4668477",
+      "declared_bytes": 10893,
+      "observed_bytes": 10893,
+      "sha256": "7cc702bac0ff8d894a4233a78362e6c85aa541c79774c8d0f08a4552c713debe",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "blob_sha": "b494b7a59171526e682cdd537f3041175be25eab",
+      "declared_bytes": 13807,
+      "observed_bytes": 13807,
+      "sha256": "621a23d62599585ebb3579c56bdeba3569c96f05f3e22d3c256aea6704b18849",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+      "blob_sha": "e9a660314db5bebf1df13a9faa243b0c054f4028",
+      "declared_bytes": 22934,
+      "observed_bytes": 22934,
+      "sha256": "e2bede30a77d39d4659c392f4fe28037247069240dcb167a688b38189ac4597a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "blob_sha": "e3ddc9da0d3680a63b8d885dec70d717ef5232c3",
+      "declared_bytes": 17350,
+      "observed_bytes": 17350,
+      "sha256": "6017e1c10bb49932a6fd4f69fcc3e5741735fb739ed70f89ae9b5b7a1fdbd2fc",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/current-cross-service.yml",
+      "blob_sha": "c176d61edcf58437632a2fcb8bb572a22aaa141b",
+      "declared_bytes": 13891,
+      "observed_bytes": 13891,
+      "sha256": "9e4ed20584cdcfab69af950878a39bd0192644db5f096ed51111dacc7459f74b",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/private-consumer-ref-verification.yml",
+      "blob_sha": "15d3bb5d00186a4cde7f1ed730ed2eb7df48d227",
+      "declared_bytes": 1373,
+      "observed_bytes": 1373,
+      "sha256": "6ef5925446bc4dfbfa445f135e79077204df7559ee3b40ad5ee04382c52b5a86",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/spatial-pr1596-stripe-provider-probe.yml",
+      "blob_sha": "e45d9aae7d04bda0135915eeb8e17221025e81be",
+      "declared_bytes": 18131,
+      "observed_bytes": 18131,
+      "sha256": "8fcd81647c9d5f25a16c2ba1e035e4dfe2d624a23a331a2f92489e56c5b5aa72",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/staging-deploy.yml",
+      "blob_sha": "711068ddedf46dfab1ded099415a3496b56ca3fd",
+      "declared_bytes": 18948,
+      "observed_bytes": 18948,
+      "sha256": "384f308b8e7c3fb926b53b0f917531f12376d21ce29b4ccee2c60f4d5fec460d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/staging-gcp-authority-readback.yml",
+      "blob_sha": "e908f035ceb008dd8c28884472c306b1de59d396",
+      "declared_bytes": 5459,
+      "observed_bytes": 5459,
+      "sha256": "6be1167d9d7317f09cedb0ae8665d4ed7ba00ef4efe2aa18ca60b103bec6bf8d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/staging-pr118-authenticated-emulator.yml",
+      "blob_sha": "933d426e2c176581a9b97e570cb38e5d861c134a",
+      "declared_bytes": 5522,
+      "observed_bytes": 5522,
+      "sha256": "ff9419e318a6b8bf24a8af6cfd8939b3ab4abf33e465acc3c8cad465f14d5a11",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/staging-pr120-federated-emulator.yml",
+      "blob_sha": "edab1f9a57f3ed06fcf47ffc37fa0830d334cafc",
+      "declared_bytes": 6233,
+      "observed_bytes": 6233,
+      "sha256": "23921de8c19bc2125bd32a1e4ad0ba670fd58da246d9a8048fedf6a87cd13706",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/staging-pr121-r451-four-emulator.yml",
+      "blob_sha": "ada369eacf75a388f93fc8ce3490901699de7ec8",
+      "declared_bytes": 6597,
+      "observed_bytes": 6597,
+      "sha256": "4c959ab08e9ac98439e8a8eb70464a58a90e82b7ee1b098baf0050350ce88433",
+      "state": "hashed_bytes"
+    }
+  ]
+}
