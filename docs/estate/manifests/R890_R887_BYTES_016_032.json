@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    16,
+    32
+  ],
+  "method": "Exact immutable Git blob fetch, independently computed UTF8 SHA256 and size (abc vector validated)",
+  "rows": [
+    {
+      "path": ".github/workflows/staging-wif-runtime-identity-probe.yml",
+      "blob_sha": "8bcbddd0244626ad3c50579f0416c77bc6be73ec",
+      "declared_bytes": 10529,
+      "observed_bytes": 10529,
+      "sha256": "85e7b5e6ce9a61118cdbd5eb364113faa593ac7b2de2d93b41f25616ee61d03a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".github/workflows/urai-production-verify.yml",
+      "blob_sha": "733717576d1822ef978c37ae44e3a5ee04fa8d2c",
+      "declared_bytes": 2976,
+      "observed_bytes": 2976,
+      "sha256": "b65b593e53b49a7a419375a3ce3fe84346914aa883dcb3c45fd9b1eb88d596e6",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".gitignore",
+      "blob_sha": "0c46ec478e95c754c78eb0acbe11c99583ed0f92",
+      "declared_bytes": 481,
+      "observed_bytes": 481,
+      "sha256": "2f8d68225257403127d56eddf0f5972e9901ca16041ada998d101aa084ce35ee",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": ".idx/dev.nix",
+      "blob_sha": "872b36ee0b749fea8069e858ddc171e95896f5ba",
+      "declared_bytes": 526,
+      "observed_bytes": 526,
+      "sha256": "b175039c8d22274d2f55f932e4ecc838d6361109c815dfee8394683932f63857",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "API_CONTRACT.md",
+      "blob_sha": "787e8c372e44477a0496ae418c9424eebac3a43e",
+      "declared_bytes": 1815,
+      "observed_bytes": 1815,
+      "sha256": "e0bec52f3a2faff2db1019d4d8a6f24227e0bf1dc022654290d0b67ef4a34b60",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "config/provider-readiness-20261001.json",
+      "blob_sha": "d78ef4128c1a6445329fef911eb9067c3ab46c24",
+      "declared_bytes": 5976,
+      "observed_bytes": 5976,
+      "sha256": "6cbede870fcc26e7a4551601c5a9ccb6c63bc34eda3ca3be9e2a0be8d0a3ecdc",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "config/provider-registry-20260925.json",
+      "blob_sha": "ac48fa29680e09fe0e2f7ef1d3b5608f017352da",
+      "declared_bytes": 10327,
+      "observed_bytes": 10327,
+      "sha256": "4a646f9f4af341de39ae91c611f60efc23144fb9c94bfb3e0f74f5b6f343c002",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "config/spatial-consumer-candidate.json",
+      "blob_sha": "55ce6d569b92830c776df153fae2e0d53f45ab60",
+      "declared_bytes": 1167,
+      "observed_bytes": 1167,
+      "sha256": "edb83904da86ecf91acc23453b1b3f73690b17e8056116cf1bafe9c4d3cf5959",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "config/staging-consumers.json",
+      "blob_sha": "775a14746682d088cc53b1250327d2289dd74de1",
+      "declared_bytes": 5723,
+      "observed_bytes": 5723,
+      "sha256": "a5ccb68df790bb949fac93a51fe2a7ff9021846f167518c0b5bf50b2d1ca31c0",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "CROSS_REPO_RELEASE_MAP.md",
+      "blob_sha": "57a30f88ac0d62dbccc3367854a995ebd045e523",
+      "declared_bytes": 3532,
+      "observed_bytes": 3532,
+      "sha256": "ef440fd572e032516300954ed6c3a199bc07dd6f061613ad0a5875339624458f",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "DEPLOY_EVIDENCE_LOG.md",
+      "blob_sha": "557686095ff31ccd686549a86c1fa2830b863ec5",
+      "declared_bytes": 1540,
+      "observed_bytes": 1540,
+      "sha256": "a51225c3c0b6189bfd8008ff52f1a833ef8d21e2a184f1f0198b3cedf2db0e20",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "DEPLOYMENT.md",
+      "blob_sha": "4855091ad12cbc2f770c5d86aab30b1403b7f8b9",
+      "declared_bytes": 4033,
+      "observed_bytes": 4033,
+      "sha256": "83db5f1d4e0f973531ead6e7aeaa9bf404f074d10abb6fb94c58445a317067f2",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/AGENT_HANDOFF_CURRENT_STATE_2026-07-19.md",
+      "blob_sha": "f6668188f211415b6c7451b2ab8708d0e2e75a45",
+      "declared_bytes": 5487,
+      "observed_bytes": 5487,
+      "sha256": "a46a9888c61bba7673a4c9e764d626317daaf51847f08d2db34cfccf0ecf1e4e",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/AGENT_HANDOFF_CURRENT_STATE_2026-08-04.md",
+      "blob_sha": "973c10d2f1c1d1305b0a87b843c82835b5abb75c",
+      "declared_bytes": 10675,
+      "observed_bytes": 10675,
+      "sha256": "7cb5151a5ca90babdaea320fb639fe6bf9f4aaa96aa9b7f6be9313a642ab6555",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/BOOTSTRAP_EVIDENCE.md",
+      "blob_sha": "0d99c067e127c827b4c9b2e1e81595d704596775",
+      "declared_bytes": 838,
+      "observed_bytes": 838,
+      "sha256": "83291ed56eb249f31a46a5fd119896f66e36c53c01a412d01d5deff9318389c7",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/COMMAND_EVIDENCE.md",
+      "blob_sha": "8fb66d2f7c272657c0a5ea39a4111224373ed6fa",
+      "declared_bytes": 2651,
+      "observed_bytes": 2651,
+      "sha256": "9622e9da364e637c8514ca3c5f2ad775cb0370ccb18dfbb65502af44d769cb2b",
+      "state": "hashed_bytes"
+    }
+  ]
+}
