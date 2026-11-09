@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    144,
+    160
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-scoped-receipt.ts",
+      "blob_sha": "b22ce33d498262e7348a66cfe038e2490d295c12",
+      "declared_bytes": 6076,
+      "observed_bytes": 6076,
+      "sha256": "10b355189a318a794f515a9a31e2b8ddc9b8c54fd691a09fe7b1816dd3470627",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-jobs-bridge.ts",
+      "blob_sha": "afca955d63a6ce928d2a6b6aa456b508a6134893",
+      "declared_bytes": 14585,
+      "observed_bytes": 14585,
+      "sha256": "ffbc00b9c637b167ac1b9305f3f0ff581f1bf11b8f8c384a6f0dc5d47b2c6620",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-jobs-client.ts",
+      "blob_sha": "0ca262e114b0439426d75cf7ac510e289ba315eb",
+      "declared_bytes": 7056,
+      "observed_bytes": 7056,
+      "sha256": "8fad1e0e2bc8b7225f0a3c25acd13cd6eee5cce9e8c1404c6e54f04bcf5c2af9",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-longform-contract.ts",
+      "blob_sha": "b61484f218a46b56fbe479dadec73595b8599b3f",
+      "declared_bytes": 16056,
+      "observed_bytes": 16056,
+      "sha256": "e4fc327a0403c6a3220308428ab50b5029369b6434a077abb467cca35ef92cb1",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r425-evidence/manifest.json",
+      "blob_sha": "798c5dcac7004920527b797abbce33388cba1f56",
+      "declared_bytes": 574,
+      "observed_bytes": 574,
+      "sha256": "eb14756bfb6306e3dcad43c413dc14e9d71b5985f5902c293a21695e58ae138e",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r425-evidence/scripts/r426-original-source-evidence.mjs",
+      "blob_sha": "1ad836d9f04d34c29ecc26cb7c83b07d971705e0",
+      "declared_bytes": 7390,
+      "observed_bytes": 7390,
+      "sha256": "00dfc6ff0d28f8fe5158dd7a9d64a945745c412d590a3bd76fc3d713db8605bc",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r425-evidence/scripts/r426-original-source-evidence.test.mjs",
+      "blob_sha": "4c01dd0e115a4cf4dbd419da83b667c795e8fc51",
+      "declared_bytes": 4348,
+      "observed_bytes": 4348,
+      "sha256": "376d98b26dad0065b8619feabf8ae34228871af74ee369adb57109cb73577b34",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r425-evidence/scripts/r427-evidence-escrow.mjs",
+      "blob_sha": "5192840d093546ed1f2c4a8ab04f8c2773272d57",
+      "declared_bytes": 5270,
+      "observed_bytes": 5270,
+      "sha256": "7ca3340e4337bc084c1ebc1eb08fad39a9e5c8a3407608a955c630a6d4d37a77",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r425-evidence/scripts/r427-evidence-escrow.test.mjs",
+      "blob_sha": "c95a4fc9124e1d903532cdfa9cfe1dda3c6fffe1",
+      "declared_bytes": 7494,
+      "observed_bytes": 7494,
+      "sha256": "b64f767d01bc5cb6f7d3fcb62e5959c0fd825dbdb3a32b3367c4688d87f4874a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r720-privacy/deletion-contract.ts",
+      "blob_sha": "1a9ffd566bd6be8257b598a216cf254228971447",
+      "declared_bytes": 8134,
+      "observed_bytes": 8134,
+      "sha256": "7c514bfbbda7ab81291696ea9c5d95716768e0ba86fa690bf49c7407fe029381",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/installed-advisory-match.mjs",
+      "blob_sha": "523b3aefb4ebf9d18ba2a2e2230061e3c7cfa9c6",
+      "declared_bytes": 5231,
+      "observed_bytes": 5231,
+      "sha256": "756dad7c802785b0d264d03a86904371e7baee4b47fff2d0f3a92549add802d0",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/launch-p0.mjs",
+      "blob_sha": "0798cce14d21186f3a14365ff8e8b9396c139894",
+      "declared_bytes": 1108,
+      "observed_bytes": 1108,
+      "sha256": "37bbe89b13da5addeafe8d6520f6b88db4de8950ca928384ebf52074f5f3f455",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/lib/r722-deletion-receipt-proof.mjs",
+      "blob_sha": "ec6be6af94c88287dcd7232dcc8da3cf52206efe",
+      "declared_bytes": 7462,
+      "observed_bytes": 7462,
+      "sha256": "020203070e35922ef5536d1e3a34a58194b357ef125dbfd63ea610070da11387",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/prepare-consumer-staging-bundle.mjs",
+      "blob_sha": "86b3b44774d0cd8044f6c6274400cf0fbc3171ed",
+      "declared_bytes": 13750,
+      "observed_bytes": 13750,
+      "sha256": "2167625ec0ef8ffb3ce452cbcacb1e4e0b606af6e2856cb113eaaf1d09ccb71d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/promote-staging-twilio-function-deploy-iam.sh",
+      "blob_sha": "1902685dfaf70c341603b4ff70e4b0458b737faf",
+      "declared_bytes": 7683,
+      "observed_bytes": 7683,
+      "sha256": "7d78ae185ce57ebb26999734e95f61a753e3660528876e1272c7e412cc98bcf3",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/r451-combined-emulator-acceptance.mjs",
+      "blob_sha": "a55abfa748e8a73e0249dbf44cca788f0c87f324",
+      "declared_bytes": 6712,
+      "observed_bytes": 6712,
+      "sha256": "a70ab999b16097abe02a3b02e92312e6f056dd88b391f61b68f0e99382316c82",
+      "state": "hashed_bytes"
+    }
+  ]
+}
