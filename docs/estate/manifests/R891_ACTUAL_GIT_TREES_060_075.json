@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    60,
+    75
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "fix/staging-admitted-communications-source-20261007",
+      "commit": "4abd517e87bc25265504c87fd7eb7b40326291f5",
+      "actual_tree_sha": "c150ac96d025870009f04ef55172fa6b909ee8b4",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-authority-readme-20260830",
+      "commit": "4c416a25818c939a59ec67ce4defa236d62ad548",
+      "actual_tree_sha": "a6ca890546026d81603698eae5a3dabaafa9a64e",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-effective-iam-project-name-20261004",
+      "commit": "18b1e9c44867baaefe4f3d48b4428ebaccee82b9",
+      "actual_tree_sha": "4331e0cdce276f396c2386e5f3dcf5b6d86adc7c",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-private-ref-node22-20261004",
+      "commit": "8c144b482d1f6659853fb061ec9591ebf0ca08c5",
+      "actual_tree_sha": "f4e2e1fa6110a6641f24e24ace80936e1baad970",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-runtime-truth-20260716",
+      "commit": "c72461a00ac9fdd42292459827467a3ef2cb4e81",
+      "actual_tree_sha": "48d30a3f106a94cc7d926f989a7bfd282270ca72",
+      "corrected": true
+    },
+    {
+      "branch": "fix/staging-smoke-and-public-boundary-20261003",
+      "commit": "c673fd24825a6b4d340af0f8b908dfdb3a5de397",
+      "actual_tree_sha": "651f5e07dc4683c25351b5a0aff76ffd8628f815",
+      "corrected": true
+    },
+    {
+      "branch": "fix/stripe-pr1591-current-contract-convergence-20261005",
+      "commit": "e290bb1d6d0d28bf3126b90fed12cfd138eaa747",
+      "actual_tree_sha": "d9decba4a7ce03d9712a2a4f6d5876a424c40e8a",
+      "corrected": true
+    },
+    {
+      "branch": "fix/stripe-pr1591-runtime-mode-source-check-20261004",
+      "commit": "dfa2483f4d9fc20e52ed0545f471197d5d674721",
+      "actual_tree_sha": "005273bb39b653f99c51dd47421dea2abb2f3493",
+      "corrected": true
+    },
+    {
+      "branch": "fix/stripe-pr1591-source-contract-20261005",
+      "commit": "b09113b9da5f4ef739c0d8e3a39efc0c444acd36",
+      "actual_tree_sha": "136ed45ee026d0951ebfe1c7aa226639636b361e",
+      "corrected": true
+    },
+    {
+      "branch": "fix/twilio-private-ref-auth-fallback-20261004",
+      "commit": "72ddfb49b00b91350540197d8b166bdcfe66f59e",
+      "actual_tree_sha": "84ba562d3cf0f7559598d2791f3479f61c06a129",
+      "corrected": true
+    },
+    {
+      "branch": "fix/twilio-rollback-heredoc-20261007",
+      "commit": "36b226f5ca7bffcd00e0d8cce65a2416f58a2c68",
+      "actual_tree_sha": "86a663e2a1da6ea4ff9da703a080e3b6e924024d",
+      "corrected": true
+    },
+    {
+      "branch": "freeze/terminal-233662d0-20260929",
+      "commit": "233662d0d7fd58b6627c5b01ede39b9ef641c359",
+      "actual_tree_sha": "37a026e168e8eb97ed4bf9a3b0ff4aad813f31ff",
+      "corrected": true
+    },
+    {
+      "branch": "freeze/terminal-dea35598-20260929",
+      "commit": "dea35598f3332c502476a469ab059fd19bad2308",
+      "actual_tree_sha": "e26fc95dc438ecb7c8d2edd858fced61fb6fa729",
+      "corrected": true
+    },
+    {
+      "branch": "govern/sendgrid-independent-review-limbernutz0-20260929",
+      "commit": "60514bc1fb697624c9ca50818d8c39f1f6b1f63e",
+      "actual_tree_sha": "81534b5f889ba646838aa36c6b417ffdac7f132a",
+      "corrected": true
+    },
+    {
+      "branch": "govern/sendgrid-independent-review-limbernutz0-current-20260929",
+      "commit": "6405ed5205dfc864b6d8a791857f358a62e75940",
+      "actual_tree_sha": "7a6c60eec1673b91ebb83e7880edb63079f65e1c",
+      "corrected": true
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    150,
+    165
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "review/r737-converged-source-authority-20261105-chalk",
+      "commit": "9bbc20983542256a0d78972455d0bec2c36b4b0d",
+      "actual_tree_sha": "a55ac4a5986b8001aaf9adcdd8dbfb3533c0efb5",
+      "corrected": true
+    },
+    {
+      "branch": "review/r742-bind-exact-privacy-workflow-paths-hold-20261105",
+      "commit": "05b8252e0371e4fa65b03d6941a73aa07f62b789",
+      "actual_tree_sha": "78a19ae49cdbe0ca9afcfab7adaa6fba4c08c6f4",
+      "corrected": true
+    },
+    {
+      "branch": "review/r744-genesis-owner-acceptance-kit-hold-20261105",
+      "commit": "9bd262418074024ba02cece9977596bab4449649",
+      "actual_tree_sha": "776c1b113a68d571f7efd3d75dd548922e522094",
+      "corrected": true
+    },
+    {
+      "branch": "review/r744-launch-evidence-timing-fixture-20261105",
+      "commit": "6f5aef9d07de29634a9efad85b69109b1ee37409",
+      "actual_tree_sha": "b9a640942548f0a20e93394524fd592e21199cca",
+      "corrected": true
+    },
+    {
+      "branch": "review/r745-reject-renamed-stale-actions-history-20261105",
+      "commit": "1755bcb559f3c37143c226f9b53756e2737b025d",
+      "actual_tree_sha": "1e5ac8bd3cf59d9607503ff7bb4331fb9bfc5a9c",
+      "corrected": true
+    },
+    {
+      "branch": "review/r748-r740-r745-complete-protected-workflow-history-20261105",
+      "commit": "2925d83ec60624c7efd2f3bc5740ccad8930392d",
+      "actual_tree_sha": "ff1d214354db9c13f0843f97b855dff63aa05424",
+      "corrected": true
+    },
+    {
+      "branch": "review/r749-retarget-owner-acceptance-to-converged-r748-hold-20261105",
+      "commit": "6d93bd4949279d4d365a7fa77f5eeecbcb5b1d84",
+      "actual_tree_sha": "08f0cbc83bf74e3768e5c7b0b5971a3a908c73cb",
+      "corrected": true
+    },
+    {
+      "branch": "review/r750-converge-r748-security-and-r744-timing-tests-20261105",
+      "commit": "e0503dab67ff5991e6248f364093a89413f7d40a",
+      "actual_tree_sha": "f25ac3caed9ffa5b13718816ff2be1e19d59e655",
+      "corrected": true
+    },
+    {
+      "branch": "review/r751-pin-owner-full-acceptance-to-r750-staging-141-20261105",
+      "commit": "29df40e05eaaf0a2b133bd59beaf570d454d6acd",
+      "actual_tree_sha": "b3c189f53c76070abb83cfadb90f21451710ebd6",
+      "corrected": true
+    },
+    {
+      "branch": "review/r752-r750-r745-historical-ledger-repair-20261105-chalk",
+      "commit": "34643afb814ff9b4fe926d6d1866dcf4b311e579",
+      "actual_tree_sha": "98c24b1d31bb1250c1bef644b476a23cdc408426",
+      "corrected": true
+    },
+    {
+      "branch": "review/r753-pin-owner-acceptance-to-r752-staging-143-20261105-chalk",
+      "commit": "4ddd781575fd0a66fca5a25bb206378fec041247",
+      "actual_tree_sha": "c474aa3ea0e32a7519125a1fd14836e283a2927b",
+      "corrected": true
+    },
+    {
+      "branch": "review/r756-expand-pinned-owner-native-test-coverage-20261105-chalk",
+      "commit": "f1b1011cfffd45af6ad0c4783280d2d66a4518b6",
+      "actual_tree_sha": "399497d8139cc105a0e0db12e6c30725a5c97ebe",
+      "corrected": true
+    },
+    {
+      "branch": "review/r757-pin-expanded-owner-acceptance-to-es2020-verified-pr146-hold-20261105",
+      "commit": "0d94470ca19cb67c487e03b71a163baf59732c39",
+      "actual_tree_sha": "6daebe5c26c499359c751283b45602de7ae1c13f",
+      "corrected": true
+    },
+    {
+      "branch": "review/r758-graph-backing-memory-consistency-fence-hold-20261105",
+      "commit": "7e0d4d3e06bfd2a11dd8f599b7db372899e1ef41",
+      "actual_tree_sha": "5d86d7b84705e0d8a1ed1fb98faba462e9c3242a",
+      "corrected": true
+    },
+    {
+      "branch": "review/r759-pin-full-acceptance-to-r754-es2020-source-20261105-chalk",
+      "commit": "709145e0127107f4366ca7d794c9dfabbb7ecba6",
+      "actual_tree_sha": "1ebd69ad7ad66f223bb56073388b7ccfec653eb3",
+      "corrected": true
+    }
+  ]
+}

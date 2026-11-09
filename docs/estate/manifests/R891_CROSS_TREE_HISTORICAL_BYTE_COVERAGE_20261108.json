@@ -1,0 +1,264 @@
+{
+  "schema": "urai-staging-r891-cross-tree-hash-reuse-v1",
+  "r884HistoricalUniqueBlobObjects": 826,
+  "r890CurrentR887VerifiedBlobObjects": 245,
+  "sharedHistoricalSha256Verified": 239,
+  "sharedHistoricalUniqueBytes": 1673017,
+  "stillUnhashedHistoricalUniqueObjects": 587,
+  "stillUnhashedHistoricalUniqueBytes": 5311559,
+  "historicalUniqueBytes": 6984576,
+  "readErrors": [],
+  "unhashedSample": [
+    {
+      "blob_sha": "0025a050343a9ed8ee2870a990b209711d7f0d09",
+      "bytes": 1484,
+      "path": "functions/package.json"
+    },
+    {
+      "blob_sha": "005da1ee77f3b42636cb2ae834ed91a433442eaf",
+      "bytes": 18275,
+      "path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml"
+    },
+    {
+      "blob_sha": "005df0efeb9630d59b2a949af8fe8f2b1f6f7ce3",
+      "bytes": 6200,
+      "path": "scripts/urai-staging-lock.sh"
+    },
+    {
+      "blob_sha": "009828c6efb59aed3b2f45783c7aff99f3e8731f",
+      "bytes": 10379,
+      "path": "scripts/validate-staging-consumers.mjs"
+    },
+    {
+      "blob_sha": "018ce421dae9fd431103190723ec6c26cf824a17",
+      "bytes": 5392,
+      "path": "scripts/validate-communications-pr58-sendgrid-staging.mjs"
+    },
+    {
+      "blob_sha": "01a4ddff6b3c329502cf6a0b52a8ad660fcbe3c1",
+      "bytes": 17245,
+      "path": ".github/workflows/spatial-pr1296-stripe-provider-probe.yml"
+    },
+    {
+      "blob_sha": "01ee2f7a725150dc9a8557c3d0c5b9ff97e67a6e",
+      "bytes": 3200,
+      "path": "scripts/validate-spatial-pr1462-stripe-provider-probe.mjs"
+    },
+    {
+      "blob_sha": "02045df9b9ebd1ebe3e77589fb8ab0038f7e9e77",
+      "bytes": 3405,
+      "path": "scripts/validate-communications-pr58-sendgrid-staging.mjs"
+    },
+    {
+      "blob_sha": "024aae54c9b3ffe8c4a94431ecfb2eb932873a03",
+      "bytes": 17187,
+      "path": ".github/workflows/spatial-pr1591-stripe-provider-probe.yml"
+    },
+    {
+      "blob_sha": "02eda94be16beac76ad78ef4986124686455bc95",
+      "bytes": 16025,
+      "path": ".github/workflows/communications-pr53-twilio-trial-e2e.yml"
+    },
+    {
+      "blob_sha": "02f3f48ae5da8f3cb7866ff0169f5264bb175e68",
+      "bytes": 18442,
+      "path": ".github/workflows/staging-deploy.yml"
+    },
+    {
+      "blob_sha": "03b427204e033b50cbaf6da1eb856650366721f4",
+      "bytes": 2054,
+      "path": "scripts/repo-doctor.mjs"
+    },
+    {
+      "blob_sha": "046ac98d49a45ff6c2d074fe6c8c88dd9bc43e6b",
+      "bytes": 2107,
+      "path": "package.json"
+    },
+    {
+      "blob_sha": "04730bcaa491c951bfcfe81dd1dafa2a1eed11b5",
+      "bytes": 15991,
+      "path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml"
+    },
+    {
+      "blob_sha": "053ae3a0435c9209f984deb309f77750c2445202",
+      "bytes": 1867,
+      "path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md"
+    },
+    {
+      "blob_sha": "06132d1ce7a8fbf07330bbbbe4624dd218d4e07a",
+      "bytes": 2112,
+      "path": "docs/URAI_KNOWN_LIMITATIONS.md"
+    },
+    {
+      "blob_sha": "0646950a7671078d14efca5f51576682e698ea94",
+      "bytes": 12240,
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "blob_sha": "066229c09e6e3efd19c26e1065504300df157192",
+      "bytes": 9165,
+      "path": "scripts/validate-staging-consumers.mjs"
+    },
+    {
+      "blob_sha": "0685bc2500ec67704bfcdf02e7859837a82bbca2",
+      "bytes": 17640,
+      "path": "functions/test/r439-original-jobs-privacy-auth.emulator.mjs"
+    },
+    {
+      "blob_sha": "06a87d1504b80a089c6543ac7bc0801a21b2cfa1",
+      "bytes": 3943,
+      "path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md"
+    },
+    {
+      "blob_sha": "06be3bd1dc6813445de23e95e8f85e34e13bf30a",
+      "bytes": 4483,
+      "path": "scripts/fixtures/r720-public-boundaries/factory/assetfactory-studio/lib/server/assetProviderAdapters.ts"
+    },
+    {
+      "blob_sha": "076d1c98cb9a5bb4495d00e5e0e2300c37092c18",
+      "bytes": 2842,
+      "path": "ENVIRONMENT.md"
+    },
+    {
+      "blob_sha": "08e20c81a3db3bd007c1d8c1049fa6ba0cccec41",
+      "bytes": 9521,
+      "path": "scripts/validate-staging-consumers.mjs"
+    },
+    {
+      "blob_sha": "092ab6271bea422dff7192d1096b0e060affa8b5",
+      "bytes": 3200,
+      "path": "scripts/validate-spatial-pr1576-stripe-provider-probe.mjs"
+    },
+    {
+      "blob_sha": "0956f50fecef7553cc5bbbf7b6fe30934f59c765",
+      "bytes": 10681,
+      "path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md"
+    },
+    {
+      "blob_sha": "09ab02982871a52ee15fb5ec5f38a157745bcc0d",
+      "bytes": 10544,
+      "path": "scripts/validate-staging-consumers.mjs"
+    },
+    {
+      "blob_sha": "09c589185f9f6df3f1f23f7f522f5065df2cad2a",
+      "bytes": 4965,
+      "path": "config/staging-consumers.json"
+    },
+    {
+      "blob_sha": "09cd453cea179947bf4646a71f6734c9a2e5015a",
+      "bytes": 6665,
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "blob_sha": "0a8ed3bcb32097f0c2ddc70892df1a17c5cec7bd",
+      "bytes": 1090,
+      "path": "DEPLOY_EVIDENCE_LOG.md"
+    },
+    {
+      "blob_sha": "0a95c33be114596c64ed4620583c11e3c0497db5",
+      "bytes": 5249,
+      "path": "scripts/urai-staging-bootstrap.mjs"
+    },
+    {
+      "blob_sha": "0ae1c410a90b1858a88601873c7e42e3a1e66e64",
+      "bytes": 7143,
+      "path": "docs/genesis/r744-owner-pinned-acceptance.sh"
+    },
+    {
+      "blob_sha": "0bd6aff9b20561da7a037dfcb6c0f2c1e6b11dd4",
+      "bytes": 9521,
+      "path": "scripts/validate-staging-consumers.mjs"
+    },
+    {
+      "blob_sha": "0caabb61a87a01175ea68f18342ede6d316fb436",
+      "bytes": 2997,
+      "path": "scripts/validate-admin-pr57-provider-probe.mjs"
+    },
+    {
+      "blob_sha": "0cabfb763ec5db2ff632497e8635e78a5f1b9bcc",
+      "bytes": 9735,
+      "path": "scripts/urai-staging-bootstrap.mjs"
+    },
+    {
+      "blob_sha": "0d2af79f05a3980c1c5ff48b27551968faa191dc",
+      "bytes": 4965,
+      "path": "config/staging-consumers.json"
+    },
+    {
+      "blob_sha": "0d336c5948b7c2374aa788072acf04132f24342d",
+      "bytes": 20920,
+      "path": "scripts/test-r723-protected-approval.mjs"
+    },
+    {
+      "blob_sha": "0d609bee16b99cfe6a5c2826d60ddf0f5c8e0f96",
+      "bytes": 18131,
+      "path": ".github/workflows/spatial-pr1596-stripe-provider-probe.yml"
+    },
+    {
+      "blob_sha": "0db4e22e28ae3bcd1c2fb647ee367e56b131e10f",
+      "bytes": 1866,
+      "path": "package.json"
+    },
+    {
+      "blob_sha": "0dc10ef90193d2028fa9c3572199e7d49df9375b",
+      "bytes": 2223,
+      "path": "package.json"
+    },
+    {
+      "blob_sha": "0e5354b7af6a6707c046182b5819e32a3ad1ac9e",
+      "bytes": 3617,
+      "path": ".github/workflows/private-consumer-ref-verification.yml"
+    },
+    {
+      "blob_sha": "0f4a61dac6a0206c2819a6173fbf04fec1dc6a73",
+      "bytes": 22449,
+      "path": "functions/src/syntheticMemoryLifecycle.ts"
+    },
+    {
+      "blob_sha": "0f78313b99026ac3dd28309d288bb510b201dbf6",
+      "bytes": 5976,
+      "path": "config/provider-readiness-20261001.json"
+    },
+    {
+      "blob_sha": "0f9f6699186596a6fd850f4d0315c3023718f5a7",
+      "bytes": 17209,
+      "path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml"
+    },
+    {
+      "blob_sha": "0fd883c0453c41264df702e36adb54aeb8ef0cd6",
+      "bytes": 3519,
+      "path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md"
+    },
+    {
+      "blob_sha": "104fff3115b9f012d0b072bad0b0bb274f4794e7",
+      "bytes": 5052,
+      "path": "config/staging-consumers.json"
+    },
+    {
+      "blob_sha": "108180c45b3cd0de8819960a9f6f0c6b5976ca16",
+      "bytes": 10724,
+      "path": "scripts/test-workstream-c-confinement.mjs"
+    },
+    {
+      "blob_sha": "10a094a92f66a4f80b0fcd78dcfa52c6b975b5bd",
+      "bytes": 15708,
+      "path": "scripts/smoke-staging.sh"
+    },
+    {
+      "blob_sha": "10a60509f403c3be7103b065c2d93e9a17862909",
+      "bytes": 377600,
+      "path": "functions/package-lock.json"
+    },
+    {
+      "blob_sha": "1153725a31dfa3ef4bec3137d676a4d50edfdd04",
+      "bytes": 1938,
+      "path": "scripts/workstream-c-private-evidence.json"
+    },
+    {
+      "blob_sha": "115a680f2b965b1f2fef830fb74626e64005db11",
+      "bytes": 6066,
+      "path": "README.md"
+    }
+  ],
+  "note": "R890 verified Git blobs at exact R887; SHA-1 identity reused for byte-level historical overlap. Does not establish semantic test or deployed resource acceptance."
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    165,
+    180
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "review/r761-pin-owner-322-acceptance-to-r755-security-source-20261105-chalk",
+      "commit": "895cfaca64475a18cc91125e1eb21980e891ca92",
+      "actual_tree_sha": "ae2e11436a03f1788dc4bd226082fb7e56a0b4d1",
+      "corrected": true
+    },
+    {
+      "branch": "review/r763-graph-relation-consistency-converged-20261105-chalk",
+      "commit": "15b035fe506d9548e57243fc57b6e8eab931b196",
+      "actual_tree_sha": "f95afcb2d58841c00e00f347f1e62cd586c58607",
+      "corrected": true
+    },
+    {
+      "branch": "review/r770-replay-ancestor-integrity-fail-closed-20261105-chalk",
+      "commit": "1219d785d09f5303d1d4addc16c666777c428b60",
+      "actual_tree_sha": "69aef7074a56dc1d46408ea9147faba2d6378d5e",
+      "corrected": true
+    },
+    {
+      "branch": "security/wif-only-staging-deploy-2026-08-11",
+      "commit": "5cbaf55bc25812d6a5fb3edff9b10315ec6b158a",
+      "actual_tree_sha": "d48be3fd3bdfff9b163d70d219d816f75e9492cc",
+      "corrected": true
+    },
+    {
+      "branch": "sendgrid/governance-certification-6c99e6c6-20260929",
+      "commit": "77a6ea4f37f2ed5cf82ad8f903581dc360bee933",
+      "actual_tree_sha": "59fc895c19795f0d787901dc3ccea234c5fa1e0d",
+      "corrected": true
+    },
+    {
+      "branch": "sendgrid/pre-signature-staging-e2e-20260929",
+      "commit": "233662d0d7fd58b6627c5b01ede39b9ef641c359",
+      "actual_tree_sha": "37a026e168e8eb97ed4bf9a3b0ff4aad813f31ff",
+      "corrected": true
+    },
+    {
+      "branch": "sendgrid/readonly-deploy-key-fallback-20260929",
+      "commit": "70135c30a44c1e9547b9c8855164836ecd43c94e",
+      "actual_tree_sha": "03300c27710c9c01672d23e28eb8ee32d8c91585",
+      "corrected": true
+    },
+    {
+      "branch": "sendgrid/repin-limbernutz-6c99e6c6-20260929",
+      "commit": "bd1b5ebe56a767dd5c667263087f3480c1eb7452",
+      "actual_tree_sha": "ec24d1685bcc5430b7e7f4d9d1d4a82e3fc2baf5",
+      "corrected": true
+    },
+    {
+      "branch": "stripe/spatial-pr1182-test-runtime",
+      "commit": "94d999eb1284b267636c3032a64210fc0421f035",
+      "actual_tree_sha": "ef02eeecee8bfa7ef09b274833b592f072f03cd9",
+      "corrected": true
+    },
+    {
+      "branch": "system-of-systems-contract-20260917",
+      "commit": "650f9ec9755727605681a109947209b668e8539e",
+      "actual_tree_sha": "408137b77ac88d744a28f1d154f36e8caa936b71",
+      "corrected": true
+    },
+    {
+      "branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
+      "commit": "d32328963fdff86f2d4dab742d32c870a049c284",
+      "actual_tree_sha": "32a462c195156bc7ac711b3a54cdd5fc18e53b7e",
+      "corrected": true
+    },
+    {
+      "branch": "test/r439-firebase-jobs-privacy-auth-emulator-20261103",
+      "commit": "4faf78a5fd5a2640150373b7883ef67ef493ee8c",
+      "actual_tree_sha": "d4f5b88b02710d92f83eaa670c0c34288cf1b7e1",
+      "corrected": true
+    },
+    {
+      "branch": "twilio/api-key-control-plane-20260927",
+      "commit": "92af9063fa11f8f04f97c1bdc312ef6ae971ad12",
+      "actual_tree_sha": "42044fdd89265049eb0f99e6693d5604ad1bd44f",
+      "corrected": true
+    },
+    {
+      "branch": "workstream-c-manual-verification-20260711",
+      "commit": "aa77765f3fa9fd87821363042e8cc5951dcc2602",
+      "actual_tree_sha": "06295e2004d8ac62d63ff3f795ebdd9f67fb5f8a",
+      "corrected": true
+    },
+    {
+      "branch": "docs/chalk-staging-historical-artifact-and-byte-proof-20261107",
+      "commit": "bc98673cb198d60335238db0fcf78d8279dd8b33",
+      "actual_tree_sha": "06d4b2ffb3b164074f0a4fb5d07d66de33afb84f",
+      "corrected": true
+    }
+  ]
+}

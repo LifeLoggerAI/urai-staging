@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    15,
+    30
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "converge/current-provider-consumers-20261003",
+      "commit": "777756f2e88507e49d34fe9e7489b1177be43a17",
+      "actual_tree_sha": "7be92df9d7bcdbf1d5857d7231f8abcd39dcdc88",
+      "corrected": true
+    },
+    {
+      "branch": "converge/final-spatial-consumer-20261004",
+      "commit": "0153df921b3d7dac53566e8727c35df5c01921e1",
+      "actual_tree_sha": "7dae9466cf8f25251d545a172e35374919d035af",
+      "corrected": true
+    },
+    {
+      "branch": "converge/production-spatial-consumer-20261004",
+      "commit": "5cec679343869030a1135794affad5f4f9c4d569",
+      "actual_tree_sha": "0e9076c253062cd1878b552b9d2d0f07dceac09e",
+      "corrected": true
+    },
+    {
+      "branch": "converge/provider-consumers-node22-ref-verifier-20261004",
+      "commit": "97049b0deb0aae40fe650898d13321aea71f6267",
+      "actual_tree_sha": "0b70451bb3012167ec79031723ac05d4f52792d2",
+      "corrected": true
+    },
+    {
+      "branch": "converge/sendgrid-pr58-6c99e6c-20260929",
+      "commit": "df715f2008505521c0cdacfa34671086948d7cdb",
+      "actual_tree_sha": "1fdc7cf4a39a11c9b26943dc79208bdeff746d00",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial1598-head-782a5a0-20261005",
+      "commit": "a5c964293246a206d94ee62148e24f9e8ec124cc",
+      "actual_tree_sha": "46d0296571005cdf2884099e7660f4ec2d7bb315",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial-1598-099470-final-bind",
+      "commit": "c74273bd4f7d5453f9db6b3fc08b0cb225812af5",
+      "actual_tree_sha": "41f11ad9f4f4f2dae1d329bd7111f71b30df5c77",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial-pr1462-current-head-20260929",
+      "commit": "ad852c67dc83d07af49eaa29aa723e4c1f666315",
+      "actual_tree_sha": "2a86e212360cd7b3cd6d0ebdc7279e248a5ba265",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial-pr1598-current-head-20261005",
+      "commit": "a89a452b63c6e59ecf94302847f2132017d5ac95",
+      "actual_tree_sha": "1f74861636e0392178d516d69194515d6b18b562",
+      "corrected": true
+    },
+    {
+      "branch": "converge/spatial-pr1598-provider-readiness-20261005",
+      "commit": "60584395a3854ccdf7751d2cec22f9c144d210e4",
+      "actual_tree_sha": "03d4908f537621e55707d858df93cd1341ce7f4a",
+      "corrected": true
+    },
+    {
+      "branch": "converge/staging-final-1591-communications-main-20261004",
+      "commit": "c69f408ec5d53d7086b95f2168a99561e747273f",
+      "actual_tree_sha": "498aff08a7f27386c05208a1e12d5319bc209bc6",
+      "corrected": true
+    },
+    {
+      "branch": "converge/staging-main-authority-20261003",
+      "commit": "16fdf29357de606670c1e40850a1cdf713e9a32a",
+      "actual_tree_sha": "7a4a524a3fdd912c4b43bd5f11a0eaf82d5d905d",
+      "corrected": true
+    },
+    {
+      "branch": "converge/staging-provider-terminal-1591-20261004",
+      "commit": "c7f5479f8a5aef6c4833ae7ad4d6dc1d19a4642a",
+      "actual_tree_sha": "6fcecf311b4517fc5176c85e9e30f909a2e52faa",
+      "corrected": true
+    },
+    {
+      "branch": "converge/system-of-systems-review-20260929",
+      "commit": "08e27ace49504a4a0ed8b74f7e506359e1fb9174",
+      "actual_tree_sha": "049ddf22b006ad36bb30ea5ce44e6e2fb4394f40",
+      "corrected": true
+    },
+    {
+      "branch": "converge-staging-control-plane-20260924",
+      "commit": "9b1e85c0b417ebaf99224d6a96bf4961e7c9449f",
+      "actual_tree_sha": "3e44a915d045f6c112bd7ba3b7aa73afb3826873",
+      "corrected": true
+    }
+  ]
+}
