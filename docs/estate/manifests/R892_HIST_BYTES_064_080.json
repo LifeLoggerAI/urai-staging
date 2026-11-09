@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    64,
+    80
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "173a9ae427cbabf37296c5653a77f00af85212ee",
+      "declared_size": 1025,
+      "example_path": "scripts/test-workstream-c-control-ref.mjs",
+      "first_branch": "repin/current-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 1025,
+      "sha256": "68df5e0b839a6c7e6d1c53e25691ce2e859a9a706a514d3319ca134ba3b135db",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1747e19d0ddb48d40eb3f340c7bc80a3263a6ed3",
+      "declared_size": 8468,
+      "example_path": "functions/src/index.ts",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 16,
+      "observed_bytes": 8468,
+      "sha256": "ff521b547333a604b0394499df80efab059e653999a84a4fb4c8508d500b33f9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "17c3aec1b2f8b675d8e83a6d0ab1faf0f6d98c14",
+      "declared_size": 868,
+      "example_path": "functions/package.json",
+      "first_branch": "chore/complete-staging-foundation",
+      "pathRefs": 2,
+      "observed_bytes": 868,
+      "sha256": "4d121a1507ef338920ef1da0650482bc0aa410f090354d0789c3d5494d546227",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1973e83b324654f0fc0a6e9fa563c26268479f98",
+      "declared_size": 817,
+      "example_path": ".github/workflows/urai-production-verify.yml",
+      "first_branch": "audit/release-evidence-hardening-20260706",
+      "pathRefs": 1,
+      "observed_bytes": 817,
+      "sha256": "8f43288a017f1d9b19cbcce840eddf54211e4f568b150e15331bb85ac4fc287c",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1a142c51e5396256bc02d34f35d93ddfcd47b83e",
+      "declared_size": 11092,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "fix/rebind-spatial-1596-20261005",
+      "pathRefs": 1,
+      "observed_bytes": 11092,
+      "sha256": "59849da4bda038ede3b7410de9d23f3abfa7aac9d3a30fb59a34d619659f11f2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1a170303613ab4cb0a4bab4083644b9828061d81",
+      "declared_size": 16509,
+      "example_path": ".github/workflows/communications-pr53-twilio-trial-e2e.yml",
+      "first_branch": "communications/twilio-trial-e2e-20260924",
+      "pathRefs": 1,
+      "observed_bytes": 16509,
+      "sha256": "54a82938a7b81338deba01b1e8fe588ab71ee4cf05d23fd978b73e522728026d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1af41550e5456a12f1d1f2f800671665b312f731",
+      "declared_size": 1624,
+      "example_path": "scripts/validate-staging-wif-runtime-identity-probe.mjs",
+      "first_branch": "fix/generic-staging-wif-probe-20261004",
+      "pathRefs": 6,
+      "observed_bytes": 1624,
+      "sha256": "2bf238265a58853a6ab30be17045bb9d515367b28765c23836532ce8ace7f7e0",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1b2ba4f98baa4fd63eee3c8b0bdc02a56d85db33",
+      "declared_size": 2482,
+      "example_path": "functions/test/stagingBoundaries.test.ts",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 20,
+      "observed_bytes": 2482,
+      "sha256": "c82cb08ffd9db4b60136a328e91c8237c5c62ee33bdc66a9c8b3f0814a70a4e9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1c195396a70ad57423fc2ed39736a4c45b47c3dd",
+      "declared_size": 17187,
+      "example_path": ".github/workflows/spatial-pr1462-stripe-provider-probe.yml",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 2,
+      "observed_bytes": 17187,
+      "sha256": "b91124908c05aa4a390f02e899bff348fab8f408f1a097b76187da21ec6a58e3",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1c1e5da6b9fdf135d17dc83aaf97140fad332393",
+      "declared_size": 18032,
+      "example_path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+      "first_branch": "fix/rebind-communications-main-20261004",
+      "pathRefs": 2,
+      "observed_bytes": 18032,
+      "sha256": "f4389b6d4e4f05aa75c64942956c5f3fd2c5c46b429f9366018514fee206f589",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1c6a318e81f727e431cb2c675a39df39b6500e3c",
+      "declared_size": 12856,
+      "example_path": "functions/test/current-cross-service.emulator.mjs",
+      "first_branch": "fix/genesis-staging-command-inventory-20261102",
+      "pathRefs": 26,
+      "observed_bytes": 12856,
+      "sha256": "c01beb935b73e0221b443c7752220ccb058922e48d3dcf39b77703386bc45c60",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1d07be905b0e37c69f9874c9b60289ff9a252208",
+      "declared_size": 8133,
+      "example_path": "functions/src/index.ts",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 20,
+      "observed_bytes": 8133,
+      "sha256": "ff7d4321f246ee0dc32a73a4d7a9ce304e0f297e04d7e7588b0a662d7909bec1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1d34e3b8c2f25df899afb11460b8b1acebed1782",
+      "declared_size": 4366,
+      "example_path": ".github/workflows/staging-gcp-authority-readback.yml",
+      "first_branch": "probe/gcp-authority-comment-trigger-20260929",
+      "pathRefs": 1,
+      "observed_bytes": 4366,
+      "sha256": "f9d2e8e98ee7f34d212100d5f047ce90a4eb3ae2ec7c1af79c2429df652faf8a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1d77cdffe349caa8c0b9fdba13d07d718302df79",
+      "declared_size": 5358,
+      "example_path": "scripts/test-sendgrid-staging-approval.mjs",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 1,
+      "observed_bytes": 5358,
+      "sha256": "e2bc399b11261e2b482c2af7ebdc846fdcf14996c511592c2a0b6445bfc20560",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "1eb0fc1d14d55ba66e91d47bda2eb46ad79b4d23",
+      "declared_size": 3753,
+      "example_path": "STATUS.md",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 19,
+      "observed_bytes": 3753,
+      "sha256": "54860913ba463f45978511e05c3b6dc3f12065e9337863c8638f50db8a47601b",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "20231128e067ad2dbfb27ff8d4fbf16813a2e2b7",
+      "declared_size": 2014,
+      "example_path": "firebase.json",
+      "first_branch": "repair/staging-web-noindex-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 2014,
+      "sha256": "f29a38bce389cc9d32f439e168a7907b43f459536e7dcb9b87b0232a3f4cc580",
+      "state": "verified"
+    }
+  ]
+}
