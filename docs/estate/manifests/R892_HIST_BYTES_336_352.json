@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    336,
+    352
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "91c0d186158850c8b4967efa9b2e94e76a0f625a",
+      "declared_size": 5026,
+      "example_path": "SYSTEM_AUDIT.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 37,
+      "observed_bytes": 5026,
+      "sha256": "d58bbfe502e792f18aebf78d6f0453bd9f1146ebb11d05af2c25acea25870248",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "91cdba8c314fd5be1e2948ac6766ccfa49305253",
+      "declared_size": 4188,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/r753-pin-owner-acceptance-to-r752-staging-143-20261105-chalk",
+      "pathRefs": 1,
+      "observed_bytes": 4188,
+      "sha256": "312a97fb8ed14c452ec5d200eae13349cdcea64d2aa5464530e6efb556b3d292",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9223f37062f9c90c9d1884fd4fb14fe604bd7c11",
+      "declared_size": 2110,
+      "example_path": "package.json",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 22,
+      "observed_bytes": 2110,
+      "sha256": "99bc63a5f055c7743a11a5ba443f83dd7f576c2e3e30e86d20f86284df35da49",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9259545a5431f2f1a62694018a89f934aaf178ff",
+      "declared_size": 23871,
+      "example_path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+      "first_branch": "fix/sendgrid-cleanup-yaml-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 23871,
+      "sha256": "9c4d289f40134bf9fa97c88a5664fb554b101ad37fdd589471de09749f714163",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9379a3ea5e37d7a0082c6f7a88652bd7e7489075",
+      "declared_size": 2316,
+      "example_path": "package.json",
+      "first_branch": "fix/genesis-staging-evidence-source-pin-20261102",
+      "pathRefs": 2,
+      "observed_bytes": 2316,
+      "sha256": "3c5f3c9c7590469c641e7ad8223a1146512756e27a1eabcd5317bc740ece3c3d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "93b29c12bb25c21bce35fdee77dd746f2f7b083a",
+      "declared_size": 17640,
+      "example_path": "functions/test/r439-original-jobs-privacy-auth.emulator.mjs",
+      "first_branch": "review/r476-current-auth-consent-source-20261103",
+      "pathRefs": 1,
+      "observed_bytes": 17640,
+      "sha256": "f8658ef33940fac6b089428ec7f69104223226074185752fa9b2a216b9bece1a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "93d1510ef55dddd1d9557a56146710afcc949fb2",
+      "declared_size": 12169,
+      "example_path": "scripts/check-deploy-readiness-v2.mjs",
+      "first_branch": "reconcile/staging-authority-current-main-20260714",
+      "pathRefs": 2,
+      "observed_bytes": 12169,
+      "sha256": "d1d5e386bd2ce4ac79cbf7aaba41210a3ccfb59c041cd40dc4a3765667fc4914",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "94613c07d3b2fa0a12eab0460e961a50e38f3049",
+      "declared_size": 6769,
+      "example_path": "scripts/urai-staging-lock.sh",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 5,
+      "observed_bytes": 6769,
+      "sha256": "4267bb11631270db4d24deb25d6ac03e1e4daf26934d6ab6ad2c544d9dbf3ea1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9488f61d5ddd0da3f90851e7a7a02907b1f09719",
+      "declared_size": 7082,
+      "example_path": "public/index.html",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 10,
+      "observed_bytes": 7082,
+      "sha256": "bf8e5b76328ee608e5d5ff9448da56af1abdbe12b1113f3047efa47ad02fdaa8",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "954adcd739309bd2a0e51fa2a5ae822a1ce8a572",
+      "declared_size": 912,
+      "example_path": "functions/package.json",
+      "first_branch": "reconcile/staging-current-main-controls-truth-20260811",
+      "pathRefs": 1,
+      "observed_bytes": 912,
+      "sha256": "3127169c5142d6ec343478ef2a13c873ceec3ed328853e393612759fc5b1b98f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "968ab0fba99aba33002d02506dbd567e65c1c21a",
+      "declared_size": 17187,
+      "example_path": ".github/workflows/spatial-pr1581-stripe-provider-probe.yml",
+      "first_branch": "fix/rebind-staging-spatial-1581-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 17187,
+      "sha256": "bc8c9b799c10a80f01994c46b643a71ed8bfb2a525e4fb64dabcf972ee4479fb",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "96c6efcf32940de429f019acf23df7bba812dcd0",
+      "declared_size": 9387,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/system-of-systems-review-20260929",
+      "pathRefs": 1,
+      "observed_bytes": 9387,
+      "sha256": "03f732c1f434b98699102f69e33add3c2cf78f1a9211950e8283be66add0e858",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "971fef82055ce27b7f0a9a88f7fcdfea184971b6",
+      "declared_size": 4637,
+      "example_path": ".github/workflows/private-consumer-ref-verification.yml",
+      "first_branch": "fix/protected-consumer-branch-verification-20261005",
+      "pathRefs": 3,
+      "observed_bytes": 4637,
+      "sha256": "d9be5c7f55ce6fb89b7b78c2275ab81e30d14abb976031b8eb6cc59ab4166152",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "97c1cbac00c594288e81d9c6b63556099f955b06",
+      "declared_size": 6238,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/r757-pin-expanded-owner-acceptance-to-es2020-verified-pr146-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 6238,
+      "sha256": "01a30266559f35e514e3645a4fd1475c4f505b590aaf589f976356625c625798",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "97df74cb9fb606f125ef3c0c7fc3818f9ed13d9d",
+      "declared_size": 5147,
+      "example_path": "STATUS.md",
+      "first_branch": "converge/final-spatial-consumer-20261004",
+      "pathRefs": 4,
+      "observed_bytes": 5147,
+      "sha256": "964b37045174740c397b9b1201ed900ca1eaffb6289e231b5d05c2e957df8686",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "981251153e7e44ba3f9b72570c17e196419efbc9",
+      "declared_size": 11092,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 2,
+      "observed_bytes": 11092,
+      "sha256": "60ce07272055b0974ec11bdeb5cd4ea7d8ef94f747e6a442210a2db06d3fb17d",
+      "state": "verified"
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    352,
+    368
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "999b187dda8c3cd792a82a8481310b4884c7e9df",
+      "declared_size": 5343,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "repair/current-verifier-provider-readback-20261001",
+      "pathRefs": 1,
+      "observed_bytes": 5343,
+      "sha256": "ab6da49f5d7ea99efe5f612db8087684bd15b281257f470f861e0c7a650efd43",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9a02c84795822103d047eb8d36eb351ead63a1db",
+      "declared_size": 1861,
+      "example_path": "ENVIRONMENT.md",
+      "first_branch": "audit/release-evidence-hardening-20260706",
+      "pathRefs": 7,
+      "observed_bytes": 1861,
+      "sha256": "7d3ecd2583c6e3c73a8318f4a797730a7119d17074d3be4f27b6206b7998a6dc",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9a5c359b0de1be6a705ff0d9ca7cd896dc0fab63",
+      "declared_size": 2110,
+      "example_path": "package.json",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 19,
+      "observed_bytes": 2110,
+      "sha256": "4dc5796d64d1bdca67ddde37546d6a408d9223cf65a34eb66eb8b7fbf9949fed",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9a72e7d6fdad3fa9b9cb2378ba82cc9c70073b84",
+      "declared_size": 5821,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/r751-pin-owner-full-acceptance-to-r750-staging-141-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 5821,
+      "sha256": "f5f45db36a0812501d3ffb284c32a017f1cfb34a1f0353fbd6aec9d5ff634b90",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9aef7bbfbc30b8c415e5c4d1d7dd7d9ce4e6cebd",
+      "declared_size": 5821,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/r749-retarget-owner-acceptance-to-converged-r748-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 5821,
+      "sha256": "0333a6b1ad1fe90516a315545931c53168db56605bd2d019426d2a7dd811b481",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9b71b6f70e224c0d7656e3fa1251491d5bde32be",
+      "declared_size": 17222,
+      "example_path": "functions/test/r439-original-jobs-privacy-auth.emulator.mjs",
+      "first_branch": "test/r439-firebase-jobs-privacy-auth-emulator-20261103",
+      "pathRefs": 1,
+      "observed_bytes": 17222,
+      "sha256": "25f2972b6bf30073a23578666dcfdde8484305e9f618ac1b9270c2a7a1c15583",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9b8542820b0a1beb64a767b83a06c430c45315a8",
+      "declared_size": 5923,
+      "example_path": "config/provider-readiness-20261001.json",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 9,
+      "observed_bytes": 5923,
+      "sha256": "84bc2a9fef89e82906809be6119292c53af29c546025a2bcf70ba1e6ca9d2557",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9bae4f619cf7acc5f324b6b6fc7a2f815fa3f480",
+      "declared_size": 6864,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge-staging-control-plane-20260924",
+      "pathRefs": 1,
+      "observed_bytes": 6864,
+      "sha256": "48f33dd51bbd0c32ef205466c25b1d310408f53f64e012692fd6096dbd6963d2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9d03742e653b643d28c3439a2573c79490b9f41d",
+      "declared_size": 14201,
+      "example_path": "scripts/check-deploy-readiness-v2.mjs",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 37,
+      "observed_bytes": 14201,
+      "sha256": "f15d17fec941a55046c4ac079a5e275d8ea0543c2d491773e82b914efbefab2d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9e6137abfc19f73ae1e42f2c78c0d82ad6ff5aef",
+      "declared_size": 6739,
+      "example_path": "scripts/validate-private-consumer-ref-workflow.mjs",
+      "first_branch": "diagnostics/staging-readonly-r215-20261028",
+      "pathRefs": 30,
+      "observed_bytes": 6739,
+      "sha256": "d9152fd9338f96ff8316dc03413c5e6af89e8f14f8b176be7ab6fae78770d300",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9fd02b193858acba379185bf9bd552093e274e4b",
+      "declared_size": 5413,
+      "example_path": "scripts/urai-staging-bootstrap.mjs",
+      "first_branch": "fix/environment-authority-20260706",
+      "pathRefs": 1,
+      "observed_bytes": 5413,
+      "sha256": "ff5b863a78b792d56715bc15e006a98fe583ed0f32013b986667c52ea3e38661",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9fd77088c6b1815a3e44ebd1c3298daaf6bbed9d",
+      "declared_size": 5673,
+      "example_path": "docs/genesis/r747-verify-federated-fixtures.mjs",
+      "first_branch": "review/r744-genesis-owner-acceptance-kit-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 5673,
+      "sha256": "4a717dc2a32601dc056803d2ea6c6239ffd247c8e3ac0e19cab32cd8fc021eee",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9fe4e723c33a0b616482ba86dc5116d0c88227ea",
+      "declared_size": 6268,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "stripe/spatial-pr1182-test-runtime",
+      "pathRefs": 1,
+      "observed_bytes": 6268,
+      "sha256": "1553884276d6217577d451142e911703cd1c40cce95dc8e4687ad4df8121b5bc",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "9ff1ba0c7fa0f81964ebc35da8721c8929faeb50",
+      "declared_size": 334,
+      "example_path": "scripts/workstream-c-current-candidates.env",
+      "first_branch": "repin/current-six-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 334,
+      "sha256": "65b21417a8d44aecb421c8e5d83b3c28b08d04836b14dd8a330e6e3dffbacdd8",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a02328badb57ac390e675485fe4d96cfbfddad69",
+      "declared_size": 149,
+      "example_path": ".firebaserc",
+      "first_branch": "audit-completion/staging-command-aliases",
+      "pathRefs": 4,
+      "observed_bytes": 149,
+      "sha256": "56eec7531338a5b6835492c861aac5c881e5b22b24742ab5cd5bb3de1200aad9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "a038d33ec405d89afefff28f2c54db9f5269ef94",
+      "declared_size": 10849,
+      "example_path": "functions/src/index.ts",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 24,
+      "observed_bytes": 10849,
+      "sha256": "365a6ec34be181d98e9001bd0772b34597e641fa7b64c1ea2731061266d9eff5",
+      "state": "verified"
+    }
+  ]
+}

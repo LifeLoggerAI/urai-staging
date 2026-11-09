@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    96,
+    112
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "2708cf39b19bb10f0ee11401fa4359b4d0d66f2e",
+      "declared_size": 3261,
+      "example_path": "docs/estate/03_ARCHITECTURE_AND_CONNECTIONS.md",
+      "first_branch": "docs/chalk-staging-source-release-audit-20261107",
+      "pathRefs": 2,
+      "observed_bytes": 3261,
+      "sha256": "199fd6bc3e004ce65d7a23cadf91d9b104e1c37c5034ea06f13aad9cb5acb568",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "27a387b29c77b7620d5270ce8633c0f52c6d1386",
+      "declared_size": 3903,
+      "example_path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
+      "first_branch": "diagnostics/staging-readonly-r215-20261028",
+      "pathRefs": 24,
+      "observed_bytes": 3903,
+      "sha256": "f3872e3de5407593af108ce332b2a3e241bf117c88d2fe25b9cc70c1ba2a8d7f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "27de7ce3f53e0e2635931cbe01ba8dcf3a7981c7",
+      "declared_size": 4627,
+      "example_path": "package.json",
+      "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
+      "pathRefs": 34,
+      "observed_bytes": 4627,
+      "sha256": "2d5014d247e2367b43e64d054f6fbf34fc7fc5bdc94601347d6da82a5f7067b9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "282427e4ae2a4f2016182c4b2f31f05728cdd639",
+      "declared_size": 363,
+      "example_path": "docs/evidence/2026-09-27-communications-consumer/staging-contracts.log",
+      "first_branch": "repair/communications-consumer-current-20260927",
+      "pathRefs": 1,
+      "observed_bytes": 363,
+      "sha256": "ecb810b57b5caca7d0d90046f3075ae36f0f864ed18441736248cf07d2813e95",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "28a9469517ee3ef33256dba45a6d4e4b2526713d",
+      "declared_size": 20174,
+      "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "first_branch": "converge/staging-provider-terminal-1591-20261004",
+      "pathRefs": 4,
+      "observed_bytes": 20174,
+      "sha256": "b051a1ee9a8c848ff56f79b3e123b372117f732a96babaa0ab0b2f7cd6e85245",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "293f6b53b9157a9a1d1a70328d39000d7da79e1a",
+      "declared_size": 18106,
+      "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "first_branch": "fix/staging-admitted-communications-source-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 18106,
+      "sha256": "1258d079449b515a2c7a280594358f2f42587d24d65b92afe0eb24e5382cbb67",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "2976b92c8fb5050bc332bfa7670fc29341e18f09",
+      "declared_size": 17161,
+      "example_path": "scripts/test-r723-protected-approval.mjs",
+      "first_branch": "review/r729-converge-protected-main-review-history-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 17161,
+      "sha256": "de6cbc5adba5cbd81595dbb3b706836bd930043ffec69e3f302fa11572d975b1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "29865030be7208eff6cc3bcfb47798cebd4600f5",
+      "declared_size": 5711,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "diagnostics/staging-readonly-r215-20261028",
+      "pathRefs": 29,
+      "observed_bytes": 5711,
+      "sha256": "f087576eb6e86a11efc38d2aef95485866e60673ab625d582ce03e065f87b399",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "29cbb94612bffe81ec05aaa7227aae116e0f90e5",
+      "declared_size": 5688,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "communications/twilio-trial-e2e-20260924",
+      "pathRefs": 1,
+      "observed_bytes": 5688,
+      "sha256": "9436eb0e4a23003ab400e9a90922a32b1f59056dfc570f53d600410ebddec767",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "2b42ed163406c5957e19e993b5ab1963d3c29ecf",
+      "declared_size": 18131,
+      "example_path": ".github/workflows/spatial-pr1596-stripe-provider-probe.yml",
+      "first_branch": "fix/rebind-spatial-1596-head-0d9ec-20261005",
+      "pathRefs": 1,
+      "observed_bytes": 18131,
+      "sha256": "af5c4037e7ed64e978f5aa3d3c81710f2bd9605978df720e7ebeb426d23cc991",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "2bbb8490a6eb95674f72281c9211c49a2e1039f4",
+      "declared_size": 22626,
+      "example_path": "scripts/test-r723-protected-approval.mjs",
+      "first_branch": "review/r742-bind-exact-privacy-workflow-paths-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 22626,
+      "sha256": "910104801880c1d80c227670136d276fae97a2214c8b235580c8d7418d54f18a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "2be35fa2fa9f27d26e173743ebfc9f0e29ff7cdd",
+      "declared_size": 6003,
+      "example_path": "scripts/urai-staging-bootstrap.mjs",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 11,
+      "observed_bytes": 6003,
+      "sha256": "e087f85bcd3bf0459f766c7473358a8396f27bfdae1f81d6305732f7b27f528d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "2d0cb8f19878f57e97c5739ea6f36b10039048a9",
+      "declared_size": 2442,
+      "example_path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 68,
+      "observed_bytes": 2442,
+      "sha256": "cc473b61eefe1db134c214e3e5fe87d400910afedea22c6cffa6f65bfd9bd44d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "2d67d2178003f19d54fe779ba5ecb77193b4b689",
+      "declared_size": 5787,
+      "example_path": "scripts/test-sendgrid-staging-approval.mjs",
+      "first_branch": "converge/staging-provider-terminal-1591-20261004",
+      "pathRefs": 2,
+      "observed_bytes": 5787,
+      "sha256": "62324643df9cdc8b3d27cd7f46ed95cdd509d65bd209882bca4e331a092230cd",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "2e3a720c9d6b681a07a4ae0094f2dbd0e6539573",
+      "declared_size": 17977,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-r764-replay-linked-parent-fence-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 17977,
+      "sha256": "b253879225837e45be36d632477bf49285c6d552b9907e67afdcab1d08a0724a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "2efacc695cc7cf2e9a495e4d1ae8250a6e18977c",
+      "declared_size": 5669,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "fix/rebind-communications-main-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 5669,
+      "sha256": "599598922f0688a360633fc3ff1557eded70310db31834863305d0aa96b7e1c1",
+      "state": "verified"
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    496,
+    512
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "d608ac106127edd96b62b25a947babd4e65b9f1b",
+      "declared_size": 15991,
+      "example_path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+      "first_branch": "converge/sendgrid-pr58-6c99e6c-20260929",
+      "pathRefs": 10,
+      "observed_bytes": 15991,
+      "sha256": "d587667dafdb116b3f287f3c81ded7dc88ac35bf46d14e9a4dc1188d0d3064ed",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d7a9b832039a5050508bccac97cd284596477ab7",
+      "declared_size": 4965,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "converge/system-of-systems-review-20260929",
+      "pathRefs": 1,
+      "observed_bytes": 4965,
+      "sha256": "239214772dc0c7884a4fe4954958c7bf9044a4473fe14e172aad2d408e63aea7",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d7bae763d14bec6cea7324220f02fa75f63d757a",
+      "declared_size": 7143,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/r756-expand-pinned-owner-native-test-coverage-20261105-chalk",
+      "pathRefs": 1,
+      "observed_bytes": 7143,
+      "sha256": "0a81e400ab60f0743e49953978a1f084a4df7ffe6c811292a1e39dde2b2db1c2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d7c4741563182055ba4e5cbb930be245913db18d",
+      "declared_size": 9417,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/provider-consumers-node22-ref-verifier-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 9417,
+      "sha256": "a06f495211917c37bf72f68c62f8ab29ddb7b9b985f5030981b60dbd3185c4f1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d7c541a1c8c694ecd68ef84d6e606ca4cc982c8e",
+      "declared_size": 17209,
+      "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "first_branch": "twilio/api-key-control-plane-20260927",
+      "pathRefs": 1,
+      "observed_bytes": 17209,
+      "sha256": "850f57edb435e4467b1d7f4c3c98034265421580a3133dad87f6fd0c7e0731e9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d82c14c5e93d60ac4c8b80aa38ebd9abb1cf15a1",
+      "declared_size": 4169,
+      "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+      "first_branch": "converge/sendgrid-pr58-6c99e6c-20260929",
+      "pathRefs": 22,
+      "observed_bytes": 4169,
+      "sha256": "67c10425333c23ea78a8000ea6511ed04dee36833ce2c15ba0e9e63c70a354eb",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d8becb1e3b083a8adb92451a077c00fff7c7445d",
+      "declared_size": 20182,
+      "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "first_branch": "fix/twilio-rollback-heredoc-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 20182,
+      "sha256": "aa439d3755ea4877cf9f47bb7f00368383491c634a7ec2cf6b42a66b1a3d425f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d91bdd5e745eabc912e3a791dd8cb05595b30408",
+      "declared_size": 16602,
+      "example_path": "functions/test/current-cross-service.emulator.mjs",
+      "first_branch": "review/chalk-r762-graph-backing-memory-transaction-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 16602,
+      "sha256": "031dbbdc0b41470e2cde0ea96f492d6476ccdc6990f421ba9c065f17566466b2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d9a10194f25d8cbf0fcd1f7d861ffd7173261f47",
+      "declared_size": 18020,
+      "example_path": ".github/workflows/spatial-pr1591-stripe-provider-probe.yml",
+      "first_branch": "fix/stripe-pr1591-source-contract-20261005",
+      "pathRefs": 1,
+      "observed_bytes": 18020,
+      "sha256": "39c33fca7b3055758a55c03b8deb70f36ff32188ea19b1de1cf9dccd17860245",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d9f017ec33342adca515d6cf03b693d5ce21ff55",
+      "declared_size": 22393,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-r780-isolated-synthetic-storage-cleanup-tests-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 22393,
+      "sha256": "6132cf192088162da1b080143ae2e37fe8a791aefcc02337e0cfb28682625168",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "da427ce994698e83f844adaf408899eb6b4fa67b",
+      "declared_size": 4113,
+      "example_path": "package.json",
+      "first_branch": "review/r720-privacy-factory-cross-system-denial-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 4113,
+      "sha256": "e9beb4e5b19762fda620496bc2347b3a6381030061745a5880cf4f3d1535e962",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "da5d06bca1c2d797b46598e6f7c8907cf11973ba",
+      "declared_size": 6206,
+      "example_path": "scripts/urai-staging-bootstrap.mjs",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 19,
+      "observed_bytes": 6206,
+      "sha256": "0ac953faecbc9872357b850acb3faec0f866f63c0e25e249ec779d46978928a5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "da904b025c86cbc11c6ff04522c7642541d7d357",
+      "declared_size": 1286,
+      "example_path": "scripts/run-workstream-c-cloud-shell.sh",
+      "first_branch": "repin/current-six-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 1286,
+      "sha256": "c24681fdf808e1e06894372f8fb4fef7b1201398da1fdbcdc5f2cbb8f834c52f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "dad68588d45214fe36545c21fd61d5c47a4e3dce",
+      "declared_size": 5424,
+      "example_path": "scripts/verify-sendgrid-staging-approval.mjs",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 71,
+      "observed_bytes": 5424,
+      "sha256": "9ab04062af6dfef8d0699c4fbacc6cb8ff26ae1628944ebcd789308187cea81a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "db0986ad3312834e94628f1288c8627e192c0fe7",
+      "declared_size": 4965,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "fix/bind-spatial-pr1576-mainline-20261004",
+      "pathRefs": 2,
+      "observed_bytes": 4965,
+      "sha256": "ac492339072fe236f5260562d7072ddfeabf03a951e7082344b1c3731ced03d2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "db1a835980fc83ae487b1e619f9e2404940e98aa",
+      "declared_size": 4002,
+      "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+      "first_branch": "fix/audit-billing-validator-pr58-20260926",
+      "pathRefs": 2,
+      "observed_bytes": 4002,
+      "sha256": "48ad7650c410a0f541c327111b9d4e2ab6d5f12d65b8455863669c79cf227691",
+      "state": "verified"
+    }
+  ]
+}

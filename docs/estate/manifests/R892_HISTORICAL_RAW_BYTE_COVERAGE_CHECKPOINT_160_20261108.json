@@ -1,0 +1,86 @@
+{
+  "schema": "one-urai-genesis-staging-r892-raw-historical-byte-coverage-checkpoint-v2",
+  "sourceSnapshot": "R884 180 branch heads and R891 corrected unique Git blobs",
+  "priorCurrentR890HistoricalVerified": 239,
+  "priorCurrentR890HistoricalVerifiedBytes": 1673017,
+  "worklistObjects": 587,
+  "worklistBytes": 5311559,
+  "additionalVerifiedObjects": 160,
+  "additionalVerifiedBytes": 1608761,
+  "combinedHistoricalVerifiedObjects": 399,
+  "combinedHistoricalVerifiedBytes": 3281778,
+  "remainingHistoricalObjects": 427,
+  "remainingHistoricalBytes": 3702798,
+  "lastFinishedWorklistOffset": 160,
+  "nextOffset": 160,
+  "segments": [
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_000_016.json",
+      "gitBlobSha": "8b91ede6f8654579c3b4db40fcffff1e6db1c0d1",
+      "rows": 16,
+      "bytes": 141365
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_016_032.json",
+      "gitBlobSha": "6c5a1d83ae2f9a447fd88aa9cc6156fac8be88fa",
+      "rows": 16,
+      "bytes": 118892
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_032_048.json",
+      "gitBlobSha": "5da541955d294a93fcdb68c20945e5570fa72498",
+      "rows": 16,
+      "bytes": 522691
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_048_064.json",
+      "gitBlobSha": "503acedfdbc962dae7beafe8ea434935d7d9d425",
+      "rows": 16,
+      "bytes": 104117
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_064_080.json",
+      "gitBlobSha": "62ca36ef8b0831cdb40d1e06b47c721ce9c5b306",
+      "rows": 16,
+      "bytes": 114584
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_080_096.json",
+      "gitBlobSha": "211a3da67ea2960a027260a70b315efa0624b954",
+      "rows": 16,
+      "bytes": 103180
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_096_112.json",
+      "gitBlobSha": "87a785201520290cd57aabdd249c6d2978e5de27",
+      "rows": 16,
+      "bytes": 157629
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_112_128.json",
+      "gitBlobSha": "3ce3733bb5b40144565d651eb8abebff1083ac47",
+      "rows": 16,
+      "bytes": 144733
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_128_144.json",
+      "gitBlobSha": "6946888f287a7707dfe13961fd0b7f37f9beeb15",
+      "rows": 16,
+      "bytes": 85845
+    },
+    {
+      "path": "docs/estate/manifests/R892_HIST_BYTES_144_160.json",
+      "gitBlobSha": "42e357f4174677737da915878a117eb553bd423a",
+      "rows": 16,
+      "bytes": 115725
+    }
+  ],
+  "mismatches": [],
+  "readErrors": [],
+  "releaseStatus": "STAGING_LIVE_HOLD_PRODUCTION_NO_GO_PHYSICAL_DEVICES_UNVERIFIED",
+  "limits": [
+    "R884 180 historical branch-head snapshot only, not all Git history",
+    "Not current candidate native npm/Firebase runtime, cloud provider, live deploy or device acceptance",
+    "Earlier 80-blob checkpoint is superseded by this later 160-blob aggregate, not erroneous"
+  ]
+}

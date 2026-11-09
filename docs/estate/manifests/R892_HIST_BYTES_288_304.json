@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    288,
+    304
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "7c2b841963d98f1016ed3d5e9bbffef05af92312",
+      "declared_size": 7041,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "fix/rebind-communications-main-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 7041,
+      "sha256": "e99b629c56ffae28f989daf5dd7ad3f3862e968958cfd5657447fe48d370db87",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7ce9b27440e0e3c93c2d3f9f303a0bbcdb37c38a",
+      "declared_size": 4169,
+      "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 1,
+      "observed_bytes": 4169,
+      "sha256": "ea90026f1e22135bfba2cb8b31b5873bf4f5a94113e899b964abdd152e624623",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7ced21234df20fe08e5f9b4b5a63521702cda804",
+      "declared_size": 1331,
+      "example_path": "URAI_STAGING_CANONICAL_APP.md",
+      "first_branch": "audit/release-evidence-hardening-20260706",
+      "pathRefs": 7,
+      "observed_bytes": 1331,
+      "sha256": "5c5c1d3b906aaab17b284b922a73ae4eef4a6d8b1675b96e9cba548d6ff4a34f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7da4039f5302c86eb74a494d1f7a332f293c4eed",
+      "declared_size": 5862,
+      "example_path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+      "first_branch": "fix/sendgrid-cleanup-yaml-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 5862,
+      "sha256": "c7ad5f840133ff8663c50e6d7acf32a7aaa58ae46d77fe5f0dabce3a44e2d689",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7e155feb1371775364b3e9e05fd8b7afade99d7c",
+      "declared_size": 17187,
+      "example_path": ".github/workflows/spatial-pr1572-stripe-provider-probe.yml",
+      "first_branch": "converge/final-spatial-consumer-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 17187,
+      "sha256": "67fc8ee319bca385d13ea9fdbb64a6f5cf2f024cb5a0f5bd9c293af6936de8e8",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7e894abc2fbf68a97c48acb14faf4dbe4895d36c",
+      "declared_size": 10544,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "diagnostics/staging-readonly-r215-20261028",
+      "pathRefs": 29,
+      "observed_bytes": 10544,
+      "sha256": "f3168a19a72830973a2378a105d0602e3b49ba6d824d2663b972b7101ba52ab0",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7f06ab523f5537bbc37c79dd841bd0c797f3ff7d",
+      "declared_size": 9417,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/staging-main-authority-20261003",
+      "pathRefs": 3,
+      "observed_bytes": 9417,
+      "sha256": "d5c4ac196f67ab0432bc8ae8455c4a4908b4f7ee313db31dbd44e5665779dfd2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7f3946bb02b83a27cb5be7d3e15158bbae4ee513",
+      "declared_size": 20184,
+      "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "first_branch": "converge/staging-final-1591-communications-main-20261004",
+      "pathRefs": 12,
+      "observed_bytes": 20184,
+      "sha256": "bb820138dfef849b7acb6874c65095632bb4f384ccb9e4db355446b299b299bf",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7f9f7688e7f4116ebe5ef9218948c7a3a9a48657",
+      "declared_size": 17302,
+      "example_path": "scripts/verify-privacy-jobs-protected-approval.mjs",
+      "first_branch": "review/r737-converged-source-authority-20261105-chalk",
+      "pathRefs": 2,
+      "observed_bytes": 17302,
+      "sha256": "9518fec767a80e14e136add8cace48850afeb8fbdab2f0063cc9837ad59e164c",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7fa08aaef06976c035ae16f68f2bf29dd3478575",
+      "declared_size": 9521,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "fix/bind-spatial-pr1576-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 9521,
+      "sha256": "ffcb58ca7757f57ccab748e669a356848baeed35c603ca8856cba9cd947a5f78",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "800ba616fe404e7c2fd1e1c637b9063dceb8d395",
+      "declared_size": 2323,
+      "example_path": "docs/estate/08_NEXT_WORKER_HANDOFF.md",
+      "first_branch": "docs/chalk-staging-source-release-audit-20261107",
+      "pathRefs": 2,
+      "observed_bytes": 2323,
+      "sha256": "013345a179d805b62239cb26624588dde56213c93f30074a9b9e4543345abc7a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "807254dff531844b548594b2ef66f9bb84e1d866",
+      "declared_size": 1955,
+      "example_path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
+      "first_branch": "canon/upstream-authority-20260924",
+      "pathRefs": 2,
+      "observed_bytes": 1955,
+      "sha256": "91b8bff7a599eca86a9dc40427403cec24b05ed7d963a4cf7fcad7e4c18b3077",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "808275b503cea11dd6ae0df55692a64b21dc762e",
+      "declared_size": 3200,
+      "example_path": "scripts/validate-spatial-pr1462-stripe-provider-probe.mjs",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 2,
+      "observed_bytes": 3200,
+      "sha256": "dc46a472363fd4d7b389c164cb2b6c15c4d2784de9ebbea630a61ee9215cb38e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8124d4f93b0db55a4976efa61ebe4c6a0125dcbb",
+      "declared_size": 526,
+      "example_path": ".idx/dev.nix",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 37,
+      "observed_bytes": 526,
+      "sha256": "b554f308836badbbbadad6393a5d616abce7fdac591ba6e6a8976bd079053ced",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "81386bf64c62c8fd0ebd6b3c62726a6ac7854b6a",
+      "declared_size": 2498,
+      "example_path": "scripts/check-workstream-c-private-evidence.mjs",
+      "first_branch": "repin/current-six-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 2498,
+      "sha256": "bdc06503295172add0bd7e3d567d97f9f870c198157a58f6bc897bed68b75c29",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "82829f531ef04b9d126cc7c5a17a2101d872cc0d",
+      "declared_size": 9060,
+      "example_path": "scripts/verify-staging-verification-binding.mjs",
+      "first_branch": "fix/staging-admitted-communications-source-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 9060,
+      "sha256": "e69a1ae6f802bae22454006132bc4b4dcce72f9b44fb99026e4a0fd98f197469",
+      "state": "verified"
+    }
+  ]
+}

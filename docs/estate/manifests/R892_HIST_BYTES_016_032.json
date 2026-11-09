@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    16,
+    32
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "0646950a7671078d14efca5f51576682e698ea94",
+      "declared_size": 12240,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "repair/staging-provider-harness-converged-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 12240,
+      "sha256": "9dbe137016dc91b20be3610554fb0774906715d19d7a43d21fc8d1e092ae9dc5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "066229c09e6e3efd19c26e1065504300df157192",
+      "declared_size": 9165,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/sendgrid-pr58-6c99e6c-20260929",
+      "pathRefs": 7,
+      "observed_bytes": 9165,
+      "sha256": "210dc34ebea279ecb34f012fc96511134b4baea17bf321f9b6a43cb49d525351",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "0685bc2500ec67704bfcdf02e7859837a82bbca2",
+      "declared_size": 17640,
+      "example_path": "functions/test/r439-original-jobs-privacy-auth.emulator.mjs",
+      "first_branch": "review/r710-current-signed-lifecycle-staging-20261105",
+      "pathRefs": 2,
+      "observed_bytes": 17640,
+      "sha256": "54cc985e8b3fd4068b8279b4a7af5baf9ab4b7cfa13b7416024c63bc5fc10435",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "06a87d1504b80a089c6543ac7bc0801a21b2cfa1",
+      "declared_size": 3943,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/r749-retarget-owner-acceptance-to-converged-r748-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 3943,
+      "sha256": "2f96b54df9c5fa737bdf702065e5a15f6e90b48e3f61fbc04f8aabb492124846",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "06be3bd1dc6813445de23e95e8f85e34e13bf30a",
+      "declared_size": 4483,
+      "example_path": "scripts/fixtures/r720-public-boundaries/factory/assetfactory-studio/lib/server/assetProviderAdapters.ts",
+      "first_branch": "review/r720-privacy-factory-cross-system-denial-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 4483,
+      "sha256": "0523797a3c5027be591ee71d7ccaf1e712d042eaec3ba2a0826da34dcb2c4aae",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "076d1c98cb9a5bb4495d00e5e0e2300c37092c18",
+      "declared_size": 2842,
+      "example_path": "ENVIRONMENT.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 22,
+      "observed_bytes": 2842,
+      "sha256": "6742e765373bc318cdacf2d7c37ce004c2b17a74335e2c10e85b8ed653344b10",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "08e20c81a3db3bd007c1d8c1049fa6ba0cccec41",
+      "declared_size": 9521,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "fix/protected-consumer-ref-coverage-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 9521,
+      "sha256": "23be625d229979b17b35f2560d10fd66eb42cb3cfada952a24de6dfaa6c10860",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "092ab6271bea422dff7192d1096b0e060affa8b5",
+      "declared_size": 3200,
+      "example_path": "scripts/validate-spatial-pr1576-stripe-provider-probe.mjs",
+      "first_branch": "fix/bind-spatial-pr1576-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 3200,
+      "sha256": "803102feb1646cf2b219d76e4bebfc2450eae3994135f0e6a89b0cf41d21a3f7",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "0956f50fecef7553cc5bbbf7b6fe30934f59c765",
+      "declared_size": 10681,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/chalk-r775-exact-genesis-owner-acceptance-pin-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 10681,
+      "sha256": "5a81fe6c33a60c88661243ff1e9be83d4670f3676a4dcf791a4a7f13fd119516",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "09ab02982871a52ee15fb5ec5f38a157745bcc0d",
+      "declared_size": 10544,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "maintenance/communications-main-pin-sync-20261018",
+      "pathRefs": 1,
+      "observed_bytes": 10544,
+      "sha256": "d42d9769884b4050f5d1718d43c2178f7367db7368745f609cdb70dad5eabdb3",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "09c589185f9f6df3f1f23f7f522f5065df2cad2a",
+      "declared_size": 4965,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "sendgrid/governance-certification-6c99e6c6-20260929",
+      "pathRefs": 2,
+      "observed_bytes": 4965,
+      "sha256": "0cec4c79e9630cb38cb3325bfb1801f85c9621a735364ae2cbcfad2a2cc1df5b",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "09cd453cea179947bf4646a71f6734c9a2e5015a",
+      "declared_size": 6665,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "fix/bind-spatial-pr1576-mainline-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 6665,
+      "sha256": "42d43ec398a735151a05638e3650f553e5e9b27277f29ccd1b50eca85df00f0d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "0a8ed3bcb32097f0c2ddc70892df1a17c5cec7bd",
+      "declared_size": 1090,
+      "example_path": "DEPLOY_EVIDENCE_LOG.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 35,
+      "observed_bytes": 1090,
+      "sha256": "ffae118c1bfc58032a6a92d58a790cc74283f1b4cc44d7995cd8b32fa3e2905f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "0a95c33be114596c64ed4620583c11e3c0497db5",
+      "declared_size": 5249,
+      "example_path": "scripts/urai-staging-bootstrap.mjs",
+      "first_branch": "audit-completion/staging-command-aliases",
+      "pathRefs": 3,
+      "observed_bytes": 5249,
+      "sha256": "e95d186abf1887bbbeb3bf38b6a745a7b924381464ec2625efd0fd80c60dc9f5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "0ae1c410a90b1858a88601873c7e42e3a1e66e64",
+      "declared_size": 7143,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/chalk-r769-pin-owner-acceptance-pr158-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 7143,
+      "sha256": "33dea27adbcda70eb42ddd74688ec72af5c75f9fe19b7088f70dcc90bebd4ad4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "0bd6aff9b20561da7a037dfcb6c0f2c1e6b11dd4",
+      "declared_size": 9521,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "fix/rebind-staging-spatial-1581-20261004",
+      "pathRefs": 4,
+      "observed_bytes": 9521,
+      "sha256": "0d8e17caf61a063ae60ee019921421edcc9de5f43473f98f745e21779f3da486",
+      "state": "verified"
+    }
+  ]
+}

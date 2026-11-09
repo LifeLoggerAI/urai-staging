@@ -1,0 +1,120 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    576,
+    587
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "f9712d01d93cfc33f8c756a8a2e6a50d0929eede",
+      "declared_size": 3405,
+      "example_path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+      "first_branch": "converge/final-spatial-consumer-20261004",
+      "pathRefs": 16,
+      "observed_bytes": 3405,
+      "sha256": "fb180ede5422bbf1507a6bcc453f3fda6f17cb2599c8b1926e33270b23f015d0",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "f985e2498a98ed6c12da294f3b3c9b3a277a2c5e",
+      "declared_size": 4931,
+      "example_path": "scripts/test-sendgrid-staging-callback.mjs",
+      "first_branch": "fix/sendgrid-cleanup-yaml-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 4931,
+      "sha256": "9c095d418901b583863046396079926f57558f26fb7c8223246d1aaef3e211b4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "f995b7e3b4947d07a08645d73450fde50cec63bf",
+      "declared_size": 6789,
+      "example_path": "scripts/lib/r722-deletion-receipt-proof.mjs",
+      "first_branch": "review/r722-signed-downstream-deletion-receipt-preflight-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 6789,
+      "sha256": "3198b4586542a7570885dd9f7686ae10874edf09f001accf2a570c38199ee2ed",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "f9ae8302f34436d867d04e534f4798c6fb1d5e48",
+      "declared_size": 1276,
+      "example_path": "scripts/run-workstream-c-manual-verification.sh",
+      "first_branch": "repin/current-six-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 1276,
+      "sha256": "b2b40e3f543de47fe70ceb8f873cbd1e94926668ea8d571d31a63d37a2b9fcbe",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "fadfd2315f839f895cf1f56cddb672b94827d5d3",
+      "declared_size": 2599,
+      "example_path": "scripts/smoke-staging.sh",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 15,
+      "observed_bytes": 2599,
+      "sha256": "923c662f0a8299ed33074d5bb229fa4133070b7526ee5e79e03dff0fac97d61c",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "fbeffd1fe659a365f148b45f56f5da14e8f55a94",
+      "declared_size": 5976,
+      "example_path": "config/provider-readiness-20261001.json",
+      "first_branch": "diagnostics/staging-readonly-r215-20261028",
+      "pathRefs": 30,
+      "observed_bytes": 5976,
+      "sha256": "c0c044784087515b27d5b14f3e940830ad2e260b2cf4fa3bf75205f123f7b793",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "fc50f2b781e260408359b318231a41e922d6d0d5",
+      "declared_size": 20681,
+      "example_path": ".github/workflows/admin-pr57-runtime-deploy.yml",
+      "first_branch": "admin-pr57-runtime-controller-20260905",
+      "pathRefs": 1,
+      "observed_bytes": 20681,
+      "sha256": "d424a18f59200ccb93442acedb6145bba914d70435f4bd31013fd94939d73a57",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "fdbad93636e6cfd4a41cfa0387c2f73e30d6547c",
+      "declared_size": 4193,
+      "example_path": ".github/workflows/staging-gcp-authority-readback.yml",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 31,
+      "observed_bytes": 4193,
+      "sha256": "9d1748ff423fec620c53a6d205ee2438c47869068297ad8ee3affdd701da1727",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "feb3d62673f3c5a3ce802358c33d208a34cde8a1",
+      "declared_size": 9053,
+      "example_path": ".github/workflows/staging-deploy.yml",
+      "first_branch": "docs/agent-handoff-recovery-20260719",
+      "pathRefs": 6,
+      "observed_bytes": 9053,
+      "sha256": "f7a374cbc042e3155779f3e68892e193d204fb2db211e717cf8711c628b7f87a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "fed896596b1ab6848ddf4836253b0faa8ae6b816",
+      "declared_size": 16918,
+      "example_path": "scripts/check-deploy-readiness.mjs",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 77,
+      "observed_bytes": 16918,
+      "sha256": "58e6dce659f1dcc9173c818c97f8621c291804af0918d5edf33455d9c9ea9c26",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "fee76c8c4e2f7de6204cc26abd1f2308f0aa8a12",
+      "declared_size": 7041,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "fix/rebind-staging-spatial-1581-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 7041,
+      "sha256": "46f2441dad5a2f5f4e47612dec6ee1c6ddc950125b4a91d42469cc92c78e8500",
+      "state": "verified"
+    }
+  ]
+}

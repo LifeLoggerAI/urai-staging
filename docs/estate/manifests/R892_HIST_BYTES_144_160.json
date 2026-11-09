@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    144,
+    160
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "3ac355c2df3d7276167e1fa83719e3e730a9e190",
+      "declared_size": 5477,
+      "example_path": "scripts/validate-private-consumer-ref-workflow.mjs",
+      "first_branch": "docs/reconcile-staging-http-boundaries-20261005",
+      "pathRefs": 4,
+      "observed_bytes": 5477,
+      "sha256": "1c1beff8fa9ab4a97edde700b053bd2a32b2c3e491f6e5648d991c94dbacb2e2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3acd0961dd6dd58d02f786af48c7a42be1a7bcef",
+      "declared_size": 6510,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 1,
+      "observed_bytes": 6510,
+      "sha256": "96584e24b94c6f0f3c5a05969cb27a6900730a0c0d70f44bf16c27f4573f7cb2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3af4c46f651aa8188b9b8a83208bebbe09fd0690",
+      "declared_size": 742,
+      "example_path": "scripts/urai-production-verify.mjs",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 84,
+      "observed_bytes": 742,
+      "sha256": "0f138663676cdd7fcaa00c1376ad8720065559af97f46ce82c3b3dec2c132db9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3b0ae49b1bf4de718ddc3888ec6fc12d96fff685",
+      "declared_size": 4555,
+      "example_path": "docs/genesis/test-r747-fixture-preflight.mjs",
+      "first_branch": "review/r744-genesis-owner-acceptance-kit-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 4555,
+      "sha256": "ca3e78fca3246ba154af5596e5b9c7bb4d3199c3544c244e0472159ae2bbb558",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3b173f8685dcbd916a693f3258ecce5d1b3a113c",
+      "declared_size": 17209,
+      "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "first_branch": "converge/final-spatial-consumer-20261004",
+      "pathRefs": 11,
+      "observed_bytes": 17209,
+      "sha256": "ff7c20c9e548e45d5284f4c434d112838e72c83ea77547e4c919cc18ec09eb37",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3b3d4e2c57ab6a379561e8950dfbaa793d2fdf87",
+      "declared_size": 17187,
+      "example_path": ".github/workflows/spatial-pr1582-stripe-provider-probe.yml",
+      "first_branch": "fix/repin-spatial-pr1582-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 17187,
+      "sha256": "ca9a06dd62dd4293086cb8f48d8562398fd4076c9eb055a8fac0a560dcbb3f43",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3c7e8d41396b0fb08cc83d52cf976278f3d4f792",
+      "declared_size": 5781,
+      "example_path": ".github/workflows/staging-deploy.yml",
+      "first_branch": "audit/release-evidence-hardening-20260706",
+      "pathRefs": 2,
+      "observed_bytes": 5781,
+      "sha256": "22bb182de240fb484f8c31bc326170657e66ca07c233563ed37658dc6f32fb2a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3c9443abd4b6890818aa32099e4db9527c84b048",
+      "declared_size": 9383,
+      "example_path": "config/provider-registry-20260925.json",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 26,
+      "observed_bytes": 9383,
+      "sha256": "5fb94f21bd9519aee4196b6f2a502986bb9ad5f7dcb68d0f0e40c3afc1eccf97",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3c9e807693154d381a8cec9015fe9bb96dff49a0",
+      "declared_size": 6464,
+      "example_path": "scripts/verify-privacy-jobs-protected-approval.mjs",
+      "first_branch": "review/r720-privacy221-current-deletion-contract-20261105",
+      "pathRefs": 3,
+      "observed_bytes": 6464,
+      "sha256": "03fc1d68fdb3fb1f91274caa232f57576551200da99aa34df517476bd78344b1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3cfc13f2439093f266200a9492ecc31e565888c9",
+      "declared_size": 5744,
+      "example_path": "scripts/test-staging-verification-binding.mjs",
+      "first_branch": "repair/twilio-owned-trial-sender-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 5744,
+      "sha256": "e16e4ddb785dcb42b1dbfc1b2b5c6dc109ec75250676c4677362c78d0f0af87d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3d3aca88fa98150f11b984711e4c03447bbe94c8",
+      "declared_size": 3352,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "repair/communications-consumer-current-20260927",
+      "pathRefs": 1,
+      "observed_bytes": 3352,
+      "sha256": "c10e0cf2a4ab15c98f79ac5978beb0a2a5cbe2d41b81e24e3bf4f0fd72e3a2bc",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3dcd917ef3fb301f94e16558e127caa11044c57c",
+      "declared_size": 9387,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/spatial-pr1462-current-head-20260929",
+      "pathRefs": 2,
+      "observed_bytes": 9387,
+      "sha256": "94086d4f85e7bd9150492698a41e3ea66d1c5de60e0c3a9d742e086920fa9d9a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3ded1f80e4108532a4f874d91b23ad6844a35777",
+      "declared_size": 5220,
+      "example_path": "scripts/urai-staging-bootstrap.mjs",
+      "first_branch": "audit/release-evidence-hardening-20260706",
+      "pathRefs": 1,
+      "observed_bytes": 5220,
+      "sha256": "dd740618f9f490d094b7f081954e8161d28a43e3b29f18206d2b6d6b211455d0",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3dfa9101331848792d170244fa3ad77763435090",
+      "declared_size": 5761,
+      "example_path": "STATUS.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 33,
+      "observed_bytes": 5761,
+      "sha256": "a0779a879391552dca27b32045a3e1ccd0ff6e6d2c329ac34fd511cbaf0927e4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3e55a078f51d9dd185a3e67486f4a82bb89d9206",
+      "declared_size": 3432,
+      "example_path": "scripts/validate-spatial-pr1591-stripe-provider-probe.mjs",
+      "first_branch": "fix/rebind-spatial-1591-0d612665-20261004",
+      "pathRefs": 2,
+      "observed_bytes": 3432,
+      "sha256": "62363cfe56e13dcb1d9fe306e94227f07c61000b7914473e7c99998b23f33369",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "3e8d28787a94ec92191c223842176da7e34c3ee3",
+      "declared_size": 9521,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/production-spatial-consumer-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 9521,
+      "sha256": "99b1dbf449274cf2064b361e241f15b5d1562350bb68482987fc633dd990b87d",
+      "state": "verified"
+    }
+  ]
+}

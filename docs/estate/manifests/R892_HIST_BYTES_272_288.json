@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    272,
+    288
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "754e92912e908cd795b685b4e300182927abb8b6",
+      "declared_size": 2326,
+      "example_path": "URAI_STAGING_LAUNCH_BLOCKERS.md",
+      "first_branch": "audit/release-evidence-hardening-20260706",
+      "pathRefs": 7,
+      "observed_bytes": 2326,
+      "sha256": "4c9e5cc48f2543fd5758e882fce0caaf5034d822a04b4a9099bee62af64455bf",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "75f4d2d1927dd9507588ba825cebbc144d484c7a",
+      "declared_size": 11092,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/spatial-pr1598-current-head-20261005",
+      "pathRefs": 1,
+      "observed_bytes": 11092,
+      "sha256": "16792b47d427bd0364e2ef91e9094e1b3900d5f959f94316fb4f0c36fbb8a177",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "769a66f5124f80c9e78cbbd9b32111238a070468",
+      "declared_size": 2241,
+      "example_path": "docs/estate/10_RELEASE_PARITY_AND_GATES.md",
+      "first_branch": "docs/chalk-staging-source-release-audit-20261107",
+      "pathRefs": 2,
+      "observed_bytes": 2241,
+      "sha256": "4f3c14e365ee154215f281d6de5656b0335a05c6df579707bee157bcc06fe0f1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "76bc563b489f139a605961bddffa3f932b4dd529",
+      "declared_size": 344,
+      "example_path": ".gitignore",
+      "first_branch": "chore/complete-staging-foundation",
+      "pathRefs": 4,
+      "observed_bytes": 344,
+      "sha256": "0c604e96590dbf302e9c04421aa82addd02947bcd56f918f829c7563c2f99a0d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "76f9f86c6c62235c39026286ef7ee34e27d1746e",
+      "declared_size": 4926,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "stripe/spatial-pr1182-test-runtime",
+      "pathRefs": 1,
+      "observed_bytes": 4926,
+      "sha256": "8beb8997e551be57642ffae273344ec505b86eb4ca057dc3e8ac2a5ed6035b67",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "77610a81a0ed42231a74d22cfa6a41c2ca4ac91e",
+      "declared_size": 4881,
+      "example_path": "functions/test/syntheticMemoryCapacity.test.mjs",
+      "first_branch": "review/chalk-r816-synthetic-graph-capacity-fence-hold-20261106",
+      "pathRefs": 1,
+      "observed_bytes": 4881,
+      "sha256": "7d092ac506db450266de067badac008e419998d483dde84aa8e6488b05262c7d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "77dc9415048cd0ed035957a3412ff9c03a39c202",
+      "declared_size": 858,
+      "example_path": "docs/evidence/2026-09-27-communications-consumer/staging-refs.log",
+      "first_branch": "repair/communications-consumer-current-20260927",
+      "pathRefs": 1,
+      "observed_bytes": 858,
+      "sha256": "cf673f1097dcb6105a13fb2c57afcbcc350e22d7c38bbea49e6e0b63b59dab96",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "78730ecf120ddcac47d89772322f955619429dd7",
+      "declared_size": 12784,
+      "example_path": "scripts/check-deploy-readiness-v2.mjs",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 17,
+      "observed_bytes": 12784,
+      "sha256": "216f3816e51c6ca25f9d32afaa5d91fa1e596af5d1f7fd03517188952599bb73",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "78ce3943e90c0727de61ee95120d52bf2f267884",
+      "declared_size": 3201,
+      "example_path": "scripts/validate-spatial-pr1582-stripe-provider-probe.mjs",
+      "first_branch": "fix/repin-spatial-pr1582-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 3201,
+      "sha256": "e63de0967cb81b4a25c7faafa46f8cf70cb8015af91b594910a41fd8347885ac",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "78f72516a9c0ec5bf05364ee96bcc81c985a985b",
+      "declared_size": 3928,
+      "example_path": ".github/workflows/private-consumer-ref-verification.yml",
+      "first_branch": "converge/staging-final-1591-communications-main-20261004",
+      "pathRefs": 20,
+      "observed_bytes": 3928,
+      "sha256": "52a6ad3ec521e67c707683a2906a86b92c34bb5b312601a05ea2f7a30b4a6fde",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "790f73898168a175db0722328817b010835e179f",
+      "declared_size": 30811,
+      "example_path": "docs/estate/BRANCH_REFS.json",
+      "first_branch": "docs/chalk-staging-historical-artifact-and-byte-proof-20261107",
+      "pathRefs": 1,
+      "observed_bytes": 30811,
+      "sha256": "c00dbe54b217b85f7aa2153ba9a97ba840d7d655a0ff5248d63dbfbd9d0073b4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "79f071b7f302003c2c134820a344731b794dc7e3",
+      "declared_size": 1702,
+      "example_path": "functions/package.json",
+      "first_branch": "review/chalk-storage-sdk-emulator-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 1702,
+      "sha256": "35ca0c058ea9b3ae457403d5e4b5e7bc2c61bddb2153841376397457e5ce8025",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7a65caf46bf5d99d7ba0c89818f001d27e49c4a5",
+      "declared_size": 2810,
+      "example_path": "scripts/test-genesis-release-gate-wiring.mjs",
+      "first_branch": "review/r722-signed-downstream-deletion-receipt-preflight-hold-20261105",
+      "pathRefs": 2,
+      "observed_bytes": 2810,
+      "sha256": "272dfeca1a92d784f572bad6b4de7173a2dc1f5696a323eacb0862ab82c5afdf",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7aff3c369ffb091dea0f814db431339d34f360b7",
+      "declared_size": 6369,
+      "example_path": "scripts/validate-launch-evidence.mjs",
+      "first_branch": "repair/staging-provider-harness-converged-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 6369,
+      "sha256": "ffb0807e35016010dfa5ff4707f6e48d02c07117dc9d581cb6e2f0d48cfc027f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7b08f11d016d25865dc3f4b699446b1173f044f0",
+      "declared_size": 5765,
+      "example_path": "scripts/check-deploy-readiness.mjs",
+      "first_branch": "audit-completion/staging-command-aliases",
+      "pathRefs": 2,
+      "observed_bytes": 5765,
+      "sha256": "2bcdf34a322a2b1292ca9df8b620bfce232c8ce4a37387a27e5113a43f885d37",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "7b8045ac93562296b9a7c5424d3c6f6877247e59",
+      "declared_size": 21172,
+      "example_path": ".github/workflows/admin-pr57-runtime-deploy.yml",
+      "first_branch": "admin-pr57-effective-iam-proof-20260905",
+      "pathRefs": 1,
+      "observed_bytes": 21172,
+      "sha256": "9f6dbbe330dc92ce049c93261c13cff39face83ffba2186bff5fd7b9788e5cde",
+      "state": "verified"
+    }
+  ]
+}

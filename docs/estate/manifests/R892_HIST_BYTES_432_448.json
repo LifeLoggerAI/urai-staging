@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    432,
+    448
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "be5502e13e7b82a2bfe4a5327e05d7d773af689e",
+      "declared_size": 4004,
+      "example_path": "package.json",
+      "first_branch": "review/r476-current-auth-consent-source-20261103",
+      "pathRefs": 4,
+      "observed_bytes": 4004,
+      "sha256": "522b9b66acaf93e21e27078ce5972441b9c5c6d41e5811e62e5d3abdedc7f39a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c02214e21c75ee2a48dd164761dce0b53d91f9ca",
+      "declared_size": 4903,
+      "example_path": "scripts/validate-provider-readiness-20261001.mjs",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 9,
+      "observed_bytes": 4903,
+      "sha256": "8f35180ead2305a2a4e870221e984a1e4e2dfc2ba83e890e300bdb45477e3894",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c0724cdef4c66e3649e5c668a3786d3153a07403",
+      "declared_size": 1893,
+      "example_path": "package.json",
+      "first_branch": "audit-completion/staging-command-aliases",
+      "pathRefs": 2,
+      "observed_bytes": 1893,
+      "sha256": "e8c2f7fd9946c8a2fe51e7a1b6edfe415bd0155e9449f8078a63b586d0adb512",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c11615d543cda3d2d55f1045862957a1bb646752",
+      "declared_size": 6665,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "converge/spatial-pr1462-current-head-20260929",
+      "pathRefs": 5,
+      "observed_bytes": 6665,
+      "sha256": "07bb7812a04cdeae3bc8fedb56cb13de6159ccbab4e6be36989b426987dbc218",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c123bc46500253b7adacd37f26e44f0611ca2970",
+      "declared_size": 3559,
+      "example_path": "URAI_STAGING_READINESS_MATRIX.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 37,
+      "observed_bytes": 3559,
+      "sha256": "3e4fa2b0f17d4e7dfe7607fa0e1a451384ceff5097c7134d7cdf711a6906bbc2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c167199647d9fea10655b54fb4410e53bc52d3eb",
+      "declared_size": 17958,
+      "example_path": "functions/test/current-cross-service.emulator.mjs",
+      "first_branch": "review/r763-graph-relation-consistency-converged-20261105-chalk",
+      "pathRefs": 1,
+      "observed_bytes": 17958,
+      "sha256": "447fe5301a8664006b5beae7c038a5e9cb28903d8a495f44189670cb9ed2dfb8",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c17dbcaaef828158e7f7a099ac656c486182c9a5",
+      "declared_size": 2066,
+      "example_path": "scripts/assert-current-communications-source.sh",
+      "first_branch": "fix/staging-admitted-communications-source-20261007",
+      "pathRefs": 2,
+      "observed_bytes": 2066,
+      "sha256": "c9bfbd6e0db6d376ab6502c638dd183d3e412fd025a35daada988bd032aa4016",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c1b5924eca8ad76b2330a225ec4cf21bfa463740",
+      "declared_size": 9337,
+      "example_path": "scripts/test-r720-public-deletion-factory-denial.mjs",
+      "first_branch": "review/r720-privacy-factory-cross-system-denial-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 9337,
+      "sha256": "743a52c1e143c5678685e9f6565886c12a4cf6ec82028cb6a796d16dc697d179",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c1e05bf386bd47ff64bec20623cc50f29a9d1aa5",
+      "declared_size": 6009,
+      "example_path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentDecision.ts",
+      "first_branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
+      "pathRefs": 2,
+      "observed_bytes": 6009,
+      "sha256": "5816f82f9255e546d973d7b9c5f7ee18270fe9c15de3b01df9700413a09e04c1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c2472da5425848173103f13b3c5b4c8ad62e427c",
+      "declared_size": 4637,
+      "example_path": ".github/workflows/private-consumer-ref-verification.yml",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 5,
+      "observed_bytes": 4637,
+      "sha256": "b38f629d4b3d790011649dd8b80b1d2c76363c55351af341cd7327e374ea6911",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c2622f8b3a6558374919f46a11d62889cbb0ddb0",
+      "declared_size": 986,
+      "example_path": "CROSS_REPO_RELEASE_MAP.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 131,
+      "observed_bytes": 986,
+      "sha256": "1a061dc1af3fac8706d07b3ce5d44d2d0fe87d761b3532c3de8c219a0124f4d8",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c28eb289467971d4ffa564d3f02c779e75fc8b87",
+      "declared_size": 15501,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-r765-acyclic-canonical-synthetic-life-graph-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 15501,
+      "sha256": "2d0225c7ce69b15d3df944a6e4563fff2009f878bf8a1c9e27d5e4526729e178",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c31d1945a3498a3091d635b1fd49c272870a760a",
+      "declared_size": 1882,
+      "example_path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md",
+      "first_branch": "fix/sendgrid-cleanup-yaml-20261007",
+      "pathRefs": 2,
+      "observed_bytes": 1882,
+      "sha256": "c8d76dc96809098223c5b948f514a0f1c30317469b44532118e7055afccb1f68",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c320c99b6efe654a71f973f6db7ebc1ca0cc2c30",
+      "declared_size": 13662,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/chalk-r787-owner-pin-r786-uid-boundary-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 13662,
+      "sha256": "6b60b085ff7c5744bd334aedcb123f6b53dd758f61d215eb8ad78459cebb4ff5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c3629ad64747b5bef617416bc14125a57c8ee281",
+      "declared_size": 101555,
+      "example_path": "docs/estate/MANIFEST.json",
+      "first_branch": "docs/chalk-staging-historical-artifact-and-byte-proof-20261107",
+      "pathRefs": 1,
+      "observed_bytes": 101555,
+      "sha256": "2584d1ee3ceaac32a9ebdc75feda0661813a57b45edc497fbaf4a0cab8878b2c",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c40cf15acf916be962bea7f759f8f62696467059",
+      "declared_size": 1041,
+      "example_path": "scripts/test-genesis-release-gate-wiring.mjs",
+      "first_branch": "fix/genesis-staging-command-inventory-20261102",
+      "pathRefs": 1,
+      "observed_bytes": 1041,
+      "sha256": "b793cc4671e80f64587ebc6a42b353b42571fd9fb0ff3e1f30d1337099900093",
+      "state": "verified"
+    }
+  ]
+}
