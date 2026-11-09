@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    30,
+    45
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "diagnostics/staging-readonly-r215-20261028",
+      "commit": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "actual_tree_sha": "0e5d9500bf376026c5bb8554cf655661a0b0f7ac",
+      "corrected": true
+    },
+    {
+      "branch": "docs/agent-handoff-recovery-20260719",
+      "commit": "7029d91a3cf7d9ae18ef5ac47241311b90614de0",
+      "actual_tree_sha": "6aa83fddf3c6dc87448e91320b48f3c5c93dd1ef",
+      "corrected": true
+    },
+    {
+      "branch": "docs/chalk-staging-source-release-audit-20261107",
+      "commit": "5c0259971eed5d49cd330d0fd4d840074f71f0cf",
+      "actual_tree_sha": "76d1358db5f2b6cc2cf96012626563ecaa8c3fb2",
+      "corrected": true
+    },
+    {
+      "branch": "docs/genesis-estate-handoff-20261106",
+      "commit": "d1202c5f69006b3fadcfef1773f214c60a900a58",
+      "actual_tree_sha": "4fdf0766fd63f6c74a548a5f217dbcd99e849ea3",
+      "corrected": true
+    },
+    {
+      "branch": "docs/reconcile-staging-http-boundaries-20261005",
+      "commit": "ceca4d716a839401215db2fe63c840eab73b5e7f",
+      "actual_tree_sha": "e81964819295f6b6b8f2aa7bac417789fd70069f",
+      "corrected": true
+    },
+    {
+      "branch": "fix/align-feature-flag-schema",
+      "commit": "44eccc0192f1e74d053aaca48a855ac93980be72",
+      "actual_tree_sha": "1daa5f66f147de97fc85a840abfe229a43902eca",
+      "corrected": true
+    },
+    {
+      "branch": "fix/audit-billing-validator-pr58-20260926",
+      "commit": "224bc8f7f0803fe5d4f0512b92909768aa33674f",
+      "actual_tree_sha": "a4a230c3d36c27c8cffeaac6f78e0ccd9d82bcae",
+      "corrected": true
+    },
+    {
+      "branch": "fix/bind-spatial-pr1576-20261004",
+      "commit": "78ba7a71e423c0f8c887e285776b543bce4ad343",
+      "actual_tree_sha": "fd23fc901b4361fcbc3740e668a6041303cea93a",
+      "corrected": true
+    },
+    {
+      "branch": "fix/bind-spatial-pr1576-mainline-20261004",
+      "commit": "f7f3183b240689965bc7ef645c0eb552482fe5ce",
+      "actual_tree_sha": "3e37978eeacb1ffcce907d982a89db4e7e4dc414",
+      "corrected": true
+    },
+    {
+      "branch": "fix/environment-authority-20260706",
+      "commit": "9568e09ad536f0fd936b316a5f4deb84fe1ff70d",
+      "actual_tree_sha": "63ebe4d08a06a0763802bfb058bff7e36348b6da",
+      "corrected": true
+    },
+    {
+      "branch": "fix/generic-staging-wif-probe-20261004",
+      "commit": "6ab648ad9b2dd039d2e2df4ccafb9cac3b9db3c9",
+      "actual_tree_sha": "d3c7de2772e9b410f3325268d40944d32c696fee",
+      "corrected": true
+    },
+    {
+      "branch": "fix/genesis-staging-command-inventory-20261102",
+      "commit": "d25d94d5b57e483674740f385a2454792de68250",
+      "actual_tree_sha": "ca48e281785dd71ba26181dc88d1b90ca013649e",
+      "corrected": true
+    },
+    {
+      "branch": "fix/genesis-staging-evidence-source-pin-20261102",
+      "commit": "c1cce429bfba9619c414f8ae61fec3d494cb9f90",
+      "actual_tree_sha": "8e24c0cb6d3f69c9cc420ac82c5edcfd37c37642",
+      "corrected": true
+    },
+    {
+      "branch": "fix/network-verifier-functions-bootstrap-20261005",
+      "commit": "01bb63a402bd164f5191c7fb4bf44e619ea0c183",
+      "actual_tree_sha": "843f0fb644de56e425fa7bdb9e4f06314c264088",
+      "corrected": true
+    },
+    {
+      "branch": "fix/private-consumer-readonly-ssh-fallback-20261005",
+      "commit": "6055c27a0e859bca4d3c6d54f8e368beb26563e5",
+      "actual_tree_sha": "ff0274e4c9d6229c5a6ebf663abafe6f9efe56b1",
+      "corrected": true
+    }
+  ]
+}
