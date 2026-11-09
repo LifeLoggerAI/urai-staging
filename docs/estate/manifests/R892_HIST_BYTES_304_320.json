@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    304,
+    320
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "83836646a19bc3276c0cd2261a0300965391269b",
+      "declared_size": 17751,
+      "example_path": ".github/workflows/staging-deploy.yml",
+      "first_branch": "reconcile/staging-authority-current-main-20260714",
+      "pathRefs": 2,
+      "observed_bytes": 17751,
+      "sha256": "8995eb76d90c1a7664337a6e79aef3adc17b9ee84b54a950e1fbc15eabcdfabf",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "83b03ff113d42c2cd95fa109441bee6f105f0acf",
+      "declared_size": 5618,
+      "example_path": "scripts/validate-provider-readiness-20261001.mjs",
+      "first_branch": "converge/staging-provider-terminal-1591-20261004",
+      "pathRefs": 12,
+      "observed_bytes": 5618,
+      "sha256": "65448cd2269c972e6d1d7d9456259f0aba90361452717dcf91588c42943c0f1e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8408dc09409653a8ebb727b9356f9c7716781e18",
+      "declared_size": 14999,
+      "example_path": "scripts/run-workstream-c-manual-verification-core.sh",
+      "first_branch": "repin/current-six-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 14999,
+      "sha256": "a8d7f34d8671664a54fd28206fc1d20be6d0ce331ef29ade89a04b6b9fd31d86",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8428de831f7818eacbf5002d344e72fa34a193b7",
+      "declared_size": 6269,
+      "example_path": "scripts/test-r723-protected-approval.mjs",
+      "first_branch": "review/r727-ensure-protected-main-required-checks-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 6269,
+      "sha256": "b203dcf4c7f33e8af522f254c24c4fb086afb8b659f16d1574911431bf759968",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8521b5a4d9a37acbac25423eb679a0dd1552ad36",
+      "declared_size": 4565,
+      "example_path": "scripts/test-r723-protected-approval.mjs",
+      "first_branch": "review/r720-privacy221-current-deletion-contract-20261105",
+      "pathRefs": 3,
+      "observed_bytes": 4565,
+      "sha256": "1d2d81816ce04e931271faf71c6c093b28f529c2fbb4b10bbce1fd898e89d062",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "852c585a78aed84826a3d4f1adaf2ca0f4f4a2f7",
+      "declared_size": 944,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 1,
+      "observed_bytes": 944,
+      "sha256": "83afd6d80b6c81a7d3e5ec94f199b53bfaf8a7af88b5e8f1da610603e2f2daa1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "852da82d0811ae56aa7048b19e98f351bdd3c418",
+      "declared_size": 22933,
+      "example_path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+      "first_branch": "fix/staging-admitted-communications-source-20261007",
+      "pathRefs": 1,
+      "observed_bytes": 22933,
+      "sha256": "f0a918f395529a64d4d58fa931d650e76e2904c44e4ba6e700dc1308b9c2c16e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "85dab0a1f09ca34766491007cbfb6ab2c5f74482",
+      "declared_size": 7143,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/r757-pin-expanded-owner-acceptance-to-es2020-verified-pr146-hold-20261105",
+      "pathRefs": 2,
+      "observed_bytes": 7143,
+      "sha256": "a6ca372bfa7d092147624f7f77f70dc3ee8f199ed8250b6bdfe24f4c4bc313da",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "85fbebce2908010a953f209cbe183aa5a9c53e73",
+      "declared_size": 1128,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "admin-pr57-effective-iam-proof-20260905",
+      "pathRefs": 7,
+      "observed_bytes": 1128,
+      "sha256": "05bf6964c2c07ad32ff0a5a14bed6a6023886cb824771cc0773385d3ff33c77d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8747fa1e50878f05707664e66f5a7f87b0fce988",
+      "declared_size": 3826,
+      "example_path": "ENVIRONMENT_AUTHORITY.md",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 20,
+      "observed_bytes": 3826,
+      "sha256": "65e7bba47f0cd8c2f4853a0a8287faa00faacf65fe327e1865cdab3dc4ffd8a9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "87a4f943555a69241318cfdd832ca86c64fa974c",
+      "declared_size": 5352,
+      "example_path": "scripts/validate-launch-evidence.mjs",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 94,
+      "observed_bytes": 5352,
+      "sha256": "7abaaad82bdb353a6212acc03343676a9657259425a6b735ebe42999ce8fa7d6",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "88b6c8ed6f068c8854009f90850e0980f86fe04d",
+      "declared_size": 9609,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/staging-provider-terminal-1591-20261004",
+      "pathRefs": 2,
+      "observed_bytes": 9609,
+      "sha256": "e3635c83b5151a56f3a719a71c35ff5e7c898d7e79bb5df9439638657f4d462c",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "894f61f9aecacd9f70cf2a49583d525562ad8699",
+      "declared_size": 1519,
+      "example_path": ".github/workflows/urai-production-verify.yml",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 11,
+      "observed_bytes": 1519,
+      "sha256": "46a6502e5f5a874d8c0bc921275a0217160609625e81b9d7ac2a94f8a33b2c2d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8972a7c04aec6070d74eda6fc7679ad32bbb3aad",
+      "declared_size": 5454,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "repin/current-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 5454,
+      "sha256": "cd7ac28b22844958a626c6d5817cc671ad965756f07b677a64da145ce72d66f4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "89771cc0521a8ee216ad1520fa7451fd7b8d06e9",
+      "declared_size": 498,
+      "example_path": "functions/src/lib/auth.ts",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 133,
+      "observed_bytes": 498,
+      "sha256": "b7ec0071f11e36ac3d9626b466e418f5cf8ef95b7f96c0a4817accaa5723e6d6",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "8981d04b875064a1530b653a09753c700ad6bba4",
+      "declared_size": 10893,
+      "example_path": ".github/workflows/admin-pr57-staging-consumer.yml",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 65,
+      "observed_bytes": 10893,
+      "sha256": "3057e506672eaba6a77055690b57f65bdbb66a0f901ce010ffee2d940d786a78",
+      "state": "verified"
+    }
+  ]
+}
