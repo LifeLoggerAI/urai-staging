@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    208,
+    224
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "scripts/validate-admin-pr57-staging-consumer.mjs",
+      "blob_sha": "26573bbd8139ca6fff46fe97ec503f6ddc48ba03",
+      "declared_bytes": 2025,
+      "observed_bytes": 2025,
+      "sha256": "12ac6b5eac603b5539c8acd39d14d10b54fa94d88aee0f1f51d03d03e0dcef64",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+      "blob_sha": "671c5aad44efbee09b5b764a3e100517ca8a541c",
+      "declared_bytes": 6871,
+      "observed_bytes": 6871,
+      "sha256": "63417c552d1a6f61968c9e781f117bb29f082c4a60d69347755c77810969be86",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+      "blob_sha": "d6350db73301e53cc6d60cd1871c1aa23fe40f7e",
+      "declared_bytes": 6278,
+      "observed_bytes": 6278,
+      "sha256": "a76df2f3bc3adafda14e3d3e1633cca9f0912540b5853190d4837c5638684acb",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-jobs-narrator-build-input.mjs",
+      "blob_sha": "5940eca4e53828c5717693692cd2841162127084",
+      "declared_bytes": 3053,
+      "observed_bytes": 3053,
+      "sha256": "0b06c61316337521127afd293f2f26c0dd33069ec8fee7f9b68ea01adf155ad0",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-launch-evidence.mjs",
+      "blob_sha": "d63b3104257524fe8f7d7fc941e90adb70121a56",
+      "declared_bytes": 9014,
+      "observed_bytes": 9014,
+      "sha256": "745d87a1266014c1762b4532be06b13319ed5f60bee1d91b5ce9d7b02f6c693f",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-privacy-jobs-staging-admission.mjs",
+      "blob_sha": "78007731114bc7d0b191074a55227ef538f13159",
+      "declared_bytes": 3308,
+      "observed_bytes": 3308,
+      "sha256": "633b939cd81eac9fa6fc660fa27e2d71c718c3718dfdbfde273669f385d1f4b8",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-private-consumer-ref-workflow.mjs",
+      "blob_sha": "3e421d094dfcba57e3a4e52c3e3a476595903614",
+      "declared_bytes": 8863,
+      "observed_bytes": 8863,
+      "sha256": "fbc19cadc129074d39c811c685562f57d91458a8cbf93869cd52649d67275750",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-provider-readiness-20261001.mjs",
+      "blob_sha": "78098b7586724af8bb71c295546bdb505da4f97f",
+      "declared_bytes": 5857,
+      "observed_bytes": 5857,
+      "sha256": "7b22598771a155fc6af2221539da13b9a83178a8cc5a1e00787e18612a8f8dca",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-spatial-pr1596-stripe-provider-probe.mjs",
+      "blob_sha": "1ef017272b8bcf3c90f7ca6a21fba4361da8c1bc",
+      "declared_bytes": 3548,
+      "observed_bytes": 3548,
+      "sha256": "f1b0d7851fd167466ce6442777ab8a99d0175f72355ceaa92fc743da839127a4",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-staging-billing-guard.mjs",
+      "blob_sha": "2c9daa2f1f343433a049f18cf1ea1f5984201cab",
+      "declared_bytes": 2620,
+      "observed_bytes": 2620,
+      "sha256": "8a1d089051913c76a4a43d9d720035d974de978014a8db9821e0e942ab372c3e",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-staging-consumers.mjs",
+      "blob_sha": "a5d7baa365a08355062222926b58610c6900cc94",
+      "declared_bytes": 10556,
+      "observed_bytes": 10556,
+      "sha256": "ca8f54e502bb84629b33dd151ffa7c0abfb35a36d3c2b5620ad5389041c87196",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-staging-deploy-workflow.mjs",
+      "blob_sha": "3e437be2192de16306e2a828f015631c3451e11b",
+      "declared_bytes": 2244,
+      "observed_bytes": 2244,
+      "sha256": "f519d651a4a3c10f82cdf1e0d5ade7899be50c7674d725a01a37fab208c7fec4",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-staging-twilio-function-deploy-iam.mjs",
+      "blob_sha": "f266f7b6ab7dda0d87ae3f73bb2a650cbb91d310",
+      "declared_bytes": 3281,
+      "observed_bytes": 3281,
+      "sha256": "169db1208836070a0666e58e3ae446929446fe660c8794832f59f5df68d1f058",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-staging-twilio-proof-iam.mjs",
+      "blob_sha": "6a914f08a3db0762d07f3868e56fecf1b60b0cd7",
+      "declared_bytes": 2059,
+      "observed_bytes": 2059,
+      "sha256": "02e5d9352cd011733ab1c04cdc3bdc3c7734688a0047f1dd44625fa1a0123f26",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-staging-wif-bootstrap.mjs",
+      "blob_sha": "5b91285072b38f46e66a9a3880415f2e1f847597",
+      "declared_bytes": 2297,
+      "observed_bytes": 2297,
+      "sha256": "94ce9e61f50dafaa30bd62e071ff439512213b4b3a582bb3c55c9ab61b31425a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/validate-staging-wif-runtime-identity-probe.mjs",
+      "blob_sha": "4004a063af99af5404c23740661ca4fec36b1722",
+      "declared_bytes": 1759,
+      "observed_bytes": 1759,
+      "sha256": "af716eb153d22b9a7681dd4e91dc0338f72789627c4fdb7d73eeb08439ecde41",
+      "state": "hashed_bytes"
+    }
+  ]
+}
