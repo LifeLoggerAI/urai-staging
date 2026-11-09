@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    120,
+    135
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "review/chalk-r769-pin-owner-acceptance-pr158-20261105",
+      "commit": "62581c5f0e1ff16c11436f8978c0dc2d715a0e5f",
+      "actual_tree_sha": "95633812791d08f85c29f9b24069b5de67a9327c",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r769-synthetic-replay-ancestry-fence-hold-20261105",
+      "commit": "ddc50e002cba7f289c3f0915a6853d50460f99fd",
+      "actual_tree_sha": "426add6d92785af6cb3c0d6d384a1f6427f581a9",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r771-pin-owner-acceptance-to-r770-ancestry-hold-20261105",
+      "commit": "c679d1f9f44b36fdb1587626e0cf73ab34b74d58",
+      "actual_tree_sha": "b827db2d9ccf0e6f8958645f6dcca60d65d08833",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r772-ancestry-revocation-source-convergence-hold-20261105",
+      "commit": "9b8fe580849dcb97d21a272dfc2ae3bf08b72798",
+      "actual_tree_sha": "5b97728ce434909d7ea63b633d519f4f1226db1b",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r772-converge-replay-ancestry-and-bounded-revocation-20261105",
+      "commit": "12c4b5d6177c2bc66d0cf43800406f7033f58789",
+      "actual_tree_sha": "5b97728ce434909d7ea63b633d519f4f1226db1b",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r773-parent-admission-graph-integrity-20261105",
+      "commit": "383c390c821e404b7dc24318647074ca2db2d288",
+      "actual_tree_sha": "c4c9815127ee8a821b3a4aeb2c03d13db6dac899",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r775-exact-genesis-owner-acceptance-pin-20261105",
+      "commit": "70e41446d356d3c53c458207a39e054d686d8b58",
+      "actual_tree_sha": "bb4acd5a946d68a19a12cb995fb7af6887bb5894",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r778-staging-orphan-synthetic-storage-cleanup-20261105",
+      "commit": "734919606a8b01bca21a7c265c2b0d18947ab36c",
+      "actual_tree_sha": "c19a43e1898782cb31275403e3f421ec752e8beb",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r779-strict-owner-pin-to-r778-storage-cleanup-20261105",
+      "commit": "5700956123d5cd2ab4abc30ac6d4481448db0d38",
+      "actual_tree_sha": "ac121f9b8af36cb0b27ac54015c2948f416e1136",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r780-isolated-synthetic-storage-cleanup-tests-20261105",
+      "commit": "c3d6c66604129ddd137db6a971751d0de4d81835",
+      "actual_tree_sha": "703bf4b6912d04cefaa38dbef3582fe6d62ce646",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r781-strict-owner-pin-and-native-cleanup-proof-20261105",
+      "commit": "0d6bb00cd308bdb7d2d2b9361f9d334d9334ab13",
+      "actual_tree_sha": "45fc0667bc7147946329fbdd8e015433c81709e7",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r786-staging-synthetic-uid-boundary-20261105",
+      "commit": "79fc5dc96026cadfdfb5a7ae81fd9207d62cc620",
+      "actual_tree_sha": "eb26ebf1612153db0ea053068cfc8c5ccc802851",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r787-owner-pin-r786-uid-boundary-20261105",
+      "commit": "41ce98f61a7dd7a051ab5a02acaf9b39d037deb3",
+      "actual_tree_sha": "b9b31b59b7d33579951c3b6feb621c62a8a0a0ee",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r816-synthetic-graph-capacity-fence-hold-20261106",
+      "commit": "1e9b8c7f0044450c0a9f0750d33ab36d2324c851",
+      "actual_tree_sha": "19fda4d14a560c1307d020222a86af74fc94652e",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r839-staging-http-capacity-convergence-20261106",
+      "commit": "49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b",
+      "actual_tree_sha": "27122b852350441f47c793c20b05ef970cf12687",
+      "corrected": true
+    }
+  ]
+}
