@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    128,
+    144
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/src/jobs/studioLifeMovieContract.ts",
+      "blob_sha": "5f944e906de7243d7415ac479cf92356b09c84c9",
+      "declared_bytes": 11446,
+      "observed_bytes": 11446,
+      "sha256": "335d0aaf56d6070bf4035f6474831432289ebfd54c5bf0aecceae76c948ea771",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieAdmissionPreflight.ts",
+      "blob_sha": "ed9d6289d3443aa634748649a2df19c64016c02f",
+      "declared_bytes": 12401,
+      "observed_bytes": 12401,
+      "sha256": "dc0ea5d73e260507d4bb0b23dd355c547eddd09bbc14a22f7e95f2f22eb3335e",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieBoundedResponse.ts",
+      "blob_sha": "88b5c3117b9c8d5d8d903efc015b58bc17590b0d",
+      "declared_bytes": 2126,
+      "observed_bytes": 2126,
+      "sha256": "950e11e7c45552224f44ee69bdd5430d6690b70c6d293c15fafa3ac1adf2e452",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentDecision.ts",
+      "blob_sha": "67d0ed28abdbfd33e537b45b262bf4ce4509c2e3",
+      "declared_bytes": 7919,
+      "observed_bytes": 7919,
+      "sha256": "4a813745e3b83ff1d6b36828233794acdc776c6074e89b050de3d5b920c659c1",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentGate.ts",
+      "blob_sha": "53761ac0f5c0340563b13fdd9a12a90e75409d42",
+      "declared_bytes": 932,
+      "observed_bytes": 932,
+      "sha256": "cc7b677f35e38583bb851f6396cea76afa928b3449d23ef15900599472c76072",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentTransport.ts",
+      "blob_sha": "c1bdbb0f196f2f678bdf2d377d1aa0eea0cc56ae",
+      "declared_bytes": 9015,
+      "observed_bytes": 9015,
+      "sha256": "053a18b4aeeb2df8bcdb7463c772a0822f453afbdbfe26da3102edbbf286ea8d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieJobsPrivacyClient.ts",
+      "blob_sha": "73d65b003f4141cd471db1e6a0edff9d7a1c747f",
+      "declared_bytes": 1130,
+      "observed_bytes": 1130,
+      "sha256": "6f6667f677ee905713817276a1e2f5b5dbd93332a738c78f2eea15a517b8aca8",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieJobsTokenProvider.ts",
+      "blob_sha": "648225708e055592ee697e0dc342bfcf1bc144e4",
+      "declared_bytes": 4216,
+      "observed_bytes": 4216,
+      "sha256": "a6f6d713e9e87ba8111a4d2c61f7bbf29651c6fbaaa9ae489a12231766edd16e",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/scripts/integration/r421-run-synthetic-cross-service.mjs",
+      "blob_sha": "a0a32e1d2be5dbb4905b41c31172a6e28a7085f2",
+      "declared_bytes": 5612,
+      "observed_bytes": 5612,
+      "sha256": "417b770ed3354e8f3cef70bc20e05c69a5c10fde5d6589bdc506d5639773f1f3",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/jobs/scripts/integration/r421-synthetic-cross-service.test.mjs",
+      "blob_sha": "00a99f38f5d537b576dd0cfb05c6874104b7f562",
+      "declared_bytes": 17182,
+      "observed_bytes": 17182,
+      "sha256": "9fc5622217faa36e0853b4697feda82dc5d050b1007581f28402464632fc96e6",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/manifest.json",
+      "blob_sha": "419d6205c2e1d9c5e38c8fa8b6af48bb597d7d65",
+      "declared_bytes": 2419,
+      "observed_bytes": 2419,
+      "sha256": "86a8a4a0f147be4e1ef37371f013efa9902e2b055c7c30767465e964eaf5bfdd",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/privacy/functions/src/consent-decision.ts",
+      "blob_sha": "35c699bd225c687bab8f1fd8e7315facc16c8148",
+      "declared_bytes": 8145,
+      "observed_bytes": 8145,
+      "sha256": "6ffa51b266cae8a71f873d3906cbc6f0388175d807cf50db1c1db942e020480a",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/privacy/functions/src/cross-user-authority.ts",
+      "blob_sha": "443097baa409c289b4189f98e4c56c7ab70aaa31",
+      "declared_bytes": 1255,
+      "observed_bytes": 1255,
+      "sha256": "8a297dc49b6e145826d42f0943a738e8454360ed9b35144ce7f17d052260b146",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-deletion-fence.ts",
+      "blob_sha": "e08751e59846b06e366d93d1d8bdac7afeaf3b6e",
+      "declared_bytes": 1732,
+      "observed_bytes": 1732,
+      "sha256": "b678d5f9cba148078c3c82b5cfd31dc1e2fd5c38e694f3801dc7c798eff950e2",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-jobs-identity.ts",
+      "blob_sha": "78f3cfe4b22fd39500ce3d94de55c9c5f46c7970",
+      "declared_bytes": 3053,
+      "observed_bytes": 3053,
+      "sha256": "88e583f34638f249c7bda0ce69687ce5a9466b0d65bd77a00e2e7218a5ef423b",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-render-authorization.ts",
+      "blob_sha": "e09564bffe1124c9a96bb54904680b606aff35c1",
+      "declared_bytes": 3944,
+      "observed_bytes": 3944,
+      "sha256": "9b684acfb4f611da2126474ad17239ca568b2564723285e33610c132fccb2323",
+      "state": "hashed_bytes"
+    }
+  ]
+}
