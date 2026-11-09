@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    75,
+    90
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "governance/provider-readiness-20261001",
+      "commit": "561b44438613dd1c9c684da2ebaf913ab124b485",
+      "actual_tree_sha": "b3d47324ad618e9a997f431c8cc80faa37dcce73",
+      "corrected": true
+    },
+    {
+      "branch": "governance/retire-spatial-1600-refresh-communications-20261005",
+      "commit": "3089b28d75d21e16dc3ae4f0b55bf57e0e6b1a40",
+      "actual_tree_sha": "d83b176976ec50e998e1072690a2a125cd526c83",
+      "corrected": true
+    },
+    {
+      "branch": "governance/sendgrid-current-review-20261006",
+      "commit": "f12005f09cae3d9d4f4ae58a36a34afb95bc369d",
+      "actual_tree_sha": "405d921135feca1bb38f2f7ff85f376f26af93c3",
+      "corrected": true
+    },
+    {
+      "branch": "main",
+      "commit": "bda659ad23590b39e7f32de349f8a3723455ce02",
+      "actual_tree_sha": "0e5d9500bf376026c5bb8554cf655661a0b0f7ac",
+      "corrected": true
+    },
+    {
+      "branch": "maintenance/communications-main-pin-sync-20261018",
+      "commit": "3d3672c733c75d4df16389cc47d5a3401f6329a9",
+      "actual_tree_sha": "2e4d02020491f276aa4d77ac6a5dff15468a6767",
+      "corrected": true
+    },
+    {
+      "branch": "ops/owner-trigger-stripe-pr1591-read-20261004",
+      "commit": "a7b08dd980aa4ed72e450de4b0d13ad89e854157",
+      "actual_tree_sha": "3d3771944a3ffa65a6e127de904694718ba4b9bb",
+      "corrected": true
+    },
+    {
+      "branch": "ops/owner-trigger-twilio-trial-e2e-20261004",
+      "commit": "29fad4645fcc1856e471b3b13e57cce906908443",
+      "actual_tree_sha": "73f2e2eaacc9b6b2d7a0114cee4dd605c840251d",
+      "corrected": true
+    },
+    {
+      "branch": "ops/twilio-staging-secret-readback-20261004",
+      "commit": "2e2a9681d4aebfc8b6026e687be09275e6037434",
+      "actual_tree_sha": "594955c078eee9952e2428a7be9bb98ca629e8f4",
+      "corrected": true
+    },
+    {
+      "branch": "probe/gcp-authority-20260929",
+      "commit": "4c1fca6686b683d57dcfb6d73bb9da47cdcfca09",
+      "actual_tree_sha": "f725238a7f84d3dab94e464eb12ac6ecdf8ce1fa",
+      "corrected": true
+    },
+    {
+      "branch": "probe/gcp-authority-comment-trigger-20260929",
+      "commit": "11121b7d8c60226aa7888ea14a6b54342c408f2d",
+      "actual_tree_sha": "589ab2f1147eb6ef6fa3e474729a10144d00f68e",
+      "corrected": true
+    },
+    {
+      "branch": "probe/gcp-authority-trigger-20260929",
+      "commit": "32d3aeacb5e0eaebe604c363191c6b76ca6b1073",
+      "actual_tree_sha": "4cd89fd4df2bff0138a8eb52265b576b7ef1f3dc",
+      "corrected": true
+    },
+    {
+      "branch": "public-staging-note",
+      "commit": "c9f5d362ad4131c4163b3d58ee593e62a5a2d628",
+      "actual_tree_sha": "7e330e20c0042a8154fc3e75e436241bbdfd4c3b",
+      "corrected": true
+    },
+    {
+      "branch": "rebind/spatial-1600-final-machine-green-20261005",
+      "commit": "42a3a9b1fbfcf85aca79d096c91042774f95ec63",
+      "actual_tree_sha": "a6b273c1959ecabd2d204d7c67c331d7d02dca25",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/asset-factory-readiness-20260925",
+      "commit": "34c569fdaa6e48abcb2bbffc07826f04562aba64",
+      "actual_tree_sha": "51dcd09e8d4a81f7b69babc284d9e1de5f96835b",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-authority-current-main-20260714",
+      "commit": "7f3a46e8df884b694a2cbefa4e60a74da18d5745",
+      "actual_tree_sha": "6ab3c7da0af46d34eb519c5b188dd4e122d9f7c1",
+      "corrected": true
+    }
+  ]
+}
