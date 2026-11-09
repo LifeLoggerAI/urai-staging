@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    464,
+    480
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "c903e045e8b51e534b995eb5f949a7ec8bb1e01f",
+      "declared_size": 1902,
+      "example_path": "firebase.json",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 93,
+      "observed_bytes": 1902,
+      "sha256": "7b44a67198e05a6cf16bd492caa733b2f59bb2b7ecffd37845edff0c789016f1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c91cd74bbfc77e360f300a9ac29bbf92260ce012",
+      "declared_size": 1911,
+      "example_path": "scripts/validate-staging-twilio-proof-iam.mjs",
+      "first_branch": "fix/audit-billing-validator-pr58-20260926",
+      "pathRefs": 2,
+      "observed_bytes": 1911,
+      "sha256": "0b6b25d62eae3bd9fd78a20102bf174edb9c3548881c0999520b6bd501f0ed47",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c94ad30bcfadc1ddae1bc094c0fd3405914143d5",
+      "declared_size": 9387,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "govern/sendgrid-independent-review-limbernutz0-20260929",
+      "pathRefs": 1,
+      "observed_bytes": 9387,
+      "sha256": "eb4f13073e28901b37a2aef1fa13ef8f3e833b270269735b30bde6544c425203",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "c995395da7f543659512dc633e3a2497ff4bb6ff",
+      "declared_size": 13861,
+      "example_path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-jobs-bridge.ts",
+      "first_branch": "review/r476-current-auth-consent-source-20261103",
+      "pathRefs": 3,
+      "observed_bytes": 13861,
+      "sha256": "33ef85fb1efe00306562461ef3e1757c7a977fd5a8ba276c53e6087b85a13374",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ca481fd9d54fefc6bc9fc1be9c535b6100babecb",
+      "declared_size": 9609,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "fix/twilio-private-ref-auth-fallback-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 9609,
+      "sha256": "f9d5a556aa1d6c0f84c0923a7f8bb40b4237c6dbf92d4bb3d20ef36b20461abe",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "cad2108cccb7220fd9f3ff12abbf609f44af6dd0",
+      "declared_size": 7041,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 39,
+      "observed_bytes": 7041,
+      "sha256": "b8f9c231b90220e2c4aba12b79d7b3856578421ea648263aee214bf75ac2e3d4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "cb981d206b348ea05d5100d92b977de4e4e59a44",
+      "declared_size": 8203,
+      "example_path": "scripts/urai-staging-lock.sh",
+      "first_branch": "fix/environment-authority-20260706",
+      "pathRefs": 1,
+      "observed_bytes": 8203,
+      "sha256": "5b62cb84f6b209ec2df4fcad282be1d0cb1b2f037f56a7bc66a68e1c6b7fbeaf",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "cbd7c58e9435db1676e0ed8c5e1486622e35bf08",
+      "declared_size": 12048,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/chalk-r781-strict-owner-pin-and-native-cleanup-proof-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 12048,
+      "sha256": "f0a4045545be4295799fdcf5ee1c9c7d2e269ce92011bc0711e62509413f708f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "cc6ed610331f293a05d4dc76fb5b956547dab60d",
+      "declared_size": 2461,
+      "example_path": ".github/workflows/urai-production-verify.yml",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 55,
+      "observed_bytes": 2461,
+      "sha256": "864811555e7aa9f2d9cb78f54958b35f1a9ec46ee56ec9c058461a357872df43",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "cd5059b23d880f61067623cbac08b07c15f2680e",
+      "declared_size": 6007,
+      "example_path": "public/index.html",
+      "first_branch": "release/ci-deploy-readiness-hardening",
+      "pathRefs": 2,
+      "observed_bytes": 6007,
+      "sha256": "4a34f242a70b7b603875862521e4ae7ba911b9e084b233d2e5c96b340dc1ed8a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ce67b3dced292988aff1f8a95097b2e6f39463e5",
+      "declared_size": 8084,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/chalk-r787-owner-pin-r786-uid-boundary-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 8084,
+      "sha256": "06cbd262c8d84df83f0e8a9dd35d9e44dd799591e7f24ad3584b610a1446d018",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ce880df99860ca1b607a4fba89bdef74e0221e62",
+      "declared_size": 3943,
+      "example_path": "scripts/check-deploy-readiness.mjs",
+      "first_branch": "release/ci-deploy-readiness-hardening",
+      "pathRefs": 2,
+      "observed_bytes": 3943,
+      "sha256": "52a8a1b4769835acc69efcf44935b1fbc8ff4843a2d2cfd5b3287f1726c6d34f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "cefe6593fbfa67ad8f44392a285e2e8a8603fdde",
+      "declared_size": 3192,
+      "example_path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+      "first_branch": "converge/sendgrid-pr58-6c99e6c-20260929",
+      "pathRefs": 7,
+      "observed_bytes": 3192,
+      "sha256": "4e9baf36f0247a1abc6650acb892509e49aaa707b96671c2a5ff5ca8b98b1744",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "cfed946ba7343fb4eb3682e2efe72775c3d436bc",
+      "declared_size": 1854,
+      "example_path": "scripts/validate-admin-pr57-provider-probe.mjs",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 4,
+      "observed_bytes": 1854,
+      "sha256": "6d15ac5ecd4065c120cf2008bc78ca22e231134618f7fcd59283b93c82cbb664",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d0016ccf1016036640ba4c941b8c4508938d1269",
+      "declared_size": 6510,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "converge-staging-control-plane-20260924",
+      "pathRefs": 4,
+      "observed_bytes": 6510,
+      "sha256": "6710d7bd33eeef535a71d65c0f07683371b5082fc5a8c213d362caea88d7a4e9",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "d005f89e04ccadc8524bb534a441f10402a0a92e",
+      "declared_size": 18020,
+      "example_path": ".github/workflows/spatial-pr1591-stripe-provider-probe.yml",
+      "first_branch": "fix/network-verifier-functions-bootstrap-20261005",
+      "pathRefs": 4,
+      "observed_bytes": 18020,
+      "sha256": "a0c556b1b0aa7efc4f807f7db2daa40d4648706db18effc0d1af342da958928b",
+      "state": "verified"
+    }
+  ]
+}
