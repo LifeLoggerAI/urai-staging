@@ -1,3 +1,5 @@
+> **SUPERSEDED NEXT-WORKER ENTRYPOINT:** This handoff was valid at R892 offset 80. It is now superseded by [R892 final next Chalk chapter 24](24_R892_FINAL_START_NEXT_CHALK_SOURCE_COMPLETE_RELEASE_HOLD_20261108.md), recording **826/826 captured historical blobs byte-verified** with no remaining R884 historical-only unique source bytes. The next worker should execute current R887 native/emulator/CI and provider parity gates instead of repeating the completed source recovery. **Staging/production/device HOLD remains.**
+
 # START NEXT CHALK — ONE URAI GENESIS STAGING R892 → R893
 
 **Read this first. As-of 2026-11-08 Central / 2026-11-09 UTC. STATUS: STAGING LIVE HOLD, PRODUCTION NO-GO, PHYSICAL DEVICE UNVERIFIED.** This is the self-contained successor handoff for the staging release lane, not production authorization.
