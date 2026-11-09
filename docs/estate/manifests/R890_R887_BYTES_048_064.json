@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    48,
+    64
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "docs/RESUME_URAI_EXECUTION.md",
+      "blob_sha": "45dbf58bd0f67c7ee2ad6903e5089a32d79a936c",
+      "declared_bytes": 2838,
+      "observed_bytes": 2838,
+      "sha256": "9c9585be17fba0dfe4e06d9d290efeca56db8cac9ca3218e85159656a0ee9b8b",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/RUNTIME_OBSERVATION_2026-07-16.md",
+      "blob_sha": "1885905aaa4c9bf308657a495c9bd0a4904a5d33",
+      "declared_bytes": 3596,
+      "observed_bytes": 3596,
+      "sha256": "9802da72a96ece1142959afb8241971b0843bc525768ad75c9bd1e9bb2fd38e1",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md",
+      "blob_sha": "7307540d7a18e34116bda281849f82d9a6b98f6f",
+      "declared_bytes": 4134,
+      "observed_bytes": 4134,
+      "sha256": "33fa5ec7212eddffd78e76cd9c9877e57d98f8399c8238319b3469a19bb38be6",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_CANONICAL_ROADMAP.md",
+      "blob_sha": "bb3a0f89083b617a7680ac9fa5f6f3264bc14f78",
+      "declared_bytes": 4186,
+      "observed_bytes": 4186,
+      "sha256": "042efd9f5972314bb20c53aad215ce2bdda2639941d2d3a6c53c6338081f296c",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_COMPLETION_STATUS.md",
+      "blob_sha": "c57a58472ae3f439b1f1c6fa099b58e7635d47ff",
+      "declared_bytes": 2511,
+      "observed_bytes": 2511,
+      "sha256": "85e3a46af2e12ffc46adeeba92061909aa3589bfdf8192255829067f0e0efc52",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_DEPLOYMENT_CHECKLIST.md",
+      "blob_sha": "6241592a8251ae485c889ba7373c8648f513ed5b",
+      "declared_bytes": 2343,
+      "observed_bytes": 2343,
+      "sha256": "b9e9132fb2f5f444f809c2b290306e7686a7dd94af7d6b6ee5488ccb0980d3d3",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_FIREBASE_SCHEMA.md",
+      "blob_sha": "db510ae44fb57b88de7c7e5b23778831f968f8ef",
+      "declared_bytes": 4075,
+      "observed_bytes": 4075,
+      "sha256": "5dbffc57b9be5843985a71ff6fb716beb53cb0ab7eecac2b75f80b349f4984ad",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_GENESIS_STAGING_READINESS.md",
+      "blob_sha": "45cf6910f319aafdd5a183cb91fb7fb8c62ad568",
+      "declared_bytes": 2070,
+      "observed_bytes": 2070,
+      "sha256": "fea068d28005db58b0f4f880f35d62589e773ff32329b835f6da954c95a88e6b",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_IMPLEMENTATION_LOG.md",
+      "blob_sha": "7e19dfd36f72ce1adb19f25016080078de7955d1",
+      "declared_bytes": 2420,
+      "observed_bytes": 2420,
+      "sha256": "c86bfe8f3fa51e9aefe4108a16d0a887d88050ce905ee8555874bdddc06acc40",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_KNOWN_LIMITATIONS.md",
+      "blob_sha": "1e0abb753726f327e5a396ac62d02cc9685e56ab",
+      "declared_bytes": 2676,
+      "observed_bytes": 2676,
+      "sha256": "757d2892d9dd21c13e345e207ecd122c1e9fac50d5c04cc6bd6a0d7206cfc1c5",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_LEGACY_FUNCTION_AUDIT.md",
+      "blob_sha": "6f5d62ae578eaf9018526a7914ceb9cd23c8d453",
+      "declared_bytes": 2848,
+      "observed_bytes": 2848,
+      "sha256": "4d8456695ff6a6d41fbe93034dba409f903ed460f304a70a83c7a05611750119",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_MASTER_FEATURE_MATRIX.md",
+      "blob_sha": "01da219ef71dc92848989375d088d585e81c1d95",
+      "declared_bytes": 7715,
+      "observed_bytes": 7715,
+      "sha256": "4e375c6d23a5bc9130c72276d5432cc292ec44e3b10d4dad4c37267d6748f6e6",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI_TESTING_CHECKLIST.md",
+      "blob_sha": "796c5cbc5ed7fb3d76217c4e762d1fa82fe0a9ba",
+      "declared_bytes": 2519,
+      "observed_bytes": 2519,
+      "sha256": "0008837d5e467453014df79f30a3f819b29c3d34485e9e0d1b952318de102b16",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/URAI-STAGING_AUDIT.md",
+      "blob_sha": "6404780346099fe4c8540e0c1f575cb920004bc7",
+      "declared_bytes": 5219,
+      "observed_bytes": 5219,
+      "sha256": "f4d7c43ba6862c298f145d897741039a73a2f671ca19d4ff1176ae213a2e5454",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/WORKSTREAM_C_CURRENT_CANDIDATES.md",
+      "blob_sha": "3338b81db2d47df9d33628e10121d14c77ece787",
+      "declared_bytes": 393,
+      "observed_bytes": 393,
+      "sha256": "bddfa4b9f4128b4558fa7df6c8c206eb3e7bd772bb978bf649515d24674ab138",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "docs/WORKSTREAM_C_MANUAL_VERIFICATION.md",
+      "blob_sha": "8146d73dde2331735a7600b5bae41fb007988be3",
+      "declared_bytes": 5469,
+      "observed_bytes": 5469,
+      "sha256": "710967f0b768c674eb025e49ea7c2c0b367e0270acb007024ceb5c6c825e45b8",
+      "state": "hashed_bytes"
+    }
+  ]
+}
