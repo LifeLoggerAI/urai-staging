@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    90,
+    105
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "reconcile/staging-current-main-controls-truth-20260811",
+      "commit": "dd7b6663151a1421f565e2d42c9ee8a2291a7f1e",
+      "actual_tree_sha": "4d63d9a069f9b62a6693d861db17081b9e9349cb",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-current-main-genesis-20260811",
+      "commit": "f776e0e3419474466b02e0f11bc6d195416da214",
+      "actual_tree_sha": "6e938dd698a3bbc5eef7e759dfd3469f8f0c6a71",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-post-wif-runtime-boundary-20260830",
+      "commit": "848f124008595ee9c4320b8f65d02744583eb2de",
+      "actual_tree_sha": "fce2b3477140fc82bf0583af5b78faee36141e3f",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-wif-main-20260811",
+      "commit": "44ba3f261543adc1160c7e9bb124505df314b8f5",
+      "actual_tree_sha": "be15146d709ef2347f53958ae3b127de98f9dcf0",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-wif-main-20260817",
+      "commit": "dbb52bd041a6979d548f2c711f32a33749282058",
+      "actual_tree_sha": "46edffd3b2a29cf6801b8b962b6e66e1b33e20ea",
+      "corrected": true
+    },
+    {
+      "branch": "reconcile/staging-wif-main-strict-20260817",
+      "commit": "99d9ac7df4ed7ceea41ccfcc0e630f2c24403c6f",
+      "actual_tree_sha": "fce2b3477140fc82bf0583af5b78faee36141e3f",
+      "corrected": true
+    },
+    {
+      "branch": "release/ci-deploy-readiness-hardening",
+      "commit": "328719767e3f6ba05c531342abf36cbf17b8d4e1",
+      "actual_tree_sha": "4503fe33dd3798175c85d9238b3442343b4de683",
+      "corrected": true
+    },
+    {
+      "branch": "release/urai-staging-v1-integration-audit",
+      "commit": "5eaeaf9c35e3041c31787cb9bb9fbacc2206c7ab",
+      "actual_tree_sha": "e3aa14de0e9e1ebde362e9b528f04493e52418a0",
+      "corrected": true
+    },
+    {
+      "branch": "remove-production-alias-20260703",
+      "commit": "11cfe122b2eddd4ae8cae86180223ef63d802bb3",
+      "actual_tree_sha": "893ac45bf67a98445da0c6bd97a645d16880c3cc",
+      "corrected": true
+    },
+    {
+      "branch": "repair/admin-pr57-provider-exact-head-trigger",
+      "commit": "677e09e88b318b600591328d10e1faee2737f500",
+      "actual_tree_sha": "408137b77ac88d744a28f1d154f36e8caa936b71",
+      "corrected": true
+    },
+    {
+      "branch": "repair/admin-pr57-runtime-runner-context",
+      "commit": "6999e5b8ad383418bd57d14a015126e7e8fb6cef",
+      "actual_tree_sha": "db3ca2b004339183fe856bdfa6fd46cdb02f9398",
+      "corrected": true
+    },
+    {
+      "branch": "repair/canon-provenance-reconciliation-20261007",
+      "commit": "568731ad7eb72e1bfc4fc3d2ed8df49056db4b1a",
+      "actual_tree_sha": "0e5d9500bf376026c5bb8554cf655661a0b0f7ac",
+      "corrected": true
+    },
+    {
+      "branch": "repair/communications-consumer-current-20260927",
+      "commit": "c38c9bc9fc9f3d9c074bbe72a13402eefb2a1bbf",
+      "actual_tree_sha": "70c2b4b0eb4e680884c601ec4a9749829f9fb6ba",
+      "corrected": true
+    },
+    {
+      "branch": "repair/current-verifier-provider-readback-20261001",
+      "commit": "52467b05beafa3b18b86e7459bbf980f11cbee88",
+      "actual_tree_sha": "1d2168f08fb994f051f9969e6bec9327a6ef90dd",
+      "corrected": true
+    },
+    {
+      "branch": "repair/staging-provider-harness-converged-20261007",
+      "commit": "d5ac7323d6ab3c157965442be29c2b3b92811846",
+      "actual_tree_sha": "754b065e4b899b92041ec02a66ba37708c420f8a",
+      "corrected": true
+    }
+  ]
+}
