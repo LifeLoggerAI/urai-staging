@@ -1,0 +1,100 @@
+{
+  "schema": "urai-staging-r891-actual-commit-tree-reconciliation-v1",
+  "range": [
+    105,
+    120
+  ],
+  "source": "GitHub git/commits/{sha} tree.sha",
+  "rows": [
+    {
+      "branch": "repair/staging-web-noindex-20261007",
+      "commit": "ce7602ae17827fb1fa414511067f581cb99f7985",
+      "actual_tree_sha": "cb8abdbcb6c2148d9964cd763187a7d91e0ac1f6",
+      "corrected": true
+    },
+    {
+      "branch": "repair/staging-workflow-context-20260901",
+      "commit": "4c043c7b6a29d5f2acc6ea1d222a6846c1a512e2",
+      "actual_tree_sha": "3a43a9fe6c332e0354cced59aa6bfb6c5329265a",
+      "corrected": true
+    },
+    {
+      "branch": "repair/twilio-owned-trial-sender-20261007",
+      "commit": "c1cc2e4f291327833e43b4c7b5108a6b5e104e69",
+      "actual_tree_sha": "b41c35edbde2cb0d0406ac66abf023ec47b0dfb8",
+      "corrected": true
+    },
+    {
+      "branch": "repin/current-core-candidates-20260715",
+      "commit": "64fa9c3e41bb262ab97554447083566127874e68",
+      "actual_tree_sha": "935197d4208bb4ac6f874dd40915a5cb27960550",
+      "corrected": true
+    },
+    {
+      "branch": "repin/current-six-core-candidates-20260715",
+      "commit": "7467983ddaf3db1365eca58dafc6a83a170c13cd",
+      "actual_tree_sha": "dbf03187afd27ebfc63e32d9b3fa26b870114109",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-independent-revocation-batch-safety-20261105",
+      "commit": "f4e76e18ec0b4f2c32b2b997d52585a251aa839e",
+      "actual_tree_sha": "29f89ebe3c4521c2e6eed5bba71edf6c77691ec5",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r754-es2020-email-domain-20261105",
+      "commit": "b400b694482ac26bb88adebc8216ef198fe83e60",
+      "actual_tree_sha": "ed7beb947e5cfe9dff35e40d3791df0cbe353c5b",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r755-synthetic-memory-read-provenance-fence-20261105",
+      "commit": "09c08cc2c9d5e4f987b7051664ba2a0e45333646",
+      "actual_tree_sha": "0688f4fbde627b03424d55b94f921307a119c7f4",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r758-synthetic-life-graph-source-transaction-20261105",
+      "commit": "eb92bd454776d6278a7b4cbc1490edc2a157fa26",
+      "actual_tree_sha": "3ea831a7618bea51d3371d28b56027c350db91d5",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r762-graph-backing-memory-transaction-20261105",
+      "commit": "9184700e65b87feebbc6c1ca7f874b38bd282782",
+      "actual_tree_sha": "c66059730bf89c14735e592087871a2ddd764765",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r764-replay-linked-parent-fence-20261105",
+      "commit": "687623d3b4831cb97a57f4aafb6a527317127b98",
+      "actual_tree_sha": "65835518411cac766f22c4f9fd11a3b49cf300a0",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r765-acyclic-canonical-synthetic-life-graph-hold-20261105",
+      "commit": "083ab3d87c432a2ad9c599fe6dfaf194c150c38e",
+      "actual_tree_sha": "cbb176889dbd8195a4480e869c926d747523f84b",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r765-pin-owner-acceptance-to-r763-graph-source-20261105",
+      "commit": "d9bb847050da5f8c72dde6666adb480635ceccae",
+      "actual_tree_sha": "d5ee7735fe5e2db79f649e189ae8711a5bd17baa",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r766-pin-strict-owner-acceptance-to-r765-156-20261105",
+      "commit": "d9bb847050da5f8c72dde6666adb480635ceccae",
+      "actual_tree_sha": "d5ee7735fe5e2db79f649e189ae8711a5bd17baa",
+      "corrected": true
+    },
+    {
+      "branch": "review/chalk-r768-linked-parent-typescript-narrowing-20261105",
+      "commit": "f01eb015276761947d59eb3970f3b753f5510426",
+      "actual_tree_sha": "8f22aba645848a39c7c3bba76be71a4996a8bbaf",
+      "corrected": true
+    }
+  ]
+}
