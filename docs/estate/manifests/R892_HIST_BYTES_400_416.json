@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    400,
+    416
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "ad37ee7d75c478b369faa83d8dc92c6f78212b04",
+      "declared_size": 1911,
+      "example_path": "scripts/validate-staging-twilio-proof-iam.mjs",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 2,
+      "observed_bytes": 1911,
+      "sha256": "d3dd245aa16b2cf6370501e1ebbbb6b8b4c4c6b6d05f3acd0591d740690ac144",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ad547a40c64ecb1dfdc89ee899a8464e89971fb4",
+      "declared_size": 5459,
+      "example_path": ".github/workflows/staging-gcp-authority-readback.yml",
+      "first_branch": "converge/staging-final-1591-communications-main-20261004",
+      "pathRefs": 14,
+      "observed_bytes": 5459,
+      "sha256": "cdd8e097cafa7c578bed4d23985262a6dd7ebd93ddfa232413b624bbaf2cc4ee",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ad891986566083db8084f4587e6ad90cd1700769",
+      "declared_size": 7143,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/chalk-r765-pin-owner-acceptance-to-r763-graph-source-20261105",
+      "pathRefs": 2,
+      "observed_bytes": 7143,
+      "sha256": "fe8140d4aa2b13698b4f9d59cd947f6299a39cf12cdc9cca1a65672365291faf",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "add8c6fcdb2e81b283fecd443381a3fa9856234b",
+      "declared_size": 1318,
+      "example_path": "docs/estate/00_START_HERE.md",
+      "first_branch": "docs/chalk-staging-source-release-audit-20261107",
+      "pathRefs": 2,
+      "observed_bytes": 1318,
+      "sha256": "da1e979e78c8ffe9a8328eaabf3d080ea83928c11722f5028c08df979018d710",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ae0c02521844f256b8ffe4ab8e437d8f92ecb601",
+      "declared_size": 5135,
+      "example_path": "STATUS.md",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 1,
+      "observed_bytes": 5135,
+      "sha256": "8622fa162f70dedfb2ea4ce96141b0cfd00b6060adff3c30885804cd0344950d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "af429e9ae686c9ced1525f2fbe80b8d145a9a48b",
+      "declared_size": 1851,
+      "example_path": "firebase.json",
+      "first_branch": "agent/probe-shared-wif",
+      "pathRefs": 17,
+      "observed_bytes": 1851,
+      "sha256": "497a86c18828e5a720b4792df40fddc833daecf637a68cfca2c160d4b10bdefc",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b02cf96027ded51d4f064097b0820dac5da1a959",
+      "declared_size": 5052,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "converge/staging-main-authority-20261003",
+      "pathRefs": 4,
+      "observed_bytes": 5052,
+      "sha256": "ca39dd7055d6499c76a1ae30c8536a59fa20aa6559fe57fde80ffd76145a097b",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b17ebcfd53968c37105994551ccd932301dc9008",
+      "declared_size": 21012,
+      "example_path": "functions/src/syntheticMemoryLifecycle.ts",
+      "first_branch": "review/chalk-r773-parent-admission-graph-integrity-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 21012,
+      "sha256": "39b5e29ecb1ac54e6918b49fb3956889796c2e9b488ae0829e669a829481b1ac",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b18fc601fff28577a3bfb624afcb313e3872a46a",
+      "declared_size": 1762,
+      "example_path": ".github/workflows/urai-production-verify.yml",
+      "first_branch": "fix/environment-authority-20260706",
+      "pathRefs": 1,
+      "observed_bytes": 1762,
+      "sha256": "0498d16131c3cd8b751ca64213070b3d37b5ceb97ce16674b87ec4b97375f459",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b1df7ae21f43b569b4e1c5343648a231ee9e360e",
+      "declared_size": 10379,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "fix/network-verifier-functions-bootstrap-20261005",
+      "pathRefs": 5,
+      "observed_bytes": 10379,
+      "sha256": "c89f475107276eeb602290fe27b65a258c9abbdd6c29042eabbb309125549ed1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b2f4297caee101ac2613411e533b5fe974d05d64",
+      "declared_size": 7532,
+      "example_path": "scripts/verify-private-consumer-refs.mjs",
+      "first_branch": "diagnostics/staging-readonly-r215-20261028",
+      "pathRefs": 30,
+      "observed_bytes": 7532,
+      "sha256": "f5cc434274ef0da6e99103df2330708670de7b1f732ecd48fee200ba530f782e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b2fb55bec2277688e047dc3331bd51c6b054fe4c",
+      "declared_size": 9521,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "converge/final-spatial-consumer-20261004",
+      "pathRefs": 1,
+      "observed_bytes": 9521,
+      "sha256": "d70bf047d809af4edf373c193aecbe0ddd09762576920896c0767030c123bbfc",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b3dd955e8a0def7664c79e3663557fd210e32189",
+      "declared_size": 1581,
+      "example_path": "scripts/write-launch-summary.mjs",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 35,
+      "observed_bytes": 1581,
+      "sha256": "40cd4fda78efcbacf1396a851d6e0ce7ea2028ced25503b64266b6f4771c091d",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b3e251792b151997492351732b6516650df11617",
+      "declared_size": 2536,
+      "example_path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 1,
+      "observed_bytes": 2536,
+      "sha256": "50dc2943ff93ec7f459ed6143753aed663c0890b0b60a7e3b617ad79cfc71192",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b42409d23dd7b094e00b21c9c93778eaabbd9c06",
+      "declared_size": 1749,
+      "example_path": "scripts/fixtures/r422-federated/manifest.json",
+      "first_branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
+      "pathRefs": 1,
+      "observed_bytes": 1749,
+      "sha256": "932f0c66031ca986329507439a43f913f9b69993d608049e48b7d769ca8f0c55",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "b50424e296b8b4c9584566c598966eff2f24a220",
+      "declared_size": 8084,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/chalk-r781-strict-owner-pin-and-native-cleanup-proof-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 8084,
+      "sha256": "cb7e11e2a3bcfc2091bf9e8c7e05ded95a16bb639509d762e58f767fcb3c5a1a",
+      "state": "verified"
+    }
+  ]
+}
