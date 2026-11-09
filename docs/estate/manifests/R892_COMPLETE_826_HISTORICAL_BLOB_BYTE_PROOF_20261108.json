@@ -1,0 +1,71 @@
+{
+  "schema": "one-urai-genesis-staging-r892-complete-r884-head-source-byte-proof-v1",
+  "sourceScope": "Original R884 180 captured accessible branch heads only",
+  "sourceMainRepo": "LifeLoggerAI/urai-staging",
+  "sourceCurrentR887Commit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "sourceCurrentR887ActualTreeSha": "95a120a86fe35aa4f7a1f7e4030b0fdff02fe825",
+  "historicBranches": 180,
+  "historicPathOccurrences": 28540,
+  "historicDistinctPaths": 299,
+  "historicDistinctActualGitTrees": 167,
+  "historicUniqueBlobs": 826,
+  "historicUniqueBytes": 6984576,
+  "priorR890SharedHistoricalByteVerifiedBlobs": 239,
+  "priorR890SharedHistoricalByteVerifiedBytes": 1673017,
+  "newR892OriginalBlobReads": 587,
+  "newR892OriginalBytes": 5311559,
+  "completedHistoricalByteVerifiedBlobs": 826,
+  "completedHistoricalByteVerifiedBytes": 6984576,
+  "remainingKnownR884UniqueBlobObjects": 0,
+  "remainingKnownR884UniqueBytes": 0,
+  "currentR887VerifiedBlobs": 247,
+  "currentR887VerifiedBytes": 1726287,
+  "validatedSegmentSources": [
+    {
+      "path": "docs/estate/manifests/R892_VALIDATED_SEGMENT_000_256.json",
+      "sha": "0ea2b65e43892928c1a72ebb9fbda1efcdbdffd9",
+      "rows": 256,
+      "bytes": 2390785
+    },
+    {
+      "path": "docs/estate/manifests/R892_VALIDATED_SEGMENT_256_512.json",
+      "sha": "25fed3b5b533182457153fcfae8d155c72c77694",
+      "rows": 256,
+      "bytes": 2012968
+    },
+    {
+      "path": "docs/estate/manifests/R892_VALIDATED_SEGMENT_512_587.json",
+      "sha": "ade711bb7700cc9e4f05352782372369a746b58d",
+      "rows": 75,
+      "bytes": 907806
+    }
+  ],
+  "dataSources": [
+    {
+      "path": "docs/estate/manifests/R892_587_HISTORICAL_UNIQUE_BLOBS_WORKLIST.json",
+      "sha": "73d3519fa8d00eebe410cde34f981b8ee1578405"
+    },
+    {
+      "path": "docs/estate/manifests/R891_ALL_BRANCH_HEAD_UNIQUE_BLOBS_CENSUS_20261108.json",
+      "sha": "175f47ecb0e3eea3dc677feae8fec8d3c2a13f7b"
+    },
+    {
+      "path": "docs/estate/manifests/R891_CROSS_TREE_HISTORICAL_BYTE_COVERAGE_20261108.json",
+      "sha": "7c3f08f972dae2d0c1c2d771eb472091cd4120e5"
+    },
+    {
+      "path": "docs/estate/manifests/R890_R887_COMPLETE_BYTE_COVERAGE_INDEX_20261108.json",
+      "sha": "79e5626e224c7b2c944adf6ef03945b153fa643d"
+    }
+  ],
+  "validationErrors": [],
+  "completionStatus": "COMPLETE_FOR_CAPTURED_R884_BRANCH_HEAD_BLOBS_ONLY",
+  "explicitNonCoverage": [
+    "not every commit in 2024-2026 history",
+    "not deleted/unreachable refs/tags/LFS or external CI artifacts",
+    "not Firebase/GCP current effective runtime state",
+    "not current-head npm/Firebase emulator/CI executable test",
+    "not staging or production deployment/source-to-live proof",
+    "not real signed private-media or physical-device approval"
+  ]
+}
