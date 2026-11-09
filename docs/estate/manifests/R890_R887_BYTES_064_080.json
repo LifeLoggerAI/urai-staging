@@ -1,0 +1,139 @@
+{
+  "schema": "urai-staging-r890-blob-evidence-v1",
+  "sourceCommit": "0d9cdd67ef75071ee69a7fde1e168a1d0a263139",
+  "range": [
+    64,
+    80
+  ],
+  "method": "Immutable GitHub blob read; JS UTF8 SHA256 abc-vector validated; compare declared size",
+  "rows": [
+    {
+      "path": "ENVIRONMENT_AUTHORITY.md",
+      "blob_sha": "102d4aaffecf1ce9c1abce86c0b1ef4a10212d9a",
+      "declared_bytes": 3998,
+      "observed_bytes": 3998,
+      "sha256": "fedc7166076d6a549ef0897f83bf2ed9242139aca67ac75b2a4d0637bda0f947",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "ENVIRONMENT.md",
+      "blob_sha": "3811772021f08a7263a40e4bafe7f5e89dc4db02",
+      "declared_bytes": 3449,
+      "observed_bytes": 3449,
+      "sha256": "e43188ca06cad35f1fbe4cf3388d08b7723433fa9ff765d471601a788431a06c",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "firebase.json",
+      "blob_sha": "c1a1f7bd5f141d21fac5f4b13c3e0fd9416af121",
+      "declared_bytes": 2081,
+      "observed_bytes": 2081,
+      "sha256": "46dd555cbe9ab1c6438f2300ab541b98547e568f50afb2ac55d287599c2f32aa",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "firestore.indexes.json",
+      "blob_sha": "9a18e020c97f91769d658dc62b470440a31a787a",
+      "declared_bytes": 5792,
+      "observed_bytes": 5792,
+      "sha256": "f49368d0dee76663016bdeec252e941ef6e8316384d030ad409612985147dce0",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "firestore.rules",
+      "blob_sha": "e6567561110ca0465441be319e906af622550417",
+      "declared_bytes": 3909,
+      "observed_bytes": 3909,
+      "sha256": "8106450871baa62023a605b2fc881339a4e3d6a3edf91e640de2e5a88e916976",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/package-lock.json",
+      "blob_sha": "d04e6bc1daaf49a0a4dd8102c93caff37dbf0f76",
+      "declared_bytes": 333270,
+      "observed_bytes": 333270,
+      "sha256": "0eb87dde93fc8ab4e24c91f3aafec17fc762445d2d8d10cb42d4cecf41c283b1",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/package.json",
+      "blob_sha": "94b1a58084bb79892a37290c1a53f181b2e1568b",
+      "declared_bytes": 1966,
+      "observed_bytes": 1966,
+      "sha256": "915128db369c20b35e9767773a37c6c8ccfdf4e26531d80e311194f24d3bfb9d",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/src/index.ts",
+      "blob_sha": "f43f9bd5cd01dcd80f6d7e0856b68c94fe5e275d",
+      "declared_bytes": 14355,
+      "observed_bytes": 14355,
+      "sha256": "66883dff01463af08628297c5245a9f3974c151e81028b45e6868fe140a17e78",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/src/lib/auth.ts",
+      "blob_sha": "c75ef09130f78375ba4d6b0022ca5897a59394fc",
+      "declared_bytes": 501,
+      "observed_bytes": 501,
+      "sha256": "ec3237afc4bf28c58cc3655b2abb8a2a0a699167a4dd68c18ca7a1a676e418bf",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/src/lib/featureRegistry.ts",
+      "blob_sha": "e2f41463b724c8237eccc60e557b355474b2c9dc",
+      "declared_bytes": 10040,
+      "observed_bytes": 10040,
+      "sha256": "eab70a2f5d4c8d6f4c4ba0e565387fb1dc33ac0ab96ecc729e8f1a327c483537",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/src/lib/logger.ts",
+      "blob_sha": "1eb572c3ed594f0eac299f5f38e063ad1acbcea7",
+      "declared_bytes": 259,
+      "observed_bytes": 259,
+      "sha256": "e5346e3f54d9bfdf33a6a46b347048fddff1e282e70f7310ba7f05feb2b176f1",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/src/lib/stagingBoundaries.ts",
+      "blob_sha": "d760bf404f8737faf2d9e25100a5fccf20872cc2",
+      "declared_bytes": 4599,
+      "observed_bytes": 4599,
+      "sha256": "fe93f80dcfd3199790800b316decf040b19bae862dbae14cdca9bbcfdf568f18",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/src/lib/validation.ts",
+      "blob_sha": "ca80de24143b6dd937c7acea037063ec8daa84ca",
+      "declared_bytes": 2249,
+      "observed_bytes": 2249,
+      "sha256": "d386e01befcf0270c1bd1f651cbc61092cdf70671aa9083b02cef0796751609b",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/src/syntheticMemoryLifecycle.ts",
+      "blob_sha": "4df1d9ca7c72910b2e24ef46c95019944abaf080",
+      "declared_bytes": 22966,
+      "observed_bytes": 22966,
+      "sha256": "c3e8a445c4f8828d25811f48d886d884c2586b8e5569bd5de146a6a1ca8611d0",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/src/syntheticStorageResidue.ts",
+      "blob_sha": "08726882b08d7929c770479425995d2dd95730c4",
+      "declared_bytes": 2321,
+      "observed_bytes": 2321,
+      "sha256": "8f6f10a5ac271970f63824d58a8a5753359c83c0b2baabfb37c8bc2f2efd01b7",
+      "state": "hashed_bytes"
+    },
+    {
+      "path": "functions/test/auth.test.ts",
+      "blob_sha": "e2fa9361957ce251f18b8e29a595e69eea617964",
+      "declared_bytes": 1184,
+      "observed_bytes": 1184,
+      "sha256": "5cdd7240aae1153ead277128881eae159a1f895f44e3f9d08c39629902ea9362",
+      "state": "hashed_bytes"
+    }
+  ]
+}
