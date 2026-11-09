@@ -1,6 +1,6 @@
 {
-  "schema": "urai-staging-r891-all-historical-head-unique-blob-census-v1",
-  "basis": "Original R884 untruncated 180-branch tree snapshot, not freshly enumerated all current branches/history",
+  "schema": "urai-staging-r891-all-historical-head-unique-blob-census-v2",
+  "basis": "R884 complete 180 current-at-snapshot branch-head trees (not complete prior history)",
   "segments": [
     {
       "path": "docs/estate/branch-trees/TREES_00_15.json",
@@ -56,19 +56,19 @@
       "path": "docs/estate/branch-trees/TREES_160_175.json",
       "blobSha": "9b2f1e0d3fd0bc9668a78987b91494fce2f939fb",
       "branchCount": 16
-    }
-  ],
-  "branchHeads": 176,
-  "totalBranchBlobOccurrences": 27913,
-  "uniquePaths": 297,
-  "uniqueBlobs": 817,
-  "uniqueBlobDeclaredBytes": 6797293,
-  "issues": [
+    },
     {
-      "path": "docs/estate/branch-trees/TREES_176_179.json",
-      "error": "NOT_FOUND: Error code: NOT_FOUND; Error: GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}"
+      "path": "docs/estate/branch-trees/TREES_176_179plus.json",
+      "blobSha": "ddcde10f135710c2adc63b07dccc10bd6f8563f7",
+      "branchCount": 4
     }
   ],
+  "branchHeads": 180,
+  "totalBranchBlobOccurrences": 28540,
+  "uniquePaths": 299,
+  "uniqueBlobs": 826,
+  "uniqueBlobDeclaredBytes": 6984576,
+  "issues": [],
   "historicalBranches": [
     {
       "name": "admin-pr57-consumer-authority-20260905",
@@ -1301,6 +1301,34 @@
       "blobCount": 227,
       "truncated": false,
       "error": null
+    },
+    {
+      "name": "test/r439-firebase-jobs-privacy-auth-emulator-20261103",
+      "commit": "4faf78a5fd5a2640150373b7883ef67ef493ee8c",
+      "blobCount": 233,
+      "truncated": false,
+      "error": null
+    },
+    {
+      "name": "twilio/api-key-control-plane-20260927",
+      "commit": "92af9063fa11f8f04f97c1bdc312ef6ae971ad12",
+      "blobCount": 136,
+      "truncated": false,
+      "error": null
+    },
+    {
+      "name": "workstream-c-manual-verification-20260711",
+      "commit": "aa77765f3fa9fd87821363042e8cc5951dcc2602",
+      "blobCount": 98,
+      "truncated": false,
+      "error": null
+    },
+    {
+      "name": "docs/chalk-staging-historical-artifact-and-byte-proof-20261107",
+      "commit": "bc98673cb198d60335238db0fcf78d8279dd8b33",
+      "blobCount": 160,
+      "truncated": false,
+      "error": null
     }
   ],
   "uniqueBlobObjects": [
@@ -1309,7 +1337,7 @@
       "declared_size": 1484,
       "example_path": "functions/package.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "005da1ee77f3b42636cb2ae834ed91a433442eaf",
@@ -1323,14 +1351,14 @@
       "declared_size": 6200,
       "example_path": "scripts/urai-staging-lock.sh",
       "first_branch": "docs/agent-handoff-recovery-20260719",
-      "pathRefs": 5
+      "pathRefs": 6
     },
     {
       "blob_sha": "0091ff5724808bcdd8991cc00b83704593e9cf41",
       "declared_size": 4526,
       "example_path": "URAI_STAGING_LOCK.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "009828c6efb59aed3b2f45783c7aff99f3e8731f",
@@ -1344,28 +1372,28 @@
       "declared_size": 5724,
       "example_path": "scripts/test-r349-release-ledger.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "00a99f38f5d537b576dd0cfb05c6874104b7f562",
       "declared_size": 17182,
       "example_path": "scripts/fixtures/r424-signed/jobs/scripts/integration/r421-synthetic-cross-service.test.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "00ad23f15df0d459d82a4044f76f1d85b4668477",
       "declared_size": 10893,
       "example_path": ".github/workflows/admin-pr57-staging-consumer.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 84
+      "pathRefs": 86
     },
     {
       "blob_sha": "0106035294cdfa41d993d745998f0db1ac01a252",
       "declared_size": 6778,
       "example_path": "scripts/test-staging-verification-binding.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "018ce421dae9fd431103190723ec6c26cf824a17",
@@ -1386,7 +1414,7 @@
       "declared_size": 7715,
       "example_path": "docs/URAI_MASTER_FEATURE_MATRIX.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "01ee2f7a725150dc9a8557c3d0c5b9ff97e67a6e",
@@ -1428,28 +1456,28 @@
       "declared_size": 2332,
       "example_path": "scripts/test-r317-release-ledger.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 45
+      "pathRefs": 46
     },
     {
       "blob_sha": "0336b34987b80a5135d586b5581a1eedd8a6bc44",
       "declared_size": 2102,
       "example_path": "scripts/repo-doctor.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "03b427204e033b50cbaf6da1eb856650366721f4",
       "declared_size": 2054,
       "example_path": "scripts/repo-doctor.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 128
+      "pathRefs": 131
     },
     {
       "blob_sha": "046ac98d49a45ff6c2d074fe6c8c88dd9bc43e6b",
       "declared_size": 2107,
       "example_path": "package.json",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 8
+      "pathRefs": 9
     },
     {
       "blob_sha": "04730bcaa491c951bfcfe81dd1dafa2a1eed11b5",
@@ -1470,7 +1498,7 @@
       "declared_size": 2112,
       "example_path": "docs/URAI_KNOWN_LIMITATIONS.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 36
+      "pathRefs": 37
     },
     {
       "blob_sha": "0646950a7671078d14efca5f51576682e698ea94",
@@ -1498,14 +1526,14 @@
       "declared_size": 3156,
       "example_path": "scripts/test-security-dependency-compatibility.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "06a45f8e4221d3d0b1d84fd08b22a2905bc4129b",
       "declared_size": 7745,
       "example_path": "scripts/test-r422-federated-source-contract.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "06a87d1504b80a089c6543ac7bc0801a21b2cfa1",
@@ -1533,7 +1561,7 @@
       "declared_size": 1108,
       "example_path": "scripts/launch-p0.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "08726882b08d7929c770479425995d2dd95730c4",
@@ -1561,7 +1589,7 @@
       "declared_size": 5411,
       "example_path": "public/index.html",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 157
+      "pathRefs": 160
     },
     {
       "blob_sha": "0956f50fecef7553cc5bbbf7b6fe30934f59c765",
@@ -1596,7 +1624,7 @@
       "declared_size": 1090,
       "example_path": "DEPLOY_EVIDENCE_LOG.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 34
+      "pathRefs": 35
     },
     {
       "blob_sha": "0a95c33be114596c64ed4620583c11e3c0497db5",
@@ -1617,7 +1645,7 @@
       "declared_size": 5514,
       "example_path": "scripts/verify-sendgrid-staging-approval.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 48
+      "pathRefs": 49
     },
     {
       "blob_sha": "0bd6aff9b20561da7a037dfcb6c0f2c1e6b11dd4",
@@ -1631,21 +1659,21 @@
       "declared_size": 481,
       "example_path": ".gitignore",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 160
+      "pathRefs": 163
     },
     {
       "blob_sha": "0c723b3cd9fb89f4dbc709979b1fad5f1d86c1bd",
       "declared_size": 3767,
       "example_path": "scripts/verify-sendgrid-staging-callback.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 48
+      "pathRefs": 49
     },
     {
       "blob_sha": "0ca262e114b0439426d75cf7ac510e289ba315eb",
       "declared_size": 7056,
       "example_path": "scripts/fixtures/r422-federated/studio.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 86
+      "pathRefs": 88
     },
     {
       "blob_sha": "0caabb61a87a01175ea68f18342ede6d316fb436",
@@ -1687,7 +1715,7 @@
       "declared_size": 838,
       "example_path": "docs/BOOTSTRAP_EVIDENCE.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "0db4e22e28ae3bcd1c2fb647ee367e56b131e10f",
@@ -1701,21 +1729,21 @@
       "declared_size": 2223,
       "example_path": "package.json",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 71
+      "pathRefs": 72
     },
     {
       "blob_sha": "0df6100213ce68e15e59c3eaa31ced12b5d7922f",
       "declared_size": 165,
       "example_path": "functions/vitest.config.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 176
+      "pathRefs": 180
     },
     {
       "blob_sha": "0e5354b7af6a6707c046182b5819e32a3ad1ac9e",
       "declared_size": 3617,
       "example_path": ".github/workflows/private-consumer-ref-verification.yml",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 24
+      "pathRefs": 25
     },
     {
       "blob_sha": "0f4a61dac6a0206c2819a6173fbf04fec1dc6a73",
@@ -1750,7 +1778,7 @@
       "declared_size": 3998,
       "example_path": "ENVIRONMENT_AUTHORITY.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "104fff3115b9f012d0b072bad0b0bb274f4794e7",
@@ -1771,14 +1799,14 @@
       "declared_size": 15708,
       "example_path": "scripts/smoke-staging.sh",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 23
+      "pathRefs": 24
     },
     {
       "blob_sha": "10a60509f403c3be7103b065c2d93e9a17862909",
       "declared_size": 377600,
       "example_path": "functions/package-lock.json",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 36
+      "pathRefs": 37
     },
     {
       "blob_sha": "1153725a31dfa3ef4bec3137d676a4d50edfdd04",
@@ -1820,7 +1848,7 @@
       "declared_size": 2466,
       "example_path": "docs/estate/02_HISTORY_AND_PROVENANCE.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "126a1f7dd7968c8322f6cc976af330b71f75d3e1",
@@ -1841,7 +1869,7 @@
       "declared_size": 5465,
       "example_path": "docs/release-evidence/r398-omega-release-ledger.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "14699de084cba3a13af4bfcbb2b9202b87e305ca",
@@ -1876,14 +1904,14 @@
       "declared_size": 1373,
       "example_path": ".github/workflows/private-consumer-ref-verification.yml",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 75
+      "pathRefs": 77
     },
     {
       "blob_sha": "15e0d62ea9670def7df9caa0f4d87f141884fe8c",
       "declared_size": 9470,
       "example_path": "scripts/test-consumer-staging-bundle.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "167c5bff671ec7f35241bbba8e80e8b184e781ba",
@@ -1897,7 +1925,7 @@
       "declared_size": 11461,
       "example_path": "docs/release-evidence/r349-20261102-system-of-systems.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 20
+      "pathRefs": 21
     },
     {
       "blob_sha": "16ba972473ea005cf97eb6097438d0e0b2de70fa",
@@ -1925,7 +1953,7 @@
       "declared_size": 8468,
       "example_path": "functions/src/index.ts",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 15
+      "pathRefs": 16
     },
     {
       "blob_sha": "17c3aec1b2f8b675d8e83a6d0ab1faf0f6d98c14",
@@ -1946,14 +1974,14 @@
       "declared_size": 3596,
       "example_path": "docs/RUNTIME_OBSERVATION_2026-07-16.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 158
+      "pathRefs": 161
     },
     {
       "blob_sha": "1902685dfaf70c341603b4ff70e4b0458b737faf",
       "declared_size": 7683,
       "example_path": "scripts/promote-staging-twilio-function-deploy-iam.sh",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 135
+      "pathRefs": 138
     },
     {
       "blob_sha": "1973e83b324654f0fc0a6e9fa563c26268479f98",
@@ -1988,14 +2016,14 @@
       "declared_size": 2876,
       "example_path": "docs/JOBS_DEPENDENCY_AUDIT_BUNDLE_013.json",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "1ad836d9f04d34c29ecc26cb7c83b07d971705e0",
       "declared_size": 7390,
       "example_path": "scripts/fixtures/r425-evidence/scripts/r426-original-source-evidence.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "1af41550e5456a12f1d1f2f800671665b312f731",
@@ -2030,7 +2058,7 @@
       "declared_size": 12856,
       "example_path": "functions/test/current-cross-service.emulator.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 25
+      "pathRefs": 26
     },
     {
       "blob_sha": "1d07be905b0e37c69f9874c9b60289ff9a252208",
@@ -2058,42 +2086,42 @@
       "declared_size": 5456,
       "example_path": "STATUS.md",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 108
+      "pathRefs": 110
     },
     {
       "blob_sha": "1e0abb753726f327e5a396ac62d02cc9685e56ab",
       "declared_size": 2676,
       "example_path": "docs/URAI_KNOWN_LIMITATIONS.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "1eb0fc1d14d55ba66e91d47bda2eb46ad79b4d23",
       "declared_size": 3753,
       "example_path": "STATUS.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 18
+      "pathRefs": 19
     },
     {
       "blob_sha": "1eb572c3ed594f0eac299f5f38e063ad1acbcea7",
       "declared_size": 259,
       "example_path": "functions/src/lib/logger.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 176
+      "pathRefs": 180
     },
     {
       "blob_sha": "1ef017272b8bcf3c90f7ca6a21fba4361da8c1bc",
       "declared_size": 3548,
       "example_path": "scripts/validate-spatial-pr1596-stripe-provider-probe.mjs",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 77
+      "pathRefs": 79
     },
     {
       "blob_sha": "1f9c70b24820abe3ac6be7d42563eb7ea257da37",
       "declared_size": 815,
       "example_path": "scripts/run-workstream-c-cloud-shell.sh",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 166
+      "pathRefs": 170
     },
     {
       "blob_sha": "20231128e067ad2dbfb27ff8d4fbf16813a2e2b7",
@@ -2156,7 +2184,7 @@
       "declared_size": 2246,
       "example_path": "functions/src/lib/validation.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 130
+      "pathRefs": 133
     },
     {
       "blob_sha": "247a7d6da81b22ebdd7a29d274362a99b056de93",
@@ -2191,21 +2219,21 @@
       "declared_size": 3821,
       "example_path": "functions/src/lib/stagingBoundaries.ts",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 23
+      "pathRefs": 24
     },
     {
       "blob_sha": "26573bbd8139ca6fff46fe97ec503f6ddc48ba03",
       "declared_size": 2025,
       "example_path": "scripts/validate-admin-pr57-staging-consumer.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 148
+      "pathRefs": 151
     },
     {
       "blob_sha": "2694cfcff51a8c9834fb0ac93ffcc109487d632c",
       "declared_size": 5280,
       "example_path": ".github/workflows/ci.yml",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 14
+      "pathRefs": 15
     },
     {
       "blob_sha": "26fceaca44df35e63cabc6aa3b3a2ee30ebe508a",
@@ -2226,14 +2254,14 @@
       "declared_size": 3261,
       "example_path": "docs/estate/03_ARCHITECTURE_AND_CONNECTIONS.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "27a387b29c77b7620d5270ce8633c0f52c6d1386",
       "declared_size": 3903,
       "example_path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 23
+      "pathRefs": 24
     },
     {
       "blob_sha": "27de7ce3f53e0e2635931cbe01ba8dcf3a7981c7",
@@ -2254,7 +2282,7 @@
       "declared_size": 415,
       "example_path": "functions/tsconfig.json",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 176
+      "pathRefs": 180
     },
     {
       "blob_sha": "28a9469517ee3ef33256dba45a6d4e4b2526713d",
@@ -2282,14 +2310,14 @@
       "declared_size": 5553,
       "example_path": "functions/test/firestore.rules.test.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 175
+      "pathRefs": 179
     },
     {
       "blob_sha": "29865030be7208eff6cc3bcfb47798cebd4600f5",
       "declared_size": 5711,
       "example_path": "config/staging-consumers.json",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 28
+      "pathRefs": 29
     },
     {
       "blob_sha": "29cbb94612bffe81ec05aaa7227aae116e0f90e5",
@@ -2303,14 +2331,14 @@
       "declared_size": 2342,
       "example_path": "RELEASE_NOTES.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "2ab27cbbc0d07daa5be79b28b23d210b592af5aa",
       "declared_size": 1535,
       "example_path": "scripts/staging-bootstrap-command-manifest.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "2b42ed163406c5957e19e993b5ab1963d3c29ecf",
@@ -2331,21 +2359,21 @@
       "declared_size": 6003,
       "example_path": "scripts/urai-staging-bootstrap.mjs",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 10
+      "pathRefs": 11
     },
     {
       "blob_sha": "2c9daa2f1f343433a049f18cf1ea1f5984201cab",
       "declared_size": 2620,
       "example_path": "scripts/validate-staging-billing-guard.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 137
+      "pathRefs": 140
     },
     {
       "blob_sha": "2d0cb8f19878f57e97c5739ea6f36b10039048a9",
       "declared_size": 2442,
       "example_path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 67
+      "pathRefs": 68
     },
     {
       "blob_sha": "2d67d2178003f19d54fe779ba5ecb77193b4b689",
@@ -2366,7 +2394,7 @@
       "declared_size": 2011,
       "example_path": "scripts/test-workstream-c-root-resolver.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "2efacc695cc7cf2e9a495e4d1ae8250a6e18977c",
@@ -2387,21 +2415,21 @@
       "declared_size": 1926,
       "example_path": "scripts/validate-active-consumer-refs.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 21
+      "pathRefs": 22
     },
     {
       "blob_sha": "2f29e7f79c0e482b0a71a732ba1c69ce80ce080a",
       "declared_size": 2393,
       "example_path": "ENVIRONMENT.md",
       "first_branch": "docs/agent-handoff-recovery-20260719",
-      "pathRefs": 7
+      "pathRefs": 8
     },
     {
       "blob_sha": "2f8cd2bf3d3bd63f3adbc3ad8756af50e4ae47a1",
       "declared_size": 2080,
       "example_path": "scripts/test-launch-evidence-command-inventory.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "304b5e2842fa3e83a2b3da988a83c5e606f55ece",
@@ -2422,21 +2450,21 @@
       "declared_size": 700,
       "example_path": "storage.rules",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 128
+      "pathRefs": 131
     },
     {
       "blob_sha": "3164460efe5c6e8e1e1b07b900f424b5bda05c7a",
       "declared_size": 18765,
       "example_path": ".github/workflows/staging-deploy.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 84
+      "pathRefs": 86
     },
     {
       "blob_sha": "319df5fb0955da0773aa7b75a4854008abbe02d9",
       "declared_size": 12200,
       "example_path": "functions/src/syntheticMemoryLifecycle.ts",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 25
+      "pathRefs": 26
     },
     {
       "blob_sha": "31a2a01d325cde6a26c80a42091733be0ff239de",
@@ -2450,7 +2478,7 @@
       "declared_size": 19322,
       "example_path": ".github/workflows/admin-pr57-provider-probe.yml",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 35
+      "pathRefs": 36
     },
     {
       "blob_sha": "322f46a2b3d5fb9a0bb7b0b2ab892dbf0b3c3c37",
@@ -2471,7 +2499,7 @@
       "declared_size": 393,
       "example_path": "docs/WORKSTREAM_C_CURRENT_CANDIDATES.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 165
+      "pathRefs": 169
     },
     {
       "blob_sha": "3342f76c69c4aef620122d11f473fa3592887eb4",
@@ -2485,21 +2513,21 @@
       "declared_size": 2356,
       "example_path": "scripts/test-r425-evidence-source-contract.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "33c71b71a7a505d17f8b5b51189573a954873593",
       "declared_size": 1996,
       "example_path": "scripts/fixtures/r422-federated/order.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "3501db8b6a5cbc4ddcf038fcf00e0a7a8574eb33",
       "declared_size": 1599,
       "example_path": "scripts/fixtures/r423-worker/functions/src/privacy/ownerDeletionFence.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "350bcf7be1184f784f794f57b29597309f585ab0",
@@ -2534,7 +2562,7 @@
       "declared_size": 8145,
       "example_path": "scripts/fixtures/r424-signed/privacy/functions/src/consent-decision.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "36729e98ec18317bbfd06fb301af5a0abbdfcab9",
@@ -2548,7 +2576,7 @@
       "declared_size": 13186,
       "example_path": "scripts/check-deploy-readiness-v2.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 23
+      "pathRefs": 24
     },
     {
       "blob_sha": "3735a39abff404d5cc28db904a7aad775d3f8956",
@@ -2590,14 +2618,14 @@
       "declared_size": 3449,
       "example_path": "ENVIRONMENT.md",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 135
+      "pathRefs": 138
     },
     {
       "blob_sha": "382502844e2fb1e0b0439ab920a29ea785318d84",
       "declared_size": 1456,
       "example_path": "docs/estate/07_WORKER_RECONCILIATION.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "3856bef7cbf7919dac76406ae18de272558d9e34",
@@ -2611,7 +2639,7 @@
       "declared_size": 20867,
       "example_path": ".github/workflows/admin-pr57-runtime-deploy.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 84
+      "pathRefs": 86
     },
     {
       "blob_sha": "38e359e8d851096d50f266e360f48f3d583ac9f7",
@@ -2639,7 +2667,7 @@
       "declared_size": 1474,
       "example_path": "URAI_STAGING_CANONICAL_APP.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "39dc7589777a437bc3fbe8f9456b3443eba7f922",
@@ -2660,7 +2688,7 @@
       "declared_size": 836,
       "example_path": "scripts/fixtures/r424-signed/jobs/functions/package.json",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "3a5c0cc6b33e7ff0838ea0c5a05537a94b580f34",
@@ -2674,7 +2702,7 @@
       "declared_size": 5792,
       "example_path": "scripts/test-sendgrid-staging-approval.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 48
+      "pathRefs": 49
     },
     {
       "blob_sha": "3ac355c2df3d7276167e1fa83719e3e730a9e190",
@@ -2695,7 +2723,7 @@
       "declared_size": 742,
       "example_path": "scripts/urai-production-verify.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 82
+      "pathRefs": 84
     },
     {
       "blob_sha": "3b0ae49b1bf4de718ddc3888ec6fc12d96fff685",
@@ -2709,7 +2737,7 @@
       "declared_size": 711,
       "example_path": "storage.rules",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "3b173f8685dcbd916a693f3258ecce5d1b3a113c",
@@ -2737,7 +2765,7 @@
       "declared_size": 9383,
       "example_path": "config/provider-registry-20260925.json",
       "first_branch": "converge/current-provider-consumers-20261003",
-      "pathRefs": 25
+      "pathRefs": 26
     },
     {
       "blob_sha": "3c9e807693154d381a8cec9015fe9bb96dff49a0",
@@ -2765,7 +2793,7 @@
       "declared_size": 1091,
       "example_path": "scripts/assert-staging-billing-enabled.sh",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 139
+      "pathRefs": 142
     },
     {
       "blob_sha": "3dcd917ef3fb301f94e16558e127caa11044c57c",
@@ -2786,21 +2814,21 @@
       "declared_size": 5761,
       "example_path": "STATUS.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 32
+      "pathRefs": 33
     },
     {
       "blob_sha": "3e421d094dfcba57e3a4e52c3e3a476595903614",
       "declared_size": 8863,
       "example_path": "scripts/validate-private-consumer-ref-workflow.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "3e437be2192de16306e2a828f015631c3451e11b",
       "declared_size": 2244,
       "example_path": "scripts/validate-staging-deploy-workflow.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 151
+      "pathRefs": 154
     },
     {
       "blob_sha": "3e55a078f51d9dd185a3e67486f4a82bb89d9206",
@@ -2849,14 +2877,14 @@
       "declared_size": 9097,
       "example_path": "scripts/verify-staging-verification-binding.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "3fa1127e0aba6928b9045dd9eaca87d30160fc80",
       "declared_size": 5977,
       "example_path": "scripts/fixtures/r423-worker/scripts/life-movies-worker-owner-deletion-fence.test.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "3fd621f92b66b66d24f717e41aec4e16465e3d2e",
@@ -2870,14 +2898,14 @@
       "declared_size": 1759,
       "example_path": "scripts/validate-staging-wif-runtime-identity-probe.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 103
+      "pathRefs": 105
     },
     {
       "blob_sha": "403dfb516a95bfadb62823bde79bcaf28a646dc1",
       "declared_size": 1714,
       "example_path": "SECURITY_STAGING.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 57
+      "pathRefs": 59
     },
     {
       "blob_sha": "40429b18d1d55103d48338a6cae5d795bc39b9e9",
@@ -2919,7 +2947,7 @@
       "declared_size": 1136,
       "example_path": "RELEASE_HANDOFF.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "42e6142c1877a5c58fa05f9e1102f2cb407c65ed",
@@ -2933,7 +2961,7 @@
       "declared_size": 1450,
       "example_path": "functions/test/validation.test.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 176
+      "pathRefs": 180
     },
     {
       "blob_sha": "43dcb78653cc584fd6d6a407b61497c683dfe84a",
@@ -2947,7 +2975,7 @@
       "declared_size": 1255,
       "example_path": "scripts/fixtures/r424-signed/privacy/functions/src/cross-user-authority.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "446ce9acc67d45987dd6c32cd04bf2fd9a89eff7",
@@ -2961,21 +2989,21 @@
       "declared_size": 2336,
       "example_path": "scripts/write-launch-summary.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "45cf6910f319aafdd5a183cb91fb7fb8c62ad568",
       "declared_size": 2070,
       "example_path": "docs/URAI_GENESIS_STAGING_READINESS.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "45dbf58bd0f67c7ee2ad6903e5089a32d79a936c",
       "declared_size": 2838,
       "example_path": "docs/RESUME_URAI_EXECUTION.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 163
+      "pathRefs": 166
     },
     {
       "blob_sha": "4608df8748a9f712c242685235e7ccccceb3f6ae",
@@ -2996,7 +3024,7 @@
       "declared_size": 16918,
       "example_path": "scripts/check-deploy-readiness.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 84
+      "pathRefs": 86
     },
     {
       "blob_sha": "4690f79dd59924a63365959065c0a1eeebf89273",
@@ -3017,14 +3045,14 @@
       "declared_size": 9277,
       "example_path": "scripts/urai-staging-bootstrap.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 91
+      "pathRefs": 93
     },
     {
       "blob_sha": "4855091ad12cbc2f770c5d86aab30b1403b7f8b9",
       "declared_size": 4033,
       "example_path": "DEPLOYMENT.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 160
+      "pathRefs": 163
     },
     {
       "blob_sha": "48bea255ac7f145d08c395f1a5caa389d7769fb6",
@@ -3038,7 +3066,7 @@
       "declared_size": 1146,
       "example_path": "scripts/check-lockfile.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "4a23da714fc069f151da2cb390fefec7e185d1ea",
@@ -3059,7 +3087,7 @@
       "declared_size": 4348,
       "example_path": "scripts/fixtures/r425-evidence/scripts/r426-original-source-evidence.test.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "4c814fec6d2d978c20c7b313f17d0f3e723a5e6f",
@@ -3108,7 +3136,7 @@
       "declared_size": 236,
       "example_path": "docs/EVIDENCE_STATUS.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 171
+      "pathRefs": 175
     },
     {
       "blob_sha": "4e447b0aac02f6a8ba57c5237ffc530f7c7179b6",
@@ -3143,7 +3171,7 @@
       "declared_size": 2552,
       "example_path": ".github/workflows/urai-production-verify.yml",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "4fc28738fd0f38a45ca4d5c9f3854b04b8252617",
@@ -3185,7 +3213,7 @@
       "declared_size": 4600,
       "example_path": "functions/src/lib/stagingBoundaries.ts",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 93
+      "pathRefs": 95
     },
     {
       "blob_sha": "50c34d1d7fca4c95f1cb3d3aa55e552e7a5a6262",
@@ -3213,35 +3241,35 @@
       "declared_size": 5270,
       "example_path": "scripts/fixtures/r425-evidence/scripts/r427-evidence-escrow.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "51f7abc56ac4cba2c5bee0b38ede76d0ce0d6d90",
       "declared_size": 3249,
       "example_path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/build-test-deploy-proof.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "523b3aefb4ebf9d18ba2a2e2230061e3c7cfa9c6",
       "declared_size": 5231,
       "example_path": "scripts/installed-advisory-match.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "529a1acf755463426f329e8efae177012c705196",
       "declared_size": 3167,
       "example_path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/environment-map.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "52b4c160cb0bac9d43818f151dcf11346394d69e",
       "declared_size": 2388,
       "example_path": "SECURITY_STAGING.md",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 115
+      "pathRefs": 117
     },
     {
       "blob_sha": "52e19b5653ea870aac5335c3f8f513b457a83f0b",
@@ -3262,21 +3290,21 @@
       "declared_size": 932,
       "example_path": "scripts/fixtures/r422-federated/gate.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 86
+      "pathRefs": 88
     },
     {
       "blob_sha": "538c106f4d0d1c892186940903b7289bc6858296",
       "declared_size": 1520,
       "example_path": "scripts/staging-evidence-timing.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "557686095ff31ccd686549a86c1fa2830b863ec5",
       "declared_size": 1540,
       "example_path": "DEPLOY_EVIDENCE_LOG.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "558195b3ae33d721ba7916e9706e813577394cd0",
@@ -3290,14 +3318,14 @@
       "declared_size": 1167,
       "example_path": "config/spatial-consumer-candidate.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "55f3d25ab97f52e96e66ea04e2ef680070610302",
       "declared_size": 2461,
       "example_path": ".github/workflows/urai-production-verify.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 38
+      "pathRefs": 39
     },
     {
       "blob_sha": "56cb9839b3103610049cdb08d19962df0e7e6111",
@@ -3318,7 +3346,7 @@
       "declared_size": 3532,
       "example_path": "CROSS_REPO_RELEASE_MAP.md",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "57a4420e1ebfb3a1550f35f09357adbc2e934d35",
@@ -3346,7 +3374,7 @@
       "declared_size": 5673,
       "example_path": "URAI_STAGING_DEFINITION_OF_DONE.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "58a2fdf407e4321a7299cf1c9e628e1ce8668861",
@@ -3374,42 +3402,42 @@
       "declared_size": 3053,
       "example_path": "scripts/validate-jobs-narrator-build-input.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "59a2a404551661c7ca9c64e6580df9b7e07814cd",
       "declared_size": 18765,
       "example_path": ".github/workflows/staging-deploy.yml",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 54
+      "pathRefs": 55
     },
     {
       "blob_sha": "59aeea334a086d7936d558a5bafc3e962e1f393e",
       "declared_size": 897,
       "example_path": "functions/package.json",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 15
+      "pathRefs": 16
     },
     {
       "blob_sha": "59e4a422191b549a497167ca1bc60fe9028f87f8",
       "declared_size": 2729,
       "example_path": "scripts/r454-specific-firebase-denial.test.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 42
+      "pathRefs": 43
     },
     {
       "blob_sha": "59fe8ef8c5bc282c90004f579a3942baa3c10562",
       "declared_size": 1670,
       "example_path": "scripts/validate-launch-evidence.mjs",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 15
+      "pathRefs": 16
     },
     {
       "blob_sha": "5a1bf20f5ed9555565ce18a08a75b54b9d6b2394",
       "declared_size": 1146,
       "example_path": "scripts/check-lockfile.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 34
+      "pathRefs": 35
     },
     {
       "blob_sha": "5a48542cc29954d2c70de6e19e6d8e1906c673d8",
@@ -3423,7 +3451,7 @@
       "declared_size": 19043,
       "example_path": "scripts/admin-pr57-staging-lock.sh",
       "first_branch": "admin-pr57-effective-iam-proof-20260905",
-      "pathRefs": 147
+      "pathRefs": 150
     },
     {
       "blob_sha": "5aecd337e0bec9479cda543e921692efbf0d4b00",
@@ -3444,21 +3472,21 @@
       "declared_size": 5463,
       "example_path": "SYSTEM_AUDIT.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "5b91285072b38f46e66a9a3880415f2e1f847597",
       "declared_size": 2297,
       "example_path": "scripts/validate-staging-wif-bootstrap.mjs",
       "first_branch": "admin-pr57-effective-iam-proof-20260905",
-      "pathRefs": 146
+      "pathRefs": 149
     },
     {
       "blob_sha": "5ba1491f694873582cf3a37a371dbbce7758d48f",
       "declared_size": 2128,
       "example_path": "scripts/fixtures/r422-federated/spatial.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "5bcb0f43622d6ece549e13b3be863593373911ba",
@@ -3493,7 +3521,7 @@
       "declared_size": 3200,
       "example_path": "scripts/validate-spatial-pr1296-stripe-provider-probe.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 14
+      "pathRefs": 15
     },
     {
       "blob_sha": "5d6d4923f7dce261d8a41c99066fb5805b4647f7",
@@ -3514,7 +3542,14 @@
       "declared_size": 3196,
       "example_path": "scripts/validate-admin-pr57-provider-probe.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 144
+      "pathRefs": 147
+    },
+    {
+      "blob_sha": "5e7caf5a5783f24c7cee3045debe6160e47d9368",
+      "declared_size": 3619,
+      "example_path": "scripts/test-r424-signed-rehearsal.mjs",
+      "first_branch": "test/r439-firebase-jobs-privacy-auth-emulator-20261103",
+      "pathRefs": 1
     },
     {
       "blob_sha": "5ebb24f4e07e3c2f174cb01e2f7b7a50e801c0fb",
@@ -3528,7 +3563,7 @@
       "declared_size": 4943,
       "example_path": "URAI_STAGING_DEFINITION_OF_DONE.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 29
+      "pathRefs": 30
     },
     {
       "blob_sha": "5eedcb00e624ed18a85df45221e125b84a859507",
@@ -3563,7 +3598,7 @@
       "declared_size": 11446,
       "example_path": "scripts/fixtures/r424-signed/jobs/functions/src/jobs/studioLifeMovieContract.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "6066e91cc93b6c7c3e98393a866f973825845b06",
@@ -3591,14 +3626,14 @@
       "declared_size": 2399,
       "example_path": "docs/launch/WAVE5_STAGING_LAUNCH_LOCK_EVIDENCE.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "6241592a8251ae485c889ba7373c8648f513ed5b",
       "declared_size": 2343,
       "example_path": "docs/URAI_DEPLOYMENT_CHECKLIST.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "628469f416d8f7671c8b4b5758d295e162f9a8ca",
@@ -3619,7 +3654,7 @@
       "declared_size": 9183,
       "example_path": "README.md",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 18
+      "pathRefs": 19
     },
     {
       "blob_sha": "63762978bd7c0e5ca7d4a036c14f2d98a6e62250",
@@ -3640,28 +3675,28 @@
       "declared_size": 5219,
       "example_path": "docs/URAI-STAGING_AUDIT.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "648225708e055592ee697e0dc342bfcf1bc144e4",
       "declared_size": 4216,
       "example_path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieJobsTokenProvider.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "64e140037503539443c68cde04ef2cd2104578d0",
       "declared_size": 1390,
       "example_path": "scripts/test-staging-bootstrap-command-environment.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "655606dd2c7525263dd03fe561dff968bfaa5a33",
       "declared_size": 7196,
       "example_path": "docs/release-evidence/r317-20261102-system-of-systems.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 45
+      "pathRefs": 46
     },
     {
       "blob_sha": "655a5e6c2e030627d170f216df472ee97363e633",
@@ -3682,14 +3717,14 @@
       "declared_size": 4401,
       "example_path": "URAI_STAGING_LAUNCH_BLOCKERS.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "6603b24d79e2c5d8c4a33b0e1c5e25becba6ee89",
       "declared_size": 3300,
       "example_path": "DEPLOYMENT.md",
       "first_branch": "docs/agent-handoff-recovery-20260719",
-      "pathRefs": 7
+      "pathRefs": 8
     },
     {
       "blob_sha": "6671330afb6b05fab39cba91c712699f18203b7d",
@@ -3703,7 +3738,7 @@
       "declared_size": 1641,
       "example_path": "docs/estate/04_IMPLEMENTED_CAPABILITIES.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "66fa942fd536656a279cc984b8a1a83628f66fe0",
@@ -3717,7 +3752,7 @@
       "declared_size": 6871,
       "example_path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "67801c3ae1dcec02306271165b426d57385e49c9",
@@ -3766,7 +3801,7 @@
       "declared_size": 2059,
       "example_path": "scripts/validate-staging-twilio-proof-iam.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 135
+      "pathRefs": 138
     },
     {
       "blob_sha": "6aa1b9c4765635398a72e8b84d884fbe66860a2f",
@@ -3794,7 +3829,7 @@
       "declared_size": 1912,
       "example_path": "URAI_STAGING_LOCK_TEMPLATE.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "6cab464f16b31a6fee9346741bed3b06d5569144",
@@ -3808,14 +3843,14 @@
       "declared_size": 12812,
       "example_path": "scripts/run-workstream-c-manual-verification-core.sh",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 166
+      "pathRefs": 170
     },
     {
       "blob_sha": "6cca2b9456319927cf22511c7d51c1f16ddf051c",
       "declared_size": 10586,
       "example_path": "scripts/fixtures/r422-federated/privacy.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "6cff740d40b0e7593bdbbf7b1eae03142e8b1eb3",
@@ -3843,7 +3878,7 @@
       "declared_size": 2974,
       "example_path": "TEST_REPORT.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "6ea9953dce3cde7d57ba0663d6acdaa7ab8fd4a5",
@@ -3871,28 +3906,28 @@
       "declared_size": 2848,
       "example_path": "docs/URAI_LEGACY_FUNCTION_AUDIT.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "6f79824cca0a42a7af10d9fbbd1641f3470e6bdb",
       "declared_size": 9189,
       "example_path": "README.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "6fb64f4cd65829a4bb9bdecb5be37e8a4f61437d",
       "declared_size": 13981,
       "example_path": "functions/src/index.ts",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 68
+      "pathRefs": 69
     },
     {
       "blob_sha": "6fcb12c2ceea4a3e7d24c4bda4902baa7ad07051",
       "declared_size": 2959,
       "example_path": "scripts/test-privacy-jobs-staging-admission.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "70958c4adb6e5cf1f86c8e2f5b21e873de1b3f86",
@@ -3920,7 +3955,14 @@
       "declared_size": 11340,
       "example_path": "functions/src/lib/featureRegistry.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 36
+      "pathRefs": 37
+    },
+    {
+      "blob_sha": "721e8de255237dd68b80c92bc8ca95d5768746f9",
+      "declared_size": 2419,
+      "example_path": "scripts/fixtures/r424-signed/manifest.json",
+      "first_branch": "test/r439-firebase-jobs-privacy-auth-emulator-20261103",
+      "pathRefs": 1
     },
     {
       "blob_sha": "72246670c2faf35366db64a8db028b1669632647",
@@ -3948,14 +3990,14 @@
       "declared_size": 4134,
       "example_path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "73117e78ed7efd339c1dc6f003de4846c12cd772",
       "declared_size": 6967,
       "example_path": "scripts/test-launch-evidence-source-pin.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 19
+      "pathRefs": 20
     },
     {
       "blob_sha": "73188aea66e3bc12e78c9d9d4d1c31d083bbb120",
@@ -3969,21 +4011,21 @@
       "declared_size": 1725,
       "example_path": "docs/JOBS_DEPENDENCY_PREFLIGHT_FAILURE_A58CA1E.json",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "73cea515da6897aef5c199a1e841b38a4024470a",
       "declared_size": 5451,
       "example_path": "functions/test/stagingBoundaries.test.ts",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 115
+      "pathRefs": 117
     },
     {
       "blob_sha": "73d65b003f4141cd471db1e6a0edff9d7a1c747f",
       "declared_size": 1130,
       "example_path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieJobsPrivacyClient.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "7439da5b9c75117805a38cff0fa213381bda50a2",
@@ -3997,7 +4039,7 @@
       "declared_size": 1952,
       "example_path": "docs/estate/01_COMPLETE_INVENTORY.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "75078e805df18ef6e32e7ad3de5341e5df293d42",
@@ -4032,7 +4074,7 @@
       "declared_size": 2241,
       "example_path": "docs/estate/10_RELEASE_PARITY_AND_GATES.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "76bc563b489f139a605961bddffa3f932b4dd529",
@@ -4053,7 +4095,7 @@
       "declared_size": 5723,
       "example_path": "config/staging-consumers.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "77610a81a0ed42231a74d22cfa6a41c2ca4ac91e",
@@ -4074,14 +4116,14 @@
       "declared_size": 3308,
       "example_path": "scripts/validate-privacy-jobs-staging-admission.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "78098b7586724af8bb71c295546bdb505da4f97f",
       "declared_size": 5857,
       "example_path": "scripts/validate-provider-readiness-20261001.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "78730ecf120ddcac47d89772322f955619429dd7",
@@ -4095,7 +4137,7 @@
       "declared_size": 1815,
       "example_path": "API_CONTRACT.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "78ce3943e90c0727de61ee95120d52bf2f267884",
@@ -4109,7 +4151,7 @@
       "declared_size": 3053,
       "example_path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-jobs-identity.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "78f72516a9c0ec5bf05364ee96bcc81c985a985b",
@@ -4119,18 +4161,25 @@
       "pathRefs": 20
     },
     {
+      "blob_sha": "790f73898168a175db0722328817b010835e179f",
+      "declared_size": 30811,
+      "example_path": "docs/estate/BRANCH_REFS.json",
+      "first_branch": "docs/chalk-staging-historical-artifact-and-byte-proof-20261107",
+      "pathRefs": 1
+    },
+    {
       "blob_sha": "796c5cbc5ed7fb3d76217c4e762d1fa82fe0a9ba",
       "declared_size": 2519,
       "example_path": "docs/URAI_TESTING_CHECKLIST.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "798c5dcac7004920527b797abbce33388cba1f56",
       "declared_size": 574,
       "example_path": "scripts/fixtures/r425-evidence/manifest.json",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "79f071b7f302003c2c134820a344731b794dc7e3",
@@ -4193,7 +4242,7 @@
       "declared_size": 6272,
       "example_path": "scripts/validate-admin-pr57-runtime-deploy.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 145
+      "pathRefs": 148
     },
     {
       "blob_sha": "7da4039f5302c86eb74a494d1f7a332f293c4eed",
@@ -4214,21 +4263,21 @@
       "declared_size": 2420,
       "example_path": "docs/URAI_IMPLEMENTATION_LOG.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "7e894abc2fbf68a97c48acb14faf4dbe4895d36c",
       "declared_size": 10544,
       "example_path": "scripts/validate-staging-consumers.mjs",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 28
+      "pathRefs": 29
     },
     {
       "blob_sha": "7ea1a57a2cffcb2530450359525b63deedd99c62",
       "declared_size": 7756,
       "example_path": "scripts/test-cross-repo-release-ownership.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "7f06ab523f5537bbc37c79dd841bd0c797f3ff7d",
@@ -4263,7 +4312,7 @@
       "declared_size": 2323,
       "example_path": "docs/estate/08_NEXT_WORKER_HANDOFF.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "807254dff531844b548594b2ef66f9bb84e1d866",
@@ -4284,7 +4333,7 @@
       "declared_size": 526,
       "example_path": ".idx/dev.nix",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 36
+      "pathRefs": 37
     },
     {
       "blob_sha": "81386bf64c62c8fd0ebd6b3c62726a6ac7854b6a",
@@ -4298,21 +4347,21 @@
       "declared_size": 5469,
       "example_path": "docs/WORKSTREAM_C_MANUAL_VERIFICATION.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "81588af19650e4575983381cd15fb40d2479f399",
       "declared_size": 9343,
       "example_path": "scripts/urai-staging-bootstrap.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "819f857d0817c2691f4f1e759e69d2ca69731c6c",
       "declared_size": 3905,
       "example_path": "docs/CROSS_SYSTEM_CANON_AUTHORITY.md",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 47
+      "pathRefs": 48
     },
     {
       "blob_sha": "827bf9dc809d36deedfcc3f48933cf54e38376e0",
@@ -4361,14 +4410,14 @@
       "declared_size": 6013,
       "example_path": "docs/release-evidence/test-r398-omega-ledger.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "84e5f8c8d9d1401da05bc7af9066ce3661d2e9b5",
       "declared_size": 2611,
       "example_path": "scripts/verify-twilio-trial-sender.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 47
+      "pathRefs": 48
     },
     {
       "blob_sha": "8521b5a4d9a37acbac25423eb679a0dd1552ad36",
@@ -4417,21 +4466,21 @@
       "declared_size": 13750,
       "example_path": "scripts/prepare-consumer-staging-bundle.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "872b36ee0b749fea8069e858ddc171e95896f5ba",
       "declared_size": 526,
       "example_path": ".idx/dev.nix",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "873cd307c7599e739a91c8d5fc9dcb8dd7c180db",
       "declared_size": 2905,
       "example_path": "URAI_XR_RELEASE_TRAIN_GATE.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "8747fa1e50878f05707664e66f5a7f87b0fce988",
@@ -4445,14 +4494,14 @@
       "declared_size": 5352,
       "example_path": "scripts/validate-launch-evidence.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 92
+      "pathRefs": 94
     },
     {
       "blob_sha": "88b5c3117b9c8d5d8d903efc015b58bc17590b0d",
       "declared_size": 2126,
       "example_path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieBoundedResponse.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "88b6c8ed6f068c8854009f90850e0980f86fe04d",
@@ -4466,7 +4515,7 @@
       "declared_size": 1519,
       "example_path": ".github/workflows/urai-production-verify.yml",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 10
+      "pathRefs": 11
     },
     {
       "blob_sha": "8972a7c04aec6070d74eda6fc7679ad32bbb3aad",
@@ -4480,14 +4529,14 @@
       "declared_size": 498,
       "example_path": "functions/src/lib/auth.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 130
+      "pathRefs": 133
     },
     {
       "blob_sha": "8981d04b875064a1530b653a09753c700ad6bba4",
       "declared_size": 10893,
       "example_path": ".github/workflows/admin-pr57-staging-consumer.yml",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 64
+      "pathRefs": 65
     },
     {
       "blob_sha": "89c50c96dcddb3c3c229cb6952c6f39ab0324a9e",
@@ -4501,7 +4550,7 @@
       "declared_size": 398,
       "example_path": ".gitignore",
       "first_branch": "audit/release-evidence-hardening-20260706",
-      "pathRefs": 12
+      "pathRefs": 13
     },
     {
       "blob_sha": "8b281218a3afa0d8073551fcafa72cb76297f0a2",
@@ -4515,7 +4564,7 @@
       "declared_size": 1958,
       "example_path": "scripts/test-genesis-release-gate-wiring.mjs",
       "first_branch": "review/r476-current-auth-consent-source-20261103",
-      "pathRefs": 4
+      "pathRefs": 5
     },
     {
       "blob_sha": "8b7a37e69618ca3511aaa5423da8b76c23aad972",
@@ -4529,14 +4578,14 @@
       "declared_size": 10529,
       "example_path": ".github/workflows/staging-wif-runtime-identity-probe.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 84
+      "pathRefs": 86
     },
     {
       "blob_sha": "8bd86161687402ebb610cc30f6677f88521c2c1c",
       "declared_size": 3946,
       "example_path": "scripts/fixtures/r422-federated/jobs.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "8c0a84d5b1c1515fbfb8f3886d4c1d8d41c7d3a1",
@@ -4557,14 +4606,14 @@
       "declared_size": 2805,
       "example_path": "scripts/assert-current-communications-source.sh",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "8de4dd0015c7532423a90142b829ce3341b8b52a",
       "declared_size": 12273,
       "example_path": "functions/test/r450-original-auth-emulator-boundary.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 42
+      "pathRefs": 43
     },
     {
       "blob_sha": "8df588e9a90e25a190474ae16dee1b4743aace89",
@@ -4578,14 +4627,14 @@
       "declared_size": 3385,
       "example_path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "8e520d57a0d60e7b551ac0943bcd2ad44c4db9c2",
       "declared_size": 992,
       "example_path": "scripts/validate-private-consumer-ref-workflow.mjs",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 52
+      "pathRefs": 53
     },
     {
       "blob_sha": "8f138f796d82d384a9e5f2008db63e50a37150b0",
@@ -4606,7 +4655,7 @@
       "declared_size": 2651,
       "example_path": "docs/COMMAND_EVIDENCE.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "90eb635b7866bae4303e373d84f49b807c8dafb4",
@@ -4641,7 +4690,7 @@
       "declared_size": 5026,
       "example_path": "SYSTEM_AUDIT.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 36
+      "pathRefs": 37
     },
     {
       "blob_sha": "91cdba8c314fd5be1e2948ac6766ccfa49305253",
@@ -4655,7 +4704,7 @@
       "declared_size": 2110,
       "example_path": "package.json",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 21
+      "pathRefs": 22
     },
     {
       "blob_sha": "9259545a5431f2f1a62694018a89f934aaf178ff",
@@ -4669,7 +4718,7 @@
       "declared_size": 5522,
       "example_path": ".github/workflows/staging-pr118-authenticated-emulator.yml",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "9379a3ea5e37d7a0082c6f7a88652bd7e7489075",
@@ -4704,7 +4753,7 @@
       "declared_size": 7082,
       "example_path": "public/index.html",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 9
+      "pathRefs": 10
     },
     {
       "blob_sha": "94b1a58084bb79892a37290c1a53f181b2e1568b",
@@ -4718,7 +4767,7 @@
       "declared_size": 610,
       "example_path": "scripts/run-with-java.sh",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "954adcd739309bd2a0e51fa2a5ae822a1ce8a572",
@@ -4753,7 +4802,7 @@
       "declared_size": 10675,
       "example_path": "docs/AGENT_HANDOFF_CURRENT_STATE_2026-08-04.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 163
+      "pathRefs": 166
     },
     {
       "blob_sha": "97c1cbac00c594288e81d9c6b63556099f955b06",
@@ -4795,7 +4844,7 @@
       "declared_size": 5792,
       "example_path": "firestore.indexes.json",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "9a5c359b0de1be6a705ff0d9ca7cd896dc0fab63",
@@ -4816,6 +4865,13 @@
       "declared_size": 5821,
       "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
       "first_branch": "review/r749-retarget-owner-acceptance-to-converged-r748-hold-20261105",
+      "pathRefs": 1
+    },
+    {
+      "blob_sha": "9b71b6f70e224c0d7656e3fa1251491d5bde32be",
+      "declared_size": 17222,
+      "example_path": "functions/test/r439-original-jobs-privacy-auth.emulator.mjs",
+      "first_branch": "test/r439-firebase-jobs-privacy-auth-emulator-20261103",
       "pathRefs": 1
     },
     {
@@ -4844,14 +4900,14 @@
       "declared_size": 16208,
       "example_path": "scripts/repair-jobs-unused-error-reporting-core.sh",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "9e6137abfc19f73ae1e42f2c78c0d82ad6ff5aef",
       "declared_size": 6739,
       "example_path": "scripts/validate-private-consumer-ref-workflow.mjs",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 29
+      "pathRefs": 30
     },
     {
       "blob_sha": "9fd02b193858acba379185bf9bd552093e274e4b",
@@ -4893,28 +4949,28 @@
       "declared_size": 10849,
       "example_path": "functions/src/index.ts",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 23
+      "pathRefs": 24
     },
     {
       "blob_sha": "a09f17baf697805459e3ef5aed86a38f9790b649",
       "declared_size": 18032,
       "example_path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 34
+      "pathRefs": 35
     },
     {
       "blob_sha": "a0a32e1d2be5dbb4905b41c31172a6e28a7085f2",
       "declared_size": 5612,
       "example_path": "scripts/fixtures/r424-signed/jobs/scripts/integration/r421-run-synthetic-cross-service.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "a10f406ccca16e5ffe53d1c4cfb8780301c10893",
       "declared_size": 1066,
       "example_path": "scripts/urai-production-verify.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "a113dd933b2a001c46fc0b753c0cc75c7de85c5c",
@@ -4949,7 +5005,7 @@
       "declared_size": 453,
       "example_path": "scripts/staging-bootstrap-command-environment.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "a3bc956c43e7f0018814b6e86dc1e6c0eec3263a",
@@ -4963,7 +5019,7 @@
       "declared_size": 634,
       "example_path": "docs/launch/HARDENING.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "a417132a0ae656c6d4096253e0f9653d9faf072d",
@@ -4977,7 +5033,7 @@
       "declared_size": 4689,
       "example_path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-scoped-receipt.ts",
       "first_branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "a45db00c4377de0b4b9da801265a5acdaa3d6756",
@@ -4994,11 +5050,18 @@
       "pathRefs": 1
     },
     {
+      "blob_sha": "a53923fdcd0e1891546333593f55aa58781aee85",
+      "declared_size": 4169,
+      "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
+      "first_branch": "twilio/api-key-control-plane-20260927",
+      "pathRefs": 1
+    },
+    {
       "blob_sha": "a55abfa748e8a73e0249dbf44cca788f0c87f324",
       "declared_size": 6712,
       "example_path": "scripts/r451-combined-emulator-acceptance.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 42
+      "pathRefs": 43
     },
     {
       "blob_sha": "a59bca0a77dfd2bd31f9fdfc772775d9a1dd6a24",
@@ -5026,7 +5089,7 @@
       "declared_size": 10556,
       "example_path": "scripts/validate-staging-consumers.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "a63b8150cf2d9b92cabb4c4a29dba3a930db0c23",
@@ -5054,14 +5117,14 @@
       "declared_size": 3334,
       "example_path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-render-authorization.ts",
       "first_branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "a77bec323f549051575df52f1aa02c025fb0f079",
       "declared_size": 1073,
       "example_path": "functions/test/featureRegistry.test.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 36
+      "pathRefs": 37
     },
     {
       "blob_sha": "a81aa373d2c9757c79ed05b5b33a58c38c62d0b1",
@@ -5103,7 +5166,14 @@
       "declared_size": 928,
       "example_path": "functions/package.json",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 92
+      "pathRefs": 94
+    },
+    {
+      "blob_sha": "a9be1b78fe41ceb74dadee1c8a1ccb4eb486ab75",
+      "declared_size": 6864,
+      "example_path": "scripts/validate-staging-consumers.mjs",
+      "first_branch": "twilio/api-key-control-plane-20260927",
+      "pathRefs": 1
     },
     {
       "blob_sha": "aa08fd0ada73f6c3c0f3ce1b26cc56f2bf2684d8",
@@ -5124,7 +5194,7 @@
       "declared_size": 9857,
       "example_path": "scripts/test-workstream-c-confinement.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 165
+      "pathRefs": 169
     },
     {
       "blob_sha": "ab469c66282323399735c2324b6825dbbaa39321",
@@ -5138,7 +5208,7 @@
       "declared_size": 10327,
       "example_path": "config/provider-registry-20260925.json",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 112
+      "pathRefs": 114
     },
     {
       "blob_sha": "ac69da52e7466ab56c9f51fdaf8a548b709f4a31",
@@ -5152,7 +5222,7 @@
       "declared_size": 5787,
       "example_path": "scripts/test-sendgrid-staging-approval.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "ad099d1b4e00141782ba7431d64fd68fb3be92e6",
@@ -5187,14 +5257,14 @@
       "declared_size": 6597,
       "example_path": ".github/workflows/staging-pr121-r451-four-emulator.yml",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 42
+      "pathRefs": 43
     },
     {
       "blob_sha": "add8c6fcdb2e81b283fecd443381a3fa9856234b",
       "declared_size": 1318,
       "example_path": "docs/estate/00_START_HERE.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "ae0c02521844f256b8ffe4ab8e437d8f92ecb601",
@@ -5208,28 +5278,28 @@
       "declared_size": 3933,
       "example_path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/blockers.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "aee3dd998218d662c4804bbece1187852985ba26",
       "declared_size": 4272,
       "example_path": "scripts/run-workstream-c-cloud-shell-core.sh",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 165
+      "pathRefs": 169
     },
     {
       "blob_sha": "af429e9ae686c9ced1525f2fbe80b8d145a9a48b",
       "declared_size": 1851,
       "example_path": "firebase.json",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 16
+      "pathRefs": 17
     },
     {
       "blob_sha": "af6daf0e32ca932e7427e368108527055c339f45",
       "declared_size": 805,
       "example_path": "scripts/run-workstream-c-manual-verification.sh",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 166
+      "pathRefs": 170
     },
     {
       "blob_sha": "afca955d63a6ce928d2a6b6aa456b508a6134893",
@@ -5278,7 +5348,7 @@
       "declared_size": 7532,
       "example_path": "scripts/verify-private-consumer-refs.mjs",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 29
+      "pathRefs": 30
     },
     {
       "blob_sha": "b2fb55bec2277688e047dc3331bd51c6b054fe4c",
@@ -5292,7 +5362,7 @@
       "declared_size": 1581,
       "example_path": "scripts/write-launch-summary.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 34
+      "pathRefs": 35
     },
     {
       "blob_sha": "b3e251792b151997492351732b6516650df11617",
@@ -5320,21 +5390,21 @@
       "declared_size": 1553,
       "example_path": "functions/test/featureRegistry.test.ts",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "b61128965a3d9cbe81416a57c4f5ed550e3dfd19",
       "declared_size": 5186,
       "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 48
+      "pathRefs": 49
     },
     {
       "blob_sha": "b61484f218a46b56fbe479dadec73595b8599b3f",
       "declared_size": 16056,
       "example_path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-longform-contract.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "b62ac2909e100cfbb22ed33ce2d2ab47de44763c",
@@ -5348,7 +5418,7 @@
       "declared_size": 959,
       "example_path": "scripts/urai-production-verify.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 42
+      "pathRefs": 43
     },
     {
       "blob_sha": "b7225b99c0bed73f2390550a60dd149754810bc4",
@@ -5404,7 +5474,7 @@
       "declared_size": 101,
       "example_path": "public/robots.txt",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "baf8ba747706d4146e34df48416d281b6b5ed842",
@@ -5418,7 +5488,7 @@
       "declared_size": 4186,
       "example_path": "docs/URAI_CANONICAL_ROADMAP.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "bb7a54864c23d168f4274ed62c8bb221920e3d1c",
@@ -5439,7 +5509,7 @@
       "declared_size": 9640,
       "example_path": "scripts/bootstrap-staging-sendgrid-proof-iam.sh",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 133
+      "pathRefs": 135
     },
     {
       "blob_sha": "bcc8d0bf7673a1915c344f9f0dbdf792f9e2df9a",
@@ -5474,14 +5544,14 @@
       "declared_size": 4004,
       "example_path": "package.json",
       "first_branch": "review/r476-current-auth-consent-source-20261103",
-      "pathRefs": 3
+      "pathRefs": 4
     },
     {
       "blob_sha": "bf20e1b020668fb9eea6f8c28b76ab141c8da2d2",
       "declared_size": 10157,
       "example_path": "scripts/urai-staging-lock.sh",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 155
+      "pathRefs": 158
     },
     {
       "blob_sha": "c02214e21c75ee2a48dd164761dce0b53d91f9ca",
@@ -5516,7 +5586,7 @@
       "declared_size": 3559,
       "example_path": "URAI_STAGING_READINESS_MATRIX.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 36
+      "pathRefs": 37
     },
     {
       "blob_sha": "c167199647d9fea10655b54fb4410e53bc52d3eb",
@@ -5530,7 +5600,7 @@
       "declared_size": 13891,
       "example_path": ".github/workflows/current-cross-service.yml",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "c17dbcaaef828158e7f7a099ac656c486182c9a5",
@@ -5544,14 +5614,14 @@
       "declared_size": 2081,
       "example_path": "firebase.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "c1b47187b0f26e2374502497865a0905a668b5f5",
       "declared_size": 3457,
       "example_path": "scripts/test-twilio-trial-sender.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 47
+      "pathRefs": 48
     },
     {
       "blob_sha": "c1b5924eca8ad76b2330a225ec4cf21bfa463740",
@@ -5565,14 +5635,14 @@
       "declared_size": 9015,
       "example_path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentTransport.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "c1e05bf386bd47ff64bec20623cc50f29a9d1aa5",
       "declared_size": 6009,
       "example_path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieConsentDecision.ts",
       "first_branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "c2472da5425848173103f13b3c5b4c8ad62e427c",
@@ -5586,7 +5656,7 @@
       "declared_size": 986,
       "example_path": "CROSS_REPO_RELEASE_MAP.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 128
+      "pathRefs": 131
     },
     {
       "blob_sha": "c28eb289467971d4ffa564d3f02c779e75fc8b87",
@@ -5600,7 +5670,7 @@
       "declared_size": 1995,
       "example_path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/actions-hardening.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "c31d1945a3498a3091d635b1fd49c272870a760a",
@@ -5614,6 +5684,13 @@
       "declared_size": 13662,
       "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
       "first_branch": "review/chalk-r787-owner-pin-r786-uid-boundary-20261105",
+      "pathRefs": 1
+    },
+    {
+      "blob_sha": "c3629ad64747b5bef617416bc14125a57c8ee281",
+      "declared_size": 101555,
+      "example_path": "docs/estate/MANIFEST.json",
+      "first_branch": "docs/chalk-staging-historical-artifact-and-byte-proof-20261107",
       "pathRefs": 1
     },
     {
@@ -5691,14 +5768,14 @@
       "declared_size": 2511,
       "example_path": "docs/URAI_COMPLETION_STATUS.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "c58dc39ccbcf8a83d85ed4a0944571de8d54a994",
       "declared_size": 14561,
       "example_path": "scripts/check-deploy-readiness-v2.mjs",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 78
+      "pathRefs": 80
     },
     {
       "blob_sha": "c5d5e6bc26356e80247a1765bb2970be4e70bf7f",
@@ -5712,35 +5789,35 @@
       "declared_size": 2287,
       "example_path": "docs/estate/06_GAPS_CONFLICTS_AND_BLOCKERS.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "c6d98090504445a1c7ad0a3d4e88b62e207c9021",
       "declared_size": 3393,
       "example_path": "scripts/test-sendgrid-staging-budget.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 47
+      "pathRefs": 48
     },
     {
       "blob_sha": "c7292404e00893ebc2dcf1b99ef57d1320ef23f6",
       "declared_size": 1746,
       "example_path": "docs/JOBS_NARRATOR_BUILD_INPUT_CORRECTION_016.json",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "c75ef09130f78375ba4d6b0022ca5897a59394fc",
       "declared_size": 501,
       "example_path": "functions/src/lib/auth.ts",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "c7715dc20c73bbe07ad215d31c6a73e20db8c8f8",
       "declared_size": 6633,
       "example_path": "scripts/bootstrap-staging-github-wif.sh",
       "first_branch": "admin-pr57-effective-iam-proof-20260905",
-      "pathRefs": 146
+      "pathRefs": 149
     },
     {
       "blob_sha": "c7c00351c4845992876fbe6ded6331cf82a926b9",
@@ -5782,7 +5859,7 @@
       "declared_size": 1902,
       "example_path": "firebase.json",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 91
+      "pathRefs": 93
     },
     {
       "blob_sha": "c91cd74bbfc77e360f300a9ac29bbf92260ce012",
@@ -5803,21 +5880,21 @@
       "declared_size": 7494,
       "example_path": "scripts/fixtures/r425-evidence/scripts/r427-evidence-escrow.test.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "c995395da7f543659512dc633e3a2497ff4bb6ff",
       "declared_size": 13861,
       "example_path": "scripts/fixtures/r424-signed/studio/apps/studio/lib/studio-life-movie-jobs-bridge.ts",
       "first_branch": "review/r476-current-auth-consent-source-20261103",
-      "pathRefs": 2
+      "pathRefs": 3
     },
     {
       "blob_sha": "ca11fb5878de8f2de415dedb8aabc44a805796c3",
       "declared_size": 1749,
       "example_path": "scripts/fixtures/r422-federated/manifest.json",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 42
+      "pathRefs": 43
     },
     {
       "blob_sha": "ca481fd9d54fefc6bc9fc1be9c535b6100babecb",
@@ -5831,14 +5908,14 @@
       "declared_size": 2249,
       "example_path": "functions/src/lib/validation.ts",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "cad2108cccb7220fd9f3ff12abbf609f44af6dd0",
       "declared_size": 7041,
       "example_path": ".github/workflows/ci.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 38
+      "pathRefs": 39
     },
     {
       "blob_sha": "cb981d206b348ea05d5100d92b977de4e4e59a44",
@@ -5859,14 +5936,14 @@
       "declared_size": 637,
       "example_path": "scripts/fixtures/r423-worker/manifest.json",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "cc6ed610331f293a05d4dc76fb5b956547dab60d",
       "declared_size": 2461,
       "example_path": ".github/workflows/urai-production-verify.yml",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 54
+      "pathRefs": 55
     },
     {
       "blob_sha": "cd5059b23d880f61067623cbac08b07c15f2680e",
@@ -5901,14 +5978,14 @@
       "declared_size": 1658,
       "example_path": ".env.example",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "cfd452c25ed6c322c3a38f746cb7ec83fb920348",
       "declared_size": 82,
       "example_path": ".firebaserc.example",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 176
+      "pathRefs": 180
     },
     {
       "blob_sha": "cfed946ba7343fb4eb3682e2efe72775c3d436bc",
@@ -5922,7 +5999,7 @@
       "declared_size": 6510,
       "example_path": ".github/workflows/ci.yml",
       "first_branch": "converge-staging-control-plane-20260924",
-      "pathRefs": 3
+      "pathRefs": 4
     },
     {
       "blob_sha": "d005f89e04ccadc8524bb534a441f10402a0a92e",
@@ -5936,7 +6013,7 @@
       "declared_size": 333270,
       "example_path": "functions/package-lock.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "d0d911f7b1685141a3ccd9eeff5462e6fdd714ba",
@@ -5971,7 +6048,7 @@
       "declared_size": 2115,
       "example_path": "scripts/test-staging-evidence-timing.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "d1ad56ce61e5983edff42a26e6f98319814a9fc6",
@@ -6013,14 +6090,14 @@
       "declared_size": 20184,
       "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 35
+      "pathRefs": 36
     },
     {
       "blob_sha": "d263b8c09c8cbe77b5a4511ba6db288be481011e",
       "declared_size": 4054,
       "example_path": "scripts/check-installed-security.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "d37f77823d3bff50ca56b683718e7bb5bb79786e",
@@ -6069,7 +6146,7 @@
       "declared_size": 5185,
       "example_path": "functions/test/storage.rules.test.ts",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "d608ac106127edd96b62b25a947babd4e65b9f1b",
@@ -6083,14 +6160,14 @@
       "declared_size": 6278,
       "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 47
+      "pathRefs": 48
     },
     {
       "blob_sha": "d63b3104257524fe8f7d7fc941e90adb70121a56",
       "declared_size": 9014,
       "example_path": "scripts/validate-launch-evidence.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "d760bf404f8737faf2d9e25100a5fccf20872cc2",
@@ -6104,7 +6181,7 @@
       "declared_size": 5976,
       "example_path": "config/provider-readiness-20261001.json",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "d7a9b832039a5050508bccac97cd284596477ab7",
@@ -6128,6 +6205,13 @@
       "pathRefs": 1
     },
     {
+      "blob_sha": "d7c541a1c8c694ecd68ef84d6e606ca4cc982c8e",
+      "declared_size": 17209,
+      "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
+      "first_branch": "twilio/api-key-control-plane-20260927",
+      "pathRefs": 1
+    },
+    {
       "blob_sha": "d82c14c5e93d60ac4c8b80aa38ebd9abb1cf15a1",
       "declared_size": 4169,
       "example_path": "scripts/validate-communications-pr58-twilio-staging.mjs",
@@ -6139,7 +6223,7 @@
       "declared_size": 8808,
       "example_path": "scripts/verify-private-consumer-refs.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "d8becb1e3b083a8adb92451a077c00fff7c7445d",
@@ -6195,7 +6279,7 @@
       "declared_size": 5424,
       "example_path": "scripts/verify-sendgrid-staging-approval.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 70
+      "pathRefs": 71
     },
     {
       "blob_sha": "db0986ad3312834e94628f1288c8627e192c0fe7",
@@ -6209,7 +6293,7 @@
       "declared_size": 11613,
       "example_path": "scripts/verify-native-consumer-browser.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "db1a835980fc83ae487b1e619f9e2404940e98aa",
@@ -6230,7 +6314,7 @@
       "declared_size": 4075,
       "example_path": "docs/URAI_FIREBASE_SCHEMA.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 174
+      "pathRefs": 178
     },
     {
       "blob_sha": "dbad6bdfe340ab5b7f5b070166350f87698aea5c",
@@ -6251,14 +6335,14 @@
       "declared_size": 3247,
       "example_path": "docs/REPO_MAP.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "dc92cc63382c34e5bf1553f076b605ad44188fc7",
       "declared_size": 117,
       "example_path": ".firebaserc",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "dcadd8f5be69b91ca6d089fb95d9a52070573572",
@@ -6272,7 +6356,7 @@
       "declared_size": 2930,
       "example_path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/last-mile-completion.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "dde5113dbe1a53ee3f5aeac9fff65b36f61f7fc4",
@@ -6335,7 +6419,7 @@
       "declared_size": 1732,
       "example_path": "scripts/fixtures/r424-signed/privacy/functions/src/life-movie-deletion-fence.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "e09564bffe1124c9a96bb54904680b606aff35c1",
@@ -6391,21 +6475,21 @@
       "declared_size": 8001,
       "example_path": "scripts/smoke-staging.sh",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 115
+      "pathRefs": 117
     },
     {
       "blob_sha": "e2f41463b724c8237eccc60e557b355474b2c9dc",
       "declared_size": 10040,
       "example_path": "functions/src/lib/featureRegistry.ts",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 78
+      "pathRefs": 80
     },
     {
       "blob_sha": "e2fa9361957ce251f18b8e29a595e69eea617964",
       "declared_size": 1184,
       "example_path": "functions/test/auth.test.ts",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 176
+      "pathRefs": 180
     },
     {
       "blob_sha": "e2fb12a6dec6f0dcecb8ed7cd940c3c8f89875f2",
@@ -6426,28 +6510,28 @@
       "declared_size": 52343,
       "example_path": "scripts/fixtures/r423-worker/workers/studio-worker/index.js",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "e3818fd653d2eae58ef8d1553e2b586f5b7b04f2",
       "declared_size": 9626,
       "example_path": "functions/src/lib/featureRegistry.ts",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 60
+      "pathRefs": 61
     },
     {
       "blob_sha": "e390455942c13d61399af64328edd84878acbb39",
       "declared_size": 377600,
       "example_path": "functions/package-lock.json",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 92
+      "pathRefs": 94
     },
     {
       "blob_sha": "e3ddc9da0d3680a63b8d885dec70d717ef5232c3",
       "declared_size": 17350,
       "example_path": ".github/workflows/communications-pr58-twilio-trial-e2e.yml",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 47
+      "pathRefs": 48
     },
     {
       "blob_sha": "e40d8c12a0faae86d899764c9915dfc34cbb39a7",
@@ -6461,14 +6545,14 @@
       "declared_size": 18131,
       "example_path": ".github/workflows/spatial-pr1596-stripe-provider-probe.yml",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 77
+      "pathRefs": 79
     },
     {
       "blob_sha": "e46f52baf09840b6e51b6b8c76aa2423e65ec01d",
       "declared_size": 5852,
       "example_path": "scripts/validate-provider-readiness-20261001.mjs",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 29
+      "pathRefs": 30
     },
     {
       "blob_sha": "e473f1602a26ebfa2ac0ff8172dda315707427fa",
@@ -6510,14 +6594,14 @@
       "declared_size": 3909,
       "example_path": "firestore.rules",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 176
+      "pathRefs": 180
     },
     {
       "blob_sha": "e65871407a9ef5814c33f8add5bd51012fdce1bf",
       "declared_size": 20867,
       "example_path": ".github/workflows/admin-pr57-runtime-deploy.yml",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 61
+      "pathRefs": 62
     },
     {
       "blob_sha": "e72ab5b0685a8a861bfc9e12c4bdc34cf8fb6e79",
@@ -6531,7 +6615,7 @@
       "declared_size": 2854,
       "example_path": "scripts/bootstrap-staging-twilio-proof-iam.sh",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 135
+      "pathRefs": 138
     },
     {
       "blob_sha": "e8795318ee421035f4f690ab6a272e605df68637",
@@ -6552,35 +6636,35 @@
       "declared_size": 13383,
       "example_path": ".github/workflows/ci.yml",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "e908f035ceb008dd8c28884472c306b1de59d396",
       "declared_size": 5459,
       "example_path": ".github/workflows/staging-gcp-authority-readback.yml",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 84
+      "pathRefs": 86
     },
     {
       "blob_sha": "e9a660314db5bebf1df13a9faa243b0c054f4028",
       "declared_size": 22934,
       "example_path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 47
+      "pathRefs": 48
     },
     {
       "blob_sha": "e9e8a3e06e3006f3822c614985d707e429ace809",
       "declared_size": 2745,
       "example_path": "launch-proof/urai-staging-production-lock/2026-06-30T0000Z/README.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 170
+      "pathRefs": 174
     },
     {
       "blob_sha": "ea74840a35ffb1c8a6a518d9b1f41758c3d94972",
       "declared_size": 17187,
       "example_path": ".github/workflows/spatial-pr1296-stripe-provider-probe.yml",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 13
+      "pathRefs": 14
     },
     {
       "blob_sha": "eaab76e2c0574b0ebdeee42efb2f8f2e9f590b90",
@@ -6594,6 +6678,13 @@
       "declared_size": 6017,
       "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
       "first_branch": "review/r744-genesis-owner-acceptance-kit-hold-20261105",
+      "pathRefs": 1
+    },
+    {
+      "blob_sha": "eb5170db14e5a2253a0c667d28dc0c705748cf0c",
+      "declared_size": 3415,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "twilio/api-key-control-plane-20260927",
       "pathRefs": 1
     },
     {
@@ -6615,14 +6706,14 @@
       "declared_size": 1504,
       "example_path": "docs/estate/09_COVERAGE_AND_LIMITATIONS.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "ec58cc2cb56d22af962dc4f14cd13f84804df22e",
       "declared_size": 4450,
       "example_path": "docs/receipts/URAI_API_PROVIDER_WORLD_AUDIT_20260925.md",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 137
+      "pathRefs": 140
     },
     {
       "blob_sha": "ec6be6af94c88287dcd7232dcc8da3cf52206efe",
@@ -6650,7 +6741,7 @@
       "declared_size": 2040,
       "example_path": "scripts/validate-active-consumer-refs.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 118
+      "pathRefs": 120
     },
     {
       "blob_sha": "ed8bc6cd28b8f8b15f251b74dccd522423a534f7",
@@ -6664,21 +6755,21 @@
       "declared_size": 12401,
       "example_path": "scripts/fixtures/r424-signed/jobs/functions/src/privacy/lifeMovieAdmissionPreflight.ts",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "edab1f9a57f3ed06fcf47ffc37fa0830d334cafc",
       "declared_size": 6233,
       "example_path": ".github/workflows/staging-pr120-federated-emulator.yml",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "edae38d039165f62cbef8ad851a190d9a8ac5bfe",
       "declared_size": 7971,
       "example_path": "scripts/verify-spatial-export-artifact.py",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "ee226b21974bac7a8d797cc3ea6e1c01f43efa88",
@@ -6720,7 +6811,7 @@
       "declared_size": 3010,
       "example_path": "docs/estate/05_VERIFICATION_AND_EVIDENCE.md",
       "first_branch": "docs/chalk-staging-source-release-audit-20261107",
-      "pathRefs": 1
+      "pathRefs": 2
     },
     {
       "blob_sha": "efff6f140c96bf1667b1150877ab6b49eebc7864",
@@ -6741,7 +6832,7 @@
       "declared_size": 1172,
       "example_path": "scripts/resolve-workstream-c-root.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "f115821612fed2ca6707b8a2b57b50767972d367",
@@ -6755,7 +6846,7 @@
       "declared_size": 3281,
       "example_path": "scripts/validate-staging-twilio-function-deploy-iam.mjs",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 135
+      "pathRefs": 138
     },
     {
       "blob_sha": "f2faf4ac78475bc5615172a4d28c6ff6b40ac69a",
@@ -6769,28 +6860,28 @@
       "declared_size": 4079,
       "example_path": "URAI_STAGING_READINESS_MATRIX.md",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 138
+      "pathRefs": 141
     },
     {
       "blob_sha": "f3a8d2a470146f37ee210ce4dcfaa1be5ecd8101",
       "declared_size": 3806,
       "example_path": "URAI_STAGING_LOCK.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 34
+      "pathRefs": 35
     },
     {
       "blob_sha": "f439b2b80bd3af19f4b84506c223f71df76b1c07",
       "declared_size": 1852,
       "example_path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md",
       "first_branch": "chore/actions-node24-current-staging-main-20261005",
-      "pathRefs": 44
+      "pathRefs": 45
     },
     {
       "blob_sha": "f43f9bd5cd01dcd80f6d7e0856b68c94fe5e275d",
       "declared_size": 14355,
       "example_path": "functions/src/index.ts",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 46
+      "pathRefs": 47
     },
     {
       "blob_sha": "f47847de09d7d8cb89bdedd155ed667665e670f9",
@@ -6818,14 +6909,14 @@
       "declared_size": 2597,
       "example_path": "scripts/test-r423-worker-deletion-source-contract.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 43
+      "pathRefs": 44
     },
     {
       "blob_sha": "f521578ca273ebb6118e10413cf31cec717b8e32",
       "declared_size": 3786,
       "example_path": "scripts/repair-jobs-unused-error-reporting.sh",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 167
+      "pathRefs": 171
     },
     {
       "blob_sha": "f5bb2164e32b3da8fcbdccb6ceff776ebaf24d04",
@@ -6839,14 +6930,14 @@
       "declared_size": 5487,
       "example_path": "docs/AGENT_HANDOFF_CURRENT_STATE_2026-07-19.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 163
+      "pathRefs": 166
     },
     {
       "blob_sha": "f67af14d1948a851a2bd2398d4d954ac33ab9b08",
       "declared_size": 1486,
       "example_path": "scripts/r454-specific-firebase-denial.mjs",
       "first_branch": "review/chalk-independent-revocation-batch-safety-20261105",
-      "pathRefs": 42
+      "pathRefs": 43
     },
     {
       "blob_sha": "f69846a43a8a1394feba6a3fa5178d2dcaa0c0af",
@@ -6860,7 +6951,7 @@
       "declared_size": 6527,
       "example_path": "scripts/test-sendgrid-staging-callback.mjs",
       "first_branch": "fix/genesis-staging-command-inventory-20261102",
-      "pathRefs": 48
+      "pathRefs": 49
     },
     {
       "blob_sha": "f730aefdd016bd76388585c540af1cd405d6a4fc",
@@ -6874,7 +6965,7 @@
       "declared_size": 4563,
       "example_path": "functions/test/stagingBoundaries.test.ts",
       "first_branch": "canon/current-authority-20260925",
-      "pathRefs": 23
+      "pathRefs": 24
     },
     {
       "blob_sha": "f79f443096268cb51aa9c12acb5e7e07617d62de",
@@ -6902,14 +6993,14 @@
       "declared_size": 1128,
       "example_path": "SMOKE_CHECKLIST.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 172
+      "pathRefs": 176
     },
     {
       "blob_sha": "f8eb4abb334e5c5f81b8decdfd69cf4790e0ea4b",
       "declared_size": 15910,
       "example_path": "scripts/check-deploy-readiness.mjs",
       "first_branch": "docs/agent-handoff-recovery-20260719",
-      "pathRefs": 5
+      "pathRefs": 6
     },
     {
       "blob_sha": "f94cb084f4886fd774ddd07c9a410abfe1106560",
@@ -6958,21 +7049,21 @@
       "declared_size": 160,
       "example_path": "scripts/workstream-c-current-candidates.env",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 165
+      "pathRefs": 169
     },
     {
       "blob_sha": "fadfd2315f839f895cf1f56cddb672b94827d5d3",
       "declared_size": 2599,
       "example_path": "scripts/smoke-staging.sh",
       "first_branch": "agent/probe-shared-wif",
-      "pathRefs": 14
+      "pathRefs": 15
     },
     {
       "blob_sha": "fbeffd1fe659a365f148b45f56f5da14e8f55a94",
       "declared_size": 5976,
       "example_path": "config/provider-readiness-20261001.json",
       "first_branch": "diagnostics/staging-readonly-r215-20261028",
-      "pathRefs": 29
+      "pathRefs": 30
     },
     {
       "blob_sha": "fc50f2b781e260408359b318231a41e922d6d0d5",
@@ -6993,14 +7084,14 @@
       "declared_size": 9053,
       "example_path": ".github/workflows/staging-deploy.yml",
       "first_branch": "docs/agent-handoff-recovery-20260719",
-      "pathRefs": 5
+      "pathRefs": 6
     },
     {
       "blob_sha": "fed896596b1ab6848ddf4836253b0faa8ae6b816",
       "declared_size": 16918,
       "example_path": "scripts/check-deploy-readiness.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 76
+      "pathRefs": 77
     },
     {
       "blob_sha": "fee76c8c4e2f7de6204cc26abd1f2308f0aa8a12",
@@ -7014,14 +7105,14 @@
       "declared_size": 1905,
       "example_path": "docs/release-evidence/STAGING_AUTHORITY_RECONCILIATION_20260714.md",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 157
+      "pathRefs": 160
     },
     {
       "blob_sha": "fff413e9c9fd18c82f94081186bd645ca1e66352",
       "declared_size": 9393,
       "example_path": "scripts/staging-prebuilt-manifest.mjs",
       "first_branch": "admin-pr57-consumer-authority-20260905",
-      "pathRefs": 159
+      "pathRefs": 162
     }
   ]
 }
