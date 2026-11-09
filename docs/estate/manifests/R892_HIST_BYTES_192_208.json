@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    192,
+    208
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "5050b04bd49c9be5a28ad59ba2b55ce2ba5c46b1",
+      "declared_size": 6087,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 2,
+      "observed_bytes": 6087,
+      "sha256": "456be42aff5d56dcf4c089bea7f6f894750c4d22dee7b55691730eedb7957823",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "507e2821bba81466efde842c648f3a1cc983fa25",
+      "declared_size": 5583,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/r759-pin-full-acceptance-to-r754-es2020-source-20261105-chalk",
+      "pathRefs": 1,
+      "observed_bytes": 5583,
+      "sha256": "c82b52b18c3acba3f7d8a8cda1af44ed4598ba15745e0941b8c1154c62d132ea",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "50b5fc7dd0796a1a560a59bbeb603966b5a9a396",
+      "declared_size": 4600,
+      "example_path": "functions/src/lib/stagingBoundaries.ts",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 95,
+      "observed_bytes": 4600,
+      "sha256": "25f2573af7a3919b547d85ad6cd5276d4a1d9d2a4b720e4781469ac9a4a94f18",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "50c34d1d7fca4c95f1cb3d3aa55e552e7a5a6262",
+      "declared_size": 18456,
+      "example_path": ".github/workflows/staging-deploy.yml",
+      "first_branch": "fix/staging-authority-readme-20260830",
+      "pathRefs": 4,
+      "observed_bytes": 18456,
+      "sha256": "50fd4e87136caafab9faf99378ca5b4788ad20f13d6fd1896441f6cd542f4a51",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "5176849ef9b570d3237cff62945eb4c66933ee71",
+      "declared_size": 5407,
+      "example_path": "scripts/validate-admin-pr57-runtime-deploy.mjs",
+      "first_branch": "admin-pr57-runtime-controller-20260905",
+      "pathRefs": 1,
+      "observed_bytes": 5407,
+      "sha256": "8c82cb108e1d1e2d567159777b41d0a6015e91af9edd8c485777c816540d36e7",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "51892fb26374ec422a3c81e372f618771f658d7d",
+      "declared_size": 6603,
+      "example_path": "docs/genesis/R744_OWNER_ACCEPTANCE_AND_RELEASE_GOVERNANCE.md",
+      "first_branch": "review/chalk-r765-pin-owner-acceptance-to-r763-graph-source-20261105",
+      "pathRefs": 2,
+      "observed_bytes": 6603,
+      "sha256": "1c8bbcc5c91260c683b6474463e56410ce95d212f6d1436c74655813820ed3a5",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "52e19b5653ea870aac5335c3f8f513b457a83f0b",
+      "declared_size": 796,
+      "example_path": "docs/WORKSTREAM_C_CURRENT_CANDIDATES.md",
+      "first_branch": "repin/current-six-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 796,
+      "sha256": "585c0be83511e554ca51e649fb5f8c0f1cb6b09ee15448d85d42b5e40f63d35b",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "537108b5df583aa413ac0bc114172a6f72f616a3",
+      "declared_size": 3201,
+      "example_path": "scripts/validate-spatial-pr1581-stripe-provider-probe.mjs",
+      "first_branch": "fix/rebind-staging-spatial-1581-20261004",
+      "pathRefs": 3,
+      "observed_bytes": 3201,
+      "sha256": "3fafe6637094b1054f47ce9b92f95ab8acc66b7d47478bc81043d0e183208987",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "558195b3ae33d721ba7916e9706e813577394cd0",
+      "declared_size": 6665,
+      "example_path": ".github/workflows/ci.yml",
+      "first_branch": "converge/sendgrid-pr58-6c99e6c-20260929",
+      "pathRefs": 9,
+      "observed_bytes": 6665,
+      "sha256": "54562e1bd7d828939b6296ba96cbac6d9ea3cad333c4b5af956efd65d32a6067",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "55f3d25ab97f52e96e66ea04e2ef680070610302",
+      "declared_size": 2461,
+      "example_path": ".github/workflows/urai-production-verify.yml",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 39,
+      "observed_bytes": 2461,
+      "sha256": "7b443ab470224cd340e9467d15580e13aa00e9ab0c1b478faaa9f87dbab6c7ae",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "56cb9839b3103610049cdb08d19962df0e7e6111",
+      "declared_size": 4002,
+      "example_path": "scripts/validate-communications-pr53-twilio-staging.mjs",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 1,
+      "observed_bytes": 4002,
+      "sha256": "faba02a75ebdc33dac70dfe5b051b33fca5fa5ae4e72b404e54f69970ad99392",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "575cae8587cfa379fe4eea48806284f382a7f184",
+      "declared_size": 18131,
+      "example_path": ".github/workflows/spatial-pr1596-stripe-provider-probe.yml",
+      "first_branch": "chore/actions-node24-current-staging-main-20261005",
+      "pathRefs": 1,
+      "observed_bytes": 18131,
+      "sha256": "fa0c6b6601c5037be5e0bc2fecd1d1d34a7a5055e889083d8eee9c70582ec8a6",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "57a4420e1ebfb3a1550f35f09357adbc2e934d35",
+      "declared_size": 2442,
+      "example_path": "functions/test/stagingBoundaries.test.ts",
+      "first_branch": "reconcile/staging-current-main-controls-truth-20260811",
+      "pathRefs": 1,
+      "observed_bytes": 2442,
+      "sha256": "24daa939f26d90dc6fb848818defe67e8e31e69c0c56684c69a003c16a2d258f",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "57c07ddea75a89fbc5ce790a5b69b01c41869117",
+      "declared_size": 3240,
+      "example_path": "scripts/validate-staging-twilio-function-deploy-iam.mjs",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 4,
+      "observed_bytes": 3240,
+      "sha256": "49bcecb2bc2f10d5219cb902ea396f67e775310a4bf9fbe7e27fca1553b5b110",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "58052990c25406e66fa3f5b55e5ff1f5c95e7bcc",
+      "declared_size": 6087,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "converge/spatial-1598-099470-final-bind",
+      "pathRefs": 3,
+      "observed_bytes": 6087,
+      "sha256": "0889dd4d6e529a084fea2f25e12951365c8845b633b54dbb6e54d4dae714882a",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "58a2fdf407e4321a7299cf1c9e628e1ce8668861",
+      "declared_size": 2087,
+      "example_path": "docs/genesis/test-r744-denial-contract.sh",
+      "first_branch": "review/chalk-r765-pin-owner-acceptance-to-r763-graph-source-20261105",
+      "pathRefs": 16,
+      "observed_bytes": 2087,
+      "sha256": "98a35e15d060f1492a38a4b8e9ebe79ceab54bb07bff08a2e5daac94f2f51a69",
+      "state": "verified"
+    }
+  ]
+}
