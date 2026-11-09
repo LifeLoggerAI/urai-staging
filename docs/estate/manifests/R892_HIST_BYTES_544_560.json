@@ -1,0 +1,170 @@
+{
+  "schema": "urai-staging-r892-historical-raw-byte-check-v1",
+  "range": [
+    544,
+    560
+  ],
+  "method": "Immutable original Git blob UTF8 byte read, known-vector SHA256, exact size. No secret content recorded.",
+  "rows": [
+    {
+      "blob_sha": "eaab76e2c0574b0ebdeee42efb2f8f2e9f590b90",
+      "declared_size": 3405,
+      "example_path": "scripts/validate-communications-pr58-sendgrid-staging.mjs",
+      "first_branch": "converge/staging-main-authority-20261003",
+      "pathRefs": 5,
+      "observed_bytes": 3405,
+      "sha256": "417d346c24e59e3e161b71063c0f80df9be3ee69e73aefa8a28dbf582711ad0e",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "eb43b60c7cf8f0d4ef55e9c6eb544a1ed3446b20",
+      "declared_size": 6017,
+      "example_path": "docs/genesis/r744-owner-pinned-acceptance.sh",
+      "first_branch": "review/r744-genesis-owner-acceptance-kit-hold-20261105",
+      "pathRefs": 1,
+      "observed_bytes": 6017,
+      "sha256": "81a66a06a40065763176b60b99ff9e24b5355ffd9beb49ae80d656fa8983dfb0",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "eb5170db14e5a2253a0c667d28dc0c705748cf0c",
+      "declared_size": 3415,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "twilio/api-key-control-plane-20260927",
+      "pathRefs": 1,
+      "observed_bytes": 3415,
+      "sha256": "12eba44429e8276e1d4b36ef41aacdab2f35574e13b6d3dac459b5fe6826acec",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "eb73042de53b18870eed8b0b72faa1c744dfbc21",
+      "declared_size": 2419,
+      "example_path": "scripts/fixtures/r424-signed/manifest.json",
+      "first_branch": "test/r422-federated-source-contract-privacy-studio-jobs-replay-20261103",
+      "pathRefs": 1,
+      "observed_bytes": 2419,
+      "sha256": "95a30e97b42edb5c592be7ab3ae3a4a5d3b7e8d212a80948a843cc65c96e63db",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ebd32ca3517124fc30096a607f20e889bd5110b8",
+      "declared_size": 3331,
+      "example_path": "package.json",
+      "first_branch": "fix/genesis-staging-command-inventory-20261102",
+      "pathRefs": 1,
+      "observed_bytes": 3331,
+      "sha256": "589a5cde50b3a51ca4d9ac24f8989a5f3222728d1e73bb294bbe3e26fcf008d8",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ec0465abd60a2b42220663d9cb9752a1838cd386",
+      "declared_size": 1504,
+      "example_path": "docs/estate/09_COVERAGE_AND_LIMITATIONS.md",
+      "first_branch": "docs/chalk-staging-source-release-audit-20261107",
+      "pathRefs": 2,
+      "observed_bytes": 1504,
+      "sha256": "48701faf23ca504a6c4bc00783ec9974e4a825e209047f0d6b4e53fa0a695b74",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ec8e07222917721f56ed40f180fbd990aa1f7c35",
+      "declared_size": 1852,
+      "example_path": "docs/SENDGRID_STAGING_NATIVE_REVIEW.md",
+      "first_branch": "fix/protected-consumer-ref-coverage-20261004",
+      "pathRefs": 12,
+      "observed_bytes": 1852,
+      "sha256": "4ecbc05000a55544c84c85dfd3a11100fe115103db52d2696843614daa6ea885",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ecd5702e6d83d19d3494eef4757404910bd70962",
+      "declared_size": 1751,
+      "example_path": "functions/src/lib/stagingBoundaries.ts",
+      "first_branch": "admin-pr57-consumer-authority-20260905",
+      "pathRefs": 21,
+      "observed_bytes": 1751,
+      "sha256": "551ec69883190c6ab38f5a5300995b2336f1ff2a07c8ba56d634609af028870c",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ed8bc6cd28b8f8b15f251b74dccd522423a534f7",
+      "declared_size": 2393,
+      "example_path": "config/staging-consumers.json",
+      "first_branch": "communications/twilio-trial-e2e-20260924",
+      "pathRefs": 1,
+      "observed_bytes": 2393,
+      "sha256": "6d7925a79c30b1f08347b12e51a93c8dc362f966c78c78d4f78ae3ba15f44ee4",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ee226b21974bac7a8d797cc3ea6e1c01f43efa88",
+      "declared_size": 4501,
+      "example_path": "STATUS.md",
+      "first_branch": "sendgrid/governance-certification-6c99e6c6-20260929",
+      "pathRefs": 1,
+      "observed_bytes": 4501,
+      "sha256": "48ea9ce88bc53af951c6e2b4f51d66d03591899851e69a9ac15a35ebb3f7cc0b",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ee494bd125f7bd05c53fdbea1e0d2f9d1a2cfc47",
+      "declared_size": 1877,
+      "example_path": "scripts/smoke-staging.sh",
+      "first_branch": "release/ci-deploy-readiness-hardening",
+      "pathRefs": 2,
+      "observed_bytes": 1877,
+      "sha256": "7f22d3b89e87078adbc38208419ea1a6dbb85956005a096ea9ab8793f6641e34",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ee9bc9a6da11fea5411adb140cc369ccd3f2ac76",
+      "declared_size": 7106,
+      "example_path": "scripts/promote-staging-twilio-function-deploy-iam.sh",
+      "first_branch": "canon/current-authority-20260925",
+      "pathRefs": 4,
+      "observed_bytes": 7106,
+      "sha256": "54e997be7cdb751ef444469cc2f80f34ee324bc2d4aa0229604eb9182cce6ce2",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "eec89a99cf4ab543bd294b2fbed1a4d5cbab0e00",
+      "declared_size": 160,
+      "example_path": "scripts/workstream-c-current-candidates.env",
+      "first_branch": "repin/current-core-candidates-20260715",
+      "pathRefs": 1,
+      "observed_bytes": 160,
+      "sha256": "fcfe1313b3eda19547c36f8a31ae88fa801c29a6099bbd8c2eba3892c09dd720",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "eef08bbcb166e64956d5355da644ccf018d25d7f",
+      "declared_size": 18275,
+      "example_path": ".github/workflows/communications-pr58-sendgrid-staging-e2e.yml",
+      "first_branch": "converge/current-provider-consumers-20261003",
+      "pathRefs": 1,
+      "observed_bytes": 18275,
+      "sha256": "e05051157bec2d6faf4041bb81e76c60b05818a9a6b9ddd250ee817eb9176e18",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "ef79ba5c2e925ec513869456127adb5744ce6543",
+      "declared_size": 3010,
+      "example_path": "docs/estate/05_VERIFICATION_AND_EVIDENCE.md",
+      "first_branch": "docs/chalk-staging-source-release-audit-20261107",
+      "pathRefs": 2,
+      "observed_bytes": 3010,
+      "sha256": "83110e7b879de44aec155eef9aafd5f99c9c243ca3cfa374b7a27cc922458fe1",
+      "state": "verified"
+    },
+    {
+      "blob_sha": "efff6f140c96bf1667b1150877ab6b49eebc7864",
+      "declared_size": 8643,
+      "example_path": "scripts/validate-launch-evidence.mjs",
+      "first_branch": "fix/genesis-staging-evidence-source-pin-20261102",
+      "pathRefs": 1,
+      "observed_bytes": 8643,
+      "sha256": "e629ade14e76842feab01b0d0401eb8c8724b2e6641f81b0e33c8dac44b88a16",
+      "state": "verified"
+    }
+  ]
+}
