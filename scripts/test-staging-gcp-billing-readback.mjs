@@ -36,7 +36,7 @@ const other = '01GX9Z-A267B5-QXZ9Y8';
 const record = (id) => ({ projectId: 'urai-staging', billingEnabled: true, billingAccountName: 'billingAccounts/' + id });
 const cases = [
   ['canonical', record(canonical), 'valid', 0, 'MATCHES_HISTORIC_CANONICAL_REFERENCE', canonical],
-  ['terminated', record(terminated), 'valid', 0, 'MATCHES_NOV19_TERMINATED_REFERENCE', terminated],
+  ['terminated', record(terminated), 'valid', 29, 'known terminated account association', terminated],
   ['another account', record(other), 'valid', 0, 'OTHER_ACCOUNT_UNVERIFIED', other],
   ['lowercase ID', record('01gx9z-A267B5-QXZ9Y8'), 'valid', 0, 'OTHER_ACCOUNT_UNVERIFIED', '01gx9z-A267B5-QXZ9Y8'],
   ['denied', record(other), 'denied', 24, 'READBACK=FAILED'],
