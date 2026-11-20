@@ -71,8 +71,47 @@ jobs:
         run: |
           set -euo pipefail
           test "$(gcloud config get-value project 2>/dev/null)" = "$PROJECT_ID"
-          billing="$(gcloud billing projects describe "$PROJECT_ID" --format='value(billingEnabled)' 2>/dev/null || true)"
-          echo "STAGING_BILLING_ENABLED=${billing:-UNKNOWN}"
+          # Read only: do not link, unlink, or mutate billing from this workflow.
+          # A successful Actions job must never disguise a failed billing read as UNKNOWN.
+          if ! billing_json="$(gcloud billing projects describe "$PROJECT_ID" --format=json)"; then
+            echo "STAGING_BILLING_READBACK=FAILED (provider query denied or unavailable)" >&2
+            exit 24
+          fi
+          BILLING_JSON="$billing_json" node <<'NODE'
+          let info;
+          try {
+            info = JSON.parse(process.env.BILLING_JSON);
+          } catch {
+            console.error('STAGING_BILLING_READBACK=FAILED (invalid provider JSON)');
+            process.exit(25);
+          }
+          if (info.projectId !== 'urai-staging') {
+            console.error('STAGING_BILLING_READBACK=FAILED (project identity mismatch)');
+            process.exit(26);
+          }
+          if (info.billingEnabled !== true) {
+            console.error('STAGING_BILLING_READBACK=FAILED (billing disabled or unknown)');
+            process.exit(27);
+          }
+          const match = /^billingAccounts\/([A-Za-z0-9]{6}-[A-Za-z0-9]{6}-[A-Za-z0-9]{6})$/.exec(String(info.billingAccountName || ''));
+          if (!match) {
+            console.error('STAGING_BILLING_READBACK=FAILED (billing account ID missing or malformed)');
+            process.exit(28);
+          }
+          // This is a public repository; workflow logs may be downloaded by others.
+          // Retain an audit fingerprint, but never print the full account identifier.
+          const { createHash } = require('node:crypto');
+          const fingerprint = createHash('sha256').update(match[1], 'utf8').digest('hex');
+          const referenceHashes = {
+            '530a88bb5466bca2307a99874c39ddee9d284fbb43ea2ac5f4feb7b887c779a9': 'MATCHES_HISTORIC_CANONICAL_REFERENCE',
+            '17a8217b741309cb574217546ca1a511107ddfd6c19e90701a0ca262b5caf283': 'MATCHES_NOV19_TERMINATED_REFERENCE'
+          };
+          console.log('STAGING_BILLING_ENABLED=true');
+          console.log('STAGING_BILLING_ACCOUNT_ID=WITHHELD_PUBLIC_LOG');
+          console.log('STAGING_BILLING_ACCOUNT_SHA256=' + fingerprint);
+          console.log('STAGING_BILLING_ASSOCIATION_CLASS=' + (referenceHashes[fingerprint] || 'OTHER_ACCOUNT_UNVERIFIED'));
+          console.log('STAGING_BILLING_READBACK=VERIFIED_PROJECT_ASSOCIATION_ONLY');
+          NODE
           if gcloud iam service-accounts describe "$EXPECTED_RUNTIME_SERVICE_ACCOUNT" --project="$PROJECT_ID" >/dev/null 2>&1; then echo "STAGING_RUNTIME_SA_EXISTS=true"; else echo "STAGING_RUNTIME_SA_EXISTS=false"; fi
           key_count="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project="$PROJECT_ID" --managed-by=user --format='value(name)' 2>/dev/null | sed '/^$/d' | wc -l | tr -d ' ')"
           echo "STAGING_DEPLOY_USER_MANAGED_KEYS=$key_count"
