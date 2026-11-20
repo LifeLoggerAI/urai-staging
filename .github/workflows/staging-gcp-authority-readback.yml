@@ -106,6 +106,13 @@ jobs:
             '530a88bb5466bca2307a99874c39ddee9d284fbb43ea2ac5f4feb7b887c779a9': 'MATCHES_HISTORIC_CANONICAL_REFERENCE',
             '17a8217b741309cb574217546ca1a511107ddfd6c19e90701a0ca262b5caf283': 'MATCHES_NOV19_TERMINATED_REFERENCE'
           };
+          // Billing-enabled alone does not establish usable staging billing:
+          // the known terminated November 19 account must never pass readback.
+          // Do not reveal its identifier in public workflow logs.
+          if (referenceHashes[fingerprint] === 'MATCHES_NOV19_TERMINATED_REFERENCE') {
+            console.error('STAGING_BILLING_READBACK=FAILED (known terminated account association)');
+            process.exit(29);
+          }
           console.log('STAGING_BILLING_ENABLED=true');
           console.log('STAGING_BILLING_ACCOUNT_ID=WITHHELD_PUBLIC_LOG');
           console.log('STAGING_BILLING_ACCOUNT_SHA256=' + fingerprint);
