@@ -93,7 +93,7 @@ jobs:
             console.error('STAGING_BILLING_READBACK=FAILED (billing disabled or unknown)');
             process.exit(27);
           }
-          const match = /^billingAccounts\\/([A-F0-9]{6}-[A-F0-9]{6}-[A-F0-9]{6})$/.exec(String(info.billingAccountName || ''));
+          const match = /^billingAccounts\/([A-F0-9]{6}-[A-F0-9]{6}-[A-F0-9]{6})$/.exec(String(info.billingAccountName || ''));
           if (!match) {
             console.error('STAGING_BILLING_READBACK=FAILED (billing account ID missing or malformed)');
             process.exit(28);
