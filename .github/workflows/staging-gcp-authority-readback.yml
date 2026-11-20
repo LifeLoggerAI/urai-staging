@@ -98,8 +98,18 @@ jobs:
             console.error('STAGING_BILLING_READBACK=FAILED (billing account ID missing or malformed)');
             process.exit(28);
           }
+          // This is a public repository; workflow logs may be downloaded by others.
+          // Retain an audit fingerprint, but never print the full account identifier.
+          const { createHash } = require('node:crypto');
+          const fingerprint = createHash('sha256').update(match[1], 'utf8').digest('hex');
+          const referenceHashes = {
+            '530a88bb5466bca2307a99874c39ddee9d284fbb43ea2ac5f4feb7b887c779a9': 'MATCHES_HISTORIC_CANONICAL_REFERENCE',
+            '17a8217b741309cb574217546ca1a511107ddfd6c19e90701a0ca262b5caf283': 'MATCHES_NOV19_TERMINATED_REFERENCE'
+          };
           console.log('STAGING_BILLING_ENABLED=true');
-          console.log('STAGING_BILLING_ACCOUNT_ID=' + match[1]);
+          console.log('STAGING_BILLING_ACCOUNT_ID=WITHHELD_PUBLIC_LOG');
+          console.log('STAGING_BILLING_ACCOUNT_SHA256=' + fingerprint);
+          console.log('STAGING_BILLING_ASSOCIATION_CLASS=' + (referenceHashes[fingerprint] || 'OTHER_ACCOUNT_UNVERIFIED'));
           console.log('STAGING_BILLING_READBACK=VERIFIED_PROJECT_ASSOCIATION_ONLY');
           NODE
           if gcloud iam service-accounts describe "$EXPECTED_RUNTIME_SERVICE_ACCOUNT" --project="$PROJECT_ID" >/dev/null 2>&1; then echo "STAGING_RUNTIME_SA_EXISTS=true"; else echo "STAGING_RUNTIME_SA_EXISTS=false"; fi
