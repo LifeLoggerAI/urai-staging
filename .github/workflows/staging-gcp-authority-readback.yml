@@ -71,8 +71,37 @@ jobs:
         run: |
           set -euo pipefail
           test "$(gcloud config get-value project 2>/dev/null)" = "$PROJECT_ID"
-          billing="$(gcloud billing projects describe "$PROJECT_ID" --format='value(billingEnabled)' 2>/dev/null || true)"
-          echo "STAGING_BILLING_ENABLED=${billing:-UNKNOWN}"
+          # Read only: do not link, unlink, or mutate billing from this workflow.
+          # A successful Actions job must never disguise a failed billing read as UNKNOWN.
+          if ! billing_json="$(gcloud billing projects describe "$PROJECT_ID" --format=json)"; then
+            echo "STAGING_BILLING_READBACK=FAILED (provider query denied or unavailable)" >&2
+            exit 24
+          fi
+          BILLING_JSON="$billing_json" node <<'NODE'
+          let info;
+          try {
+            info = JSON.parse(process.env.BILLING_JSON);
+          } catch {
+            console.error('STAGING_BILLING_READBACK=FAILED (invalid provider JSON)');
+            process.exit(25);
+          }
+          if (info.projectId && info.projectId !== 'urai-staging') {
+            console.error('STAGING_BILLING_READBACK=FAILED (project identity mismatch)');
+            process.exit(26);
+          }
+          if (info.billingEnabled !== true) {
+            console.error('STAGING_BILLING_READBACK=FAILED (billing disabled or unknown)');
+            process.exit(27);
+          }
+          const match = /^billingAccounts\\/([A-F0-9]{6}-[A-F0-9]{6}-[A-F0-9]{6})$/.exec(String(info.billingAccountName || ''));
+          if (!match) {
+            console.error('STAGING_BILLING_READBACK=FAILED (billing account ID missing or malformed)');
+            process.exit(28);
+          }
+          console.log('STAGING_BILLING_ENABLED=true');
+          console.log('STAGING_BILLING_ACCOUNT_ID=' + match[1]);
+          console.log('STAGING_BILLING_READBACK=VERIFIED_PROJECT_ASSOCIATION_ONLY');
+          NODE
           if gcloud iam service-accounts describe "$EXPECTED_RUNTIME_SERVICE_ACCOUNT" --project="$PROJECT_ID" >/dev/null 2>&1; then echo "STAGING_RUNTIME_SA_EXISTS=true"; else echo "STAGING_RUNTIME_SA_EXISTS=false"; fi
           key_count="$(gcloud iam service-accounts keys list --iam-account="$DEPLOY_SERVICE_ACCOUNT" --project="$PROJECT_ID" --managed-by=user --format='value(name)' 2>/dev/null | sed '/^$/d' | wc -l | tr -d ' ')"
           echo "STAGING_DEPLOY_USER_MANAGED_KEYS=$key_count"
