@@ -85,7 +85,7 @@ jobs:
             console.error('STAGING_BILLING_READBACK=FAILED (invalid provider JSON)');
             process.exit(25);
           }
-          if (info.projectId && info.projectId !== 'urai-staging') {
+          if (info.projectId !== 'urai-staging') {
             console.error('STAGING_BILLING_READBACK=FAILED (project identity mismatch)');
             process.exit(26);
           }
