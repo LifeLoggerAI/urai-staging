@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 
 const expectedProject = 'urai-staging';
 const expectedSite = 'urai-staging';
@@ -40,8 +41,22 @@ if (firebase) {
   if (firebase.firestore?.indexes !== 'firestore.indexes.json') failures.push('Firestore indexes path is not canonical');
   if (firebase.storage?.rules !== 'storage.rules') failures.push('Storage rules path is not canonical');
   const rewrites = Array.isArray(firebase.hosting?.rewrites) ? firebase.hosting.rewrites : [];
-  const buildInfoRewrite = rewrites.find((rewrite) => rewrite?.source === '/api/buildinfo');
-  if (buildInfoRewrite?.function !== 'buildinfo') failures.push('/api/buildinfo must route to lowercase buildinfo before the SPA fallback');
+  const functionsRequire = createRequire(new URL('../functions/package.json', import.meta.url));
+  for (const name of ['healthz', 'buildinfo']) {
+    const route = '/api/' + name;
+    const matches = (rule) => {
+      if (rule?.source === '**' || rule?.source === route) return true;
+      if (/^\/[\w./-]+$/.test(rule?.source ?? '')) return false;
+      // For pattern rules use the matcher in the frozen Firebase Hosting emulator.
+      return functionsRequire('superstatic/lib/utils/patterns').configMatcher(route, rule);
+    };
+    try {
+      const first = rewrites.find(matches);
+      if (first?.source !== route || first.function !== name) failures.push(`${route} must reach its named Function before any broader rewrite`);
+    } catch {
+      failures.push(`Unable to verify rewrite priority for ${route} with the installed Hosting matcher`);
+    }
+  }
   if (!rewrites.some((rewrite) => rewrite?.source === '**' && rewrite?.destination === '/index.html')) failures.push('Hosting must retain the SPA fallback after API rewrites');
 }
 
