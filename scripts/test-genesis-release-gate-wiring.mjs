@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import './test-staging-diagnostic-routing.mjs';
 
 const readScripts = () => JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).scripts;
 test('release verifier must require deploy readiness, privacy/jobs admission and actual staging evidence', () => {

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "one-urai-genesis-staging-r887-native-wiring-test-1",
+  "observationDateUTC": "2026-11-08",
+  "reviewParent": "49d705f21a0d8370f9c6b9db5cf344b1b20a1d9b",
+  "testedScript": "scripts/test-r887-release-acceptance-wiring.mjs",
+  "testedSourceGitBlob": "0c46ede422700bc779a7dc60d4467bb863d5162c",
+  "testedSourceSHA256": "bec403ed615274d38cc61da783cfaf43bfcf0344a9a2410a43bfed01afe17624",
+  "testedScriptGitBlobMatch": true,
+  "node": "22.16.0",
+  "testType": "native Node test runner executed on original R887 test bytes in explicitly synthetic minimal repository fixture, not complete R840 checkout",
+  "positiveResult": {
+    "cases": 4,
+    "passed": 4,
+    "failed": 0,
+    "exitCode": 0
+  },
+  "negativeMutations": [
+    {
+      "mutation": "delete R816 capacity command from synthetic CI fixture",
+      "exitCode": 1,
+      "failedCheck": "original R840 checks must be enrolled in all three release paths exactly once in order"
+    },
+    {
+      "mutation": "delete prebuilt seal command from synthetic protected deploy fixture",
+      "exitCode": 1,
+      "failedCheck": "preflight is ahead of credentials"
+    }
+  ],
+  "sourceActualWorkflows": {
+    "readFromGitHubAtCommit": "4da99c3c6ac009dabef4c64afbc64338bfef4298",
+    "paths": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/urai-production-verify.yml",
+      ".github/workflows/staging-deploy.yml"
+    ],
+    "eachR887CommandOccurrences": 1,
+    "orderVerified": true,
+    "cloudAuthStepsPreserved": true
+  },
+  "limitations": [
+    "Synthetic minimal workflow fixtures are not exact full workflow files; exact original workflow path/sequence verified separately using GitHub connector",
+    "No original npm ci/TypeScript build/full repository execution",
+    "No genuine Firebase emulator download or 23/23 runtime",
+    "No four-emulator acceptance",
+    "No hosted Actions executed-step acceptance; workflows failed before recorded steps",
+    "No staging deploy, no Firebase auth, no paid compute, no production or device acceptance"
+  ],
+  "releaseDisposition": "R887 source wiring PROPOSED, local regression 4/4 on synthetic fixtures, current exact-head integration HOLD; production NO-GO"
+}

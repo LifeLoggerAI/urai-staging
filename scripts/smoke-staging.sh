@@ -30,18 +30,23 @@ require_status() {
   local url="$2"
   local expected="$3"
   local payload="${4:-}"
-  local code
+  local info code
+  local -a redirect=(--location)
+  # Diagnostic proof has to come from this Hosting route itself.
+  if [[ "$method" == GET && "$url" == "$STAGING_URL/api/"* ]]; then
+    redirect=()
+  fi
   if [ -n "$payload" ]; then
-    code=$(curl --fail-with-body --location --silent --show-error --connect-timeout 15 --max-time 45 \
-      -o "$BODY_PATH" -w "%{http_code}" -X "$method" "$url" \
+    info=$(curl --fail-with-body "${redirect[@]}" --silent --show-error --connect-timeout 15 --max-time 45 \
+      -o "$BODY_PATH" -w '%{http_code}|%{content_type}' -X "$method" "$url" \
       -H "Content-Type: application/json" -d "$payload" || true)
   else
-    code=$(curl --fail-with-body --location --silent --show-error --connect-timeout 15 --max-time 45 \
-      -o "$BODY_PATH" -w "%{http_code}" -X "$method" "$url" || true)
+    info=$(curl --fail-with-body "${redirect[@]}" --silent --show-error --connect-timeout 15 --max-time 45 \
+      -o "$BODY_PATH" -w '%{http_code}|%{content_type}' -X "$method" "$url" || true)
   fi
+  code="${info%%|*}"
+  response_content_type="${info#*|}"
   echo "$method $url -> $code"
-  cat "$BODY_PATH" || true
-  echo
   if [ "$code" != "$expected" ]; then
     echo "Expected HTTP $expected but received HTTP $code for $url" >&2
     exit 1
@@ -62,19 +67,30 @@ require_json_api_status() {
     exit 1
   fi
 
-  node - "$BODY_PATH" <<'NODE'
+  node - "$BODY_PATH" "$method" "$STAGING_PROJECT_ID" "$STAGING_URL" "$response_content_type" <<'NODE'
 const fs = require('node:fs');
-const bodyPath = process.argv[2];
+const [bodyPath, method, projectId, hostingUrl, contentType] = process.argv.slice(2);
 let parsed;
 try {
   parsed = JSON.parse(fs.readFileSync(bodyPath, 'utf8'));
-} catch (error) {
-  console.error(`Expected valid JSON API response: ${error.message}`);
+} catch {
+  console.error('Expected valid JSON API response.');
   process.exit(1);
 }
 if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
   console.error('Expected a JSON object response.');
   process.exit(1);
+}
+if (method === 'GET') {
+  if (contentType.split(';')[0].trim().toLowerCase() !== 'application/json') {
+    console.error('Expected application/json from the staging diagnostic.');
+    process.exit(1);
+  }
+  if (parsed.status !== 'ok' || parsed.service !== 'urai-staging' ||
+      parsed.projectId !== projectId || parsed.hostingUrl !== hostingUrl) {
+    console.error('Staging diagnostic identity did not match the target.');
+    process.exit(1);
+  }
 }
 NODE
 }
@@ -96,7 +112,6 @@ if ! grep -Eqi '^Disallow:[[:space:]]*/[[:space:]]*$' "$BODY_PATH"; then
 fi
 if grep -Eqi '^[[:space:]]*(Allow|Sitemap):|urai\.app|/u/adamclamp' "$BODY_PATH"; then
   echo "robots.txt contains forbidden public/production indexing authority." >&2
-  cat "$BODY_PATH" >&2
   exit 1
 fi
 
@@ -122,21 +137,17 @@ if (!/^\d+$/.test(String(receipt.workflowRunId ?? ''))) {
   failures.push('mutation receipt workflowRunId must be numeric');
 }
 
-if (body.status !== 'ok') failures.push('status must be ok');
-if (body.service !== 'urai-staging') failures.push('service must be urai-staging');
-if (body.projectId !== expectedProject) failures.push(`projectId must be ${expectedProject}`);
-if (body.hostingUrl !== expectedUrl) failures.push(`hostingUrl must be ${expectedUrl}`);
 if (body.releaseCandidateSha !== expectedSha) {
-  failures.push(`releaseCandidateSha must equal exact candidate ${expectedSha}, received ${String(body.releaseCandidateSha)}`);
+  failures.push(`releaseCandidateSha must equal exact candidate ${expectedSha}`);
 }
 if (body.deployedAt !== receipt.deployedAt) {
-  failures.push(`deployedAt must equal current mutation receipt ${String(receipt.deployedAt)}, received ${String(body.deployedAt)}`);
+  failures.push('deployedAt must equal current mutation receipt');
 }
 if (String(body.deploymentWorkflowRunId ?? '') !== String(receipt.workflowRunId)) {
-  failures.push(`deploymentWorkflowRunId must equal current mutation workflow ${String(receipt.workflowRunId)}, received ${String(body.deploymentWorkflowRunId)}`);
+  failures.push('deploymentWorkflowRunId must equal current mutation workflow');
 }
 if (body.runtimeProjectId !== expectedProject) {
-  failures.push(`runtimeProjectId must equal ${expectedProject}, received ${String(body.runtimeProjectId)}`);
+  failures.push(`runtimeProjectId must equal ${expectedProject}`);
 }
 
 if (failures.length) {

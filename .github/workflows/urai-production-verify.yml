@@ -59,6 +59,15 @@ jobs:
       - name: Run canonical staging bootstrap
         run: node scripts/urai-staging-bootstrap.mjs
 
+      - name: Reject missing exact-head R840 release acceptance wiring
+        run: node --test scripts/test-r887-release-acceptance-wiring.mjs
+
+      - name: Verify original R816 128-node transaction fence
+        run: npm run test:r816:capacity
+
+      - name: Verify original R840 23-case synthetic callable lifecycle on three real emulators
+        run: npm --prefix functions run test:synthetic-lifecycle:http-emulator
+
       - name: Validate launch evidence
         run: node scripts/validate-launch-evidence.mjs
 
