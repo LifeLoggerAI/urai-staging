@@ -187,6 +187,7 @@ export const healthz = stagingPublicHttpRuntime.https.onRequest((request, respon
     service: 'urai-staging',
     projectId: STAGING_PROJECT_ID,
     hostingUrl: STAGING_HOSTING_URL,
+    ...stagingRuntimeBuildInfo(),
   });
 });
 
