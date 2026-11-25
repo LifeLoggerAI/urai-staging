@@ -121,6 +121,8 @@ requirePhrases('.github/workflows/staging-deploy.yml', [
   'expected_main_sha:', 'rollback_sha:', 'run_live_deploy:', 'environment: staging', 'id-token: write', 'ref: ${{ env.TARGET_SHA }}', 'persist-credentials: false',
   'git ls-remote --exit-code origin refs/heads/main', 'git merge-base --is-ancestor', 'Run credential-free protected staging verification', 'Seal source-bound staging prebuilt artifact',
   'Download source-bound prebuilt artifact outside repository', 'Verify external artifact before credentials exist', 'Install exact Firebase CLI outside repository',
+  'cp functions/package.json functions/package-lock.json "$CLI_ROOT/"', 'npm ci --prefix "$CLI_ROOT" --include=dev --ignore-scripts',
+  'steps.firebase_cli.outputs.version',
   'Materialize verified Functions output before credentials exist', 'Require exact staging credential', 'GCP_WIF_PROVIDER', 'GCP_STAGING_DEPLOY_SERVICE_ACCOUNT',
   'google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093', 'create_credentials_file: true', 'export_environment_variables: true',
   'GOOGLE_GHA_CREDS_PATH', 'gha-creds-*.json', 'WIF credential project mismatch', "URAI_PRODUCTION_DEPLOY_APPROVED: '0'", "ALLOW_CREATE_STAGING_HOSTING_SITE: '0'",
@@ -129,7 +131,9 @@ requirePhrases('.github/workflows/staging-deploy.yml', [
 ]);
 requireOrder('.github/workflows/staging-deploy.yml', [
   'Run credential-free protected staging verification', 'Seal source-bound staging prebuilt artifact', 'Download source-bound prebuilt artifact outside repository',
-  'Verify external artifact before credentials exist', 'Install exact Firebase CLI outside repository', 'Materialize verified Functions output before credentials exist',
+  'Verify external artifact before credentials exist', 'Install exact Firebase CLI outside repository',
+  'npm ci --prefix functions --omit=dev --ignore-scripts', 'Materialize verified Functions output before credentials exist',
+  'FUNCTIONS_MANIFEST_OUTPUT_PATH="$manifest" node_modules/.bin/firebase-functions',
   'Require exact staging credential', 'Deploy verified artifact to staging only', 'Destroy staging credentials before evidence handoff',
   'Upload protected staging mutation evidence', 'Public staging verification without cloud identity',
 ], 'credential-free preflight, protected mutation, cleanup, and public verification order');

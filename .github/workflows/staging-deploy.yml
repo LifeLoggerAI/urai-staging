@@ -33,7 +33,6 @@ env:
   TARGET_SHA: ${{ inputs.expected_main_sha }}
   ROLLBACK_SHA: ${{ inputs.rollback_sha }}
   NODE_VERSION: '22'
-  FIREBASE_CLI_VERSION: '15.23.0'
   EXPECTED_STAGING_PROJECT: urai-staging
   URAI_STAGING_PROJECT_ID: urai-staging
   URAI_STAGING_URL: https://urai-staging.web.app
@@ -238,21 +237,47 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=all)"
 
       - name: Install exact Firebase CLI outside repository
+        id: firebase_cli
         shell: bash
         run: |
           set -euo pipefail
           CLI_ROOT="$RUNNER_TEMP/firebase-cli"
           mkdir -p "$CLI_ROOT"
-          npm install --prefix "$CLI_ROOT" --no-audit --no-fund "firebase-tools@$FIREBASE_CLI_VERSION"
-          test "$("$CLI_ROOT/node_modules/.bin/firebase" --version)" = "$FIREBASE_CLI_VERSION"
+          cp functions/package.json functions/package-lock.json "$CLI_ROOT/"
+          npm ci --prefix "$CLI_ROOT" --include=dev --ignore-scripts --no-audit --no-fund
+          version="$(node -p "require('./functions/package-lock.json').packages['node_modules/firebase-tools'].version")"
+          test "$("$CLI_ROOT/node_modules/.bin/firebase" --version)" = "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "$CLI_ROOT/node_modules/.bin" >> "$GITHUB_PATH"
           test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Install locked Functions runtime dependencies
+        run: npm ci --prefix functions --omit=dev --ignore-scripts --no-audit --no-fund
 
       - name: Materialize verified Functions output before credentials exist
         env:
           URAI_RELEASE_CANDIDATE_SHA: ${{ env.TARGET_SHA }}
           URAI_STAGING_PREBUILT_ROOT: ${{ env.PREBUILT_ROOT }}
         run: node scripts/staging-prebuilt-manifest.mjs --materialize
+
+      - name: Discover staging diagnostics before credentials exist
+        working-directory: functions
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$RUNNER_TEMP/staging-functions-discovery.json"
+          # The SDK also enumerates Pub/Sub triggers, which require a project ID.
+          GCLOUD_PROJECT=demo-urai-staging-discovery \
+            FUNCTIONS_MANIFEST_OUTPUT_PATH="$manifest" node_modules/.bin/firebase-functions
+          node - "$manifest" <<'NODE'
+          const fs = require('node:fs');
+          const { endpoints } = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          for (const name of ['healthz', 'buildinfo']) {
+            if (!Object.hasOwn(endpoints?.[name] ?? {}, 'httpsTrigger')) {
+              throw new Error(`Staging HTTP function missing from the verified build: ${name}`);
+            }
+          }
+          NODE
 
       - name: Require exact staging credential
         shell: bash
@@ -310,7 +335,7 @@ jobs:
           URAI_STAGING_PREFLIGHT_VERIFIED: '1'
           URAI_STAGING_AUTHORITY_SCOPE: urai-staging-repository-only
           URAI_STAGING_CONSUMER_ASSIGNMENTS_JSON: '[]'
-          URAI_FIREBASE_CLI_VERSION: ${{ env.FIREBASE_CLI_VERSION }}
+          URAI_FIREBASE_CLI_VERSION: ${{ steps.firebase_cli.outputs.version }}
           URAI_PRODUCTION_DEPLOY_APPROVED: '0'
           ALLOW_CREATE_STAGING_HOSTING_SITE: '0'
         run: bash scripts/urai-staging-lock.sh
